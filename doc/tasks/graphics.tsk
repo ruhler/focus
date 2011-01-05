@@ -1,0 +1,52 @@
+
+Task: How can an application describe graphic output?
+
+Tue Jan  4 19:58:13 EST 2011
+
+One way would be to serialize an SDL surface. But I think we could probably
+have a better high level encoding of graphics, right?
+
+Think terminal escape characters,  but for graphics?
+
+Better yet, think ascii encoding of graphical operations. The goal with the
+protocol is to minimize the communication that needs to be done between client
+and server.
+
+And presumably we could implement a library analogous to ncurses for graphical
+applications that knows how to abstract away and optimize the communication.
+
+Let me take a survey of the graphical applications I've implemented and see
+what they use.
+
+clear - clear the screen.
+fillrect - draw a rectangle on the screen.
+ttfrender - render a character from a font.
+blit - copy a rectangle of given pixels to the screen.
+
+We'll want a way to deal with colors. The most basic thing is being able to
+set a pixel at a given location.
+
+You know? It's not so bad, I don't think. This could possibly be made to work.
+
+I need to get an idea of the performance.
+
+I need to try something.
+
+I need to come up with a simple API, write a bunch of graphical applications
+which use it, and see how it works.
+
+The first two applications I should get working with my API are fbterm and
+pngviewer.
+
+For performance reasons, let's assume communication is one way, in the sense
+that none of these functions return responses. It's the client application's
+job to keep around extra information if it needs to.
+
+It might be nice to implement a procedure to encode an SDL_Surface using this
+API.
+
+It might also be nice to implement an SDL back end to the API, which renders
+to an SDL_Surface.
+
+You know? This is starting to look a little like X. Only a lot simpler.
+

@@ -1,0 +1,32 @@
+
+Task: What is memory mapping, and can I use it?
+
+Tue Jan  4 19:48:00 EST 2011
+
+Here's the motivation. We need applications to be running in separate
+processes, but we want them to communicate the display they output to the
+focus server as efficiently as if they were not in different processes.
+
+One idea is, perhaps we can map both server and client to share a bunch of
+pages in memory, and then that would be the case.
+
+This task is to figure out what all you can do with memory mapping pages
+shared by multiple processes and how you do it.
+
+Tue Jan  4 19:54:44 EST 2011
+
+I read the mmap man page. Some promising results.
+
+We can mmap an anonymous region of memory, and it will carry over across a
+fork call. This way we could share memory with a forked processes.
+
+We can also have multiple processes share memory mapped from the same file.
+
+So that's all I need, right?
+
+The next question is how I would use this.
+
+I guess it's just a way to speed up communication between processes, rather
+than using TCP or linux pipes. Though linux pipes might do mmap under the
+covers, so really I shouldn't try this until I run into performance problems.
+

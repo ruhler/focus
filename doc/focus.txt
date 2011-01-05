@@ -1,0 +1,46 @@
+
+Tue Jan  4 19:28:21 EST 2011
+
+focus.
+
+Focus is my plan for a window manager implemented in SDL (so it doesn't need
+X). I'm thinking like a graphical version of screen.
+
+The idea is you focus at one thing at a time. No overlapping windows. All like
+screen.
+
+
+One goal is to be able to start a png viewer from within elinks, for example.
+
+Client applications will have to connect somehow to a server thing and
+transmit data that way.
+
+I suppose connection could be done, as in screen, by focus itself, and it can
+then fork off a child application. The big question is how the child
+application and focus interact.
+
+I'm thinking applications want as input a sequence of events, and want as
+output a display. For example, the output might be an SDL_Screen. Performance
+is going to be an issue.
+
+What it boils down to, I think, is having a way to maintain mirroring
+SDL_Surfaces in each process efficiently. Fortunately that can all be
+abstracted away from the client programs.
+
+How do I get going on this?
+
+There are a number of things I could do:
+ - learn about memory mapping to see if processes can share memory and we can
+   somehow use that for efficient transference of the display.
+    (mmap.tsk)
+
+ - try implementing a version of focus where all the clients are built in, so
+   we don't need multiple processes. The clients could be fbterm and maybe
+   pngviewer or whatever other silly application I write.
+
+ - write out an initial proposal for how someone would use focus.
+ 
+ - discuss ideas of using escape codes to communicate graphical data, or some
+   other ascii encoding (maybe client shouldn't know about SDL).
+    (graphics.tsk)
+
