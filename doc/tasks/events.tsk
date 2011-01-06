@@ -1,0 +1,37 @@
+
+Task: How to represent events?
+
+Thu Jan  6 09:13:48 EST 2011
+
+We need some way to send events, such as keyboard events, to applications. How
+should we represent them?
+
+Some stream of UTF-8 characters, yes, but how do we encode the events as
+characters?
+
+Key presses are pretty natural. But should we associate a key press with a
+character, or a key? For example, SDL does key, forcing you to map that to
+characters yourself. That way you can get things like SHIFT and CTRL, which
+are great for games because they are bigger keys.
+
+Easier would be just the keycode of the key. Then have some library to
+translate it to key presses, and another library to translate it to
+characters. Users can choose which translation they have done.
+
+Then we'll want key press and key release.
+In the future things like the mouse could be accessible, but I don't need that
+yet.
+
+Then we may want things like:
+ - resize event
+ - quit event
+
+But for now, key press and key release should suffice. So lets do:
+
+PHH - press key with scancode HH, where HH is hex for the code.
+RHH - release key with given scan code.
+
+Thu Jan  6 09:31:13 EST 2011
+
+Another thing we're going to want is timing events of some sort.
+

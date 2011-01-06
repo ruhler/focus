@@ -1,0 +1,24 @@
+
+Task: Milestone 1: a simple application.
+
+Thu Jan  6 09:22:51 EST 2011
+
+For milestone one, now that we have initial graphics and events encodings
+defined, I should implement an SDL back end for running the application, and
+implement a simple application to try it out.
+
+The application I should implement: my pngviewer. Because it's in haskell it
+should be trivial to implement a different raster back end.
+
+So what we have is, a pngviewer implemented in haskell which takes as input
+the input events codes and outputs the graphics codes.
+
+To run it, we start another application, implemented in c, which forks the
+pngviewer (or whatever client you give it), and interprets the outputs using
+SDL.
+
+This should be fairly easy to implement.
+
+Some submilestones might be:
+ - draw squares of different color on the screen
+

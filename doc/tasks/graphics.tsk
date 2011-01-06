@@ -50,3 +50,29 @@ to an SDL_Surface.
 
 You know? This is starting to look a little like X. Only a lot simpler.
 
+Thu Jan  6 09:02:31 EST 2011
+
+Here's my first attempt at an interface.
+
+I think we should use only UTF8 characters. Encode graphics operations using
+those. We can compress the stream on the fly if that will help communications,
+but it's really nice to deal with readable and writeable strings.
+
+For outputting graphics, I propose we start with the following:
+
+C - clear the entire screen.
+Swxh@x,y:(image data)
+    Set a rectangular region of the screen to the given pixel data.
+    w is the width
+    h is the height 
+    x,y is the starting coordinate
+    The image data is a sequence of pixels represented in hex, from top to
+    bottom, left to right.
+Fwxh@x,y:HHHHHH
+    Fill a rectangle with the given solid color at the given location.
+
+This should be enough to implement my snake game, png viewer, fbterm. They may
+not be fast, but if that's the case, I can figure out what other operations
+would speed them up. I worry if I do just a few applications I'll skew my
+optimizations though, so let them be slow at first.
+
