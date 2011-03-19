@@ -35,3 +35,77 @@ Thu Jan  6 09:31:13 EST 2011
 
 Another thing we're going to want is timing events of some sort.
 
+Thu Jan  6 20:06:44 EST 2011
+
+First question: how do I represent the client side of the application library
+(which I'm calling "grapps")?
+
+We want a way to get the next event, analgous to SDL's WaitEvent.
+
+And later we'll want to support both getting of keycode and getting of key and
+getting of character, all three different levels.
+
+We want an abstract data type. That's clear. Which means we need functions to
+access it.
+
+Define a thing called an Event. (I hate C).
+
+Maybe first I should put this interface in haskell.
+
+Now how will it work? Define a Grapps monad. The Grapps monad has the
+following like stuff.
+ 
+-- Get the next event (blocking)
+event :: Grapps Event
+
+-- Return the type of an event.
+etype :: Event -> EventType
+
+-- The event types (public)
+EventType = KeyPress | KeyRelease
+
+keycode ... but this isn't safe. Can we do it safely? I guess we should make
+Event a public type then? I really rather not. I really better not.
+
+Why do I loose type saftey here?
+
+Let me try again.
+
+event :: Grapps Event
+
+type KeyCode = Integer 
+data Event = KeyPress KeyCode | KeyRelease KeyCode
+
+But that's not enough. So let's give them more information?
+
+Okay! Try 3:
+
+data Event = KeyPress KeyPressEvent | KeyRelease KeyReleaseEvent
+
+-- Get the code of the key pressed.
+keycode :: KeyPressEvent -> KeyCode
+
+-- Get the keyboard symbol of the key pressed.
+keysym :: KeyPressEvent -> KeySym
+
+-- Get the character associated with the key pressed.
+character :: KeyPressEvent -> Char
+
+Yes. This is making progress now. Nice and safe and abstract.
+
+I like it. Not sure how I'll load the keymap. Oh well.
+
+Good. This is all I need.
+
+Thu Jan  6 20:19:18 EST 2011
+
+Wait. I had another thought. The keysym and character stuff should be totally
+separate right? They can be.
+
+Turning into the keysym from the keycode is a straight function.
+Turning into the character requires knowledge of what modifiers are on. But
+what modifiers are on is a function of the history of keysyms.
+
+You know what? I'm clearly not thinking straight. Let me stop while I'm only a
+little behind.
+

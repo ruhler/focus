@@ -22,6 +22,20 @@ This should be fairly easy to implement.
 Some submilestones might be:
  - draw squares of different color on the screen
 
+Thu Jan  6 19:54:44 EST 2011
+
+I need names for things.
+
+the screen like application for graphics: "focus"
+the ncurses like library for graphics: ???
+the terminal emulator like application that displays graphics (likely via sdl
+in this case): ??? How about "depot"? Sure. Go with that. Which leaves the
+ncurses like library as "freight"?
+
+I guess it really doesn't matter so much.
+
+Except, I don't actually know so much about railroads, so I'll go back to my
+earlier tradition, no? Um. Maybe not.
 
 Sat Feb 12 19:46:31 EST 2011
 
