@@ -1,0 +1,13 @@
+
+# vim: ft=python
+
+Import('env')
+#env['CFLAGS'] = ['-ggdb']
+#env['CFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
+#env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
+
+ccl_o = env.Object('ccl.o', 'ccl.c')
+
+boxer = env.Program('boxer', ['boxer.c', ccl_o])
+env.Default(boxer)
+

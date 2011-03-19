@@ -22,3 +22,15 @@ This should be fairly easy to implement.
 Some submilestones might be:
  - draw squares of different color on the screen
 
+
+Sat Feb 12 19:46:31 EST 2011
+
+I'm thinking the first step is a library. An api. An interface. This should be
+analogous to ncurses. The client application will make library calls, in c,
+which will lead to the application reading and writing stuff on stdin and
+stdout. Then I'll have an application which takes one of these programs as an
+argument, forks a process with pipes to talk to it, and uses SDL to draw
+everything on the screen.
+
+Let me write down the api. See api.tsk.
+

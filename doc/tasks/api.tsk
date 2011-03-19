@@ -1,0 +1,40 @@
+
+Task: Define a client api.
+
+Sat Feb 12 19:48:31 EST 2011
+
+What all do we need? A way to draw graphics. A way to read input. Perhaps we
+need something to initialize a graphics program? Clear the screen? Set up the
+screen size? Is the screen size an input?
+
+Let me make a minimal proposal and see out it goes.
+
+void clear() - Clear the display.
+void setpixel(int x, int y, Color c) - set the pixel at the given location.
+Color rgb8(int r, int b, int g)  - create a color with given components.
+Event event();  - Get the next event. Blocks until ready.
+int keypress(Event e, int* scancode) - Get the scancode from a keypress event.
+int keyrelease(Event e, int* scancode)
+
+I hate C. Oh well.
+
+I think this is enough to do a fair number of applications. It should be
+possible for me to, for example, draw a box, and move it around the screen.
+
+I want to start writing some code.
+
+Sat Feb 12 20:01:18 EST 2011
+
+What do we call this api? I need a name for the header file, and a prefix for
+the functions.
+
+Brainstorm:
+graphics curses gcurses app focus lfocus gui pixie term
+gterm gcon grcon grok grconsole graphicsconsole gvcon
+graphicconsole console
+consoleclient. ccl.
+
+That's not bad. ccl, as an abbreviation for console client.
+Sure! Let me go with that.
+
+
