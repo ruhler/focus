@@ -48,3 +48,67 @@ everything on the screen.
 
 Let me write down the api. See api.tsk.
 
+Sat Mar 19 16:34:48 EDT 2011
+
+Status update. It looks like what I have implemented is a simple client
+library supporting key presses, clearing of the screen, and setting pixels. I
+have a client implemented. What I need is just the server.
+
+So, to make this work I should implement the server.
+
+The server should take as input a program to run. It should act just like 
+fbterm. Spawn the given program in a process, forward inputs and draw outputs. 
+Let me take a crack at it, go as far as I can until I get stuck, then I'll go
+take a walk and see where all we end up.
+
+Sat Mar 19 17:29:24 EDT 2011
+
+I wrote the server, it wasn't hard. But it doesn't work.
+
+It seems like, for some reason, when I write to the slave I write instead to
+myself. Or maybe when I read from the slave I read from myself. I'm not sure
+what that's about.
+
+Sat Mar 19 18:14:26 EDT 2011
+
+Hypothesis: I have echo turned on, so the slave is echoing all its input to
+the master. That could explain the problem. Though I'm still surprised I'm not
+getting the Clear command to happen...
+
+So here's what to do.
+
+1. Read about how to turn off echo.
+2. Read about blocking/noblocking of this forkpty thing
+    (because why does fgetc return EOF all the time?)
+3. Change clear color to solid blue or some such.
+
+I don't know. Hopefully that clears things up.
+
+Sat Mar 19 18:23:48 EDT 2011
+
+Why do I need a pty? Can I not just use some other communication channel? Such
+as two linux FIFOs? Wouldn't that be easier? At least, to get started? Then no
+need to fork or anything, it's just a little more annoying to start the
+program.
+
+Gar.
+
+Here's what I'll do. I'll make my own fifo, skip this forkpty stuff. I don't
+know why I even needed that in the first place. Gar. I don't understand.
+
+Sat Mar 19 19:02:10 EDT 2011
+
+Problem was: I forget the NULL terminator in my execv call, so boxer was never
+run. But echoing was on, so we just got what I wrote to the slave.
+
+Good. Now everything makes sense.
+
+I rewrote the server to not use forkpty, but traditional pipes and such. Now
+the clear thing works.
+
+Sat Mar 19 19:15:52 EDT 2011
+
+And I when I restored the input commands, something happened, but not what I
+wanted. Somehow parsing the protocol is wrong. I don't feel like dealing with
+it now, maybe later.
+

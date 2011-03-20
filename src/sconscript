@@ -8,6 +8,9 @@ Import('env')
 
 ccl_o = env.Object('ccl.o', 'ccl.c')
 
+csr = env.Program('csr', ['csr.c'], LIBS = ['SDL', 'util']);
+env.Default(csr);
+
 boxer = env.Program('boxer', ['boxer.c', ccl_o])
 env.Default(boxer)
 

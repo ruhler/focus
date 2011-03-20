@@ -5,6 +5,8 @@
 
 int main()
 {
+    ccl_clear();
+
     Event event;
     int done = 0;
     int x = 10;
@@ -38,5 +40,7 @@ int main()
             ccl_fill(x, y, 20, 20, ccl_rgb8(255, 0, 0));
         }
     }
+
+    return 0;
 }
 

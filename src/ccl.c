@@ -6,7 +6,8 @@
 void ccl_clear()
 {
     // The clear command: C
-    putchar('C');
+    printf("C");
+    fflush(stdout);
 }
 
 int redof(Color c)
@@ -28,7 +29,8 @@ void ccl_pixel(int x, int y, Color c)
 {
     // The pixel command: P@x,y:RRGGBB
     // x and y are expressed in hex.
-    printf("P@%x,%x:%02X%02X%02X", redof(c), greenof(c), blueof(c));
+    printf("P@%x,%x:%02X%02X%02X", x, y, redof(c), greenof(c), blueof(c));
+    fflush(stdout);
 }
 
 void ccl_fill(int x, int y, int w, int h, Color c)
@@ -52,14 +54,19 @@ void ccl_event(Event* event)
     // One of:
     // PHH - key press with code in hex
     // RHH - key release with code in hex.
+    if (feof(stdin)) {
+        fprintf(stderr, "got end of file");
+        exit(0);
+    }
 
     char t;
     scanf("%c%02X", &t, &(event->value));
+    fprintf(stderr, "got event type: %c(%02X)\n", t, t);
     switch (t) {
         case 'P': event->type = EVENT_KEYPRESS; break;
         case 'R': event->type = EVENT_KEYRELEASE; break;
         default:
-            fprintf(stderr, "invalid event type in input: %c\n", t);
+            fprintf(stderr, "invalid event type in input: %c(%02X)\n", t, t);
             break;
     }
 }
