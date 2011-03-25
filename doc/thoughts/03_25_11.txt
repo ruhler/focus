@@ -1,0 +1,132 @@
+
+Fri Mar 25 11:06:05 EDT 2011
+
+I spent a bunch of time thinking about this, and my conclusion is I think I
+need to spend more time thinking about it. Let me elaborate.
+
+The main question is: what API should the client use for drawing the display.
+
+I'm pretty confident events will be forwarded from server to client in a fifo
+like fashion, no problem. And I'm pretty confident we want to hide the
+communication protocol between server and client. Just treat it as RPC. Maybe
+we can assume the server and client are on the same computer (you can write a
+special remote client for each special remote situation if you want).
+
+How, then, should we describe the pixels to display for the client?
+
+Goals:
+    - it should be natural to what we want to describe, not any specific
+      implementation.
+    - it should allow high performance rendering (though this may require more
+      knowledge to understand than I currently have)
+    - it should be very simple to make it easy to write clients, and easy to
+      write servers too.
+
+What I currently have implemented is the following:
+    clear() - clear the screen
+    pixel(x, y, r, g, b) - the given pixel to the given red, green, blue
+                           value.
+
+The trouble is, this isn't high performance. So I was thinking of adding
+higher level things, such as: fill a rectangle, draw a character, and so on.
+
+In other words, I was defining my own drawing api.
+
+Here's the concern: I shouldn't be defining my own drawing API. What if the
+user prefers his own drawing API, such as SDL, or Cairo, or GL? All those
+should be allowed. The API I want is much lower level.
+
+So, taking inspiration from wayland, I propose this alternative api:
+
+You basically have a single BitBlit function which lets you copy raw pixel
+data from some rectangular region of a buffer into the display.
+
+This buffer could be an SDL_Surface, a cairo_surface, a raw array of pixels,
+or whatever. So you can use any front end drawing tool you want.
+
+I believe this can be made high performance if the buffer is allocated for the
+client. Then we could, I imagine, allocate the buffer in video memory, and the
+bit blit would be from video memory to video memory, so even if between
+processes it would be very fast.
+
+There's a question about what pixel format we want to use: bitmap, rgb,
+indexed, and bitdepth and all that.
+
+There's a question of who determines the size of the display and such things.
+
+Let me propose the following more detailed API:
+
+Event: Resize: or some such thing is an event which tells us how large the
+display is. We have this notion of a display buffer not visible to the client,
+which presumably lives on the server somewhere. The server chooses the size
+and tells the client through this event.
+
+The client can request a buffer be allocated. The client picks what size and
+pixel format the buffer should have. We can include functions that return the
+buffer in the form of an SDL_Surface, cairo_surface, raw pixels, or whatever.
+Along with each buffer comes some unique, possibly opaque, identifier: say the
+pointer to the buffer.
+
+We have a single function: blit. It takes as input the source buffer, which is
+one of the buffers allocated through the API, a source origin which says where
+in the buffer to read from, a width and height of the area to read, and a
+destination origin, which says where in the display to copy the pixels to.
+
+And it's that simple.
+
+Cool. I like that idea.
+
+So, what are the next steps then?
+
+I need to define the api in detail. I need to answer those questions about
+pixel format and display size. I need to come up with a reasonably efficient
+way of transferring the buffers from client to server (mmap?). Then I should
+reimplement the server, client, and boxer. Make boxer use the raw pixel data
+which looks like a frame buffer (not SDL yet).
+
+If I get that working, then I'm on a roll, because all my SDL apps should very
+easily be work with this API.
+
+Let me open a task: pixels.tsk to discuss pixel format issues.
+
+Fri Mar 25 11:38:17 EDT 2011
+
+Let me start by just having one kind of buffer. We can expand it later.
+
+    void* alloc_buffer(width, height);
+
+Where each pixel is 4 bytes: ARGB.
+
+Later we can add arguments to alloc_buffer which request different formats.
+And if a format is not supported, return NULL. And maybe we can have a way to
+list supported formats.
+
+Sot the API to use is simple:
+    Event: ResizeEvent: width height.
+    Given initially at program startup (we can assume perhaps otherwise it 
+    starts width 1 and height 1?) Or the client can ignore this if it wants
+    and just let the server clip.
+
+void* alloc_buffer(width, height);
+void free_buffer(void* buffer);
+void blit(void* src, int srcx, int srcy, int dstx, int dsty, int w, int h);
+
+So simple! I want to try this now.
+
+Maybe to start we have a communication protocol (rather than mmap) which is
+just:
+
+4bytes: dst x
+4bytes: dst y
+4bytes: width
+4bytes: height
+Nbytes: pixel data
+
+That should be pretty easy to parse and transfer via fifo.
+
+Yah. I'm so going to code all that up once I get back from lunch.
+
+Fri Mar 25 13:13:31 EDT 2011
+
+It seems to be working now, finally. Cool.
+

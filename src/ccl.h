@@ -8,18 +8,43 @@
 // One byte for each red, green, blue component.
 typedef unsigned int Color;
 
-// Clear the display.
-void ccl_clear();
+typedef struct {
+    unsigned int width;
+    unsigned int height;
+    Color* pixels;
+} Buffer_;
 
-// Set the color of the given pixel on the display.
-void ccl_pixel(int x, int y, Color c);
+typedef Buffer_* Buffer;
 
-// Fill the given rectangle with the given color.
-void ccl_fill(int x, int y, int w, int h, Color c);
+// Allocate a pixel buffer.
+// Returns NULL if there was some problem allocating the buffer.
+// The buffer should be freed when you're done using it.
+Buffer ccl_alloc_buffer(unsigned int width, unsigned int height);
+
+// Free an allocated pixel buffer.
+void ccl_free_buffer(Buffer buffer);
+
+// Copy bits from the given buffer (allocated by alloc_buffer) to the display.
+void ccl_blit(Buffer src,
+        unsigned int srcx, unsigned int srcy,
+        unsigned int dstx, unsigned int dsty,
+        unsigned int width, unsigned int height);
+
+// Read the color at the given pixel of the given buffer.
+Color ccl_getpixel(Buffer buffer, unsigned int x, unsigned int y);
+
+// Write the color at the given pixel of the given buffer.
+void ccl_setpixel(Buffer buffer, unsigned int x, unsigned int y, Color c);
 
 // Return a color with given components of red, green, and blue.
 // The component values are from 0 to 255.
 Color ccl_rgb8(int r, int g, int b);
+
+// Extract component values from a color.
+// The values returned are 8 bit.
+int ccl_redof(Color c);
+int ccl_greenof(Color c);
+int ccl_blueof(Color c);
 
 // Event types
 #define EVENT_KEYPRESS 0

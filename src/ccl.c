@@ -4,49 +4,87 @@
 
 #include "ccl.h"
 
-void ccl_clear()
+Buffer ccl_alloc_buffer(unsigned int width, unsigned int height)
 {
-    // The clear command: C
-    printf("C");
-    fflush(stdout);
+    Buffer buf = malloc(sizeof(Buffer_));
+    if (!buf) {
+        return NULL;
+    }
+
+    buf->width = width;
+    buf->height = height;
+    buf->pixels = malloc(sizeof(Color) * width * height);
+    if (!buf->pixels) {
+        free(buf);
+        return NULL;
+    }
+    return buf;
 }
 
-int redof(Color c)
+void ccl_free_buffer(Buffer buffer)
 {
-    return 0xFF & (c >> 16);
+    free(buffer->pixels);
+    free(buffer);
 }
 
-int greenof(Color c)
+void ccl_blit(Buffer src,
+        unsigned int srcx, unsigned int srcy,
+        unsigned int dstx, unsigned int dsty,
+        unsigned int width, unsigned int height)
 {
-    return 0xFF & (c >> 8);
-}
+    // Output the data using the following format:
+    // ui4: x destination
+    // ui4: y destination
+    // ui4: width
+    // ui4: height
+    // width*ui4: row 1
+    // width*ui4: row 2
+    // ...
+    // width*ui4: row (height)
 
-int blueof(Color c)
-{
-    return 0xFF & c;
-}
+    unsigned int header[] = {dstx, dsty, width, height};
+    fwrite(header, 4, 4, stdout);
 
-void ccl_pixel(int x, int y, Color c)
-{
-    // The pixel command: P@x,y:RRGGBB
-    // x and y are expressed in hex.
-    printf("P@%x,%x:%02X.%02X.%02X", x, y, redof(c), greenof(c), blueof(c));
-    fflush(stdout);
-}
-
-void ccl_fill(int x, int y, int w, int h, Color c)
-{
-    int i, j;
-    for (i = 0; i < w; i++) {
-        for (j = 0; j < h; j++) {
-            ccl_pixel(x+i, y+j, c);
+    int x;
+    int y;
+    for (y = srcy; y < height+srcy; y++) {
+        for (x = srcx; x < width + srcx; x++) {
+            Color c = ccl_getpixel(src, x, y);
+            fwrite(&c, 4, 1, stdout);
         }
     }
+    fflush(stdout);
+}
+
+Color ccl_getpixel(Buffer buffer, unsigned int x, unsigned int y)
+{
+    return buffer->pixels[y*buffer->width + x];
+}
+
+void ccl_setpixel(Buffer buffer, unsigned int x, unsigned int y, Color c)
+{
+    buffer->pixels[y*buffer->width + x] = c;
 }
 
 Color ccl_rgb8(int r, int g, int b)
 {
     return (r << 16) | (g << 8) | b;
+}
+
+
+int ccl_redof(Color c)
+{
+    return 0xFF & (c >> 16);
+}
+
+int ccl_greenof(Color c)
+{
+    return 0xFF & (c >> 8);
+}
+
+int ccl_blueof(Color c)
+{
+    return 0xFF & c;
 }
 
 void ccl_event(Event* event)

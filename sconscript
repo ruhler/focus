@@ -2,11 +2,10 @@
 # TODO: how do I get env.Program without using 'default'?
 env = Environment(tools=['default'])
 Export('env')
+env['CFLAGS'] = ['-ggdb']
 
 # Local host based stuff
-env['CPPPATH'] = ['/pkg/sdl-1.2.14/install/include/SDL']
-env['LIBPATH'] = ['/pkg/sdl-1.2.14/install/lib']
-env['ENV']['LD_LIBRARY_PATH'] = '/pkg/sdl-1.2.14/install/lib'
+SConscript('scons/local')
 
 # The main program
 SConscript('src/sconscript')

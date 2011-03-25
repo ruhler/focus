@@ -1,0 +1,18 @@
+
+Fri Mar 25 11:33:57 EDT 2011
+
+Task: understand all the difference formats a pixel buffer can take on.
+
+That is, how many different ways can we represent a pixel?
+
+TrueColor: red, green, blue, [alpha]
+    Using N bits for each of red, green, blue
+
+Indexed: we need an index specified somewhere.
+
+Greyscale: red, green, blue all treated as equal
+
+
+How does SDL support all this? It basically allows all of the above by
+specifying the pixelformat with each surface.
+

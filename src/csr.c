@@ -2,60 +2,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
+
+#include "ccl.h"
 
 int fdw;
 int fdr;
 SDL_Surface* screen;
 
-void clear()
-{
-    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0x30, 0x30, 0x30));
-}
-
 void pixel(int x, int y, int r, int g, int b)
 {
-    SDL_Rect dst = {x, y, 1, 1};
-    SDL_FillRect(screen, &dst, SDL_MapRGB(screen->format, r, g, b));
+    if (x >= 0 && x <= screen->w && y >= 0 && y <= screen->h) {
+        SDL_Rect dst = {x, y, 1, 1};
+        SDL_FillRect(screen, &dst, SDL_MapRGB(screen->format, r, g, b));
+    }
 }
 
 int handle_output(void* usrdata)
 {
-    FILE* pfr = fdopen(fdr, "r");
+    FILE* pfr = fdopen(fdr, "rb");
     if (!pfr) {
         perror("fdopen");
         return -1;
     }
 
     while (1) {
-        char cmd = fgetc(pfr);
-        switch (cmd) {
-            case EOF:
-                // ignore?
-                break;
+        unsigned int header[4] = {0};
+        if (fread(header, 4, 4, pfr) < 4) {
+            break;
+        }
 
-            case 'C':
-                clear();
-                break;
-
-            case 'P':
-            {
-                unsigned int x = 0;
-                unsigned int y = 0;
-                unsigned int r = 0;
-                unsigned int g = 0;
-                unsigned int b = 0;
-                if (fscanf(pfr, "@%x,%x:%x.%x.%x", &x, &y, &r, &g, &b) < 5) {
-                    fprintf(stderr, "error reading P command\n");
-                    fprintf(stderr, " x=%i, y=%i, r=%i, g=%i, b=%i\n");
-                }
-                fprintf(stderr, "pixel %i, %i, %i, %i, %i\n", x, y, r, g, b);
-                pixel(x, y, r, g, b);
-            } break;
-
-            default:
-                fprintf(stderr, "unknown command: %c(%02X)\n", cmd, cmd);
-                break;
+        int xbase = header[0];
+        int ybase = header[1];
+        int r = 0;
+        int c = 0;
+        for (r = 0; r < header[3]; r++) {
+            for (c = 0; c < header[2]; c++) {
+                Color col;
+                fread(&col, 4, 1, pfr);
+                pixel(xbase + c, ybase + r, ccl_redof(col), ccl_greenof(col), ccl_blueof(col));
+            }
         }
         SDL_UpdateRect(screen, 0, 0, 0, 0);
     }
@@ -162,10 +148,10 @@ int main(int argc, char* argv[])
 
     } else {
         fdw = stoc[1];
-        //close(stoc[0]);
+        close(stoc[0]);
         
         fdr = ctos[0];
-        //close(ctos[1]);
+        close(ctos[1]);
 
         runserver();
     }

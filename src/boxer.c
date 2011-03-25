@@ -4,10 +4,26 @@
 #include "ccl.h"
 
 // Application with a box you can move around the screen.
+#define WIDTH 640
+#define HEIGHT 480
+
+void fill(Buffer dpy,
+        unsigned int x, unsigned int y,
+        unsigned int w, unsigned int h,
+        Color col)
+{
+    int c;
+    int r;
+    for (r = 0; r < h; r++) {
+        for (c = 0; c < w; c++) {
+            ccl_setpixel(dpy, c+x, r+y, col);
+        }
+    }
+}
 
 int main()
 {
-    ccl_clear();
+    Buffer display = ccl_alloc_buffer(WIDTH, HEIGHT);
 
     Event event;
     int done = 0;
@@ -17,30 +33,11 @@ int main()
         ccl_event(&event);
         int code; 
         if (ccl_keypress(&event, &code)) {
-            fprintf(stderr, "client: got code: %i\n", code);
-            switch (code) {
-                case 16:   // q
-                    done = 1;
-                    break;
-
-                case 35:   // h
-                    x -= 10;
-                    break;
-
-                case 36:   // j
-                    y += 10;
-                    break;
-
-                case 37:   // k
-                    y -= 10;
-                    break;
-
-                case 38:   // l
-                    x += 10;
-                    break;
-            }
-            ccl_clear();
-            ccl_fill(x, y, 10, 10, ccl_rgb8(255, 0, 0));
+            fill(display, x, y, 10, 10, ccl_rgb8(255, 0, 0));
+            x += 10;
+            y += 10;
+            fill(display, x, y, 10, 10, ccl_rgb8(0, 255, 0));
+            ccl_blit(display, 0, 0, 0, 0, 640, 480);
         }
     }
 
