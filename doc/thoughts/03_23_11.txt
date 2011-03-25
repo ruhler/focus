@@ -1,0 +1,47 @@
+
+Thu Mar 24 20:30:01 EDT 2011
+
+Checked out wayland. This looks like a promising future for X-less systems. I
+could try to work with it in detail, but I think if I do things write, I
+shouldn't have to worry about how it works. Perhaps when it matures a little
+more it will be simple to make a client for it that works with my api.
+
+In other words, keep working on what I've been working on.
+
+Summary of the goals:
+ - define a nice client api for graphic applications
+    defines functions for drawing pixels.
+    defines functions for accessing input events.
+ - define a protocol for client/server communication
+    ideally this can be completely abstracted away from both client and server
+    writers. We want to make it easy to write new servers (to help with
+    composition of things)
+ - define a server api for writing servers in.
+    Basically a wrapper around the client/server communication channel on the
+    server side.
+ - implement an SDL server
+ - implement some clients
+    maybe: boxer, png viewer, pdf viewer, terminal emulator
+    Those all would be great, but lots of work too. To start I'll just be
+    simple.
+ - implement my window manager
+    Like screen, but for the graphical case
+ - other things I might want:
+    Implement a remote client thing, so I can have clients run on remote
+    computers.
+
+It would be wonderful if I had all this and it worked! And the protocol
+doesn't have to be complicated. Well, perhaps performance will want it to be,
+and sharing: like copy paste and such. But I don't have to worry about that to
+start.
+
+I really do need this, because SDL and X just don't get along. Terminal
+programs compose in a lovely way. Graphical applications do if you are in X,
+but no more than that. Hopefully this way everything can compose in a lovely
+way...
+
+So, where we left off last was my boxer application was crashing annoyingly.
+Let me try to fix that. Maybe I'll work until the first crash when I have to
+shut down my computer.
+
+

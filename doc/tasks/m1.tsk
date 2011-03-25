@@ -112,3 +112,37 @@ And I when I restored the input commands, something happened, but not what I
 wanted. Somehow parsing the protocol is wrong. I don't feel like dealing with
 it now, maybe later.
 
+Thu Mar 24 20:52:08 EDT 2011
+
+Trouble seemed to be we didn't have a separator between r, g, and b. So that
+fixed that issue.
+
+The trouble now though is, when we quit, the screen goes blank and there's
+nothing I can do but reboot the computer.
+
+Perhaps this is an issue with shutting down SDL?
+
+I fear this will be painful to debug, especially if I have to reboot every
+time. Can I run sdl in X I wonder? Let me try that.
+
+Yes! I can run it under X (I hope I can still run not under X too...)
+
+It looks like it works.
+Some issues now:
+    Drawing the box is REALLY REALLY slow. Probably because we do an SDL
+    update after each draw. So I'll want to optimize the protocol for that
+    perhaps.
+
+    The keycodes are different from what I expect. So the wrong keys move the
+    box.
+
+    We seem not to reclear the screen each time, even though I'm sure it's
+    supposed to.
+
+So I should work those issues out next.
+
+I'll think about whether I like the current model: updates are applied
+directly as opposed to explicit commits.
+
+I'll have to debug to figure out the keycode thing and the clear thing.
+

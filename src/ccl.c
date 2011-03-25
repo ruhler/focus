@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "ccl.h"
 
@@ -29,7 +30,7 @@ void ccl_pixel(int x, int y, Color c)
 {
     // The pixel command: P@x,y:RRGGBB
     // x and y are expressed in hex.
-    printf("P@%x,%x:%02X%02X%02X", x, y, redof(c), greenof(c), blueof(c));
+    printf("P@%x,%x:%02X.%02X.%02X", x, y, redof(c), greenof(c), blueof(c));
     fflush(stdout);
 }
 
@@ -55,18 +56,18 @@ void ccl_event(Event* event)
     // PHH - key press with code in hex
     // RHH - key release with code in hex.
     if (feof(stdin)) {
-        fprintf(stderr, "got end of file");
+        fprintf(stderr, "client: got end of file\n");
         exit(0);
     }
 
     char t;
     scanf("%c%02X", &t, &(event->value));
-    fprintf(stderr, "got event type: %c(%02X)\n", t, t);
+    fprintf(stderr, "client: got event type: %c(%02X)\n", t, t);
     switch (t) {
         case 'P': event->type = EVENT_KEYPRESS; break;
         case 'R': event->type = EVENT_KEYRELEASE; break;
         default:
-            fprintf(stderr, "invalid event type in input: %c(%02X)\n", t, t);
+            fprintf(stderr, "client: invalid event type in input: %c(%02X)\n", t, t);
             break;
     }
 }

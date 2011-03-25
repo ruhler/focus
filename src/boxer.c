@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 #include "ccl.h"
 
 // Application with a box you can move around the screen.
@@ -9,12 +11,13 @@ int main()
 
     Event event;
     int done = 0;
-    int x = 10;
-    int y = 10;
+    int x = 100;
+    int y = 100;
     while (!done) {
         ccl_event(&event);
         int code; 
         if (ccl_keypress(&event, &code)) {
+            fprintf(stderr, "client: got code: %i\n", code);
             switch (code) {
                 case 16:   // q
                     done = 1;
@@ -37,7 +40,7 @@ int main()
                     break;
             }
             ccl_clear();
-            ccl_fill(x, y, 20, 20, ccl_rgb8(255, 0, 0));
+            ccl_fill(x, y, 10, 10, ccl_rgb8(255, 0, 0));
         }
     }
 

@@ -45,14 +45,13 @@ int handle_output(void* usrdata)
                 unsigned int r = 0;
                 unsigned int g = 0;
                 unsigned int b = 0;
-                if (fscanf(pfr, "@%x,%x:%x%x%x", &x, &y, &r, &g, &b) < 5) {
+                if (fscanf(pfr, "@%x,%x:%x.%x.%x", &x, &y, &r, &g, &b) < 5) {
                     fprintf(stderr, "error reading P command\n");
                     fprintf(stderr, " x=%i, y=%i, r=%i, g=%i, b=%i\n");
                 }
                 fprintf(stderr, "pixel %i, %i, %i, %i, %i\n", x, y, r, g, b);
                 pixel(x, y, r, g, b);
-
-            }
+            } break;
 
             default:
                 fprintf(stderr, "unknown command: %c(%02X)\n", cmd, cmd);
@@ -74,6 +73,7 @@ void runserver()
         fprintf(stderr, "sdl init: %s\n", SDL_GetError());
         return;
     }
+    atexit(SDL_Quit);
 
     screen = SDL_SetVideoMode(1280, 800, 0, SDL_ANYFORMAT);
     if (screen == NULL) {
