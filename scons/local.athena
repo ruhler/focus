@@ -1,0 +1,6 @@
+
+Import('env')
+
+env['CPPPATH'] = ['/mit/ruhler/local/include']
+env['LIBPATH'] = ['/mit/ruhler/local/lib']
+env['LIBS'] = ['SDL']

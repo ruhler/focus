@@ -1,0 +1,81 @@
+
+Sat Mar 26 13:06:17 EDT 2011
+
+Task: Make green application: a graphical version of screen.
+
+See thoughts/03_26_11.txt for initial plan.
+
+I think I should break it up into two separate components: the client and the
+server.
+
+The green client is the way you can connect to an existing green session. For
+example: 
+    cgreen pnger foo.png
+
+will connect to the existing green server and open up a new window with the
+pnger client.
+
+The server is just the server.
+    sgreen
+
+Later on we can trivially make it a single application by checking for an
+existing server, and based on the result either exec cgreen or sgreen. Or
+something like that.
+
+For now, let's say the server runs forever. I can worry about closing the
+server later.
+
+Let's say we use /tmp/green as the socket for the server. Obviously that can
+change to something more sensical later on.
+
+The client's job is easy. All it has to do is tell the server what program to
+run. So have it connect to the server via the /tmp/green socket. If it can't
+connect bail. If it can send info in the following format over the socket:
+
+uint32: number of arguments
+uint32: arg 1 length
+uint8*N: arg 1 data
+uint32: arg 2 length
+uint8*N: arg 2 data
+...
+
+Once it's sent, the client can close again.
+
+
+The server I plan to make multithreaded (against my better judgement, becuase
+that's how ideally it would be if multithreaded weren't such a pain).
+
+It has one thread listening for new clients. The thread parse the program to
+run, then spawns a new thread to run the client. This thread runs forever.
+
+For each client it has a thread which listens for updates from the client,
+copies those updates into the appropriate buffer. If the client is the current
+window, it updates the display too.
+
+Input is checked for control sequences for switching windows (on yet another
+thread). If not part of the control sequence the input is passed to the
+current client.
+
+To switch clients, we simply update the display from the new client buffer and
+set him as the current.
+
+When a client finishes, we clean up and revert to some notion of a previous
+client. Maybe to keep it simple we start with a maximum 10 clients (0-9). I
+don't think I've ever used that many in screen before, and we can expand it
+later. So have a list of which clients ids are in use and which not.
+
+It all seems pretty clear to me.
+
+Here's my plan for the implementation:
+
+1. Start by getting the server/client thing going.
+So for the first milestone, the server sets up the socket, in an infinite loop
+collects and prints out the clients request to stdout. No graphical stuff yet.
+With this we can implement the client and make sure it works.
+
+2. Add the graphical stuff.
+
+What do you say? Shall I get started?
+
+I think so. I'll let you know what goes wrong.
+

@@ -17,3 +17,9 @@ env.Default(boxer)
 pnger = env.Program('pnger', ['pnger.c', ccl_o], LIBS = ['png'])
 env.Default(pnger)
 
+sgreen = env.Program('sgreen', ['sgreen.c']);
+env.Default(sgreen);
+
+cgreen = env.Program('cgreen', ['cgreen.c']);
+env.Default(cgreen);
+
