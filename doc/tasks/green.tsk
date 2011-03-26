@@ -79,3 +79,30 @@ What do you say? Shall I get started?
 
 I think so. I'll let you know what goes wrong.
 
+Sat Mar 26 13:40:53 EDT 2011
+
+Number (1) went surprisingly well.
+Now for (2).
+
+Let's see how far I can get.
+
+Sat Mar 26 13:59:08 EDT 2011
+
+Here's the issues I ran into:
+
+1. I don't have a way to check for modifiers, so my original plan of ctrl-'
+for a control sequence won't work until I have that. As a fine temporary
+solution i've decided just to interpret the function keys F0-F9 as switch to
+that window (if possible).
+
+2. I need a way to forward an event to the client.
+This should be part of a csr kind of library I'm sure. And what is now csr
+should instead be called sdlcsr or some such.
+
+3. I'll probably also want in the csr library a way to update a buffer from a
+child process I've started. And it would be nice to have a nice way of
+spawning the child process (via fork, etc...).
+
+So, not major issues. Just enough to make me finally want to get lunch (even
+if nothing looks so appealing).
+
