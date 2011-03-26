@@ -14,3 +14,6 @@ env.Default(csr);
 boxer = env.Program('boxer', ['boxer.c', ccl_o])
 env.Default(boxer)
 
+pnger = env.Program('pnger', ['pnger.c', ccl_o], LIBS = ['png'])
+env.Default(pnger)
+

@@ -1,7 +1,14 @@
 
 Import('env')
 
-env['CPPPATH'] = ['/pkg/sdl-1.2.14/install/include']
-env['LIBPATH'] = ['/pkg/sdl-1.2.14/install/lib']
+env['CPPPATH'] = [
+    '/pkg/sdl-1.2.14/install/include',
+    '/pkg/libpng-1.4.5/install/include'
+    ]
+
+env['LIBPATH'] = [
+    '/pkg/sdl-1.2.14/install/lib',
+    '/pkg/libpng-1.4.5/install/lib',
+    ]
 env['ENV']['LD_LIBRARY_PATH'] = '/pkg/sdl-1.2.14/install/lib'
 

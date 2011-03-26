@@ -29,7 +29,10 @@ int handle_output(void* usrdata)
     while (1) {
         unsigned int header[4] = {0};
         if (fread(header, 4, 4, pfr) < 4) {
-            break;
+            SDL_Event e;
+            e.type = SDL_QUIT;
+            SDL_PushEvent(&e);
+            return 0;
         }
 
         int xbase = header[0];
@@ -45,6 +48,8 @@ int handle_output(void* usrdata)
         }
         SDL_UpdateRect(screen, 0, 0, 0, 0);
     }
+
+    return 0;
 }
 
 void runserver()
@@ -105,7 +110,9 @@ int main(int argc, char* argv[])
         fprintf(stderr, "csr prg\n");
         return 1;
     }
-    const char* prg = argv[1];
+
+    int pargc = argc - 1;
+    char** pargv = argv+1;
 
     int stoc[2];
     int ctos[2];
@@ -141,8 +148,8 @@ int main(int argc, char* argv[])
         close(stoc[0]);
         close(stoc[1]);
 
-        if (execl(prg, prg, NULL) < 0) {
-            perror("execl");
+        if (execvp(pargv[0], pargv) < 0) {
+            perror("execvp");
             return 1;
         }
 
