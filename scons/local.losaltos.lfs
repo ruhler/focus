@@ -1,7 +1,7 @@
 
 Import('env')
 
-env['CPPPATH'] = ['/pkg/sdl-1.2.14/install/include/SDL']
+env['CPPPATH'] = ['/pkg/sdl-1.2.14/install/include']
 env['LIBPATH'] = ['/pkg/sdl-1.2.14/install/lib']
 env['ENV']['LD_LIBRARY_PATH'] = '/pkg/sdl-1.2.14/install/lib'
 

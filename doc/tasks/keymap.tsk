@@ -1,0 +1,78 @@
+
+Fri Mar 25 19:42:15 EDT 2011
+
+Task: How to convert keycode to keysym?
+
+Running `xmodmap -pk` will show me what X thinks the translation is. I wonder
+where that comes from.
+
+man keymaps tells you how linux does it.
+
+I suppose we just have to specify the mapping somehow, like x and linux do.
+Maybe we could reuse one of those? Are there already functions? What does SDL
+do?
+
+Seems like the mapping linux does is totally different from X. What's up with
+that? What does SDL give us?
+
+SDL claims the keycode is based on the hardware.
+
+I don't understand at all.
+
+Is there something that it makes more sense to use than keycode?
+
+The keycode seems not portable between linux and X. This suggests maybe code
+isn't what I want to use?
+
+Hum.
+
+Sat Mar 26 10:23:09 EDT 2011
+
+I spent some time thinking about it. Maybe I can recreate my thoughts.
+
+There are 3 forms I see that we can use to specify keyboard inputs.
+
+A. keycodes
+B. keysyms
+C. characters
+
+(C) suggests we'll never see things like shift and control and such keys
+pressed, which is bad for some applications. So I rule out (C) for that
+reason.
+
+(B) suggests we see which keys are pressed (including motifier and other funny
+keys), but we name them by symbol. This to me seems reasonable.
+
+(A) is hardware dependent, and environment dependent, so that the values you
+get are meaningless without some sort of mapping.
+
+So I suggest we use (B). Specify my own keysym definitions (similar to SDL and
+X), and use that to identify keypresses and keyreleases. I have this funny
+feeling the keycode is computed based on keysym anyway, so it's pretty
+meaningless.
+
+Let me ask a couple of questions now.
+
+1. Do we distinguish between a and A? What about keys with multiple symbols on
+them?
+
+SDL does not distinguish between a and A. It does have 1 and ! different,
+though. Suppose those are on different keys. Then you need a way to
+distinguish them. Maybe we can assume a and A will always be on the same key,
+no matter what keyboard layout you have, so you only need the one symbol.
+
+2. How does SDL get the keycode and keysym? Let me look into the source code
+to figure that out.
+
+It has code for each OS, for each video driver type that sets up a keymap,
+reads the scancode, does the conversion.
+
+Hmm...
+
+So, I could, uh, do a similar sort of thing?
+
+How about for now, I'll just use keysym. Later on, if I want to, I can switch
+to keycode.
+
+Good.
+

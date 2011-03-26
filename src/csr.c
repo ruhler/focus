@@ -84,13 +84,13 @@ void runserver()
                 if (event.key.keysym.sym == SDLK_F12) {
                     done = 1;
                 } else {
-                    fprintf(pfw, "P%02X", event.key.keysym.scancode);
+                    fprintf(pfw, "P%02X", event.key.keysym.sym);
                     fflush(pfw);
                 }
                 break;
 
             case SDL_KEYUP:
-                fprintf(pfw, "R%02X", event.key.keysym.scancode);
+                fprintf(pfw, "R%02X", event.key.keysym.sym);
                 fflush(pfw);
                 break;
         }

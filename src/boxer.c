@@ -31,11 +31,18 @@ int main()
     int y = 100;
     while (!done) {
         ccl_event(&event);
-        int code; 
-        if (ccl_keypress(&event, &code)) {
+        int sym; 
+        if (ccl_keypress(&event, &sym)) {
             fill(display, x, y, 10, 10, ccl_rgb8(255, 0, 0));
-            x += 10;
-            y += 10;
+
+            switch (sym) {
+                case 'q': done = 1; break;
+                case 'h': x -= 10; break;
+                case 'j': y += 10; break;
+                case 'k': y -= 10; break;
+                case 'l': x += 10; break;
+            }
+
             fill(display, x, y, 10, 10, ccl_rgb8(0, 255, 0));
             ccl_blit(display, 0, 0, 0, 0, 640, 480);
         }

@@ -4,6 +4,8 @@
 
 // Console Client Library
 
+#include "ccl_keysym.h"
+
 // A color. Represented as 0x00RRGGBB.
 // One byte for each red, green, blue component.
 typedef unsigned int Color;
