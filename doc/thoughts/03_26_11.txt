@@ -1,0 +1,68 @@
+
+Sat Mar 26 11:21:06 EDT 2011
+
+I've implemented boxer and a png viewer now (though admittedly the png viewer
+doesn't have much flexibility: it just shows the image, and if you want to see
+the image in a different spot or size, tough).
+
+The last steps to make this really useful (and better than what I have now
+without using X), is my 'green' program. The graphical version of screen. And
+of course, my terminal emulator.
+
+Let me focus on green first.
+
+What is the idea of green? It's a window manager of sorts. Clients can connect
+to it (by running the green command), and it will add a window to a running
+instance which displays the client.
+
+I'll have some control sequence which is a way to talk to green. Ideally it
+isn't the same as screen, but is still easy to use. That way I can switch
+between the two. What's a good sequence?
+
+I propose: ctrl-'
+Just use the other pinky from what screen uses.
+
+What commands do I want? They'll be just like screen. The most important to
+start is a way to switch between windows: maybe using numbers 0 through 9.
+That's enough to start, right? I can extend from there.
+
+Let's walk through the scenario I'd love to have then.
+
+I start up green with my terminal emulator as the argument. I run elinks
+inside the terminal emulator. I visit some webpage, say wikipedia, which has a
+link to a png file. I click the link, it calls `green pnger %`, which sees I
+already have a green instance running, so it connects to that, starts up a new
+window with the pnger client. I can switch back and forth between the two
+windows using ctrl-' 0 and ctrl-' 1. When I'm done with the pnger, I hit some
+key, it closes the window, we revert back to the other window. When the last
+window closes, we end green.
+
+Very simple. No splitting at this time.
+
+How will I implement it?
+
+When you start green it first checks for an existing green running. Perhaps
+via an environment variable. If there isn't, it starts a new one, if there is,
+it tells the new one (through some communication channel) what program to
+start and exits.
+
+The server running will have buffers for each window running, and a current
+window selected. It will intercept key sequences to check for the control
+sequence. It should poll on (or perhaps use multiple threads?) the following
+things:
+
+- a window has an update: update it to the buffer for that window. If the
+  window is active, update it to the display.
+- a new client request: start the program, allocate a new buffer, switch
+  to that window.
+
+Honestly, it would be wonderful if I could write this as a multithread program
+instead of polling. That's much more natural. But, maybe because requests are
+atomic like things polling will work just fine too.
+
+No. Let me make it multithreaded. That's how it should be, and it will be good
+to gain experience with multithread programs for my research (and have some
+example ones I could experiment with if I wanted to).
+
+Cool. This will be awesome.
+
