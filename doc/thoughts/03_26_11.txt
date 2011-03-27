@@ -66,3 +66,9 @@ example ones I could experiment with if I wanted to).
 
 Cool. This will be awesome.
 
+Sat Mar 26 17:22:22 EDT 2011
+
+In the process of making improvements: defining the csr api, I've gotten lazy.
+The API clearly won't work as is (especially the update function). So think
+harder about that first, then fix it.
+

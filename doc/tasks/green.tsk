@@ -106,3 +106,21 @@ spawning the child process (via fork, etc...).
 So, not major issues. Just enough to make me finally want to get lunch (even
 if nothing looks so appealing).
 
+Sun Mar 27 11:06:44 EDT 2011
+
+So, I pulled console server routines out into csr library, and I finished a
+rough draft of the sgreen implementation.
+
+Unfortunately, it doesn't work.
+
+The behavior I'm seeing is:
+
+The new client is immedidately getting end of file on input events.
+So the client exits right away.
+
+Then, for some reason, the server stops running (when I expect it to keep
+running).
+
+I fear the problem may have something to do with mixing pthreads and fork. I
+don't know. Not sure how to proceed on this.
+

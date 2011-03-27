@@ -1,0 +1,37 @@
+
+Sun Mar 27 09:49:19 EDT 2011
+
+Task: Update the API
+
+I propose the following:
+
+Call the API SCI, for Simple Console Interface.
+No need to have different server and client interfaces.
+
+
+Display - a display buffer of pixels with specified width and height.
+Display sci_display_alloc(integer width, integer height) - create a new display
+void sci_display_free(Display) - free an existing display.
+
+Console - A connection to the console (abstract).
+stdconsole - predefined standard console connection (using stdin and stdout).
+
+Client - A connection to a client (abstract).
+
+Event - An event (not abstract).
+sci_event_send(Client client, Event event);
+sci_event_recv(Console console, Event* event);
+
+sci_display_send(Display src, integer srcx, integer srcy, integer dstx, ...)
+    - blit part of a display from client to console.
+
+sci_display_recv(Client client, Rect* rect, f, arg);
+    - receive a display: calls function f for each pixel, returns the
+      destination rectangle in rect
+
+Client sci_fork(const char* path, char* const args[]);
+    - spawn a client process, return a connection to it.
+
+
+Or something like that. I'm not sure of the names yet. Are long names okay?
+

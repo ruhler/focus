@@ -7,9 +7,10 @@ Import('env')
 #env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
 
 ccl_o = env.Object('ccl.o', 'ccl.c')
+csr_o = env.Object('csr.o', 'csr.c')
 
-csr = env.Program('csr', ['csr.c', ccl_o], LIBS = ['SDL', 'util']);
-env.Default(csr);
+sdlcsr = env.Program('sdlcsr', ['sdlcsr.c', csr_o, ccl_o], LIBS = ['SDL', 'util']);
+env.Default(sdlcsr);
 
 boxer = env.Program('boxer', ['boxer.c', ccl_o])
 env.Default(boxer)
@@ -17,7 +18,7 @@ env.Default(boxer)
 pnger = env.Program('pnger', ['pnger.c', ccl_o], LIBS = ['png'])
 env.Default(pnger)
 
-sgreen = env.Program('sgreen', ['sgreen.c']);
+sgreen = env.Program('sgreen', ['sgreen.c', ccl_o, csr_o], LIBS = ['pthread']);
 env.Default(sgreen);
 
 cgreen = env.Program('cgreen', ['cgreen.c']);

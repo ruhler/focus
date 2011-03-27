@@ -100,7 +100,6 @@ void ccl_event(Event* event)
 
     char t;
     scanf("%c%02X", &t, &(event->value));
-    fprintf(stderr, "client: got event value: %c(%02X)\n", event->value, event->value);
     switch (t) {
         case 'P': event->type = EVENT_KEYPRESS; break;
         case 'R': event->type = EVENT_KEYRELEASE; break;
