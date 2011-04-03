@@ -114,6 +114,7 @@ void new_client(char* const argv[])
     pthread_t thread;
     int* vid = (int*)malloc(sizeof(int));
     assert(vid && "malloc failed");
+    *vid = id;
     pthread_create(&thread, NULL, &handle_output, (void*)vid);
 }
 
@@ -211,11 +212,10 @@ int main(int argc, char* argv[])
     }
     g_curwin = 0;
 
-    // start serving clients in a new thread.
+
     pthread_t scthread;
     pthread_create(&scthread, NULL, &serve_clients, NULL);
 
-    // handle the input (in this thread).
     handle_input();
     return 0;
 }

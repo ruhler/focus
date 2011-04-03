@@ -124,3 +124,44 @@ running).
 I fear the problem may have something to do with mixing pthreads and fork. I
 don't know. Not sure how to proceed on this.
 
+Sun Apr  3 09:21:56 EDT 2011
+
+I tried moving serveclients to the main thread, it didn't help.
+
+Hmm...
+
+Let me try simplifying first.
+
+I don't believe the issue is with cgreen connecting. So let me get rid of the
+whole cgreen thing, and just spawn two boxer processes manually.
+
+Sun Apr  3 09:33:09 EDT 2011
+
+Yup. Even just spawning the processes manually doesn't work.
+Odd. It works in sdlcsr right?
+
+What's the difference?
+
+I wonder if what was happening was the server was exiting when it shouldn't
+have? Err... That doesn't quite fit.
+
+Anyway, when I moved handle_input into the main thread after the serveclients
+function we suddenly got something different: bad address for execv. hmm..
+
+Um. It's working now with the one client. Though output seems to lag a key
+press. Let me not worry about that.
+
+I switched back to using cgreen, and now it works. I have no idea what
+changed...
+
+I guess I must have had a bug, and we were dereferencing a bad pointer or
+something like that. I don't know. It just doesn't make sense to me.
+
+But that problem seems to be gone, so I can focus on the rest of the problems.
+
+Okay, now I'm worried. Because there literally has been no change from before.
+Why did it start working?
+
+Oh. It was the assignment of vid. Before that something was crashing the
+server, only I didn't see the segfault. I get it. Phew!
+
