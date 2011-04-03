@@ -1,0 +1,42 @@
+
+Sun Apr  3 10:31:21 EDT 2011
+
+Status update: we now have:
+- boxer: a simple application using my graphics protocol
+- pnger: a useful application using my graphics protocol
+- green: a graphical screen like application for switching among other
+  graphical applications using my protocol.
+
+Now, admittedly all of these are a little raw, but certainly solid proofs of
+concept.
+
+So, what's next?
+
+What's next is, to make this really useful, I need a terminal emulator using
+my graphics protocol.
+
+I could use fbterm, try to add an SDL layer, but I'd like to look into not
+using SDL at all. It should be easily doable if I have some way to render the
+ttf font outside of SDL, which I think is easily doable. I just have to find
+the right library and how to use it.
+
+The terminal emulator will force me to figure out a better escape sequence for
+switching windows than 0-9. That will be an improvement. (Maybe alt-F1 through
+alt-F9 to start?).
+
+Then to make things useable I'll probably want a green application which
+acts as sgreen or cgreen as necessary. And have sgreen close the /tmp/green
+file when it finishes (maybe that won't be so much of a problem).
+
+Then start using it. Everywhere I can. And make it better as desired.
+And after that, it's a matter of adding applications to it.
+Particularly desirable will be a pdf viewer (use a variant on gylf I think,
+with libpoppler and cairo).
+
+Ideally we could implement an xserver application, so I can run any X
+application. That might actually be doable with xvfb? It's worth looking into.
+That way I'll get firefox and inkscape, the other more important graphical
+applications I use. Then I'll be all set.
+
+Wow. This is cool. I'm excited.
+

@@ -1,0 +1,10 @@
+
+Sun Apr  3 10:40:39 EDT 2011
+
+Task: Milestone 3: elinks and png images
+
+Milestone 3 is to be able to run elinks (without X) and be able to select a
+png image as a link, and have it pop up a new window with the png image that I
+can see. I can't currently do this with fbterm out of X, so this will be an
+achievement.
+
