@@ -28,6 +28,7 @@ int g_curwin;
 
 void switch_to_window(int windowid)
 {
+    fprintf(stderr, "switching to window %i\n", windowid);
     if (g_clients[windowid].client) {
         g_curwin = windowid;
         Buffer b = g_clients[windowid].buffer;
@@ -190,10 +191,10 @@ void handle_input()
         int sym;
 
         // Check for a control sequence.
-        // (for now: function keys choose the window)
-        if (ccl_keypress(&event, &sym) && sym >= CCLK_F1 && sym <= CCLK_F9) {
+        // (for now: number keys choose the window)
+        if (ccl_keypress(&event, &sym) && sym >= CCLK_0 && sym <= CCLK_9) {
             // Switch to the given window
-            switch_to_window(sym - CCLK_F1);
+            switch_to_window(sym - CCLK_0);
         } else {
             // Forward the event to the current window
             if (g_clients[g_curwin].client) {

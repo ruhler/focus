@@ -98,15 +98,7 @@ void ccl_event(Event* event)
         exit(0);
     }
 
-    char t;
-    scanf("%c%02X", &t, &(event->value));
-    switch (t) {
-        case 'P': event->type = EVENT_KEYPRESS; break;
-        case 'R': event->type = EVENT_KEYRELEASE; break;
-        default:
-            fprintf(stderr, "client: invalid event type in input: %c(%02X)\n", t, t);
-            break;
-    }
+    fread(event, sizeof(Event), 1, stdin);
 }
 
 int ccl_keypress(const Event* e, int* code)

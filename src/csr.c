@@ -32,17 +32,8 @@ int csr_update(Client client, int* x, int* y, int* w, int* h, UpdateFunction f, 
 
 void csr_event(Client c, Event e)
 {
-    switch (e.type) {
-        case EVENT_KEYPRESS:
-            fprintf(c->fw, "P%02X", e.value);
-            fflush(c->fw);
-            break;
-
-        case EVENT_KEYRELEASE:
-            fprintf(c->fw, "R%02X", e.value);
-            fflush(c->fw);
-            break;
-    }
+    fwrite(&e, sizeof(Event), 1, c->fw);
+    fflush(c->fw);
 }
 
 void csr_close(Client c)

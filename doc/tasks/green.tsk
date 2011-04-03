@@ -165,3 +165,17 @@ Why did it start working?
 Oh. It was the assignment of vid. Before that something was crashing the
 server, only I didn't see the segfault. I get it. Phew!
 
+Sun Apr  3 10:18:44 EDT 2011
+
+It's almost working!
+
+The problem we have is, somehow we get garbage events.
+Maybe I'm doing an stdout when I shouldn't be, or something like that?
+
+Somehow I think it's a bug in the event communication protocol. How about I
+switch to something much simpler: binary read and write of events. See if that
+fixes anything.
+
+That totally fixed everything! Now it seems to be working perfectly.
+Awesome!
+
