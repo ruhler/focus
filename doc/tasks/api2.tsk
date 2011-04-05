@@ -35,3 +35,60 @@ Client sci_fork(const char* path, char* const args[]);
 
 Or something like that. I'm not sure of the names yet. Are long names okay?
 
+Mon Apr  4 17:14:08 EDT 2011
+
+sci is sort of taken. That is, SCI is a common prefix for science, and SCIM is
+definately taken. Is there some better name I can come up with?
+
+How about: TCI for trivial console interface? Too close to TCL? Yes. I think
+so.
+
+How about: 
+SCA - simple console api
+SCL - simple console    (too close to SC Lite?)
+VSC - very simple console
+FSC - fairly simple console
+MSC - mostly simple console
+RSC - Richard's Simple Console (too close to RCS?)
+RSU - no. I reject this now.
+GNX - GNX is not X (horrible!)
+
+I like RSC best so far. There will always be something.
+Except, it's maybe already taken.
+
+ICS - Interface Console Simple
+
+I mean, really there's probably nothing not taken in some way or another.
+ICS is internet chess server.
+
+Maybe I should be more specific in my name. Simple adds nothing. Interface
+adds nothing. Console is something...
+
+So what are we? A composable console api. Or a shared buffer based console
+api, or an abstract console api?
+
+Or maybe have a bigger name with a smaller prefix.
+The name currently is technically focus, but that was always meant for what's
+become called "green".
+
+What about my traditional strategy for names?
+quinne, ione, joshua, manani, ruin.
+
+rhapsody, achmed.
+
+Gosh. This is tricky.
+
+Mon Apr  4 18:27:06 EDT 2011
+
+I went for a walk, and I think I've come up with a good solution.
+What do you think about this:
+
+As the name of the library: consoler
+As the prefix of the functions: cnsl
+
+I think that's nice. Then the terminal emulator should just be called termer.
+Goes along with boxer, pnger, pdfer. What fun.
+    
+Cool. So can I make the switch to this new api? I suppose it makes more sense
+to do it when I'm on a computer I can try it out on.
+

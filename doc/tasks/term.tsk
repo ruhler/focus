@@ -1,0 +1,97 @@
+
+Mon Apr  4 17:11:18 EDT 2011
+
+Task: Implement a terminal emulator using this framework.
+
+I checked out freetype, and it looks like it has all need to draw characters
+from a truetype (and many other) fonts, so I shouldn't need SDL to implement
+the terminal.
+
+It will be like fbterm, but I think this time around I should do things a
+little differently. Rather than manipulating the displayed image for things
+like character erasing and scrolling, I should keep in memory the characters
+currently displayed to the screen, and draw those on demand.
+
+Perhaps we can use a circular buffer to make scrolling easier.
+
+Maybe this will help with performance. Maybe not. But one thing it certainly
+does is separate the terminal control and content code from the graphics code.
+
+The first big question is: what should I call the terminal?
+
+Mon Apr  4 18:47:44 EDT 2011
+
+I have a name proposal: termer
+It's pretty lame, but simple.
+
+For now I can include the source with the rest of the focus project.
+(Let's say the focus project includes the consoler library and a number of
+sample applications). Eventually there's no reason for it to be bundled with
+the other consoler programs.
+
+Cool. Let me take this opportunity to refactor what fbterm was if I can. What
+should the design look like?
+
+Components:
+
+Input Keys -> Actions
+    Where this is mostly just copy it to the client, but sometimes copy more
+    complex stuff, such as for arrow keys, and handle CTRL and SHIFT modifiers
+    and such.
+
+    This is called vti in fbterm.
+
+Output Chars -> Actions
+    Interpret output from the client.
+    This is often: draw a character and move the cursor.
+    Sometimes it is interpreting sequences.
+
+    This is called vto in fbterm.
+
+Action -> ConsoleState
+    We keep console state: what characters are on the screen, their colors,
+    current color, cursor position.
+
+    This is affected by commands from the Output Chars.
+
+    This is called sdlt in fbterm.
+
+    But in fbterm it dealt with both display and console state. The state
+    (characters at least) was stored as part of the raster image of the
+    screen.
+
+    Here I imagine we'll just use a 2D array (maybe circular buffer) to hold
+    all the character contents (and their characteristics: color, style, etc).
+
+    The actions will update those appropriatly. There need not be any notion
+    of how to draw the characters on the screen. So in theory if I wanted to
+    this same module could be reused by fbterm and termer.
+
+ConsoleState -> Display
+    Some way to draw a display. Perhaps we provide callback functions to
+    ConsoleState module to call when display is performed? Hmm...
+    
+All that remains in fbterm is this configuration module (which uses tcl), and
+the main program which glues things together.
+
+I don't know what the best way to do this is. But maybe I can think of it in a
+hardwarish kind of way. Let's say the inputer takes a stream of key presses
+as inputs and outputs a stream of Actions (which are maybe just character
+strings?) to send to the client.
+
+Then say the output takes a stream of key presses and converts it to a stream
+of actions.
+
+Then say the ConsoleState takes a stream of input actions and ... has some way
+to query it's state. Maybe someway to ask what's changed since the last query?
+That might be nice.
+
+Then say the displayer has a pointer to the console state, whenever asked it
+can update the display. Perhaps one of the input actions can be "IDLE"?
+
+And these all can communicate through FIFOs? That seems a little strange to
+me, I must admit. Ug. I'll keep thinking about it.
+
+I wonder if I can think about it in terms of a transaction based shared memory
+model like in fiddler?
+
