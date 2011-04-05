@@ -1,0 +1,107 @@
+
+Tue Apr  5 09:38:07 EDT 2011
+
+Task: I need test cases
+
+I'm hesitant to upgrade the API because I don't have any automated test cases
+in place. This means I need test cases.
+
+The difficulty is, how do you test something graphical?
+
+The answer is not so bad. Implement a dummy console server. Let's say it has a
+tcl interpreter so you can write tcl scripts to control it. You can have like:
+send_event commands in tcl. And maybe a way to generate an image from the
+display buffer. Then it should be pretty easy to test the clients.
+
+Testing the sdl console of course will be harder to automate. Perhaps it's
+okay if it isn't automatically tested, because it's what I'll end up using
+when I interact with the programs?
+
+It will obviously require some setup work to make testing feasible. But I
+suspect that will be well worth it.
+
+In fact, this should probably be the next step. Even before I update the api.
+
+Okay, here's the easy way to do it. Write a console server which takes as
+input a tcl script to drive it. It will define some tcl functions (send event,
+get display, that sort of thing), then interpret the script you gave it.
+
+That way I don't have to worry about tcl libraries and all that yuckiness. It
+acts as a standalone executable.
+
+Should we assume it works with a single client? Or should we include functions
+to launch clients from tcl? Might as well do that.
+
+Let me propose the following functions we provide (in addition to everything
+tcl has):
+
+consoler::launch
+    Inputs:
+        path - path to the client to launch
+        width - width of the display to use 
+        height - height of the display to use
+        name - name of the display
+    Outputs:
+        name - name of the display which is now a command to interface with
+        the client.
+
+$name send  
+    Inputs:
+        event type (enum: keypress, keyrelease)
+        event value (number? enum?)
+    Outputs:
+        (none)
+
+$name display
+    Inputs:
+        image: name of an image photo to draw the display to
+    Outputs:
+        image is updated with current display.
+
+So this will require tk? I guess the question is do I need tk to work with
+images? Or, really, do I need X? That would be really unfortunate. There must
+be some way to manipulate images in tcl without X...
+
+It looks like that may indeed be the case, which is totally stupid. The image
+library should in no way require X. The question is, how do I use it?
+
+Because what I would love to be able to do is take snapshots and compare them,
+and check specific pixel values and stuff like that.
+
+Oh well. Maybe the interface has to be lower level. I don't so much care about
+performance for these tests, so it might be enough to just use:
+
+$name display
+    Inputs:
+        x: an x position in the display
+        y:  a y position in the display
+    Outputs:
+        A 3 tuple of 8 bit rgb values which is the color at that position.
+
+It's a little more annoying to work with, but should be wrapable in higher
+level abstractions, and doesn't require X to run.
+        
+        
+There. That's easy enough.
+Maybe we also want a way to test if the connection to the client is still
+open. I can add that later.
+
+How can I test this?
+
+I think it would be useful to have a client which, depending on what key you
+press, changes the background to a solid color. Maybe call it filler. We could
+use that to test the tests, and I'm sure it would help in testing green too.
+
+
+Cool. Sounds like a plan to me.
+
+Summary of next steps (not sure what order):
+ - implement filler app which just colors the background solid based on key
+   presses.
+ - implement tclconsol which provides this tcl interface to a console.
+ - upgrade the api to cnsl as described in api2.tsk.
+ - write a test for filler using tclconsol.
+
+Once I get all that up and running, I'll be in good shape moving forward.
+
+
