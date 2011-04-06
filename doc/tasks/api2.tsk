@@ -92,3 +92,21 @@ Goes along with boxer, pnger, pdfer. What fun.
 Cool. So can I make the switch to this new api? I suppose it makes more sense
 to do it when I'm on a computer I can try it out on.
 
+Tue Apr  5 19:59:59 EDT 2011
+
+I need naming conventions.
+
+I often have a verb and a noun. So what are my options?
+
+verbnoun        getred, getpixel, iskeypress
+verb_noun       launch_client
+noun_verb       display_free, event_send
+nounverb
+verbNoun
+nounVerb
+
+Not so many now, are there...
+
+Still, this is going to take some thought. I'm not up for it now. I'll let you
+know what I decided later.
+
