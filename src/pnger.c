@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <png.h>
 
-#include "ccl.h"
+#include "consoler.h"
 
 int main(int argc, char* argv[])
 {
@@ -50,7 +50,8 @@ int main(int argc, char* argv[])
     unsigned int width = png_get_image_width(png_ptr, info_ptr);
     unsigned int height = png_get_image_height(png_ptr, info_ptr);
 
-    Buffer display = ccl_alloc_buffer(width, height);
+    CNSL_Init();
+    CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     unsigned int y;
     for (y = 0; y < height; y++) {
@@ -59,20 +60,21 @@ int main(int argc, char* argv[])
             unsigned int r = row_pointers[y][3*x];
             unsigned int g = row_pointers[y][3*x+1];
             unsigned int b = row_pointers[y][3*x+2];
-            Color color = ccl_rgb8(r, g, b);
-            ccl_setpixel(display, x, y, color);
+            CNSL_Color color = CNSL_MakeColor(r, g, b);
+            CNSL_SetPixel(display, x, y, color);
         }
     }
-    ccl_blit(display, 0, 0, 0, 0, width, height);
+    CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
     // Wait for any key press to finish.
-    Event event;
-    ccl_event(&event);
+    CNSL_Event event;
+    CNSL_RecvEvent(stdcon, &event);
     int sym;
-    while (!ccl_keypress(&event, &sym)) {
-        ccl_event(&event);
+    while (!CNSL_IsKeypress(&event, &sym)) {
+        CNSL_RecvEvent(stdcon, &event);
     }
 
+    CNSL_Quit();
     return 0;
 }
 

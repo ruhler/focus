@@ -7,20 +7,19 @@
 #include <sys/un.h>
 #include <pthread.h>
 
-#include "ccl.h"
-#include "csr.h"
+#include "consoler.h"
 
 #define MAX_WINDOWS 10
 #define WIDTH 640
 #define HEIGHT 480
 
 typedef struct {
-    Client client;
-    Buffer buffer;
+    CNSL_Client client;
+    CNSL_Display display;
 } ClientInfo;
 
-// Buffers for each window.
-// The buffer is NULL if the window is not in use.
+// Displays for each window.
+// The display is NULL if the window is not in use.
 ClientInfo g_clients[MAX_WINDOWS];
 
 // The currently active window.
@@ -31,16 +30,16 @@ void switch_to_window(int windowid)
     fprintf(stderr, "switching to window %i\n", windowid);
     if (g_clients[windowid].client) {
         g_curwin = windowid;
-        Buffer b = g_clients[windowid].buffer;
-        ccl_blit(b, 0, 0, 0, 0, b->width, b->height);
+        CNSL_Display b = g_clients[windowid].display;
+        CNSL_SendDisplay(stdcon, b, 0, 0, 0, 0, b->width, b->height);
     }
 }
 
-void tobuffer(void* vb, int x, int y, Color c)
+void tobuffer(void* vb, int x, int y, CNSL_Color c)
 {
-    Buffer b = (Buffer)vb;
+    CNSL_Display b = (CNSL_Display)vb;
     if (x >= 0 && x < b->width && y >= 0 && y < b->height) {
-        ccl_setpixel(b, x, y, c);
+        CNSL_SetPixel(b, x, y, c);
     }
 }
 
@@ -55,25 +54,25 @@ void* handle_output(void* vwid) {
     assert(g_clients[id].client && "tried to handle output of NULL client");
     fprintf(stderr, "handling output for client %i\n", id);
 
-    Client client = g_clients[id].client;
-    Buffer buffer = g_clients[id].buffer;
+    CNSL_Client client = g_clients[id].client;
+    CNSL_Display display = g_clients[id].display;
 
     while (1) {
         int x, y, w, h;
-        if (csr_update(client, &x, &y, &w, &h, tobuffer, (void*)buffer) == 0) {
+        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, tobuffer, (void*)display) == 0) {
             break;
         }
 
         if (id == g_curwin) {
-            ccl_blit(buffer, x, y, x, y, w, h);
+            CNSL_SendDisplay(stdcon, display, x, y, x, y, w, h);
         }
     }
 
     g_clients[id].client = NULL;
-    g_clients[id].buffer = NULL;
+    g_clients[id].display = NULL;
 
-    csr_close(client);
-    ccl_free_buffer(buffer);
+    CNSL_CloseClient(client);
+    CNSL_FreeDisplay(display);
 
     if (id == g_curwin) {
         int i;
@@ -107,8 +106,8 @@ void new_client(char* const argv[])
     }
     fprintf(stderr, "sgreen: new client (id = %i)\n", id);
 
-    g_clients[id].client = csr_launch(argv[0], argv);
-    g_clients[id].buffer = ccl_alloc_buffer(WIDTH, HEIGHT);
+    g_clients[id].client = CNSL_LaunchClient(argv[0], argv);
+    g_clients[id].display = CNSL_AllocDisplay(WIDTH, HEIGHT);
     switch_to_window(id);
 
     // Spawn the thread to handle output from this client.
@@ -185,20 +184,20 @@ void* serve_clients(void* arg)
 
 void handle_input()
 {
-    Event event;
+    CNSL_Event event;
     while (1) {
-        ccl_event(&event);
+        CNSL_RecvEvent(stdcon, &event);
         int sym;
 
         // Check for a control sequence.
         // (for now: number keys choose the window)
-        if (ccl_keypress(&event, &sym) && sym >= CCLK_0 && sym <= CCLK_9) {
+        if (CNSL_IsKeypress(&event, &sym) && sym >= CNSLK_0 && sym <= CNSLK_9) {
             // Switch to the given window
-            switch_to_window(sym - CCLK_0);
+            switch_to_window(sym - CNSLK_0);
         } else {
             // Forward the event to the current window
             if (g_clients[g_curwin].client) {
-                csr_event(g_clients[g_curwin].client, event);
+                CNSL_SendEvent(g_clients[g_curwin].client, &event);
             }
         }
     }
@@ -206,10 +205,12 @@ void handle_input()
 
 int main(int argc, char* argv[])
 {
+    CNSL_Init();
+
     int i;
     for (i = 0; i < MAX_WINDOWS; i++) {
         g_clients[i].client = NULL;
-        g_clients[i].buffer = NULL;
+        g_clients[i].display = NULL;
     }
     g_curwin = 0;
 
@@ -218,6 +219,8 @@ int main(int argc, char* argv[])
     pthread_create(&scthread, NULL, &serve_clients, NULL);
 
     handle_input();
+
+    CNSL_Quit();
     return 0;
 }
 

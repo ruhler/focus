@@ -110,3 +110,100 @@ Not so many now, are there...
 Still, this is going to take some thought. I'm not up for it now. I'll let you
 know what I decided later.
 
+Wed Apr  6 18:38:09 EDT 2011
+
+I failed to make the decision, so I guess I have to do it now. Hmm...
+
+red_get, getgreen, getblue
+allocdisplay
+ndisplay
+fdisplay
+freedisplay
+get_pixel pixelof
+set_pixel pixelto
+send_event
+recv_event
+send_display
+
+FreeDisplay
+RedOf
+GreenOf
+GetPixel
+SendEvent
+
+I hate to say it, but it looks like
+VerbNoun might be best. Contrast with with just Noun for types.
+So we use:
+
+CNSL_GetRed
+CNSL_SetRed
+CNSL_GetBlue
+CNSL_AllocDisplay
+CNSL_FreeDisplay
+CNSL_GetPixel
+CNSL_IsKeyPress
+CNSL_IsKeyRelease
+CNSL_LaunchClient
+CNSL_CloseClient
+CNSL_RecvEvent
+CNSL_SendEvent
+CNSL_SendDisplay
+
+Yes. That will have to do.
+Not sure what rgb8 should be called.
+CNSL_MakeColor? 
+CNSL_MkColor?
+CNSL_RGBColor?
+CNSL_WithColor?
+CNSL_FormColor?
+CNSL_SpecifyColor?
+CNSL_CreateColor.
+CNSL_NewColor.
+
+Okay? Let me go start renaming things.
+
+Thu Apr  7 19:18:56 EDT 2011
+
+Renamed everything, implemented rough draft of the new api.
+
+What's next? Perhaps I should just go all out, rewrite all the applications
+using this new api, try to compile them and test them out.
+
+Traditionally this method of: rewrite all then try to make work hasn't gone so
+well. Oh well, let's give it another try, see if that's still the case.
+
+Let me note something I'm worried about now: Before when the client gave end
+of file we stopped, but I think the new implementation doesn't do that. Just
+something to watch out for.
+
+Wrote up everything. Two issues have come up
+
+1. When are things pointers, and when are things not?
+Specifically: Event, and Client, and Console.
+
+I feel like I'm inconsistent, and it makes a difference.
+
+2. How to initialize stdcon?
+It needs to point to something (if Console is a pointer).
+
+Unless I just want it to be NULL, but really I don't.
+
+So I guess what we should do is have CNSL_Init and CNSL_Quit functions.
+And remember to always call them. That's a little annoying, but probably wise
+for the future anyway. Okay, I'll add that.
+
+Thu Apr  7 20:00:43 EDT 2011
+
+I added that. Everything compiles now.
+
+The trouble is, how do I test it? (the reason it's troublesome is because I'm
+working from pacific right now, and have no way of running a graphical
+application).
+
+The answer is, I need to implement the testing thing. That is, I need to write
+unit tests as in testing.tsk.
+
+So, let's assume it works. Then write the test case to show otherwise. I
+should not need a graphical environment to test this.
+
+

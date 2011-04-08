@@ -4,10 +4,9 @@
 #include <unistd.h>
 #include <SDL/SDL.h>
 
-#include "ccl.h"
-#include "csr.h"
+#include "consoler.h"
 
-Client client;
+CNSL_Client client;
 SDL_Surface* screen;
 
 void pixel(int x, int y, int r, int g, int b)
@@ -18,17 +17,17 @@ void pixel(int x, int y, int r, int g, int b)
     }
 }
 
-void pixel_(void* ud, int x, int y, Color c)
+void pixel_(void* ud, int x, int y, CNSL_Color c)
 {
-    pixel(x, y, ccl_redof(c), ccl_greenof(c), ccl_blueof(c));
+    pixel(x, y, CNSL_GetRed(c), CNSL_GetGreen(c), CNSL_GetBlue(c));
 }
 
 int handle_output(void* usrdata)
 {
-    Buffer display = ccl_alloc_buffer(screen->w, screen->h);
+    CNSL_Display display = CNSL_AllocDisplay(screen->w, screen->h);
     while (1) {
         int x, y, w, h;
-        if (csr_update(client, &x, &y, &w, &h, pixel_, NULL) == 0) {
+        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, pixel_, NULL) == 0) {
             SDL_Event e;
             e.type = SDL_QUIT;
             SDL_PushEvent(&e);
@@ -64,7 +63,7 @@ void runserver()
     int done = 0;
     while (!done) {
         SDL_WaitEvent(&event);
-        Event cclev;
+        CNSL_Event cclev;
         switch (event.type) {
             case SDL_QUIT: done = 1; break;
             case SDL_MOUSEBUTTONDOWN: done = 1; break;
@@ -72,16 +71,16 @@ void runserver()
                 if (event.key.keysym.sym == SDLK_F12) {
                     done = 1;
                 } else {
-                    cclev.type = EVENT_KEYPRESS;
+                    cclev.type = CNSLE_KEYPRESS;
                     cclev.value = event.key.keysym.sym;
-                    csr_event(client, cclev);
+                    CNSL_SendEvent(client, &cclev);
                 }
                 break;
 
             case SDL_KEYUP:
-                cclev.type = EVENT_KEYRELEASE;
+                cclev.type = CNSLE_KEYRELEASE;
                 cclev.value = event.key.keysym.sym;
-                csr_event(client, cclev);
+                CNSL_SendEvent(client, &cclev);
                 break;
         }
     }
@@ -99,8 +98,11 @@ int main(int argc, char* argv[])
     int pargc = argc - 1;
     char** pargv = argv+1;
 
-    client = csr_launch(pargv[0], pargv);
+    CNSL_Init();
+    client = CNSL_LaunchClient(pargv[0], pargv);
     runserver();
+
+    CNSL_Quit();
     return 0;
 }
 
