@@ -11,6 +11,9 @@ consoler_o = env.Object('consoler.o', 'consoler.c')
 sdlcsr = env.Program('sdlcsr', ['sdlcsr.c', consoler_o], LIBS = ['SDL', 'util']);
 env.Default(sdlcsr);
 
+filler = env.Program('filler', ['filler.c', consoler_o])
+env.Default(filler)
+
 boxer = env.Program('boxer', ['boxer.c', consoler_o])
 env.Default(boxer)
 

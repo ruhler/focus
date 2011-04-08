@@ -96,10 +96,10 @@ use that to test the tests, and I'm sure it would help in testing green too.
 Cool. Sounds like a plan to me.
 
 Summary of next steps (not sure what order):
- - implement filler app which just colors the background solid based on key
+ + implement filler app which just colors the background solid based on key
    presses.
  - implement tclconsol which provides this tcl interface to a console.
- - upgrade the api to cnsl as described in api2.tsk.
+ + upgrade the api to cnsl as described in api2.tsk.
  - write a test for filler using tclconsol.
 
 Once I get all that up and running, I'll be in good shape moving forward.

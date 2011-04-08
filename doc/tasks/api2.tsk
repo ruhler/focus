@@ -207,3 +207,11 @@ So, let's assume it works. Then write the test case to show otherwise. I
 should not need a graphical environment to test this.
 
 
+Thu Apr  7 20:05:58 EDT 2011
+
+The next step is to write this filler app to help with testing. The thing is,
+the filler app has to know what size the window is. I suppose to start we
+could assume like a 100x100 window. Hey, yeah, that's probably a good idea.
+Start with a fixed sized window (640x480 maybe?). Then later I can add this
+ResizeEvent thing.
+
