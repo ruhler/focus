@@ -1,5 +1,7 @@
 
+#include <poll.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #include "consoler.h"
@@ -147,13 +149,13 @@ void CNSL_CloseClient(CNSL_Client client)
 
 int CNSL_RecvEvent(CNSL_Console console, CNSL_Event* event)
 {
-    // TODO: is it possible only part of an event is read?
-    return read(console->fdin, event, sizeof(CNSL_Event));
+    int red = read(console->fdin, event, sizeof(CNSL_Event));
+    return red;
 }
 
 int CNSL_SendEvent(CNSL_Client client, const CNSL_Event* event)
 {
-    write(client->fdout, &event, sizeof(CNSL_Event));
+    write(client->fdout, event, sizeof(CNSL_Event));
     return 1;
 }
 
@@ -213,6 +215,14 @@ int CNSL_RecvDisplay(CNSL_Client client,
     }
 
     return 1;
+}
+
+int CNSL_PollDisplay(CNSL_Client client)
+{
+    struct pollfd fd;
+    fd.fd = client->fdin;
+    fd.events = POLLIN;
+    return poll(&fd, 1, 0);
 }
 
 int CNSL_Init()

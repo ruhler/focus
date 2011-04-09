@@ -49,6 +49,7 @@ int main()
     int color = BLACK;
     while (!done) {
         int x, y;
+        fprintf(stderr, "filler: filling with color %x\n", colors[color]);
         for (x = 0; x < WIDTH; x++) {
             for (y = 0; y < HEIGHT; y++) {
                 CNSL_SetPixel(display, x, y, colors[color]);
@@ -56,7 +57,13 @@ int main()
         }
         CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, WIDTH, HEIGHT);
 
+        if (CNSL_RecvEvent(stdcon, &event) == 0) {
+            done = 1;
+            break;
+        }
+
         if (CNSL_IsKeypress(&event, &sym)) {
+            fprintf(stderr, "filler: got keysym %c\n", sym);
             switch (sym) {
                 case 'q': done = 1; break;
                 case 'r': color = RED; break;

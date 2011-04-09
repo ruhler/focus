@@ -14,6 +14,9 @@ env.Default(sdlcsr);
 filler = env.Program('filler', ['filler.c', consoler_o])
 env.Default(filler)
 
+tfiller = env.Program('tfiller', ['tfiller.c', consoler_o])
+Default(env.Command('tfiller.output', [tfiller, filler], "$SOURCES > $TARGET"));
+
 boxer = env.Program('boxer', ['boxer.c', consoler_o])
 env.Default(boxer)
 

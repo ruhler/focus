@@ -112,6 +112,11 @@ int CNSL_RecvDisplay(CNSL_Client client,
         unsigned int* width, unsigned int* height,
         CNSL_RDFunction f, void* ud);
 
+// Check whether a display is pending reception.
+// Returns nonzero if a call to RecvDisplay will not block.
+// Returns zero if a call to RecvDisplay will block.
+int CNSL_PollDisplay(CNSL_Client client);
+
 // Initialize the consoler library.
 // This must be called before using the library!
 int CNSL_Init();

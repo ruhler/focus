@@ -208,3 +208,27 @@ read part of it?
 Perhaps as long as I only read in the same size chunks as I write it will be
 okay.
 
+Sat Apr  9 11:38:15 EDT 2011
+
+Okay, I've implemented the PollDisplay function. Now I should be able to write
+a filler test, right?
+
+Launch filler.
+Recieve all displays.
+Verify initial color at some point (say 20, 30) is black.
+Send w key.
+Recieve all displays.
+Verify color at some point (say 20, 30) is white.
+Send q key.
+
+That should be a good start, right?
+Let me see if it works!
+
+Sat Apr  9 12:05:13 EDT 2011
+
+I'm not convinced the PollDisplay implementation works. But my test did
+uncover a bug in the consoler implementation (used &event instead of event),
+which is cool.
+
+So now I'm on the way testing wise and can start making forward progress.
+
