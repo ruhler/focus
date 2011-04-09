@@ -95,3 +95,21 @@ me, I must admit. Ug. I'll keep thinking about it.
 I wonder if I can think about it in terms of a transaction based shared memory
 model like in fiddler?
 
+Sat Apr  9 12:17:45 EDT 2011
+
+Let me start one piece at a time.  Starting with the input module.
+
+Input is: a sequence of key presses and key releases. Because I guess I'll
+handle key modifiers manually too (is shift down? etc...).
+
+Output is: well, eventually a sequence of bytes sent to the terminal
+application. So maybe we can think of it as just a file.
+
+From the modules point of view it should, I think, be running in its own
+thread. It should explicitly perform gets to get an input, and it should
+explicitly perform puts to output an output.
+
+So maybe we instantiate it with callback functions: get and put. The get
+function will return the next key press or release (so, event). The put
+function will take a string of bytes, perhaps with explicit length.
+

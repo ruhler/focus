@@ -8,3 +8,14 @@ png image as a link, and have it pop up a new window with the png image that I
 can see. I can't currently do this with fbterm out of X, so this will be an
 achievement.
 
+Sat Apr  9 12:12:14 EDT 2011
+
+I need the following working components for this milestone:
+
+1. PNG viewer - I already have this
+2. Terminal Emulator
+3. Green with better control sequence
+    I think I have green. I just need the better control sequences.
+
+So, let me focus on the terminal emulator next. Termer.
+
