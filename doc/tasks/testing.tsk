@@ -104,4 +104,98 @@ Summary of next steps (not sure what order):
 
 Once I get all that up and running, I'll be in good shape moving forward.
 
+Thu Apr  7 20:27:04 EDT 2011
+
+Some questions.
+
+Do I want to reconsider the names of things to match with the new api?
+Update to the display will be done asynchronously, right, so I need some sort
+of threading to make sure we don't step on our toes? Or should recieving an
+updated display be explicit? Err... somehow I think that's a bad idea.
+
+I suppose if tcl has threads, we could leave that up to the user?
+
+Err... do I really need tcl for this? Can I just write some c programs
+instead? I feel like that would be much easier and just as useful. Especially
+if tcl isn't going to give me this image stuff without tk.
+
+That means now I should be able to write my first test of filler in c.
+
+Yes. Somehow I think this will be better.
+
+Thu Apr  7 20:36:12 EDT 2011
+
+I still have this trouble of: we don't know how often a client updates the
+screen. For example, two successive updates of the screen, one half at a time,
+from the users perspective is functionally equivalent to a single massive
+update. How can I let the client do either and still pass the test cases?
+
+Perhaps I can have a way to receive all the currently pending displays. That
+is, have a nonblocking version of RecvDisplay.
+
+Bugger. This is going to be a bit of work. No wonder I haven't already written
+a bunch of tests for this.
+
+I'll think about this and get back to you tomorrow.
+
+Sat Apr  9 10:37:53 EDT 2011
+
+I thought about it. Here's what my conclusions are:
+
+What I really want is some way to recieve all pending display updates. That
+is, do RecvDisplay in a loop as long as it will not block.
+
+Then hopefully I can not worry about this issue (but it might creep up in some
+places, because we will still be nondeterminate). I suppose the first question
+to ask is, what do I have to do to do a nonblocking read on a FILE?
+
+Looks like I need to use the low level file descriptors if I want nonblocking
+IO in c. I don't think I really take advantage of the streams: we do fflush
+after writing, and always know exactly how much will be ...
+
+err, that's not true. Say I get a whole bundle of events. The buffered fread
+will improve performance a bunch I expect.
+
+Oh well. Stupid language limitations.
+
+Could I use threads to make this nicer? Have one thread recieve all updates?
+Sounds risky. What if I have a variable that says whether that thread is
+blocking? No. Too risky. Too hard.
+
+These are fifos right? Or rather, pipes. I wonder if pipes have anything
+special related to nonblocking...
+
+No. Nothing special except an easy way to make them nonblocking.
+
+Well, fortunately all this is hidden within the CNSL api.
+
+It's just, sometimes I want to do a nonblocking call, and other times I want
+to do a blocking call. What I really want is two calls:
+   read - which is blocking
+   poll - which just asks if we will block or not.
+
+Then the nonblocking is trivial. That is, add a
+    int CNSL_PollDisplay(CNSL_Client client); 
+function which asks if there is a pending display ready to be recieved.
+
+Implementing that on top of linux...
+
+Okay. Here's the plan. Keep the pipes blocking. That way we can do the
+blocking read and write easily. But switch from FILE* to plain old file
+descriptor. That way we can use the poll or select calls and use those to
+implement the CNSL_PollDisplay function.
+
+Okay? Good. What's the plan now? Do I want to again just dive into things, or
+do I want to write some test case first, even before I have the nonblocking
+thing? Or do I want to manually test first, before I have the nonblocking
+thing?
+
+I think the best thing to do would be
+1. test as is now manually.
+2. switch to file descriptors.
+3. test again manually.
+4. write atomatic test.
+
+But you know? I don't really feel like doing that. So maybe I'll switch right
+to the file descriptors and manual test and see how awful that is.
 
