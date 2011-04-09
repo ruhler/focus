@@ -199,3 +199,12 @@ I think the best thing to do would be
 But you know? I don't really feel like doing that. So maybe I'll switch right
 to the file descriptors and manual test and see how awful that is.
 
+Sat Apr  9 11:31:10 EDT 2011
+
+The problem is, read and write don't promise to wait until there is data
+available. I think if we are part way through writing a display, we might only
+read part of it?
+
+Perhaps as long as I only read in the same size chunks as I write it will be
+okay.
+

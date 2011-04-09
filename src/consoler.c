@@ -125,21 +125,13 @@ CNSL_Client CNSL_LaunchClient(const char* path, char* const args[])
         close(stoc[0]);
         close(ctos[1]);
 
-        int fdw = stoc[1];
-        int fdr = ctos[0];
-
         CNSL_Client c = malloc(sizeof(CNSL_Client_));
         if (!c) {
             return NULL;
         }
-        
-        c->fout = fdopen(fdw, "w");
-        c->fin = fdopen(fdr, "r");
-        if (!c->fout || !c->fin) {
-            free(c);
-            return NULL;
-        }
 
+        c->fdout = stoc[1];
+        c->fdin = ctos[0];
         return c;
     }
 
@@ -148,24 +140,20 @@ CNSL_Client CNSL_LaunchClient(const char* path, char* const args[])
 
 void CNSL_CloseClient(CNSL_Client client)
 {
-    fclose(client->fin);
-    fclose(client->fout);
+    close(client->fdin);
+    close(client->fdout);
     free(client);
 }
 
 int CNSL_RecvEvent(CNSL_Console console, CNSL_Event* event)
 {
-    if (feof(console->fin)) {
-        return 0;
-    }
-
-    fread(event, sizeof(CNSL_Event), 1, stdin);
+    // TODO: is it possible only part of an event is read?
+    return read(console->fdin, event, sizeof(CNSL_Event));
 }
 
 int CNSL_SendEvent(CNSL_Client client, const CNSL_Event* event)
 {
-    fwrite(&event, sizeof(CNSL_Event), 1, client->fout);
-    fflush(client->fout);
+    write(client->fdout, &event, sizeof(CNSL_Event));
     return 1;
 }
 
@@ -186,17 +174,16 @@ int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
     // width*ui4: row (height)
 
     unsigned int header[] = {dstx, dsty, width, height};
-    fwrite(header, 4, 4, console->fout);
+    write(console->fdout, header, 4*sizeof(unsigned int));
 
     int x;
     int y;
     for (y = srcy; y < height+srcy; y++) {
         for (x = srcx; x < width + srcx; x++) {
             CNSL_Color c = CNSL_GetPixel(display, x, y);
-            fwrite(&c, 4, 1, console->fout);
+            write(console->fdout, &c, sizeof(CNSL_Color));
         }
     }
-    fflush(console->fout);
     return 1;
 }
 
@@ -207,7 +194,7 @@ int CNSL_RecvDisplay(CNSL_Client client,
         CNSL_RDFunction f, void* ud)
 {
     unsigned int header[4] = {0};
-    if (fread(header, 4, 4, client->fin) < 4) {
+    if (read(client->fdin, header, 4 * sizeof(unsigned int)) < 4) {
         return 0;
     }
 
@@ -220,13 +207,12 @@ int CNSL_RecvDisplay(CNSL_Client client,
     for (r = 0; r < *height; r++) {
         for (c = 0; c < *width; c++) {
             CNSL_Color col;
-            fread(&col, 4, 1, client->fin);
+            read(client->fdin, &col, sizeof(CNSL_Color));
             f(ud, c+*dstx, r+*dsty, col);
         }
     }
 
     return 1;
-
 }
 
 int CNSL_Init()
@@ -235,8 +221,8 @@ int CNSL_Init()
     if (!stdcon) {
         return -1;
     }
-    stdcon->fin = stdin;
-    stdcon->fout = stdout;
+    stdcon->fdin = STDIN_FILENO;
+    stdcon->fdout = STDOUT_FILENO;
 
     return 1;
 }

@@ -2,8 +2,6 @@
 #ifndef CONSOLER_H
 #define CONSOLER_H
 
-#include <stdio.h>
-
 #include "consoler_keysym.h"
 
 // A color. Represented as 0x00RRGGBB.
@@ -63,8 +61,8 @@ int CNSL_IsKeyrelease(const CNSL_Event* e, int* code);
 
 
 typedef struct {
-    FILE* fin;
-    FILE* fout;
+    int fdin;
+    int fdout;
 } CNSL_Console_;
 
 typedef CNSL_Console_* CNSL_Console;
@@ -72,8 +70,8 @@ typedef CNSL_Console_* CNSL_Console;
 extern CNSL_Console stdcon;
 
 typedef struct {
-    FILE* fin;
-    FILE* fout;
+    int fdin;
+    int fdout;
 } CNSL_Client_;
 
 typedef CNSL_Client_* CNSL_Client;
