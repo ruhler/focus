@@ -1,0 +1,59 @@
+
+Tue Apr 26 08:33:44 EDT 2011
+
+Now I've had my fun with my new netbook, it's time to get back into this
+project. Because I'd love to be able to make use of my netbook's graphic
+capabilities without having to install X.
+
+Reminder of where we were: We just set up a testing framework which hopefully
+works. The next task is to implement a terminal emulator.
+
+Specifically we broke the terminal emulator down into modules. The first
+module to implement is the input module.
+
+It takes a sequence of key events as inputs (which it gets by manually calling
+some get function). And it outputs a sequence of characters to send to the
+application. It can do this with a put function.
+
+There are some times when we want to send multiple characters out at a time.
+We can do this with multiple calls to put. This is rare enough and uses short
+enough strings that I don't think it matters.
+
+Oh, and all state can be local, because we act as if we are our own thread.
+Isn't that nice? Wow. That would be great if it works.
+
+Tue Apr 26 08:50:44 EDT 2011
+
+Some interesting questions arise when making inputter its own thread.
+
+- How do we know when it is done?
+- When testing, how do we know if it has more work to do or if it is waiting
+  on an input?
+
+I suppose we can detect if it is waiting by instrumenting getf. So we can
+write getf to take input from an array, then we you get to the end of the
+array, notify someone somehow. Than the test is just: wait for all inputs to
+be taken from array, then check all the outputs we expect.
+
+Nifty, huh? I'm excited. Let's see if this can really work.
+
+Tue Apr 26 09:12:08 EDT 2011
+
+The problem is this is very painful to do in C. Because we have to explicitly
+pass around pointers to functions and userdata to have function closure like
+things, and memory management is annoying and communication between the get
+and put for testing. It would be nicer in haskell. But even then I suspect it
+will be a little annoying to write.
+
+I should write it in haskell, shouldn't I. There's no reason not to. Except
+this small concern that the haskell STM may not work well with the low level
+IO we do to talk between server and client. But that can be made to work with
+a C import. And to start I can test everything without that. And this is what
+I want for fiddler anyway.
+
+There's no reason a haskell implemented program can't interact with C
+implemented programs as long as it sticks to the same protocol.
+
+Yes. I think that's a good decision. Why should I implement things in C when I
+can use a better language?
+
