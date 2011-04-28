@@ -7,6 +7,7 @@ Import('env')
 #env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
 
 consoler_o = env.Object('consoler.o', 'consoler.c')
+env['consoler_o'] = consoler_o
 
 sdlcsr = env.Program('sdlcsr', ['sdlcsr.c', consoler_o], LIBS = ['SDL', 'util']);
 env.Default(sdlcsr);

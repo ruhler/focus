@@ -3,7 +3,11 @@
 #include <iostream>
 #include <string>
 
+
+extern "C" {
 #include "consoler.h"
+}
+
 #include "Document.h"
 
 const int WIDTH = 640;
@@ -35,7 +39,7 @@ void show(CNSL_Display display, cairo_surface_t* surface, int x, int y)
     for (int r = 0; r < HEIGHT; r++) {
         for (int c = 0; c < WIDTH; c++) {
             if (y + r >= 0 && y + r < sh && x + c >= 0 && x + c < sw) {
-                unsigned int pixel = pixels[r*sw + c];
+                unsigned int pixel = pixels[(y+r)*sw + (x+c)];
                 int red = (pixel >> 16) & 0xFF;
                 int green = (pixel >> 8) & 0xFF;
                 int blue = (pixel) & 0xFF;
@@ -90,6 +94,7 @@ int main(int argc, char* argv[])
                     done = true;
                     break;
 
+                case CNSLK_SPACE:
                 case CNSLK_n:
                     if (page+1 <= doc->pages()) {
                         page++;
@@ -115,12 +120,12 @@ int main(int argc, char* argv[])
                     break;
 
                 case CNSLK_h:
-                    x += 10;
+                    x -= 10;
                     reshow = true;
                     break;
 
                 case CNSLK_l:
-                    x -= 10;
+                    x += 10;
                     reshow = true;
                     break;
 
