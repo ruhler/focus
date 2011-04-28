@@ -1,0 +1,8 @@
+
+Import('env')
+
+env['CPPPATH'] = ['/usr/include/poppler', '/usr/include/cairo', '..']
+
+pdfer = env.Program('pdfer', ['pdfer.cpp', 'Document.cpp'], LIBS=['cairo'])
+env.Default(pdfer)
+

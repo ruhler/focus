@@ -1,0 +1,27 @@
+
+Thu Apr 28 14:46:44 EDT 2011
+
+Task: Make a pdf viewer that uses the focus framework.
+
+This should be relatively simple. The goal is a minimal pdf viewer that I can
+use to give presentations from a computer without X11 installed.
+
+I can steal everything from gylf. That is, we use poppler to draw to a cairo
+surface, we copy that to our display buffer and update it and all that.
+
+For the first version no need to display page numbers or have a textline or a
+tcl interpreter. Though, come to think of it, I could have a tcl interpreter
+if I wanted...
+
+No, add that later. Start with the usual keybindings, focusing again for
+presentations. I suggest for the first set:
+- scroll: up, down, left, right
+- zoom: in, out, width, page
+- goto: next, previous
+- quit
+
+Should be plenty for a simple presentation.
+
+I can just have a main loop which reads key inputs, processes them, then
+updates the display.
+
