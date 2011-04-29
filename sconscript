@@ -9,5 +9,4 @@ SConscript('scons/local')
 
 # The main program
 SConscript('src/sconscript')
-SConscript('src/pdfer/sconscript')
 

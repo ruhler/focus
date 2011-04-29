@@ -1,7 +1,0 @@
-
-Import('env')
-
-pdfer = env.Program('pdfer', ['pdfer.cpp', env['consoler_o']],
-        LIBS=['poppler', 'poppler-cpp'])
-env.Default(pdfer)
-

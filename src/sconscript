@@ -7,7 +7,6 @@ Import('env')
 #env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
 
 consoler_o = env.Object('consoler.o', 'consoler.c')
-env['consoler_o'] = consoler_o
 
 sdlcsr = env.Program('sdlcsr', ['sdlcsr.c', consoler_o], LIBS = ['SDL', 'util']);
 env.Default(sdlcsr);
@@ -30,3 +29,5 @@ env.Default(sgreen);
 cgreen = env.Program('cgreen', ['cgreen.c']);
 env.Default(cgreen);
 
+pdfer = env.Program('pdfer', ['pdfer.cpp', consoler_o], LIBS=['poppler', 'poppler-cpp'])
+env.Default(pdfer)
