@@ -3,37 +3,53 @@
 #include <iostream>
 #include <string>
 
+#include <poppler-document.h>
+#include <poppler-page.h>
+#include <poppler-page-renderer.h>
+#include <poppler-image.h>
+#include <poppler-rectangle.h>
+
 
 extern "C" {
 #include "consoler.h"
 }
 
-#include "Document.h"
-
 const int WIDTH = 640;
 const int HEIGHT = 480;
 
-// Draw the given view to a new cairo_surface and return the surface.
-// The surface should be destroyed when you are done with it.
-cairo_surface_t* draw(Document* doc, int page, double zoom)
+int widthof(poppler::document* doc, int pagenum)
 {
-    int w = doc->width(page)/zoom;
-    int h = doc->height(page)/zoom;
-    cairo_surface_t* surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
-    cairo_t* cairo = cairo_create(surface);
-    doc->draw(cairo, page, zoom, "");
-    cairo_destroy(cairo);
-    return surface;
+    return doc->create_page(pagenum)->page_rect().width();
+}
+
+int heightof(poppler::document* doc, int pagenum)
+{
+    return doc->create_page(pagenum)->page_rect().height();
+}
+
+// Draw the given view to a new image and return the image.
+// The surface should be destroyed when you are done with it.
+poppler::image draw(poppler::document* doc, int pagenum, double zoom)
+{
+    poppler::page* page = doc->create_page(pagenum);
+    poppler::rectf pr = page->page_rect();
+
+    poppler::page_renderer renderer;
+    renderer.set_paper_color(0xFFFFFFF);
+
+    int w = pr.width()/zoom;
+    int h = pr.height()/zoom;
+    return renderer.render_page(page, 72.0/zoom, 72.0/zoom);
 }
 
 // Show the page on the display, with x and y the coordinates of the surface
 // to be placed at the upper left corner of the display.
 // x and y may be negative.
-void show(CNSL_Display display, cairo_surface_t* surface, int x, int y)
+void show(CNSL_Display display, poppler::image image, int x, int y)
 {
-    int sw = cairo_image_surface_get_width(surface);
-    int sh = cairo_image_surface_get_height(surface);
-    unsigned int* pixels = (unsigned int*)cairo_image_surface_get_data(surface);
+    int sw = image.width();
+    int sh = image.height();
+    unsigned int* pixels = (unsigned int*)image.data();
 
     // (c, r) are coordinates in the display
     for (int r = 0; r < HEIGHT; r++) {
@@ -62,7 +78,7 @@ int main(int argc, char* argv[])
 
     std::string pdffilename = argv[1];
 
-    Document* doc = Document::load(pdffilename);
+    poppler::document* doc = poppler::document::load_from_file(pdffilename);
     if (!doc) {
         std::cerr << "Error loading pdf " << pdffilename << std::endl;
         return 1;
@@ -71,13 +87,13 @@ int main(int argc, char* argv[])
     CNSL_Init();
     CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);
 
-    int page = 1;
+    int page = 0;
     double zoom = 1.0;
     double x = 0;
     double y = 0;
 
-    cairo_surface_t* surface = draw(doc, page, zoom);
-    show(display, surface, (int)x, (int)y);
+    poppler::image image = draw(doc, page, zoom);
+    show(display, image, (int)x, (int)y);
 
     CNSL_Event event;
     bool done = false;
@@ -96,14 +112,14 @@ int main(int argc, char* argv[])
 
                 case CNSLK_SPACE:
                 case CNSLK_n:
-                    if (page+1 <= doc->pages()) {
+                    if (page+1 < doc->pages()) {
                         page++;
                         redraw = true;
                     }
                     break;
 
                 case CNSLK_p:
-                    if (page-1 > 0) {
+                    if (page-1 >= 0) {
                         page--;
                         redraw = true;
                     }
@@ -144,17 +160,17 @@ int main(int argc, char* argv[])
                     break;
 
                 case CNSLK_w:
-                    zoom = doc->width(page) / WIDTH;
+                    zoom = widthof(doc, page) / WIDTH;
                     x = 0;
                     redraw = true;
                     break;
 
                 case CNSLK_a:
                 {
-                    double wzoom = doc->width(page)/WIDTH;
-                    double hzoom = doc->height(page)/HEIGHT;
-                    x = (doc->width(page) - WIDTH)/2.0;
-                    y = (doc->height(page) - HEIGHT)/2.0;
+                    double wzoom = widthof(doc, page)/WIDTH;
+                    double hzoom = heightof(doc, page)/HEIGHT;
+                    x = (widthof(doc, page) - WIDTH)/2.0;
+                    y = (heightof(doc, page) - HEIGHT)/2.0;
                     double amt = std::max(wzoom, hzoom);
                     zoom *= amt;
                     x = (x + WIDTH/2)/amt - WIDTH/2;
@@ -166,13 +182,12 @@ int main(int argc, char* argv[])
         }
 
         if (redraw) {
-            cairo_surface_destroy(surface);
-            surface = draw(doc, page, zoom);
+            image = draw(doc, page, zoom);
             reshow = true;
         }
 
         if (reshow) {
-            show(display, surface, (int)x, (int)y);
+            show(display, image, (int)x, (int)y);
         }
     }
 
