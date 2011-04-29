@@ -1,15 +1,6 @@
 
 Import('env')
 
-env['CPPPATH'] = [
-    '..',
-    '/usr/include/cairo',
-    '/usr/include/pixman-1',
-    '/usr/include/freetype2',
-    '/usr/include/libpng12',
-    '/usr/include/poppler',
-    ]
-
 pdfer = env.Program('pdfer', ['pdfer.cpp', 'Document.cpp', env['consoler_o']],
         LIBS=['cairo', 'poppler', 'poppler-glib'])
 env.Default(pdfer)

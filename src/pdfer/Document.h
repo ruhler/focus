@@ -22,12 +22,7 @@ public:
     // Greater zoom means a smaller page.
     // Instances of the string highlight will be highlighted in the draw
     // image if it is a non-empty string.
-    void draw(cairo_t* cairo, int pagenum, double zoom, const std::string& highlight);
-
-    // Search for the given string in the document starting at the given page.
-    // Returns the first page which contains an instance of str.
-    // Returns -1 if there is no such page.
-    int search(std::string str, int pagenum);
+    void draw(cairo_t* cairo, int pagenum, double zoom);
 
     // Return the number of pages in the document.
     int pages();

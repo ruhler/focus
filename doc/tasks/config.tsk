@@ -1,0 +1,9 @@
+
+Fri Apr 29 11:55:28 EDT 2011
+
+Task: Need a nicer way to do scons configuration
+
+Like, some of the programs need extra libraries, but not all. It would be nice
+to only require extra libraries for the ones that need it. Maybe only build
+those apps which you can based on available libraries? Or something like that.
+

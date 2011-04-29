@@ -1,0 +1,18 @@
+
+Import('env')
+
+env['CPPPATH'] = [
+    '#/build/src',
+    '/pkg/sdl-1.2.14/install/include',
+    '/pkg/libpng-1.5.2/install/include',
+    '/pkg/cairo-1.10.2/install/include/cairo'
+
+    ]
+
+env['LIBPATH'] = [
+    '/pkg/sdl-1.2.14/install/lib',
+    '/pkg/libpng-1.5.2/install/lib'
+    ]
+
+env['ENV']['LD_LIBRARY_PATH'] = '/pkg/sdl-1.2.14/install/lib'
+

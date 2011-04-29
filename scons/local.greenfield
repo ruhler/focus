@@ -1,2 +1,10 @@
 
+env['CPPPATH'] = [
+    '..',
+    '/usr/include/cairo',
+    '/usr/include/pixman-1',
+    '/usr/include/freetype2',
+    '/usr/include/libpng12',
+    '/usr/include/poppler',
+    ]
 

@@ -30,3 +30,39 @@ Thu Apr 28 16:36:10 EDT 2011
 Hey! It works! And it only took a little more than an hour. That's pretty
 nifty. It feels more responsive than gylf usually does too, which is cool.
 
+Fri Apr 29 14:11:12 EDT 2011
+
+I downloaded a later version of poppler to try on pacific. It looks like there
+is a new cpp interface. Now the interface has no documentation, but I'd like
+to try switching over to it. Let's see how hard that is.
+
+I want the following functionality:
+ + load a document given a filename
+ - draw a given page and zoom setting to a cairo surface.
+ + get the number of pages
+ - get the media width for a page
+ - get the media height for a page
+
+I can ignore highlighting and searching for now.
+
+Here's what I see available via the new poppler cpp interface:
+
+poppler-document.h: 
+  poppler::document::load_from_file - for loading
+  poppler::document::pages() - for number of pages
+  poppler::document::create_page() - to get a page
+  poppler::page:page_rect - to get page dimensions?
+  poppler::page_renderer::render_page - to draw the page with zoom.
+  poppler::image::width
+  poppler::image::height
+  poppler::image::data
+
+Interesting. So it looks like I may not need to reference cairo at all? Perhaps I just load the document, get the page, render the page to one of poppler's images, then copy the data from there.
+
+That's pretty nice. I'll have to change things just a bit. How about, dump my Document.cpp class, switch over entirely to this cpp interface.
+
+Still don't know about memory management. Hopefully things will work out?
+
+I should do this work on greenfield, not pacific. Let me do that.
+ 
+
