@@ -5,13 +5,14 @@ env['CPPPATH'] = [
     '#/build/src',
     '/pkg/sdl-1.2.14/install/include',
     '/pkg/libpng-1.5.2/install/include',
-    '/pkg/cairo-1.10.2/install/include/cairo'
-
+    '/pkg/cairo-1.10.2/install/include/cairo',
+    '/pkg/poppler-0.17.0/install/include/poppler/cpp'
     ]
 
 env['LIBPATH'] = [
     '/pkg/sdl-1.2.14/install/lib',
-    '/pkg/libpng-1.5.2/install/lib'
+    '/pkg/libpng-1.5.2/install/lib',
+    '/pkg/poppler-0.17.0/install/lib'
     ]
 
 env['ENV']['LD_LIBRARY_PATH'] = '/pkg/sdl-1.2.14/install/lib'
