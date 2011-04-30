@@ -1,5 +1,13 @@
 
+# vim: ft=python
+
 Import('env')
+
+env['GHC'] = '/pkg/ghc-6.12.3/install/bin/ghc'
+
+#  Haskell packages are found:
+env['ENV']['GHC_PACKAGE_PATH'] = '/home/richard/.ghc/x86_64-linux-6.12.3/package.conf.d:/pkg/ghc-6.12.3/install/lib/ghc-6.12.3/package.conf.d/'
+
 
 env['CPPPATH'] = [
     '/pkg/sdl-1.2.14/install/include',

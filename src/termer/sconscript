@@ -1,0 +1,13 @@
+
+# vim: ft=python
+
+Import('env')
+
+env['GHCPATH'] = Dir(".")
+#env['GHCFLAGS'] = "-optc -ggdb -optc -O0"
+#env['GHCFLAGS'] = "-prof -auto-all"
+
+# Unit Tests
+termertest = env.GHCProgram('termertest')
+env.Default(env.Command('termertest.out', termertest, "$SOURCE > $TARGET"))
+

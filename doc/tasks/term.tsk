@@ -113,3 +113,57 @@ So maybe we instantiate it with callback functions: get and put. The get
 function will return the next key press or release (so, event). The put
 function will take a string of bytes, perhaps with explicit length.
 
+Sat Apr 30 09:51:40 EDT 2011
+
+I've thought about things, and decided yes, even though it will get painful, I
+should implement the terminal emulator in haskell. Understand what the pain
+is. Because I understand the pain of C, and I know haskell fixes much of that
+pain. I don't understand the pain of haskell. Maybe if I did I could figure
+out how to fix it.
+
+In haskell things look like this:
+- inputter:  process which gets events, puts characters
+- outputter: process which gets (UTF8) characters, updates shared character
+  array.
+- displayer: process which draws shared character array to the screen
+  Ideally this gets lower priority than the outputter. Is that possible?
+
+And is that it? Those are the only processes I need? Maybe a main program to
+set things going, and certainly libraries to access the underlying consoler
+protocol, but that seems fairly nice to me.
+
+First step is inputter. I should be able to implement and test it purely.
+
+Steps to implement
+ + define event type
+ - implement inputter module
+ - test inputter module
+
+Easy, no? Let me dive into a rough draft.
+
+Sat Apr 30 09:58:44 EDT 2011
+
+I defined the event type. That was trivial.
+Now for the inputter module.
+
+Oh my god. The inputter doesn't even have to know about STM haskell! It can be
+made to work with a general monad, which should make testing it trivial!
+Wonderful!
+
+Except, I need to have some way of stopping the inputter. Perhaps it can
+listen for a Quit event of some sort? That would make testing much easier. It
+could be useful temporarally.
+
+Sat Apr 30 11:37:10 EDT 2011
+
+I've written the rough draft of the inputter. It's a little verbose, but not
+terrible. I fear for performance (that we do hundreds of comparisons when we
+could just do a single addition to translate keysym to input char), but I'm
+putting that out of my mind until it is really shown to be a problem.
+
+Now what I need is to write some tests.
+I guess I can start with a really simple test: verify KEYSYM_A sends 'a'.
+I can add more tests if I want to, or just one, then add more when things fail
+to work. Whatever. Minimum is one test though. Set up the hunit stuff, get it
+all to compile.
+
