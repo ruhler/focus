@@ -47,7 +47,7 @@ void runserver()
     }
     atexit(SDL_Quit);
 
-    screen = SDL_SetVideoMode(1280, 800, 0, SDL_ANYFORMAT);
+    screen = SDL_SetVideoMode(640, 480, 0, SDL_ANYFORMAT);
     if (screen == NULL) {
         fprintf(stderr, "sdl: %s\n", SDL_GetError());
         SDL_Quit();
