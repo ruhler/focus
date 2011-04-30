@@ -18,7 +18,7 @@ data Keysym =
   | F12 | F13 | F14 | F15 | NUMLOCK | CAPSLOCK | SCROLLOCK | RSHIFT
   | LSHIFT | RCTRL | LCTRL | RALT | LALT | RMETA | LMETA | LSUPER
   | RSUPER | MODE | COMPOSE | HELP | PRINT | SYSREQ | BREAK | MENU
-  | POWER | EURO | UNDO
+  | POWER | EURO | UNDO deriving(Eq, Show)
 
 instance Enum Keysym
   where
@@ -105,7 +105,7 @@ instance Enum Keysym
     fromEnum KP9 = 265
     fromEnum KP_PERIOD = 266
     fromEnum KP_DIVIDE = 267
-    fromEnum KP_MULTIPLY = =
+    fromEnum KP_MULTIPLY = 268
     fromEnum KP_MINUS = 269
     fromEnum KP_PLUS = 270
     fromEnum KP_ENTER = 271
@@ -241,7 +241,7 @@ instance Enum Keysym
     toEnum 265 = KP9
     toEnum 266 = KP_PERIOD
     toEnum 267 = KP_DIVIDE
-    toEnum = = KP_MULTIPLY
+    toEnum 268 = KP_MULTIPLY
     toEnum 269 = KP_MINUS
     toEnum 270 = KP_PLUS
     toEnum 271 = KP_ENTER

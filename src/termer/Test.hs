@@ -1,5 +1,5 @@
 
-module Test (req, isl, (~:), (~=?), runtests)
+module Test ((~:), (~=?), runtests)
   where
 
 import System

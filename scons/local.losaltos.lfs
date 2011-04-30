@@ -11,12 +11,15 @@ env['ENV']['GHC_PACKAGE_PATH'] = '/home/richard/.ghc/x86_64-linux-6.12.3/package
 
 env['CPPPATH'] = [
     '/pkg/sdl-1.2.14/install/include',
-    '/pkg/libpng-1.4.5/install/include'
+    '/pkg/libpng-1.4.5/install/include',
+    '/pkg/poppler-0.16.5/install/include/poppler/cpp'
     ]
 
 env['LIBPATH'] = [
     '/pkg/sdl-1.2.14/install/lib',
     '/pkg/libpng-1.4.5/install/lib',
+    '/pkg/poppler-0.16.5/install/lib'
     ]
+
 env['ENV']['LD_LIBRARY_PATH'] = '/pkg/sdl-1.2.14/install/lib'
 

@@ -1,7 +1,10 @@
 
+{-# LANGUAGE FlexibleContexts #-}
+
 module Inputter (inputter)
   where
 
+import Control.Monad.State
 import Consoler
 
 data InputterState = InputterState {
@@ -19,17 +22,17 @@ setctrl :: (MonadState InputterState sm) => Bool -> sm ()
 setctrl x = modify $ \s -> s { ctrlon = x }
 
 inputter :: (Monad m) => m Event -> (Char -> m ()) -> m ()
-inputter get put = fst $ runStateT (sinputter get put) initial
+inputter iget iput = runStateT (sinputter iget iput) initial >> return ()
     
 -- sinputter: Inputter with modifier key state
 sinputter :: (Monad m) => m Event -> (Char -> m()) -> StateT InputterState m ()
 sinputter iget iput = do
-    event <- iget
-    shift = gets shifton
-    ctrl = gets ctrlon
+    event <- lift $ iget
+    shift <- gets shifton
+    ctrl <- gets ctrlon
     case event of
         Quit -> return ()
-        Keypress x -> press (lift iput) x shift ctrl >> sinputter iget iput
+        Keypress x -> press (\c -> lift $ iput c) x shift ctrl >> sinputter iget iput
         Keyrelease x -> release x >> sinputter iget iput
 
 -- press: handle a single input keypress event
@@ -223,9 +226,9 @@ press _ x s c = error $ "unhandled input keysym " ++ show x
 -- release is only for keeping track of modifiers. We never need to send the
 -- client anything.
 release :: (MonadState InputterState sm) => Keysym -> sm ()
-release RSHIFT = setshift false
-release LSHIFT = setshift false
-release RCTRL = setctrl false
-release LCTRL = setctrl false
+release RSHIFT = setshift False
+release LSHIFT = setshift False
+release RCTRL = setctrl False
+release LCTRL = setctrl False
 release _ = return ()
 
