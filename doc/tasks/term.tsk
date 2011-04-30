@@ -167,3 +167,52 @@ I can add more tests if I want to, or just one, then add more when things fail
 to work. Whatever. Minimum is one test though. Set up the hunit stuff, get it
 all to compile.
 
+Sat Apr 30 12:34:03 EDT 2011
+
+My three tests pass! First try. Nifty.
+
+So, what's next?
+
+Next is the outputter module.
+The task of the outputter module is to interpret a stream of characters into
+actions which modify the terminal state. Basically actions are:
+change the cursor, change characters and attributes of the character buffer.
+
+So, before doing the translation, I really want an abstract data type
+representing the console state.
+
+It should include the following:
+
+- Number of lines
+- Number of columns
+- The current cursor position (line and column)
+- The current fgcolor, bgcolor, style
+- For each position: character, style, fgcolor, bgcolor
+    color is one of: black, red, green, yellow, blue, magenta, cyan, white
+    style is one of: reverse, bold
+
+Methods on the terminal might be:
+ - clear
+ - insert line
+ - clear to end of line
+ - scroll forward
+ - set foreground
+ - set background
+ - set reverse
+ - set bold
+
+Do you think? What about
+ - cursorup, cursordown, etc...
+ - some way to get at the contents of cells.
+    So I think the CELLS should be public, but representation of the terminal
+    (be it array, tree, list, whatever) should be private.
+
+Cool. That's fairly clear. Or rather, the direction is clear, the detail has
+to be worked out. Shall I do that on the fly?
+
+Sure, why not? But what do I call this module? Terminal? Display? Screen?
+Output?
+
+You know? I like Screen. We can save Display for displaying the screen. Here I
+go then. Wish me luck.
+
