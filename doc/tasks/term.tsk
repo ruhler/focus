@@ -216,3 +216,15 @@ Output?
 You know? I like Screen. We can save Display for displaying the screen. Here I
 go then. Wish me luck.
 
+Sat Apr 30 14:54:35 EDT 2011
+
+I completed a rough draft of Screen. I think it has everything we'll need for
+fbterm equivalent functionality. The details are not at all documented (or
+decided on) yet, which I should probably do...
+
+I would say the next step is to write some tests for the Screen module. But
+before I test a function, take the time to work out the specific details for
+that function which makes sense to have and document it.
+
+Cool. Sounds like a plan.
+
