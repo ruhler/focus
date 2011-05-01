@@ -1,172 +1,347 @@
 
 module Screen (
     Color(..), Style(..), Cell(..), Position(..), Screen(),
-    screen, clear, moveto, up, down, left, right, home
+    screen,
+    carriage_return, newline, tab, column_address, row_address, 
+    cursor_address, cursor_down, cursor_home, cursor_left, cursor_right,    
+    cursor_to_ll, cursor_up, parm_left_cursor, parm_right_cursor,
+    parm_down_cursor, clear_screen, clr_bol, clr_eol, clr_eos,
+    enter_bold_mode, enter_reverse_mode, exit_attribute_mode,
+    set_foreground, set_background, delete_character, parm_dch,
+    delete_line, parm_delete_line, erase_chars, insert_character,
+    parm_ich, insert_line, parm_insert_line, scroll_forward,
+    parm_index, scroll_reverse, parm_rindex,
+    put_char, cursor, cellat 
     )
   where
 
+import Prelude hiding (reverse, lines)
 import Data.Array
 
 data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
     deriving(Eq, Show)
 
 data Style = Style {
-    reverse :: Bool
+    reverse :: Bool,
     bold :: Bool
 }
 
 normal :: Style
 normal = Style False False
 
-data Cell = Cell [
-    character :: Char,
+data Attributes = Attributes {
     fgcolor :: Color,
     bgcolor :: Color,
     style :: Style
+}
+
+default_attributes :: Attributes
+default_attributes = Attributes WHITE BLACK normal
+
+data Cell = Cell {
+    character :: Char,
+    cattrs :: Attributes
 }
 
 defaultcell :: Cell
-defaultcell = Cell ' ' WHITE BLACK normal
+defaultcell = Cell ' ' default_attributes
 
--- The first line is 1
--- The first column is 1
-data Position = {
-    column :: Integer
-    line :: Integer,
-}
+-- The first column is 0
+-- The first line is 0
+data Position = Position {
+    column :: Integer,
+    line :: Integer
+} deriving(Eq, Show, Ord, Ix)
+
+  
 
 -- The home cursor position
 home :: Position
-home = Position 1 1
+home = Position 0 0
 
-data Screen = {
+data Screen = Screen {
     columns :: Integer,
     lines :: Integer,
     cursor :: Position,
-    cells :: Array Position Cell
-    fgcolor :: Color,
-    bgcolor :: Color,
-    style :: Style
+    cells :: Array Position Cell,
+    sattrs :: Attributes
 }
 
 -- make an array where every element is the same
-uniformArray :: (Idx i) -> (i, i) -> a -> Array i a
+uniformArray :: (Ix i) => (i, i) -> a -> Array i a
 uniformArray bounds x = listArray bounds (repeat x)
 
 -- screen columns lines
 -- Return a clear screen with the given number of rows and columns.
 screen :: Integer -> Integer -> Screen
 screen cols lines
-  = let bounds = (Position 1 1, Position cols lines)
+  = let bounds = (Position 0 0, Position cols lines)
         cells = uniformArray bounds defaultcell
-    in Screen cols lines home cells WHITE BLACK normal
+    in Screen cols lines home cells default_attributes
 
-clearcell :: Screen -> Cell
-clearcell scr = Cell ' ' (fgcolor scr) (bgcolor scr) (style csr)
+blank :: Screen -> Cell
+blank scr = Cell ' ' (sattrs scr)
 
--- clear the screen and moves the cursor to the home position
-clear :: Screen -> Screen
-clear scr 
-  = let bounds = (Position 1 1, Position cols lines)
-        cells = uniformArray bounds (clearcell scr)
-    in scr { cells = cells, cursor = home }
 
+
+-- carriage_return
+-- Move cursor to the left edge of the current row.
+carriage_return :: Screen -> Screen
+carriage_return scr = column_address 0 scr
+
+-- Move the the first column of the next line
+newline :: Screen -> Screen
+newline = cursor_down . carriage_return
+
+-- Advance the cursor column to the next 8-space tab stop
+tab :: Screen -> Screen
+tab scr = parm_right_cursor (8 - ((column . cursor $ scr) `mod` 8)) scr
+
+-- column_address column
+-- Move the cursor to the given column
+column_address :: Integer -> Screen -> Screen
+column_address ncol scr
+  = cursor_address ( (cursor scr) { column = ncol } ) scr
+
+-- row_address row
+-- Move the cursor to the given row
+row_address :: Integer -> Screen -> Screen
+row_address nrow scr
+  = cursor_address ( (cursor scr) { line = nrow } ) scr
+
+-- cursor_address pos
 -- Move the cursor to the given position
-moveto :: Position -> Screen -> Screen
-moveto pos scr
- = if (line pos >= 1 && line pos <= (lines scr)
-         && column pos >= 1 && column pos <= (columns scr))
-    then scr { cursor = pos }
-    else scr
+cursor_address :: Position -> Screen -> Screen
+cursor_address pos scr = scr { cursor = pos }
 
--- Move the cursor up n lines
-up :: Integer -> Screen -> Screen
-up n scr
- = let src = cursor scr
-       dst = src { line = (line src) - n }
-   in moveto dst
+-- Move cursor down one line
+cursor_down :: Screen -> Screen
+cursor_down = parm_down_cursor 1
 
--- Move the cursor down n lines
-down :: Integer -> Screen -> Screen
-down n scr
- = let src = cursor scr
-       dst = src { line = (line src) + n }
-   in moveto dst
+-- Move cursor to the home position
+cursor_home :: Screen -> Screen
+cursor_home = cursor_address home
+
+-- Move the cursor left one column
+cursor_left :: Screen -> Screen
+cursor_left = parm_left_cursor 1
+
+-- Move the cursor right one column
+cursor_right :: Screen -> Screen
+cursor_right = parm_right_cursor 1
+
+-- Move the cursor to the last line, first column
+cursor_to_ll :: Screen -> Screen
+cursor_to_ll scr = cursor_address (Position 0 ((lines scr)-1)) scr
+
+-- Move the cursor up one column
+cursor_up :: Screen -> Screen
+cursor_up = parm_up_cursor 1
 
 -- Move the cursor left n columns
-left :: Integer -> Screen -> Screen
-left n scr
- = let src = cursor scr
-       dst = src { column = (column src) - n }
-   in moveto dst
+parm_left_cursor :: Integer -> Screen -> Screen
+parm_left_cursor n scr = column_address ((column . cursor $ scr) - n) scr
 
 -- Move the cursor right n columns
-right :: Screen -> Screen
-right scr
- = let src = cursor scr
-       dst = src { column = (column src) + n }
-   in moveto dst
+parm_right_cursor :: Integer -> Screen -> Screen
+parm_right_cursor n scr = column_address ((column . cursor $ scr) + n) scr
 
--- Apply the given function to update all the cells of the screen.
-modifyby :: (Position -> Cell) -> Screen -> Screen
-modifyby f scr
-  = let cols = columns scr
-        lines = lines scr
-        bounds = (Position 1 1, Position cols lines)
-        ncells = array bounds [(Position x y, f (Position x y)) | x <- [1..cols], y <- [1..lines]]
-    in scr { cells  = ncells }
+-- Move the cursor up n lines
+parm_up_cursor :: Integer -> Screen -> Screen
+parm_up_cursor n scr = row_address ((line . cursor $ scr) - n) scr
 
--- Scroll forward n lines
-scroll :: Integer -> Screen -> Screen
-scroll n scr
-  = let f (Position x y)
-          = if (y + n >=1 && y + n <= lines)
-            then (cells scr) ! (Position x (y+n))
-            else clearcell scr
-    in modifyby f scr
+-- Move the cursor down n lines
+parm_down_cursor :: Integer -> Screen -> Screen
+parm_down_cursor n scr = row_address ((line . cursor $ scr) + n) scr
 
--- Insert a line at the given location
-insert_line :: Integer -> Screen -> Screen
-insert_line line scr
-  = let f (Position x y)
-          = if (y > 1 && y < line)
-              then (cells scr) ! (Position x (y+1))
-              else if (y == line)
-                then clearcell scr
-                else (cells scr) ! (Position x y)
-    in modifyby f scr
 
--- Clear from the cursor to the end of line
+-- Clear the screen and move the cursor to the home position
+clear_screen :: Screen -> Screen
+clear_screen scr 
+  = let bounds = (Position 0 0, Position (columns scr) (lines scr))
+        cells = uniformArray bounds (blank scr)
+    in scr { cells = cells, cursor = home }
+
+-- Clear from the beggining of the line to the current cursor position
+-- inclusive, leaving the cursor where it is.
+clr_bol :: Screen -> Screen
+clr_bol scr 
+  = let cline = line . cursor $ scr
+        ccol = column . cursor $ scr
+        upds = [(Position x cline, blank scr) | x <- [0..ccol]]
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
+
+-- Clear from the cursor position to the end of the line, leaving the cursor
+-- where it is.
 clr_eol :: Screen -> Screen
 clr_eol scr
-  = let pos = cursor scr
-        update = [(pos { column = x }, clearcell scr | x <- [(column pos)..(columns scr)]]
-    in scr { cells = (cells csr) // update }
+  = let cline = line . cursor $ scr
+        ccol = column . cursor $ scr
+        upds = [(Position x cline, blank scr) | x <- [ccol..(columns scr)]]
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
 
--- Set the current bold state
--- True for bold
--- False for normal
-setbold :: Bool -> Screen -> Screen
-setbold b scr = scr { style = ((style scr) { bold = b }) }
+-- Clear from the current cursor position to the end of the display.
+clr_eos :: Screen -> Screen
+clr_eos scr
+  = let cline = line . cursor $ scr
+        ccol = column . cursor $ scr
+        lupds = [(Position x cline, blank scr) | x <- [ccol..(columns scr)]]
+        supds = [(Position x y, blank scr) | x <- [0..(lines scr)], y <- [(cline+1)..(lines scr)]]
+        upds = lupds ++ supds
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
 
--- Set the current reverse state
--- True for bold
--- False for normal
-setreverse :: Bool -> Screen -> Screen
-setreverse b scr = scr { style = ((style scr) { reverse = b }) }
+-- Enter bold mode
+enter_bold_mode :: Screen -> Screen
+enter_bold_mode scr
+  = let attrs = sattrs scr
+        nattrs = attrs { style = ((style attrs) { bold = True }) }
+    in scr { sattrs = nattrs }
+
+-- Enter reverse mode
+enter_reverse_mode :: Screen -> Screen
+enter_reverse_mode scr
+  = let attrs = sattrs scr
+        nattrs = attrs { style = ((style attrs) { reverse = True }) }
+    in scr { sattrs = nattrs }
+
+-- Turn off all attributes
+exit_attribute_mode scr = scr { style = normal, fgcolor = WHITE, bgcolor = BLACK }
 
 -- Set the forground color
-setfg :: Color -> Screen -> Screen
-setfg c scr = scr { fgcolor = c }
+set_foreground :: Color -> Screen -> Screen
+set_foreground c scr = scr { sattrs = ((sattrs scr) { fgcolor = c}) }
 
 -- Set the background color
-setbg :: Color -> Screen -> Screen
-setbg c scr = scr { bgcolor = c }
+set_background :: Color -> Screen -> Screen
+set_background c scr = scr { sattrs = ((sattrs scr) { bgcolor = c}) }
 
--- Write a character to the screen at the current cursor position.
-writechar :: Char -> Screen -> Screen
-writechar c scr
-  = let old = (cells scr) ! (cursor scr)
-        new = old { char = c }
-    in scr { cells = (cells scr)//[(cursor scr, new)] }
+-- Delete the character at the cursor position
+delete_character :: Screen -> Screen
+delete_character = parm_dch 1
+
+-- Delete n characters from the cursor position
+parm_dch :: Integer -> Screen -> Screen
+parm_dch n scr
+  = let cline = line . cursor $ scr
+        ccol = column . cursor $ scr
+        
+        f x = if (x + n >= columns scr)
+                  then blank scr
+                  else (cells scr) ! (Position (x+n) cline)
+        
+        upds = [(Position x cline, f x) | x <- [ccol..(columns scr)]]
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
+
+-- Delete the line at the cursor position
+delete_line :: Screen -> Screen
+delete_line = parm_delete_line 1
+
+-- Delete n lines starting at the cursor position
+parm_delete_line :: Integer -> Screen -> Screen
+parm_delete_line n scr
+  = let cline = line . cursor $ scr
+        f x y = if (y + n >= lines scr)
+                  then blank scr
+                  else (cells scr) ! (Position x (y+n))
+        upds = [(Position x y, f x y) | x <- [0..(columns scr)], y <- [cline..(lines scr)]] 
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
+
+-- erase n characters (clear them) at the cursor position without moving the
+-- cursor.
+erase_chars :: Integer -> Screen -> Screen
+erase_chars n scr
+  = let cline = line . cursor $ scr
+        ccol = column . cursor $ scr
+        upds = [(Position x cline, blank scr) | x <- [ccol..(ccol+n)]]
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
+
+-- Insert a (blank) character at the cursor position without moving the cursor
+-- position. Shifts following characters on the line over.
+insert_character :: Screen -> Screen
+insert_character = parm_ich 1
+
+-- Insert n characters at the cursor position without moving the cursor
+-- position. Shifts following characters on the line over.
+parm_ich :: Integer -> Screen -> Screen
+parm_ich n scr 
+  = let cline = line . cursor $ scr
+        ccol = column . cursor $ scr
+        
+        f x = if (x - n >= 0)
+                  then (cells scr) ! (Position (x-n) cline)
+                  else blank scr
+        
+        blks = [(Position x cline, blank scr) | x <- [ccol..(ccol + n)]]
+        shfts = [(Position x cline, f x) | x <- [(ccol+n)..(columns scr)]]
+        upds = blks ++ shfts
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
+
+-- Insert a line at the cursor position without moving the cursor.
+insert_line :: Integer -> Screen -> Screen
+insert_line n = parm_insert_line 1
+
+-- Insert n lines at the cursor position
+parm_insert_line :: Integer -> Screen -> Screen
+parm_insert_line n scr
+  = let cline = line . cursor $ scr
+        f x y = if (y - n >= 0)
+                  then (cells scr) ! (Position x (y-n))
+                  else blank scr
+        
+        blks = [(Position x y, blank scr) | x <- [0..(columns scr)], y <- [cline..(cline+n)]]
+        shfts = [(Position x y, f x y) | x <- [0..(columns scr)], y <- [(cline+n)..(lines scr)]]
+        upds = blks ++ shfts
+        ncells = (cells scr)//upds
+    in scr { cells = ncells }
+
+-- Scroll forward one line
+scroll_forward :: Screen -> Screen
+scroll_forward = parm_index 1
+
+-- Scroll forward n lines
+parm_index :: Integer -> Screen -> Screen
+parm_index = scroll
+
+-- Scroll backward 1 lines
+scroll_reverse :: Screen -> Screen
+scroll_reverse = parm_rindex 1
+
+-- Scroll backwards n lines
+parm_rindex :: Integer -> Screen -> Screen
+parm_rindex n = scroll (-n)
+
+  
+-- Scroll n lines
+-- scrolls forward if n is negative, reverse if n is positive.
+scroll :: Integer -> Screen -> Screen
+scroll n scr
+  = let cols = columns scr
+        lns = lines scr
+        bounds = (Position 0 0, Position cols lns)
+        f (Position x y)
+          = if (y + n >=0 && y + n < lns)
+            then (cells scr) ! (Position x (y+n))
+            else blank scr
+        ncells = array bounds [(Position x y, f (Position x y)) | x <- [0..cols], y <- [0..lns]]
+    in scr { cells = ncells }
+
+
+
+-- Place a character on the screen at the given cursor position. Advances the
+-- cursor position.
+put_char :: Char -> Screen -> Screen
+put_char c scr
+  = let nscr = scr { cells = ((cells scr)//[(cursor scr, (blank scr) { character = c } )]) }
+    in cursor_right nscr
+
+-- Get the cell at the given position
+cellat :: Position -> Screen -> Cell
+cellat pos scr = (cells scr) ! pos
 

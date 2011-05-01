@@ -2,9 +2,11 @@
 import Test
 
 import qualified InputterTest
+import qualified ScreenTest
 
 tests = "Tests" ~: [
-    InputterTest.test
+    InputterTest.test, 
+    ScreenTest.test
     ]
     
 

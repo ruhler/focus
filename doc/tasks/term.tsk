@@ -228,3 +228,72 @@ that function which makes sense to have and document it.
 
 Cool. Sounds like a plan.
 
+Sun May  1 11:31:26 EDT 2011
+
+I've gone through the terminfo capabilities. I think it would be great of the
+screen functions were named after these capabilities. That way it's clear
+based on terminfo documentation what the thing should do, and I don't have to
+come up with my own names.
+
+Cool. So then, initial capabilities I should do are:
+
++ carriage_return
++ column_address
++ cursor_address
++ cursor_down
++ cursor_home
++ cursor_left
++ cursor_right
++ cursor_to_ll
++ cursor_up
++ parm_left_cursor
++ parm_right_cursor
++ parm_up_cursor
++ parm_down_cursor
++ row_address
++ newline
++ tab
+
++ clear_screen
++ clr_bol
++ clr_eol
++ clr_eos
+
++ enter_bold_mode
++ enter_reverse_mode
++ exit_attribute_mode
+
++ set_background
++ set_foreground
+
++ delete_character
++ parm_dch
++ delete_line
++ parm_delete_line
++ erase_chars
+
++ insert_character
++ parm_ich
++ insert_line
++ parm_insert_line
+
++ scroll_forward
++ parm_index
++ scroll_reverse
++ parm_rindex
+
+For the fun of things, maybe I can say I'll implement all of these as Screen
+functions, test them all, then I'll be in great shape to go on to implement
+the rest of the terminal emulator.
+
+Cool. Am I ready?
+Allow me to spend 20 minutes on this, see how far I get.
+
+Sun May  1 13:34:20 EDT 2011
+
+So I took a bit more than 20 minutes to do this. Fine. But now I have all the
+big ones implemented. I suspect almost all of them have bugs in them, so I
+should get a nice test suite going. That's the plan now. I'll write tests for
+each function, try to get them all working. Can I do it in 25 minutes you
+think? We'll see.
+

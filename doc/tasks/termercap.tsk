@@ -1,0 +1,270 @@
+
+Sun May  1 10:42:58 EDT 2011
+
+Task: What capabilities should my termer term have?
+
+This is particularly relevant to my Screen module implementation, because
+that's where I'm implementing all the capabilities.
+
+fbterm was as minimal as I could make it. Really it is not functional without
+screen doing translations for it.
+
+For termer I could do the same, but I would kind of like a fully functional
+terminal on its own, because I may wish to replace screen entirely with other
+stuff (though that's a complicated issue).
+
+So, why not support all capabilities? Is that even meaningful?
+
+The ECMA-48 standard might have more detail on what the capabilities are if
+the terminfo man page doesn't tell me enough.
+
+
+
+auto_left_margin bw ?
+
+auto_right_margin am ?
+   Automatically jump to next line when we reach the end of this one.
+
+back_color_erase bce ?
+   Erase screen with background color.
+   Seems reasonable to me.
+
+can_change ccc 
+   Can change colors.
+   I'm leaning toward no. I don't think it's a very important feature.
+    
+ceol_standout_glitch xhp no
+   I need not implement a glitch
+
+col_addr_glitch xhpa no
+cpi_changes_res cpix ?
+cr_cancels_micro_mode crxm ?
+  I think don't have a micro mode, so I don't need this.
+
+dest_tabs_magic_smso xt ??
+eat_newline_glitch xenl ??
+erase_overstrike eo ??
+generic_type gn ??
+hard_copy hc no
+  This is not a printer.
+hard_cursor chts no
+  Probably no, I can make the cursor very easy to see.
+  And with the new implementation, it can be a reverse video cursor instead of
+  a solid white blob.
+has_meta_key km ??
+has_print_wheel daisy no
+has_status_line hs no
+hue_lightness_saturation hls ??
+insert_null_glitch in ??
+   I don't think I'll have an insert mode. Should I?
+lpi_changes_res lpix ??
+memory_above da ??
+   I think I maybe don't want to save data.
+memory_below db ??
+move_insert_mode mir ??
+move_standout_mode msgr ??
+needs_xon_xoff nxon no
+  I should never need flow control (padding or otherwise).
+no_esc_ctlc xsb ??
+no_pad_char npc ??
+non_dest_scroll_region ndscr ??
+non_rev_rmcup nrrmc ??
+over_strick os ??
+prtr_silent mc5i ??
+row_addr_glitch xvpa ??
+semi_auto_right_margin sam ??
+status_line_esc_ok eslok no
+  I don't have a status line
+tilde_glitch hz no
+  No need for this glitch. We can print ~.
+transparent_underline ul ??
+xon_xoff xon ??
+  Don't do xon/xoff.
+  But terminfo man page suggests I should have this set for a virtual terminal
+  so padding characters aren't sent. Then I can use padding annotations to
+  describe the costs of things?
+  
+columns cols ??
+  I can handle any number, so what do I put here?
+init_tabs it ??
+label_height lh ??
+label_width lw ??
+lines lines ??
+  I can handle any number, so what do I put here?
+lines_of_memory lm ??
+magic_cookie_glitch xmc ??
+max_attributes ma ??
+max_colors colors 8
+  No need to be more fancy to start.
+max_pairs pairs 64
+maximum_windows wnum ??
+no_color_video ncv ??
+num_labels nlab ??
+padding_baud_rate pb ??
+virtual_terminal vt ??
+width_status_line wsl ??
+  Don't have a status line, so don't give this, right?
+
+acs_chars acsc ??
+back_tab cbt ??
+bell bel ??
+carriage_return cr ??
+change_char_pitch cpi ??
+  Mine is fixed, right? So don't include this?
+change_line_pitch lpi ??
+  Fixed, so don't let them change it, right?
+change_res_horz chr ?? 
+change_res_vert cvr ??
+change_scroll_region csr ??
+char_padding rmp ??
+clear_all_tabs tbc ??
+clear_margins mgc ??
+clear_screen clear
+  yes, I should have this.
+clr_bol el1
+  clear to beginning of line. Yes, I think I should have this.
+clr_eol el
+  clear to end of line. Yes, I think I should have this.
+clr_eos ed
+  clear to end of screen. What does that mean exactly?
+  I think I should have it.
+column_address hpa
+  set horizontal position of cursor. Yes I should have this.
+command_character cmdch ??
+create_window cwin ??
+cursor_address cup
+  set cursor position. Yes I should have this.
+cursor_down cud1
+  go down one line. Yes, have this.
+cursor_home home 
+  yes. have this.
+cursor_invisible civis ??
+  I could have this, but maybe wait for a later version?
+cursor_left cub1
+  yes have this.
+cursor_mem_address mrcup ??
+cursor_normal cnorm ??
+  Have it if I have civis.
+cursor_right cuf1
+  Yes, have this.
+cursor_to_ll ll
+  Move cursor to last line. Sure, have this.
+cursor_up cuu1 
+  Yes. Have this.
+cursor_visible cvvis ??
+define_char defc ??
+delete_character dch1 
+  Yes. Have this. How exactly does it work?
+delete_line dl1 
+  Yes. Have this. How exactly does it work?
+dial_phone dial ??
+dis_status_line dsl ??
+display_clock dclk ??
+down_half_line hd ??
+ena_acs enacs ??
+enter_alt_charset_mode smacs ??
+enter_am_mode smam ??
+enter_blink_mode blink ??
+enter_bold_mode bold
+  Yes, have this.
+enter_ca_mode smcup ??
+enter_delete_mode smdc  
+enter_dim_mode dim ??
+enter_doublewide_mode swidm ??
+enter_draft_quality sdrfq ??
+enter_insert_mode smir ??
+enter_italics_mode sitm ??
+enter_leftward_mode slm ??
+enter_micro_mode smicm ??
+enter_near_letter_quality snlq ??
+enter_normal_quality snrmq ??
+enter_protected_mode prot ??
+enter_reverse_mode rev
+  Yes, have this.
+enter_secure_mode invis ??
+enter_shadow_mode sshm
+enter_standout_mode smso ??
+enter_subscript_mode ssubm ??
+enter_superscript_mode ssupm?
+enter_underline_mode smul ??
+enter_upward_mode sum ??
+enter_xon_mode smxon ??
+erase_chars ech
+  Probably want this. What exactly does it mean?
+exit_alt_charset_mode rmacs ??
+exit_am_mode rmam ??
+exit_attribute_mode sgr0 
+  Yes, have this.
+exit_ca_mode rmcup ??
+exit_delete_mode rmdc ??
+exit_doublewide_mode rwidm ??
+exit_insert_mode rmir ??
+exit_italics_mode ritm ??
+exit_leftward_mode rlm ??
+exit_micro_mode rshh ??
+exit_standout_mode rmso ??
+exit_subscript_mode rsubm ??
+exit_superscript_mode rsupm ??
+exit_underline_mode rmul ??
+exit_upward_mode rum ??
+exit_xon_mode rmxon ??
+fixed_pause pause ??
+flash_hook hook ??
+flash_screen flash ??
+form_feed ff ??
+from_status_line fsl ??
+goto_window wingo ??
+hangup hup ??
+init_1string is1 ??
+init_2string is2 ??
+init_3string is3 ??
+init_file if ??
+init_prog iprog ??
+initialize_color initc ?
+initialize_pair initp ??
+insert_character ich1
+  Yes, probably want this
+insert_line il1 
+  Yes, probably want this
+insert_padding ip ??
+
+key_...
+
+newline nel 
+  Yes, have this.
+parm_dch dch
+  Yes, have this.
+parm_delete_line dl
+  Yes
+parm_down_cursor cud 
+  Yes
+parm_ich ich 
+  Yes
+parm_index indn
+  Yes
+parm_insert_line il
+  Yes
+parm_left_cursor cub
+  Yes
+parm_right_cursor cuf 
+  Yes
+parm_rindex rin
+  Yes
+parm_up_cursor cuu
+  Yes
+repeat_char
+  Sure, why not?
+row_address vpa
+  Yes
+scroll_forward ind 
+  Yes
+scroll_reverse ri
+  yes
+set_background setb
+  yes
+set_foreground setf
+  yes
+tab ht
+  yes
+
+
