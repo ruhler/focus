@@ -22,8 +22,10 @@ the terminfo man page doesn't tell me enough.
 
 auto_left_margin bw ?
 
-auto_right_margin am ?
+auto_right_margin am yes
    Automatically jump to next line when we reach the end of this one.
+   Let's say yes, because it seems an obvious thing to do, and all my sample
+   terminals (ansi, vt102, xterm, linux, screen) support it.
 
 back_color_erase bce ?
    Erase screen with background color.

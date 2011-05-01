@@ -297,3 +297,49 @@ should get a nice test suite going. That's the plan now. I'll write tests for
 each function, try to get them all working. Can I do it in 25 minutes you
 think? We'll see.
 
+Sun May  1 15:20:01 EDT 2011
+
+So I write some tests. Mostly for the cursor motions. The reason I don't feel
+like writing more right now is it is hard to write tests that check multiple
+cells on the screen in the same test. So I'll wait until I actually run into
+bugs, or get bored enough to write the tests, before writing more tests.
+
+That said, what's the next step? Assuming inputter works swell, and assuming
+screen works well, the next step should be outputter, right?
+
+The job of outputter is to convert a sequence of characters from the client
+into a sequence of Screen commands. It would be awesome if I could test this
+without Screen, don't you think?
+
+Or maybe I need to come up with a good way of describing a screen for test
+purposes. Then I could give a long string, do the conversion and update the
+screen, then test the final screen is correct.
+
+I suppose I could send a string, generate an output screen.
+And then on a different screen send all the expected commands.
+Then compare to see whether the resulting screens are the same.
+
+That's not so bad an idea.
+
+What's the outputter interface? It should be its own process. It gets two
+functions I think:
+  getf :: m Char, get the next input character
+  update :: Screen -> Screen -> m (),
+    Make a change to the screen.
+
+  For testing, the update function looks a lot like modify on a State Screen
+  monad.
+
+Good, I like this idea for testing the outputter.
+
+I don't really feel like working on the output just at this moment (must be
+time to take a walk or something). Let's imagine I've already implemented
+outputter. Then what would be the next step? After outputter is displayer.
+That's where things will get tricky, because I'll want to incorporate the CNSL
+stuff into haskell, and freetype library. Basically the display turns a Screen
+into a CNSL buffer. After that things get tricky again, because I have to
+start worrying about concurrency, getting and setting CNSL events and
+displays, launching the client and so on.
+
+So it only gets harder, and much harder. Or rather, much more annoying.
+

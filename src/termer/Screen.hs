@@ -1,6 +1,6 @@
 
 module Screen (
-    Color(..), Style(..), Cell(..), Position(..), Screen(),
+    Color(..), Style(..), Cell(..), Position(..), Screen(), Attributes(..),
     screen,
     carriage_return, newline, tab, column_address, row_address, 
     cursor_address, cursor_down, cursor_home, cursor_left, cursor_right,    
@@ -24,7 +24,7 @@ data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
 data Style = Style {
     reverse :: Bool,
     bold :: Bool
-}
+} deriving (Eq, Show)
 
 normal :: Style
 normal = Style False False
@@ -33,7 +33,7 @@ data Attributes = Attributes {
     fgcolor :: Color,
     bgcolor :: Color,
     style :: Style
-}
+} deriving (Eq, Show)
 
 default_attributes :: Attributes
 default_attributes = Attributes WHITE BLACK normal
@@ -41,7 +41,7 @@ default_attributes = Attributes WHITE BLACK normal
 data Cell = Cell {
     character :: Char,
     cattrs :: Attributes
-}
+} deriving (Eq, Show)
 
 defaultcell :: Cell
 defaultcell = Cell ' ' default_attributes
@@ -74,10 +74,10 @@ uniformArray bounds x = listArray bounds (repeat x)
 -- screen columns lines
 -- Return a clear screen with the given number of rows and columns.
 screen :: Integer -> Integer -> Screen
-screen cols lines
-  = let bounds = (Position 0 0, Position cols lines)
+screen cols lns
+  = let bounds = (Position 0 0, Position cols lns)
         cells = uniformArray bounds defaultcell
-    in Screen cols lines home cells default_attributes
+    in Screen cols lns home cells default_attributes
 
 blank :: Screen -> Cell
 blank scr = Cell ' ' (sattrs scr)
@@ -127,6 +127,7 @@ cursor_left :: Screen -> Screen
 cursor_left = parm_left_cursor 1
 
 -- Move the cursor right one column
+-- It is undefined what happens at the right edge of the terminal.
 cursor_right :: Screen -> Screen
 cursor_right = parm_right_cursor 1
 
@@ -336,10 +337,17 @@ scroll n scr
 
 -- Place a character on the screen at the given cursor position. Advances the
 -- cursor position.
+-- We have auto_margin, so cursor is in the last column, after putting the
+-- character the cursor will go down to the beginning of the next line.
 put_char :: Char -> Screen -> Screen
 put_char c scr
-  = let nscr = scr { cells = ((cells scr)//[(cursor scr, (blank scr) { character = c } )]) }
-    in cursor_right nscr
+  = let cl = line . cursor $ scr
+        cc = column . cursor $ scr
+        ncursor = if (cc +1 >= columns scr)
+                    then Position 0 (cl+1)
+                    else Position (cc+1) cl
+        nscr = scr { cells = ((cells scr)//[(cursor scr, (blank scr) { character = c } )]) }
+    in cursor_address ncursor nscr
 
 -- Get the cell at the given position
 cellat :: Position -> Screen -> Cell
