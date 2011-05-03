@@ -1,0 +1,13 @@
+
+Tue May  3 08:37:12 EDT 2011
+
+Task: A console client needs some way to know the screen dimensions.
+
+For example, a pdf viewer should be able to go full screen, not some fixed
+compiled in size.
+
+Or, I suppose the size could be a command line argument to the client.
+
+Anyway, I was thinking just have a resize event which includes the width and
+height of the new screen.
+

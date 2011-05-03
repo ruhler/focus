@@ -1,0 +1,67 @@
+termer,
+
+# from ansi
+    am,
+	cols#80,
+	lines#24,
+	clear=\E[H\E[J,
+    il=\E[%p1%dL,
+	il1=\E[L,
+    el1=\E[1K,
+	el=\E[K,
+    ed=\E[J,
+    
+    ind=^J,
+    indn=\E[%p1%dS,
+    rin=\E[%p1%dT,
+
+    ich=\E[%p1%d@,
+
+	cup=\E[%i%p1%d;%p2%dH,
+    cub=\E[%p1%dD,
+    cub1=\E[D,
+    cud=\E[%p1%dB,
+    cud1=\E[B,
+    cuf=\E[%p1%dC,
+    cuf1=\E[C,
+    cuu=\E[%p1%dA,
+    cuu1=\E[A,
+    home=\E[H,
+    cr=^M,
+    nel=\r\E[S,
+    ht=\E[I,
+    hpa=\E[%i%p1%dG,
+    vpa=\E[%i%p1%dd,
+    op=\E[39m\E[49m,
+
+    ech=\E[%p1%dX,
+    
+    dl=\E[%p1%dM,
+    dl1=\E[M
+    dch=\E[%p1%dP,
+    dch1=\E[P,
+
+    bold=\E[1m,
+    rev=\E[7m,
+    sgr0=\E[0;10m,
+
+    colors#8, 
+    pairs#64,
+    setaf=\E[3%p1%dm,
+	setab=\E[4%p1%dm,
+
+    kbs=^H,
+    kcuu1=\E[A,
+	kcud1=\E[B,
+    kcuf1=\E[C,
+    kcub1=\E[D,
+    khome=\E[H,
+
+# from screen
+    ri=\EM,
+    kend=\E[4~,
+
+# from linux
+    bce,
+    ich1=\E[@,
+    

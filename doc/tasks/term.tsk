@@ -343,3 +343,38 @@ displays, launching the client and so on.
 
 So it only gets harder, and much harder. Or rather, much more annoying.
 
+Tue May  3 09:20:10 EDT 2011
+
+Outputter! I could try using parsec, but I feel like that is overkill for this
+simple parsing. Basically all we need to parse are character literals and
+integers. So if I can have a function to extract the next character literal
+(which will be called getf, we already have it), and a function to extract the
+next integer, we should be in good shape.
+
+I'll probably want to buffer a single character.
+
+And I'll need to decide on the terminfo. Perhaps it would be better to write
+the terminfo file first, so I know what all sequences I need to parse. Yes,
+that would make sense. I want to stay ansi or vt102 or common compatable
+rather than make up something wildly different.
+
+So let me do that now, I think I can do that.
+
+Tue May  3 09:52:36 EDT 2011
+
+I did that. What do we see? It's as I expected, we only need to parse literal
+characters and decimal integers.
+
+Rather than require a buffer, I suggest we have the following functions:
+ getf :: m Char     - get the next character literal
+ getnum :: Char -> m (Maybe Integer, Char)
+        - read the integer at the front of the string and the following char.
+          If there is no integer at the front of the string, return Nothing
+          for that field.
+
+ In fact, I could use the getnum function always if I wanted to...
+
+Yes, that looks like it will be a straight-forward, relatively painless way of
+parsing the control sequences.
+
+

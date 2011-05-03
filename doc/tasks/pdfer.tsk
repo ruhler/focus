@@ -70,3 +70,51 @@ Fri Apr 29 14:53:39 EDT 2011
 Well, it seems to be working. It just looks funny (fonts not drawn so good)
 and is rather slow to render.
 
+Tue May  3 08:39:07 EDT 2011
+
+pdfer has problems, as I discovered when using it to do a presentation.
+ - zoom width, zoom page, zoom in and zoom out no longer seem to work
+    (must be getting a funny width back from the document)
+ - It's really slow
+ - Window size should not be compiled in statically: we should at least be
+   able to say when we run the thing what window size to use.
+ - Quality of rendering is really bad. Why aren't we using the cairo engine?
+
+The zoom troubles I should be able to capture in a test case. For example,
+using my colors pdf, zoom width, then verify left and right edges are the
+color, and that if I move left or right, then the left and right edges become
+no longer the color.
+
+Or I could draw a pdf with a border a special color, then just check the edge
+is the border color.
+
+Tue May  3 09:04:07 EDT 2011
+
+I think I know the trouble. That is, the reason I don't feel like writing a
+test. I need pdfer to be more like a library. It should be a library for
+manipulating a console client display. You have some pdf document, and you can
+apply functions to it to cause a display to be updated. Then I can test those
+functions, independent of keys and such? Err...
+
+So, for example, we should have the following things:
+
+Pdfer - type representing a pdf document and view.
+load - create a new Pdfer from the given file.
+display - display the current view to a CNSL_Display
+next, prev, goto, scroll, zoom, width, page
+
+What do you think? I think it sounds reasonable. Then it will be easier to
+test, and easier to change keybindings, and interface, and stuff like that.
+
+But I, err, still don't feel like doing this right now.
+
+Tue May  3 09:17:50 EDT 2011
+
+I looked into poppler. When using the cpp interface it uses Splash. That
+probably explains the terrible rendering and poor performance. Looks like I
+can't get around it. I have to hack the thing to use cairo.
+
+But I know how to do it, so maybe I can just make a patch (and submit it to
+poppler?)
+
+
