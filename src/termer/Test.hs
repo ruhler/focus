@@ -1,9 +1,10 @@
 
-module Test ((~:), (~=?), runtests)
+module Test (Test, (~:), (~=?), runtests)
   where
 
 import System
 import Test.HUnit
+
 
 -- Pass
 pass :: Test

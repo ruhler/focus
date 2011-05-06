@@ -4,7 +4,7 @@ module Screen (
     screen,
     carriage_return, newline, tab, column_address, row_address, 
     cursor_address, cursor_down, cursor_home, cursor_left, cursor_right,    
-    cursor_to_ll, cursor_up, parm_left_cursor, parm_right_cursor,
+    cursor_to_ll, cursor_up, parm_left_cursor, parm_right_cursor, parm_up_cursor,
     parm_down_cursor, clear_screen, clr_bol, clr_eol, clr_eos,
     enter_bold_mode, enter_reverse_mode, exit_attribute_mode,
     set_foreground, set_background, delete_character, parm_dch,
@@ -65,7 +65,7 @@ data Screen = Screen {
     cursor :: Position,
     cells :: Array Position Cell,
     sattrs :: Attributes
-}
+} deriving (Eq, Show)
 
 -- make an array where every element is the same
 uniformArray :: (Ix i) => (i, i) -> a -> Array i a
@@ -285,8 +285,8 @@ parm_ich n scr
     in scr { cells = ncells }
 
 -- Insert a line at the cursor position without moving the cursor.
-insert_line :: Integer -> Screen -> Screen
-insert_line n = parm_insert_line 1
+insert_line :: Screen -> Screen
+insert_line = parm_insert_line 1
 
 -- Insert n lines at the cursor position
 parm_insert_line :: Integer -> Screen -> Screen
