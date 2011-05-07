@@ -1,0 +1,107 @@
+From 9b698427fecf09cc8ef3d9f4649fc72c3a8433bd Mon Sep 17 00:00:00 2001
+From: Richard Uhler <ruhler@csail.mit.edu>
+Date: Sat, 7 May 2011 13:01:26 -0400
+Subject: [PATCH] Added cairo rendering support to cpp page-renderer.
+
+---
+ cpp/Makefile.am               |   11 +++++++-
+ cpp/poppler-page-renderer.cpp |   48 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 56 insertions(+), 3 deletions(-)
+
+diff --git a/cpp/Makefile.am b/cpp/Makefile.am
+index 6d4954b..3b496d1 100644
+--- a/cpp/Makefile.am
++++ b/cpp/Makefile.am
+@@ -1,7 +1,10 @@
+ INCLUDES =					\
+ 	-I$(top_srcdir)				\
+ 	-I$(top_srcdir)/goo			\
+-	-I$(top_srcdir)/poppler
++	-I$(top_srcdir)/poppler	\
++	$(CAIRO_CFLAGS) \
++	$(FREETYPE_CFLAGS) \
++	$(FONTCONFIG_CFLAGS)
+ 
+ SUBDIRS = . tests
+ 
+@@ -47,6 +50,10 @@ libpoppler_cpp_la_CXXFLAGS =			\
+ 
+ libpoppler_cpp_la_LIBADD = 			\
+ 	$(top_builddir)/poppler/libpoppler.la	\
+-	$(LIBICONV)
++	$(top_builddir)/poppler/libpoppler-cairo.la \
++	$(LIBICONV) \
++	$(CAIRO_LIBS) \
++    $(FREETYPE_LIBS)                \
++	$(FONTCONFIG_LIBS)
+ 
+ libpoppler_cpp_la_LDFLAGS = -version-info 2:0:2 @create_shared_lib@ @auto_import_flags@
+diff --git a/cpp/poppler-page-renderer.cpp b/cpp/poppler-page-renderer.cpp
+index 5e07954..3a9fcf5 100644
+--- a/cpp/poppler-page-renderer.cpp
++++ b/cpp/poppler-page-renderer.cpp
+@@ -24,6 +24,9 @@
+ #include <config.h>
+ 
+ #include "PDFDoc.h"
++#if defined(HAVE_CAIRO)
++#include "CairoOutputDev.h"
++#endif
+ #if defined(HAVE_SPLASH)
+ #include "SplashOutputDev.h"
+ #include "splash/SplashBitmap.h"
+@@ -163,7 +166,50 @@ image page_renderer::render_page(const page *p,
+         return image();
+     }
+ 
+-#if defined(HAVE_SPLASH)
++#if defined(HAVE_CAIRO)
++
++    // Currently only x, y, w, and h of -1 are supported with cairo.
++    // This is because I can't figure out what x, y, w, and h are supposed to
++    // mean, so I don't know how to implement it correctly when they aren't
++    // -1.
++    // TODO: treat x, y, w, h as page units, make it work under that
++    // assumption.
++    if (x != -1 || y != -1 || w != -1 || h != -1 || rotate != rotate_0) {
++        return image();
++    }
++
++    page_private *pp = page_private::get(p);
++    PDFDoc* pdfdoc = pp->doc->doc;
++
++    // How big the image should be...
++    const int bw = pdfdoc->getPageMediaWidth(pp->index + 1) * xres / 72.0;
++    const int bh = pdfdoc->getPageMediaHeight(pp->index + 1) * yres / 72.0;
++    cairo_surface_t* surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, bw, bh);
++    cairo_t* cairo = cairo_create(surface);
++
++    // Clear the background.
++    double bgr = ((d->paper_color >> 16) & 0xff)/256.0;
++    double bgb = ((d->paper_color >> 8) & 0xff)/256.0;
++    double bgg = ((d->paper_color >> 0) & 0xff)/256.0;
++    cairo_set_source_rgb(cairo, bgr, bgb, bgg);
++    cairo_paint(cairo);
++
++    // Draw the page content
++    CairoOutputDev dev;
++    dev.setCairo(cairo);
++    dev.startDoc(pdfdoc->getXRef(), pdfdoc->getCatalog());
++    pdfdoc->displayPage(&dev, pp->index + 1,
++            xres, yres, int(rotate) * 90,
++            gFalse, gFalse, gFalse);
++
++    void* data_ptr = cairo_image_surface_get_data(surface);
++
++    const image img(reinterpret_cast<char *>(data_ptr), bw, bh, image::format_argb32);
++    cairo_surface_destroy(surface);
++    cairo_destroy(cairo);
++    return img.copy();
++
++#elif defined(HAVE_SPLASH)
+     page_private *pp = page_private::get(p);
+     PDFDoc *pdfdoc = pp->doc->doc;
+ 
+-- 
+1.7.3
+
