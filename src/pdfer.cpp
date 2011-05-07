@@ -1,197 +1,129 @@
 
-#include <cassert>
-#include <iostream>
-#include <string>
+#include <stdio.h>
 
-#include <poppler-document.h>
+#include "pdfer.h"
+
 #include <poppler-page.h>
 #include <poppler-page-renderer.h>
-#include <poppler-image.h>
 #include <poppler-rectangle.h>
 
-
-extern "C" {
-#include "consoler.h"
+Pdfer::Pdfer(poppler::document* doc, int width, int height)
+    : m_width(width), m_height(height), m_doc(doc),
+      m_page(1), m_zoom(1.0), m_x(0.0), m_y(0.0)
+{
+    redraw();
 }
 
-const int WIDTH = 640;
-const int HEIGHT = 480;
-
-int widthof(poppler::document* doc, int pagenum)
+Pdfer* Pdfer::load(const std::string& filename, int width, int height)
 {
-    return doc->create_page(pagenum)->page_rect().width();
+    poppler::document* doc = poppler::document::load_from_file(filename);
+    if (!doc) {
+        return NULL;
+    }
+
+    return new Pdfer(doc, width, height);
 }
 
-int heightof(poppler::document* doc, int pagenum)
+void Pdfer::unload(Pdfer* pdfer)
 {
-    return doc->create_page(pagenum)->page_rect().height();
+    delete pdfer;
 }
 
-// Draw the given view to a new image and return the image.
-// The surface should be destroyed when you are done with it.
-poppler::image draw(poppler::document* doc, int pagenum, double zoom)
+void Pdfer::show(CNSL_Display display)
 {
-    poppler::page* page = doc->create_page(pagenum);
-    poppler::rectf pr = page->page_rect();
+    int x = (int)m_x;
+    int y = (int)m_y;
+    int sw = m_image.width();
+    int sh = m_image.height();
 
-    poppler::page_renderer renderer;
-    renderer.set_paper_color(0xFFFFFFF);
-
-    int w = pr.width()/zoom;
-    int h = pr.height()/zoom;
-    return renderer.render_page(page, 72.0/zoom, 72.0/zoom);
-}
-
-// Show the page on the display, with x and y the coordinates of the surface
-// to be placed at the upper left corner of the display.
-// x and y may be negative.
-void show(CNSL_Display display, poppler::image image, int x, int y)
-{
-    int sw = image.width();
-    int sh = image.height();
-    unsigned int* pixels = (unsigned int*)image.data();
+    unsigned int* pixels = (unsigned int*)m_image.data();
 
     // (c, r) are coordinates in the display
-    for (int r = 0; r < HEIGHT; r++) {
-        for (int c = 0; c < WIDTH; c++) {
+    for (int r = 0; r < display->height; r++) {
+        for (int c = 0; c < display->width; c++) {
             if (y + r >= 0 && y + r < sh && x + c >= 0 && x + c < sw) {
                 unsigned int pixel = pixels[(y+r)*sw + (x+c)];
-                int red = (pixel >> 16) & 0xFF;
-                int green = (pixel >> 8) & 0xFF;
-                int blue = (pixel) & 0xFF;
-                CNSL_SetPixel(display, c, r, CNSL_MakeColor(red, green, blue));
+                CNSL_SetPixel(display, c, r, pixel);
             } else {
                 // Background color: grey
                 CNSL_SetPixel(display, c, r, CNSL_MakeColor(0x80, 0x80, 0x80));
             }
         }
     }
-    CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, WIDTH, HEIGHT);
 }
 
-int main(int argc, char* argv[])
+void Pdfer::goto_(int page)
 {
-    if (argc < 2) {
-        std::cerr << "no input file" << std::endl;
-        return 1;
+    if (page >= 1 && page <= m_doc->pages()) {
+        m_page = page;
+        redraw();
     }
+}
 
-    std::string pdffilename = argv[1];
+void Pdfer::next()
+{
+    goto_(m_page + 1);
+}
 
-    poppler::document* doc = poppler::document::load_from_file(pdffilename);
-    if (!doc) {
-        std::cerr << "Error loading pdf " << pdffilename << std::endl;
-        return 1;
-    }
+void Pdfer::previous()
+{
+    goto_(m_page - 1);
+}
 
-    CNSL_Init();
-    CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+void Pdfer::scroll(double xp, double yp)
+{
+    m_x -= xp * m_width;
+    m_y -= yp * m_width;
+}
 
-    int page = 0;
-    double zoom = 1.0;
-    double x = 0;
-    double y = 0;
+void Pdfer::zoom(double zf)
+{
+    m_zoom *= zf;
+    m_x = (m_x + m_width/2)/zf - m_width/2;
+    m_y = (m_y + m_height/2)/zf - m_height/2;
+    redraw();
+}
 
-    poppler::image image = draw(doc, page, zoom);
-    show(display, image, (int)x, (int)y);
+void Pdfer::fitwidth()
+{
+    m_zoom = 1.0;
+    zoom(pagewidth()/m_width);
+    m_x = 0;
+}
 
-    CNSL_Event event;
-    bool done = false;
-    
-    while (!done) {
-        CNSL_RecvEvent(stdcon, &event);
-        int sym;
-        bool redraw = false;
-        bool reshow = false;
+void Pdfer::fitpage()
+{
+    double wz = pagewidth()/m_width;
+    double hz = pageheight()/m_height;
 
-        if (CNSL_IsKeypress(&event, &sym)) {
-            switch (sym) {
-                case CNSLK_q:
-                    done = true;
-                    break;
+    // center the image.
+    zoom(1.0/m_zoom);
+    m_x = (pagewidth() - m_width)/2.0;
+    m_y = (pageheight() - m_height)/2.0;
 
-                case CNSLK_SPACE:
-                case CNSLK_n:
-                    if (page+1 < doc->pages()) {
-                        page++;
-                        redraw = true;
-                    }
-                    break;
+    zoom(std::max(wz, hz));
+}
 
-                case CNSLK_p:
-                    if (page-1 >= 0) {
-                        page--;
-                        redraw = true;
-                    }
-                    break;
+void Pdfer::redraw()
+{
+    // For poppler first page is 0, so we have to adjust.
+    // TODO: is it bad to recreate pages? Should we cache them instead?
+    poppler::page* page = m_doc->create_page(m_page-1);
 
-                case CNSLK_j:
-                    y += 10;
-                    reshow = true;
-                    break;
+    // TODO: can or should we reuse the renderer for every page rather than
+    // creating a new one for every page?
+    poppler::page_renderer renderer;
+    renderer.set_paper_color(0xFFFFFF);
+    m_image = renderer.render_page(page, 72.0/m_zoom, 72.0/m_zoom);
+}
 
-                case CNSLK_k:
-                    y -= 10;
-                    reshow = true;
-                    break;
+double Pdfer::pagewidth()
+{
+    return m_doc->create_page(m_page-1)->page_rect().width();
+}
 
-                case CNSLK_h:
-                    x -= 10;
-                    reshow = true;
-                    break;
-
-                case CNSLK_l:
-                    x += 10;
-                    reshow = true;
-                    break;
-
-                case CNSLK_i:
-                    zoom *= 0.8;
-                    x = (x + WIDTH/2)/0.8 - WIDTH/2;
-                    y = (y + HEIGHT/2)/0.8 - HEIGHT/2;
-                    redraw = true;
-                    break;
-
-                case CNSLK_o:
-                    zoom *= 1.25;
-                    x = (x + WIDTH/2)/1.25 - WIDTH/2;
-                    y = (y + HEIGHT/2)/1.25 - HEIGHT/2;
-                    redraw = true;
-                    break;
-
-                case CNSLK_w:
-                    zoom = widthof(doc, page) / WIDTH;
-                    x = 0;
-                    redraw = true;
-                    break;
-
-                case CNSLK_a:
-                {
-                    double wzoom = widthof(doc, page)/WIDTH;
-                    double hzoom = heightof(doc, page)/HEIGHT;
-                    x = (widthof(doc, page) - WIDTH)/2.0;
-                    y = (heightof(doc, page) - HEIGHT)/2.0;
-                    double amt = std::max(wzoom, hzoom);
-                    zoom *= amt;
-                    x = (x + WIDTH/2)/amt - WIDTH/2;
-                    y = (y + HEIGHT/2)/amt - HEIGHT/2;
-                    redraw = true;
-
-                } break;
-            }
-        }
-
-        if (redraw) {
-            image = draw(doc, page, zoom);
-            reshow = true;
-        }
-
-        if (reshow) {
-            show(display, image, (int)x, (int)y);
-        }
-    }
-
-    CNSL_Quit();
-    return 0;
+double Pdfer::pageheight()
+{
+    return m_doc->create_page(m_page-1)->page_rect().height();
 }
 
