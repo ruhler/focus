@@ -377,4 +377,37 @@ Rather than require a buffer, I suggest we have the following functions:
 Yes, that looks like it will be a straight-forward, relatively painless way of
 parsing the control sequences.
 
+Fri May  6 21:30:06 EDT 2011
+
+
+I figured out how to use freetype to draw characters on the screen. For the
+most part anyway. It's not too bad.
+
+Now that outputter is up and running, we've reached the hard part: hooking up
+CNSL to haskell.
+
+Tasks involved:
+ - haskell function to get next input event
+ - haskell function to fork a terminal client
+ - haskell function to write a character to the terminal client
+ - haskell function to read a character from the terminal client
+ - haskell function to draw a character with given color
+
+And generally just understanding how all this will work. That is, defining the
+interface.
+
+Options:
+ - keep as much CNSL stuff on the C side as possible
+   - so only get CNSL_Events, and draw characters. Drawn characters can be
+     immediately updated and displayed, or have a function to send display,
+     where the display is implicit. When drawing characters we can specify
+     location in terms of row and col rather than in pixels.
+
+ - try to make haskell interface for CNSL completely general
+  - have a way to allocate a buffer.
+  - have a way to render a character to a buffer at the given location.
+  - have a way to send that buffer to the server. etc...
+    
+That's something I'll have to think about for the next step.
+
 
