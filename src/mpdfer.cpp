@@ -1,12 +1,10 @@
 
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
 #include "pdfer.h"
-
-const int WIDTH = 640;
-const int HEIGHT = 480;
 
 int main(int argc, char* argv[])
 {
@@ -17,17 +15,26 @@ int main(int argc, char* argv[])
 
     std::string pdffilename = argv[1];
 
-    Pdfer* pdfer = Pdfer::load(pdffilename, WIDTH, HEIGHT);
+    int width = 640;
+    int height = 480;
+
+    if (argc > 3) {
+        width = atoi(argv[2]);
+        height = atoi(argv[3]);
+    }
+    std::cerr << "using " << width << " " << height << std::endl;
+
+    Pdfer* pdfer = Pdfer::load(pdffilename, width, height);
     if (!pdfer) {
         std::cerr << "Error loading pdf " << pdffilename << std::endl;
         return 1;
     }
 
     CNSL_Init();
-    CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+    CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     pdfer->show(display);
-    CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, WIDTH, HEIGHT);
+    CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
     CNSL_Event event;
     bool done = false;
@@ -53,7 +60,7 @@ int main(int argc, char* argv[])
             }
 
             pdfer->show(display);
-            CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, WIDTH, HEIGHT);
+            CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
         }
 
     }
