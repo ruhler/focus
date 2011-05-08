@@ -42,7 +42,7 @@ int forkterminalclient()
 
     if (pid == 0) {
         // does not return (I hope).
-        execl("'/bin/bash", "/bin/bash");
+        execl("'/bin/bash", "/bin/bash", NULL);
         perror("execl");
         exit(1);
     }
