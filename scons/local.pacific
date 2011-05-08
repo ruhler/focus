@@ -6,7 +6,7 @@ Import('env')
 env['GHC'] = '/pkg/haskell/install/bin/ghc'
 
 env['CPPPATH'] = [
-    '#/build/src',
+    'build/src',
     '/pkg/sdl-1.2.14/install/include',
     '/pkg/libpng-1.5.2/install/include',
     '/pkg/cairo-1.10.2/install/include/cairo',

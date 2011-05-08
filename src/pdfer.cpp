@@ -58,6 +58,7 @@ void Pdfer::goto_(int page)
         m_page = page;
         redraw();
     }
+    m_y = 0;
 }
 
 void Pdfer::next()

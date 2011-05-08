@@ -11,3 +11,10 @@ env['GHCPATH'] = Dir(".")
 termertest = env.GHCProgram('termertest')
 env.Default(env.Command('termertest.out', termertest, "$SOURCE > $TARGET"))
 
+# termer main app
+env.Default(env.GHCProgram('termer',
+    ['termer.hs', 'ctermer.c', '../consoler.o'],
+    LIBS=['freetype', 'util'],
+    GHCFLAGS=['-threaded']))
+env.Depends('termer', 'ctermer.h')
+

@@ -117,4 +117,48 @@ can't get around it. I have to hack the thing to use cairo.
 But I know how to do it, so maybe I can just make a patch (and submit it to
 poppler?)
 
+Sat May  7 14:10:34 EDT 2011
+
+pdfer is slow. We're talking..
+
+If I start it, type j 10 times, then q, it takes about 9 seconds.
+Same thing if I type n 10 times, then q. Which suggests the time is in showing
+the page more than drawing the page.
+
+This is with the splash rendering. Let me update poppler to use cairo instead
+of flash and remeasure.
+
+Now here's what I think is going on:
+
+redraw: cairo draws to surface
+        copy pixels from surface to image
+
+reshow: copy pixels from image to display
+        write from display to stdcon pipe
+        read from stdcon pipe to sdl surface
+            deconstructing and reconstructing components of each pixel
+            using FILL Rect to draw the pixels
+        sdlupdate to write pixels to vgabuffer
+
+This is a bit more work than ideal.
+
+I suppose ideally we can allocate the display in video memory, so cairo draws
+to surface, we copy display to video memory, use the intel driver to update the display.
+
+Using fillrect is probably more expensive than just setting raw pixels. That
+would be a relatively easy fix to make.
+
+Perhaps try using a hardware surface for the screen? That might help speed
+things up.
+
+
+Sat May  7 14:28:20 EDT 2011
+
+Switched to cairo. The document looks a little better, though still not as good
+as I hoped. Performance doesn't seem to have changed noticeably, except that
+maybe the cairo rendering is a little slower (not significantly). Probably it
+looks bad because the resolution's bad. The fbconsole looks pretty bad too.
+That should be solved using the intelfb driver that I haven't figured out how
+to get working yet.
+
 

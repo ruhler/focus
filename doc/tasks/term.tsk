@@ -410,4 +410,157 @@ Options:
     
 That's something I'll have to think about for the next step.
 
+Sat May  7 18:02:23 EDT 2011
+
+Here's the plan next. I have this interface between haskell and C to implement
+which looks something like:
+
+init - initialize stuff. Maybe even takes the terminal client application and forks it.
+getevent - get the next event
+    I may want to split this up into: next, type, and value methods to make the conversion easier.
+putchar - pass a character to the terminal client.
+    Or would it be easier to just return a write file handle? Perhaps.
+getchar - get a character from the terminal client
+    Would probably be easier to return a read file handle (from init) and use that.
+drawchar - draw a character (using freetype) on the display (implicit).
+    input is: character, foreground color, background color, row, col
+upddisplay - send the display (with characters drawn on it) to the console server.
+
+Implement the C and haskell sides of the interface. That's the next step.
+
+After that, just write some haskell to use the interface. Basically it's: initialize, then fork threads (don't even need SMT, just CC will be enough) to do
+    inputter: get is getevent, put is putchar
+    outputter: get is getchar, updatef is update screen, drawchars and update display
+    
+And it should be that simple. Cool. I'll work that tomorrow.
+
+Sun May  8 10:40:17 EDT 2011
+
+Working out the haskell/C interface is more detail now.
+
+First, some questions to answer:
+ - Is is possible to send structure across haskell FFI? How?
+    If so, we should just have a getevent function, if not we should have
+    next, type, and value methods for sending an event from C to haskell.
+
+    It looks like it is possible using Storable, but it also looks like it's a
+    pain. Much easier for now to just make multiple function calls to get the
+    data.
+
+ - Is is possible to send enums across haskell FFI? How?
+    If so, that would be useful in sending color info from haskell to C
+    Otherwise just pack it to an int.
+
+    Doesn't look like it. Just convert to an Int and unconvert.
+
+ - Is there a way to do an fdopen in haskell?
+     If yse, then putchar and getchar can be replaced with files, and we should
+     automatically get character support.
+
+     It looks like it's possibly possible, if I hack into some ghc specific low
+     level stuff, but probably unpleasent.
+
+ - How is unicode character translation done across haskell FFI?
+     It would be nice. For putchar and getchar if I need those, and for
+     drawchar to specify the character.
+
+    There is a way to send strings, which seems to handle unicode. There are
+    also functions to convert Char to CChar which just drop unicode characters.
+
+
+So, the conclusion? It's pretty sad. I'm going to loose unicode I suspect. I'll
+have to fix that later. It should be okay for the first version of term.
+
+So the interface is as before. I'll want a prefix. Maybe CTERM? Sure... For
+the C side of Termer.
+
+int CTERM_Init()
+  Initialize the cterm. It does
+    - initialize CNSL,
+    - initialize freetype
+    - fork a client process: for now always just fork /bin/bash or some such.
+    - allocate a CNSL_Display
+
+void CTERM_EventGet()
+    - Get the next event. Stores the event in a static place accessible with  
+      CTERM_EventType and CTERM_EventValue
+
+CInt CTERM_EventType()
+    - Return the type of the most recently gotten event.
+      Do not call before EventGet is called, as you'll get undefined results.
+
+CInt CTERM_EventValue()
+    - Return the value of the most recently gotten event.
+
+void CTERM_ToTermClient(CChar c)
+    - Send the character c to the terminal client.
+
+CChar CTERM_FromTermClient()
+    - Get a character from the terminal client.
+
+void CTERM_DrawCell(CChar c, CInt style, CInt fgcolor, CInt bgcolor, CInt col, CInt row);
+    c - the character of the cell
+    style - bold or not
+    fgcolor - foreground color enum
+    bgcolor - background color enum
+    col - column of cell to draw
+    row - row of cell to draw
+
+    Draw a cell using freetype to the right place in the display.
+
+void CTERM_ShowDisplay()
+    Send the current display to the consol server.
+
+
+I think this will be a good first start. And I have clear what I need to
+write.  The task now is to implement the c cide of this, let's say in
+ctermer.h and ctermer.c.
+
+Sun May  8 13:21:25 EDT 2011
+
+I wrote the rough draft of ctermer.h and ctermer.c. No issues. It seems rather
+straight forward. Next step? I might as well get it compiling before I move on
+to the haskell side of the interface. Should I make a library? Or just a .o
+file? I'll have to look at other projects I've done with ffi.
+
+It looks like I just pass the c file to GHCProgram, so I'll wait until I have
+the haskell side up to try compiling.
+
+Next steps:
+1. The haskell side: CTermer.hs.
+2. Use CTermer.
+
+I expect this is actually a very little amount of code, which shouldn't take
+an hour to write up and get compiling.
+
+What are the problems I anticipate?
+ - How do we know the dimensions of a character cell?
+ - I don't have the font I use installed, so that's bad.
+ - Maybe need to install concurrent haskell package?
+ - There's bound to be deadlock when I run it, and it will likely crash my
+   machine if I'm not running in X. So I should probably debug this in X
+   (maybe go to the athena lab once it compiles on my netbook).
+ - What does the end game look like? How do I stop the terminal emulator?
+
+So, time for lunch, then I'll finish writing this sucker.
+
+Sun May  8 14:24:54 EDT 2011
+
+I wrote CTermer.hs. Now all that's left is the main application, right?
+I think I can do this. Call it Termer.hs. Inputter and outputter is all I
+need, yes?
+
+Sun May  8 14:40:56 EDT 2011
+
+There, rough draft is all written. In theory I can end the application by
+typing Ctrl-E. Time to try compiling and seeing what all the problems are.
+
+Sun May  8 14:59:55 EDT 2011
+
+It compiles!
+Now, obviously it won't work if I run it. I'll have to reboot my computer and
+all. So let me commit and push now, then try to get it working on my netbook.
+Once it crashes things, switch to an athena cluster, get everything up to
+date, then try to get things working there.
+
 

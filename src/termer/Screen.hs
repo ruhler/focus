@@ -21,6 +21,27 @@ import Data.Array
 data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
     deriving(Eq, Show)
 
+instance Enum Color
+  where
+    fromEnum BLACK = 0
+    fromEnum RED = 1
+    fromEnum GREEN = 2
+    fromEnum YELLOW = 3
+    fromEnum BLUE = 4
+    fromEnum MAGENTA = 5
+    fromEnum CYAN = 6
+    fromEnum WHITE = 7
+
+    toEnum 0 = BLACK
+    toEnum 1 = RED
+    toEnum 2 = GREEN
+    toEnum 3 = YELLOW
+    toEnum 4 = BLUE
+    toEnum 5 = MAGENTA
+    toEnum 6 = CYAN
+    toEnum 7 = WHITE
+
+
 data Style = Style {
     reverse :: Bool,
     bold :: Bool
