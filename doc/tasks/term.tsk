@@ -563,4 +563,124 @@ all. So let me commit and push now, then try to get it working on my netbook.
 Once it crashes things, switch to an athena cluster, get everything up to
 date, then try to get things working there.
 
+Sun May  8 16:12:52 EDT 2011
+
+This font thing is annoying. What's the right way to specify the font to use?
+
+Anyway, after the font issue we run into this bug: y is out of range in our
+call to SetPixel in DrawCell. The issue: CHAR_HEIGHT isn't right. How do I
+make it right?
+
+I made that bigger and guess what! It sort of works! Very slowly, fine, but I
+see characters going by, but then they overwrite eachother and I see lots of
+funny squares and all that.
+
+So, let's see how I can make progress...
+
+It says: execl: no such file or directory I think.
+Ah yes, I had a typo. Trying again...
+
+Problem now: unhandled control sequence: ESC[1;
+So switching to sh...
+
+Problem now: I only see the top half of the first row. Why is that (do we
+ignore row?). And return outputs some square on the display instead of going
+to the next line.
+
+If I keep typing, it eventually wraps around. The characters are not being
+drawn in their entirety, and they certainly aren't being drawn in a consistent
+part of the cell.
+
+So I think the next steps are:
+ - really understand how I can know the cell character dimensions based on the
+   font size, and where in the bitmap the characters are getting drawn.
+ - I think we have the following bug which should be easy to test: when you
+   reach the end of the last line, it should automatically scroll the
+   terminal.
+ - We don't end properly: I think application outputs a bunch of EOF
+   characters or NULs. I should use that as trigger for when to quit.
+
+I would much prefer to get the font stuff working first so I can see better
+what's going on. That's the key next step.
+
+But I must say, this is really cool. It's going to work!
+
+Okay, let's figure out the font thing.
+
+Current thoughts:
+
+We specify pixel size width and height. It looks terrible unless I set width
+and height as the same: like 32x32, but I know the cell sizes shouldn't be
+square.
+
+My belief is freetype produces a bitmap which only contains lines and columns
+with pixels in them. That is, it won't include black space around the edge. To
+make up for that, it tells you where the bitmap should be placed with respect
+to some known point on the character using bitmap_left and bitmap_top.
+Specifically, bitmap_left is the number of pixels to the right of the origin
+of the CELL where the bitmaps first column should be placed. And bitmap_top is
+the number of pixels number of pixels above the CELL where the bitmaps top row
+should be placed?
+
+What I would like to know is: from freetype, what is the bounding box for the
+CELL? What are the dimensions?
+
+Now to read some documentation.
+
+Read about FT_Set_Pixel_Sizes
+
+bitmap_left: horizontal distance from the current pen position to the leftmost
+border of the glyph bitmap. If pen is cell, that sounds right.
+
+bitmap_top: vertical distance from the pen position to the topmost border of
+the glyph bitmap. Oh. That's a little different right? No. That's what I
+thought too.
+
+Aha! Here's an important point I may have missed. The y direction for display
+buffer is 0 at the top, and increases going down.
+
+So given I want to draw a character at cell (0, 0), whose x and y coordinates
+are 0 and 0, I want to draw the bitmap's upper left corner at x = bitmap_left
+and y = height - bitmap_top, right? Isn't that what I do?
+
+Oh, here's something: slot->advance.x and slot->advance.y may contain the
+width and height of the cell (but 64 times that really).
+
+face->glyph->metrics.width: bounding box of a glyph
+                    .height
+
+These seem to be character specific. I'm more interested in characters in
+general (but maybe that only makes sense for monospace?).
+
+Read about FT_Set_Pixel_Sizes
+Read about FT_Size_Metrics
+Read about FT_Glyph_Get_CBox
+
+Aha, making progress now...
+Fields of the face:
+    units_per_EM
+    bbox - aha! This is good
+    height
+
+Even better:
+    face->size->metrics.height
+
+Oh, so Set_Pixel_Sizes just relates pixels to EM, where EM is like the font
+metrics: 1000 for example.
+
+I think I should do an experiment.
+Print out the following things:
+
+advance.x, advance.y, face->size->metrics.height
+units_per_EM, bbox, height. Let's use a 32 bit pixel size.
+
+Sun May  8 17:27:40 EDT 2011
+
+Oh, I found  a bug. I was using w instead of h. Now characters are lined up, I
+can see them all. Not sure about the size it's supposed to be from the
+metrics, but it looks good.
+
+Good enough, indeed to start making progress. Let me just figure out how to
+exit it cleanly so I can work on it on my netbook. And I think I'm in shape
+now to start making great progress!
 

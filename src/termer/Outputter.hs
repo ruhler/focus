@@ -106,6 +106,7 @@ outputter term getf updatef = do
                             c <- getf
                             case c of
                               'H' -> updatef $ cursor_address (Position x y)
+                  x -> error $ "unhandled control sequence ESC[" ++ (show x)
           c -> updatef $ put_char c         
         outputter term getf updatef
 

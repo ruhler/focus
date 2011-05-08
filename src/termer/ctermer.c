@@ -10,10 +10,13 @@
 #include "consoler.h"
 #include "ctermer.h"
 
+#define FONT "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono-Bold.ttf"
+//#define FONT "/pkg/dejavu-fonts-ttf-2.32/dejavu-fonts-ttf-2.32/ttf/DejaVuSansMono-Bold.ttf"
+
 #define WIDTH 640
 #define HEIGHT 480
-#define CHAR_WIDTH 16
-#define CHAR_HEIGHT 8
+#define CHAR_WIDTH 32
+#define CHAR_HEIGHT 32
 
 
 typedef struct {
@@ -42,7 +45,7 @@ int forkterminalclient()
 
     if (pid == 0) {
         // does not return (I hope).
-        execl("'/bin/bash", "/bin/bash", NULL);
+        execl("/bin/sh", "/bin/sh", NULL);
         perror("execl");
         exit(1);
     }
@@ -52,7 +55,6 @@ int forkterminalclient()
 
 int ctermer_Init()
 {
-    const char* font = "/pkg/dejavu-fonts-ttf-2.32/dejavu-fonts-ttf-2.32/ttf/DejaVuSansMono-Bold.ttf";
     const int size = 32;
 
     if (forkterminalclient() != 0) {
@@ -65,7 +67,7 @@ int ctermer_Init()
         return 1;
     }
 
-    if (FT_New_Face(gstate.library, font, 0, &gstate.face) != 0) {
+    if (FT_New_Face(gstate.library, FONT, 0, &gstate.face) != 0) {
         fprintf(stderr, "error loading font\n");
         return 1;
     }
@@ -132,7 +134,22 @@ int blueof(int color, int style)
 
 void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgcolor)
 {
+    //fprintf(stderr, "dc %c(%02X) @ %ix%i\n", c, c, col, row);
+
     FT_Load_Char(gstate.face, c, FT_LOAD_RENDER);
+
+    //fprintf(stderr, "advance.x: %li\n", gstate.face->glyph->advance.x);
+    //fprintf(stderr, "advance.y: %li\n", gstate.face->glyph->advance.y);
+    //fprintf(stderr, "metrics.height: %li\n", gstate.face->size->metrics.height);
+    //fprintf(stderr, "max_advance: %li\n", gstate.face->size->metrics.max_advance);
+    //fprintf(stderr, "units_per_EM: %i\n", gstate.face->units_per_EM);
+    //fprintf(stderr, "height: %i\n", gstate.face->height);
+    //fprintf(stderr, "max_advance_width: %i\n", gstate.face->max_advance_width);
+    //fprintf(stderr, "bbox xmin: %li\n", gstate.face->bbox.xMin);
+    //fprintf(stderr, "bbox xman: %li\n", gstate.face->bbox.xMax);
+    //fprintf(stderr, "bbox ymin: %li\n", gstate.face->bbox.yMin);
+    //fprintf(stderr, "bbox yman: %li\n", gstate.face->bbox.yMax);
+
     int xdst = col * CHAR_WIDTH;
     int ydst = row * CHAR_HEIGHT;
 
@@ -143,14 +160,19 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
 
     int x, y;
     for (x = 0; x < w; x++) {
-        for (y = 0; y < w; y++) {
+        for (y = 0; y < h; y++) {
             int index = y * w + x;
             int level = gstate.face->glyph->bitmap.buffer[index];
             int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
             int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
             int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
             CNSL_Color c = CNSL_MakeColor(red, green, blue);
-            CNSL_SetPixel(gstate.display, xdst + l + x, ydst + CHAR_HEIGHT - t + y, c);
+
+            // TODO: if I do things right, I shouldn't have to do a check
+            // here!
+            if (ydst + CHAR_HEIGHT - t + y >= 0) {
+                CNSL_SetPixel(gstate.display, xdst + l + x, ydst + CHAR_HEIGHT - t + y, c);
+            }
         }
     }
 }
