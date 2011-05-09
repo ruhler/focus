@@ -43,6 +43,7 @@ outputter term getf updatef = do
       Just x | x == c -> return ()
       _ -> do
         case c of
+          '\LF' -> updatef cursor_down
           '\CR' -> updatef carriage_return
           '\ESC' -> do
             c <- getf

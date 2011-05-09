@@ -46,6 +46,13 @@ test = "OutputterTest" ~: [
         modify $ put_char 'a'
         modify $ put_char 'b'
         modify $ put_char 'c'
+        ),
+
+    "newline" ~: (run 6 4 "ab\n\rc" $ do
+        modify $ put_char 'a'
+        modify $ put_char 'b'
+        modify $ newline
+        modify $ put_char 'c'
         )
     ]
 
