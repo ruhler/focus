@@ -364,11 +364,14 @@ put_char :: Char -> Screen -> Screen
 put_char c scr
   = let cl = line . cursor $ scr
         cc = column . cursor $ scr
+        needscroll = cl == (lines scr)
         ncursor = if (cc +1 >= columns scr)
                     then Position 0 (cl+1)
                     else Position (cc+1) cl
         nscr = scr { cells = ((cells scr)//[(cursor scr, (blank scr) { character = c } )]) }
-    in cursor_address ncursor nscr
+    in if needscroll
+         then put_char c (cursor_up (scroll_forward scr))
+         else cursor_address ncursor nscr
 
 -- Get the cell at the given position
 cellat :: Position -> Screen -> Cell

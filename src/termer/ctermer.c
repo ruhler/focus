@@ -10,7 +10,9 @@
 #include "consoler.h"
 #include "ctermer.h"
 
-#define FONT "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono-Bold.ttf"
+
+#define FONT "/pkg/dejavu-fonts-ttf-2.32/dejavu-fonts-ttf-2.32/ttf/DejaVuSansMono-Bold.ttf"
+//#define FONT "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono-Bold.ttf"
 //#define FONT "/pkg/dejavu-fonts-ttf-2.32/dejavu-fonts-ttf-2.32/ttf/DejaVuSansMono-Bold.ttf"
 
 #define WIDTH 640

@@ -684,3 +684,16 @@ Good enough, indeed to start making progress. Let me just figure out how to
 exit it cleanly so I can work on it on my netbook. And I think I'm in shape
 now to start making great progress!
 
+Sun May  8 21:12:20 EDT 2011
+
+Suspected bugs to test and fix:
+ - Doesn't autoscroll at bottom of terminal.
+ - backspace doesn't move the cursor backwards.
+ - newline character (and enter) not treated as newline.
+ - characters overstrike instead of replacing what's there.
+
+All of these should be pretty easy to test and fix, except the last is a
+little tricker to test. Let's go one at a time.
+
+Autoscroll: add as Screen test.
+

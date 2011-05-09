@@ -142,6 +142,13 @@ test = "ScreenTest" ~: [
             mapM_ (modify . put_char) "abcdefGHIJKLmno"
             modify $ clear_screen
             gets $ cellat (Position 3 1)
+            ),
+
+    "put_char scrolls at end" ~: Cell 'J' (Attributes WHITE BLACK (Style False False))
+        ~=? (run 6 4 $ do
+            modify $ cursor_address (Position 0 3) 
+            mapM_ (modify . put_char) "abcdefGHIJKLmno"
+            gets $ cellat (Position 3 2)
             )
 
     ]
