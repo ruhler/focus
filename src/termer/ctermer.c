@@ -161,6 +161,15 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     int t = gstate.face->glyph->bitmap_top;
 
     int x, y;
+
+    // blank the cell first
+    for (x = 0; x < CHAR_WIDTH; x++) {
+        for (y = 0; y < CHAR_HEIGHT; y++) {
+            CNSL_SetPixel(gstate.display, xdst + x, ydst + y, 0);
+        }
+    }
+
+    // Now draw the character.
     for (x = 0; x < w; x++) {
         for (y = 0; y < h; y++) {
             int index = y * w + x;
