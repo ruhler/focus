@@ -35,3 +35,6 @@ env.Default(pdfer)
 freetyper = env.Program('freetyper', ['freetyper.c', consoler_o], LIBS=['freetype'])
 env.Default(freetyper)
 
+fontconfiger = env.Program('fontconfiger', ['fontconfiger.c'], LIBS=['fontconfig'])
+env.Default(fontconfiger)
+

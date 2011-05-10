@@ -41,5 +41,20 @@ And I should definately be able to try this using the fcmatch app, right? It's
 called fc-match. So when I come back I'll play with this.
 
 
+Tue May 10 08:09:05 EDT 2011
+
+Yes, fc-match does as expected, after I've added all my font paths to a
+local.conf file in the installation of fontconfig
+($PREFIX/etc/fonts/local.conf).
+
+I can say fc-match Monospace, and it finds my Dejavu font.
+
+The next task, which should probably be done in a research place, is code to
+do what fc-match does.
+
+Tue May 10 08:47:50 EDT 2011
+
+I wrote up fontconfiger.c as a test. It seems to work just swell, so let me
+start using that in my terminal emulator.
 
 

@@ -4,16 +4,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <fontconfig.h>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "consoler.h"
 #include "ctermer.h"
-
-
-#define FONT "/pkg/dejavu-fonts-ttf-2.32/dejavu-fonts-ttf-2.32/ttf/DejaVuSansMono-Bold.ttf"
-//#define FONT "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono-Bold.ttf"
-//#define FONT "/pkg/dejavu-fonts-ttf-2.32/dejavu-fonts-ttf-2.32/ttf/DejaVuSansMono-Bold.ttf"
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -57,6 +54,7 @@ int forkterminalclient()
 
 int ctermer_Init()
 {
+    const char* font = "Monospace:Bold";
     const int size = 32;
 
     if (forkterminalclient() != 0) {
@@ -69,10 +67,23 @@ int ctermer_Init()
         return 1;
     }
 
-    if (FT_New_Face(gstate.library, FONT, 0, &gstate.face) != 0) {
+    // Find a font file using fontconfig
+    FcInit();
+    FcPattern* pattern = FcNameParse(font);
+    FcConfigSubstitute(NULL, pattern, FcMatchPattern);
+    FcDefaultSubstitute(pattern);
+    FcPattern* match = FcFontMatch(NULL, pattern, NULL);
+
+    FcValue file;
+    FcPatternGet(match, "file", 0, &file);
+
+    if (FT_New_Face(gstate.library, file.u.s, 0, &gstate.face) != 0) {
         fprintf(stderr, "error loading font\n");
         return 1;
     }
+
+    FcPatternDestroy(pattern);
+    FcPatternDestroy(match);
 
     if (FT_Set_Pixel_Sizes(gstate.face, size, size) != 0) {
         fprintf(stderr, "error setting font size\n");
