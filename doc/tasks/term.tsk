@@ -731,4 +731,19 @@ to find glyphs for strange unicode characters.
 
 I'm starting a task: fontconfig.tsk.
 
+Tue May 10 08:54:27 EDT 2011
+
+Bug review:
+
+ - backspace doesn't move the cursor backwards.
+ - enter at bottom of terminal does bad things.
+ - bottoms of low characters like p and g are getting cut off.
+   (termcharsize.tsk)
+ - it's really really really really really slow.
+   (termperf.tsk)
+ - cursor isn't displayed
+
+I think the main priorities should be performance and proper character
+spacing. Let me open up new tasks for these, because otherwise I'll get way
+too disorganized.
 

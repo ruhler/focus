@@ -4,6 +4,8 @@ env = Environment(tools=['ghc', 'default'], toolpath=['scons'])
 Export('env')
 
 env['CFLAGS'] = ['-ggdb']
+#env['CFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
+#env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
 
 # Local host based stuff
 SConscript('scons/local')

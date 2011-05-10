@@ -2,9 +2,6 @@
 # vim: ft=python
 
 Import('env')
-#env['CFLAGS'] = ['-ggdb']
-#env['CFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
-#env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
 
 consoler_o = env.Object('consoler.o', 'consoler.c')
 

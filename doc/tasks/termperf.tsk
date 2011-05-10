@@ -1,0 +1,81 @@
+
+Tue May 10 08:59:35 EDT 2011
+
+Task: termer performance is really really slow.
+
+I should run profiling to figure out what's going on. I have some ideas
+though...
+
+- Updating whole display is slow?
+    Perhaps it's just always updating the whole screen which is slow. Maybe if
+    we only update those areas which change we won't have so much of a
+    problem.
+
+    If this were case, I would expect a much bigger terminal size would take
+    longer to render the same thing as a much smaller terminal size.
+
+- Rendering characters is slow  
+    Maybe we need to cache glyphs.
+
+- consoler is fundamentally slow?
+    Like, all this copying stuff we do...
+
+
+Let me turn on profiling of the haskell code, run the time profile, and see
+what it says after cating a bunch of stuff to the screen.
+
+Tue May 10 09:09:37 EDT 2011
+
+Well, that's pretty clear. Profiling says 80% of the time is being spent in
+the showDisplay command. Notice, this is not the draw cell command.
+
+I must say, I find that a little surprising. Is it really so much work to copy
+a buffer to a pipe?
+
+Unless the issue is sdlcsr is slow to read the display data, so it's getting
+backed up and the update is blocking until there's enough space in the pipe.
+Or maybe we can only send a little bit of a data at a time over the fifo, and
+we're trying to send 640 * 480 = 307200 bytes at once, or 75 pages. That could
+definately be a problem.
+
+This suggests to me the problem could be with using pipes for communication.
+That might also explain why we have performance issues with pdfer updating
+the display.
+
+I would like to profile sdlscr too. See where it's spending all its time.
+
+Anyway, the interesting things to take away from this profile run are:
+ - rendering characters doesn't seem to be the problem
+ - constant communication between haskell and C doesn't seem to be a problem
+ - The problem is somewhere between sending the updated display and showing
+   the updated display.
+
+Let's do sdlscr profiling next. That will hopefuly tell us if the problem is
+in drawing the updated display, or waiting for the updated display.
+
+Tue May 10 09:28:52 EDT 2011
+
+As with past attempts, I find profiling sdl doesn't work. It doesn't give me
+any time info. Gar! That's so annoying.
+
+The one thing it does say is we can CNSL_GetRed and friends a lot. That is, we
+do lots of deconstruction and construction of the colors, which is surely
+almost entirely wasted.
+
+The major problem I'm facing here is lack of insight as to what's going on in
+my programs. gprof seems not to work so well for sdl programs, and profiling
+haskell is always hard for some reason.
+
+Anyway, based on my incomplete information now, I would recommend the
+following changes to improve the performance of the termer:
+ - Only update that part of the display which has changed
+    for my test case usually that's just one cell instead of the whole screen.
+    I would expect a speedup of something like 300x then, because we are just
+    dealing with so many less pixels.
+
+ - In sdlcsr don't deconstruct and reconstruct the color, make an efficient
+   function for converting CNSL colors to sdlcsr colors, namely: the identity
+   function.
+
+But the real solution is to figure out how to profile sdl code.
+
