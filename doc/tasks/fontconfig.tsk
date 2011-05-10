@@ -1,0 +1,45 @@
+
+Mon May  9 18:26:58 EDT 2011
+
+Goal: figure out how to use font config.
+
+Specifically, I want a way to translate the string "Monospace" or similar
+(for example Monospace Bold) into the appropriate ttf file, or FT_Face if I
+can do that directly.
+
+It looks like patterns are a big deal. I can make a pattern from an FT_Face.
+So the question is, how are patterns specified, and once I have a pattern, how
+do I use it?
+
+It looks like first I create a pattern. That pattern is basically the
+programatic representation of "Monospace" and friends. Perhaps there is even a
+function to create a pattern from a string.
+
+Perhaps I make a pattern, call FcMatch, and what it returns is a pattern with
+the font name buried inside somewhere.
+
+So perhaps overall steps are:
+ 1. convert String to Pattern
+ 2. Match Pattern
+ 3. extract filename from pattern.
+
+Perhaps I can get all this information throught the fontconfig applications,
+experimenting with it that way before writing c code.
+
+Yes, it appears there is a function to convert a font name (string) to a
+pattern. If only I knew what it was called...
+
+How about: pattern.fullname to specify full name, and pattern.file to get the
+font file.
+
+Aha! If that's the case, it's as simple as:
+ 1. Make a pattern with fullname set to "Monospace"
+ 2. Match Pattern
+ 3. Extract "file" from pattern.
+
+And I should definately be able to try this using the fcmatch app, right? It's
+called fc-match. So when I come back I'll play with this.
+
+
+
+

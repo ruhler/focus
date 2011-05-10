@@ -714,3 +714,21 @@ update the small part of the screen).
 
 Cool. Very cool.
 
+Mon May  9 18:24:36 EDT 2011
+
+Let's talk about how we specify the font. I know what font I want. I know the
+path to it. The trouble is, I kind of want it to be implicit.
+
+Anyway, ideally we could specify the font as just: Bitstream Vera Sans Mono,
+or even better Monospace. I should be able to do this if I make use of
+fontconfig, which we'll want to use eventually anyway (it is the "right" thing
+to do I feel like).
+
+So let me learn about fontconfig and try to make it so I can specify my font
+simply as Monospace. Then let fontconfig do all the work of finding the right
+font file on the computer. And who knows, maybe fontconfig will also help me
+to find glyphs for strange unicode characters.
+
+I'm starting a task: fontconfig.tsk.
+
+
