@@ -15,6 +15,6 @@ env.Default(env.Command('termertest.out', termertest, "$SOURCE > $TARGET"))
 env.Default(env.GHCProgram('termer',
     ['termer.hs', 'ctermer.c', '../consoler.o'],
     LIBS=['freetype', 'fontconfig', 'util'],
-    GHCFLAGS=['-threaded', '-prof', '-auto-all']))
+    GHCFLAGS=['-threaded']))
 env.Depends('termer', 'ctermer.h')
 
