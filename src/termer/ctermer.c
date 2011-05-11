@@ -162,6 +162,10 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     //fprintf(stderr, "bbox xman: %li\n", gstate.face->bbox.xMax);
     //fprintf(stderr, "bbox ymin: %li\n", gstate.face->bbox.yMin);
     //fprintf(stderr, "bbox yman: %li\n", gstate.face->bbox.yMax);
+    
+    fprintf(stderr, "charheight: %li\n", gstate.face->glyph->metrics.height);
+    fprintf(stderr, "charwidth: %li\n", gstate.face->glyph->metrics.width);
+    fprintf(stderr, "horiadvance: %li\n", gstate.face->glyph->metrics.horiAdvance);
 
     int xdst = col * CHAR_WIDTH;
     int ydst = row * CHAR_HEIGHT;

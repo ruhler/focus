@@ -73,6 +73,9 @@ following changes to improve the performance of the termer:
     I would expect a speedup of something like 300x then, because we are just
     dealing with so many less pixels.
 
+    This will need work both in ctermer to not update the whole display, and
+    in Termer.hs, to not update all the characters.
+
  - In sdlcsr don't deconstruct and reconstruct the color, make an efficient
    function for converting CNSL colors to sdlcsr colors, namely: the identity
    function.
