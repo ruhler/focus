@@ -82,3 +82,91 @@ following changes to improve the performance of the termer:
 
 But the real solution is to figure out how to profile sdl code.
 
+Wed May 11 20:45:27 EDT 2011
+
+The first parts hard. Let me...
+
+Okay, this is sad, but I need to really write a test first of the
+communication link.
+
+Here's what I propose. Write an application which switches back and forth
+between black and white and black and white. Record how long it takes to do
+that for various screen dimensions to try and get an estimate on throughput.
+
+Now, once I have that, make the second optimization with the colors thing, see
+if it makes any difference.
+
+This test will be useful for trying out other optimizations to the
+communication protocol.
+
+time ./build/src/sdlcsr ./build/src/flicker 640 480 100
+hw_available: 0
+wm_available: 1
+
+real    0m32.695s
+user    0m4.539s
+sys     0m26.168s
+
+
+
+richard@losaltos:focus$ time ./build/src/sdlcsr ./build/src/flicker 1280 800
+hw_available: 0
+wm_available: 1
+
+real    1m35.288s
+user    0m14.970s
+sys     0m56.615s
+
+
+time ./build/src/sdlcsr ./build/src/flicker 640 480 100
+hw_available: 1
+wm_available: 0
+
+real    0m35.451
+user    0m11.224
+sys     0m24.272
+
+richard@losaltos:focus$ time ./build/src/sdlcsr ./build/src/flicker 1280 800
+hw_available: 1
+wm_available: 0
+
+real    1m58.776s
+user    0m35.857s
+sys     1m13.976s
+
+Some initial results in X and not in X of various sizes.
+Hardware acceleration actually appears to slow us down. Or X is speeding us up
+or some such.
+
+
+Now let me try my performance optimization: don't deconstruct and reconstruct
+colors. See what that all does to things.
+
+richard@losaltos:focus$ time ./build/src/sdlcsr ./build/src/flicker 1280 800 100
+in X
+real    1m54.808s
+user    0m12.093s
+sys     1m40.698s
+ 
+richard@losaltos:focus$ time ./build/src/sdlcsr ./build/src/flicker 640 480 100
+in X
+
+real    0m27.543s
+user    0m4.375s
+sys     0m22.548s
+
+
+That didn't make much of a difference.
+
+Sigh. So I have other ideas, such as:
+  - fifos are the problem
+  - using FillRect instead of just setting pixels directly.
+
+But the right way to do this has got to be enable profiling. So I really
+should figure out next how to do that.
+
+Certainly we can reduce the amount of the terminal we update, but for focus in
+general, just imagine you are scrolling the screen or a pdf, the whole page
+will need to be updated, so we should figure out some way of making that be
+fast.
+

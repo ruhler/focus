@@ -35,3 +35,6 @@ env.Default(freetyper)
 fontconfiger = env.Program('fontconfiger', ['fontconfiger.c'], LIBS=['fontconfig'])
 env.Default(fontconfiger)
 
+flicker = env.Program('flicker', ['flicker.c', consoler_o])
+env.Default(flicker)
+

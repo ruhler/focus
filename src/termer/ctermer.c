@@ -59,7 +59,7 @@ int forkterminalclient()
 int ctermer_Init()
 {
     const char* font = "Monospace:Bold";
-    const int size = 32;
+    const int size = 26;
 
     if (forkterminalclient() != 0) {
         fprintf(stderr, "error forking terminal client\n");

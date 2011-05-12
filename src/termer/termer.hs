@@ -8,7 +8,7 @@ import Outputter
 import Screen
 
 lns = 12
-cols = 16
+cols = 40
 
 
 updatef :: (Screen -> Screen) -> StateT Screen IO ()

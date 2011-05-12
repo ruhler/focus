@@ -747,3 +747,12 @@ I think the main priorities should be performance and proper character
 spacing. Let me open up new tasks for these, because otherwise I'll get way
 too disorganized.
 
+Wed May 11 20:38:45 EDT 2011
+
+At this point what's keeping me from using termer for my terminal really is
+the terrible performance. So that's the next focus I think. I'll make it the
+right size terminal, see how slow it goes, then do what it says in
+termperf.tsk to make it go faster. Probably I'll just experiment rather than
+really figuring out what's going on, because figuring out how to profile stuff
+will be lots of work.
+
