@@ -1,4 +1,5 @@
 
+#include <math.h>
 #include <pty.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,9 +15,6 @@
 
 #define WIDTH 640
 #define HEIGHT 480
-#define CHAR_WIDTH 32
-#define CHAR_HEIGHT 32
-
 
 typedef struct {
     // The most recently gotten event.
@@ -25,6 +23,12 @@ typedef struct {
 
     FT_Library library;
     FT_Face face;
+
+    // Character metrics.
+    int cell_width;
+    int cell_height;
+    int char_ascender;
+         
     
     // terminal client file descriptor.
     int tcfd;
@@ -90,6 +94,16 @@ int ctermer_Init()
         return 1;
     }
 
+    double em = (double)gstate.face->units_per_EM;
+    double w = (double)gstate.face->max_advance_width;
+    double h = (double)gstate.face->height;
+    double a = (double)gstate.face->ascender;
+    double p = (double)size;
+    gstate.cell_width = (int)ceil(w*p/em);
+    gstate.cell_height = (int)ceil(h*p/em);
+    gstate.char_ascender = (int)ceil(a*p/em);
+
+
     CNSL_Init();
     gstate.display = CNSL_AllocDisplay(WIDTH, HEIGHT);
 
@@ -145,30 +159,19 @@ int blueof(int color, int style)
     return color & CTERMER_COLOR_BLUE ? full : 0;
 }
 
+double fromfixed(signed long x)
+{
+    double d = x;
+    d /= 65536.0;
+    return d;
+}
+
 void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgcolor)
 {
-    //fprintf(stderr, "dc %c(%02X) @ %ix%i\n", c, c, col, row);
-
     FT_Load_Char(gstate.face, c, FT_LOAD_RENDER);
 
-    //fprintf(stderr, "advance.x: %li\n", gstate.face->glyph->advance.x);
-    //fprintf(stderr, "advance.y: %li\n", gstate.face->glyph->advance.y);
-    //fprintf(stderr, "metrics.height: %li\n", gstate.face->size->metrics.height);
-    //fprintf(stderr, "max_advance: %li\n", gstate.face->size->metrics.max_advance);
-    //fprintf(stderr, "units_per_EM: %i\n", gstate.face->units_per_EM);
-    //fprintf(stderr, "height: %i\n", gstate.face->height);
-    //fprintf(stderr, "max_advance_width: %i\n", gstate.face->max_advance_width);
-    //fprintf(stderr, "bbox xmin: %li\n", gstate.face->bbox.xMin);
-    //fprintf(stderr, "bbox xman: %li\n", gstate.face->bbox.xMax);
-    //fprintf(stderr, "bbox ymin: %li\n", gstate.face->bbox.yMin);
-    //fprintf(stderr, "bbox yman: %li\n", gstate.face->bbox.yMax);
-    
-    fprintf(stderr, "charheight: %li\n", gstate.face->glyph->metrics.height);
-    fprintf(stderr, "charwidth: %li\n", gstate.face->glyph->metrics.width);
-    fprintf(stderr, "horiadvance: %li\n", gstate.face->glyph->metrics.horiAdvance);
-
-    int xdst = col * CHAR_WIDTH;
-    int ydst = row * CHAR_HEIGHT;
+    int xdst = col * gstate.cell_width;
+    int ydst = row * gstate.cell_height;
 
     int w = gstate.face->glyph->bitmap.width;
     int h = gstate.face->glyph->bitmap.rows;
@@ -178,8 +181,8 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     int x, y;
 
     // blank the cell first
-    for (x = 0; x < CHAR_WIDTH; x++) {
-        for (y = 0; y < CHAR_HEIGHT; y++) {
+    for (x = 0; x < gstate.cell_width; x++) {
+        for (y = 0; y < gstate.cell_height; y++) {
             CNSL_SetPixel(gstate.display, xdst + x, ydst + y, 0);
         }
     }
@@ -189,16 +192,13 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
         for (y = 0; y < h; y++) {
             int index = y * w + x;
             int level = gstate.face->glyph->bitmap.buffer[index];
+
             int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
             int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
             int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
             CNSL_Color c = CNSL_MakeColor(red, green, blue);
 
-            // TODO: if I do things right, I shouldn't have to do a check
-            // here!
-            if (ydst + CHAR_HEIGHT - t + y >= 0) {
-                CNSL_SetPixel(gstate.display, xdst + l + x, ydst + CHAR_HEIGHT - t + y, c);
-            }
+            CNSL_SetPixel(gstate.display, xdst + l + x, ydst + gstate.char_ascender - t + y, c);
         }
     }
 }

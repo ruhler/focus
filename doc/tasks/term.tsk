@@ -737,7 +737,7 @@ Bug review:
 
  - backspace doesn't move the cursor backwards.
  - enter at bottom of terminal does bad things.
- - bottoms of low characters like p and g are getting cut off.
+ + bottoms of low characters like p and g are getting cut off.
    (termcharsize.tsk)
  - it's really really really really really slow.
    (termperf.tsk)

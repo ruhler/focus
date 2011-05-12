@@ -32,3 +32,65 @@ convert it to pixels I bet.
 
 Oh well.
 
+Wed May 11 19:51:11 EDT 2011
+
+The right thing to do is pretty clear.
+Get the size metrics. Convert to pixels. That's it.
+
+I should only have to look at the general size metrics, nothing glyph
+specific, so let's start there. Let me print all that information out, and
+calculate by hand what the dimensions should be for my 32 size font and see if
+it makes sense. I'm looking for something like width of 16 height of 32.
+
+Here are sample values that I get from the face size metrics.
+
+x_ppem: 32 pixels per em
+y_ppem: 32 pixels per em
+x_scale: 1.000000
+y_scale: 1.000000
+ascender: 1920
+descender: -512
+height: 2368
+max_advance: 1216
+
+
+Looks like I need just a little more information. This directly from the font
+face record.
+
+units_per_EM: 2048
+ascender: 1901
+descender: 4294966813
+height: 2384
+max_advance_width: 1233
+max_advance_height: 2384
+
+I'm looking at height and max advance width. Now just get into the right
+units:
+
+2384 fontunits * 1em / (2048 fontunits) * 32 pixels / (1 em)
+1233 fontunits * 1em / (2048 fontunits) * 32 pixels / (1 em)
+
+is: 37.25 pixels in height, 19.265625 pixels in width.
+
+Which says we want a cell of dimensions 38 by 20 pixels.
+Um, that's a little odd to me... But let's compare how the two look.
+The two being what I have now (which looks bad (32x32)), and 20x38.
+
+It looks great! That size will do. It will do swell.
+One question though: we still have the bottoms of the p character cut off.
+What is with that? Now we leave space for it, but it's still cut off...
+
+I think I see why. I put the baseline at the bottom of the cell, leaving no
+space for the descender. What we need instead is to not go down the full cell
+height.
+
+So instead of adding 2384, add 1901 (the ascender), 30 in our case. let's try
+that, see how it looks.
+
+Wed May 11 20:26:01 EDT 2011
+
+Yes, that's it exactly. Cool. So let me just calculate these things at the
+beginning. Say I use the ceiling of all these things.
+
+Perfect! This task is now done I say.
+
