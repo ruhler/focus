@@ -170,3 +170,83 @@ general, just imagine you are scrolling the screen or a pdf, the whole page
 will need to be updated, so we should figure out some way of making that be
 fast.
 
+Wed May 11 21:15:54 EDT 2011
+
+Part of the problem is enabling, disabling profiling. Perhaps it is time to
+separate consoler out into a library, then start building things with and
+without profiling enabled?
+
+I can at least enable profiling on specific applications.
+
+Wed May 11 21:29:45 EDT 2011
+
+Read online about gprof issues. The multithreaded problem with gprof is not
+what I'm encountering, because even then we should still be profiling the main
+thread. I'm seeing nothing there.
+
+The mac OS X problem is not what I'm encoutering, because I don't have a mac.
+
+The not run long enough problem is not what I'm encountering, because I've run
+it for a long long time.
+
+Other things to check: 
+ - do we terminate cleanly? If not, we might not get useful output, and I've
+   heard sdl might fail to terminate cleanly with gprof.
+    No, we are definately exiting cleanly...
+
+ - do non-sdl programs have the same problem? For example, what if I just run
+   flicker built with profiling enabled?
+
+    Yes, this works.
+
+So what is sdl doing to break profiling? Probably mucking with timers or some
+such.
+
+Anyway, an interesting thing to note: profiling just flicker shows that
+flicker is really slow to run by itself.
+
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 51.87      0.57     0.57                             CNSL_SendDisplay
+ 42.77      1.04     0.47                             CNSL_GetPixel
+  2.73      1.07     0.03                             CNSL_FreeDisplay
+  1.82      1.09     0.02                             CNSL_SetPixel
+  0.91      1.10     0.01                             main
+
+The profile suggests that CNSL_SendDisplay and CNSL_GetPixel are slow. I guess
+we can't really understand the meaning of that because we don't know that the
+interpreter of the data isn't taking a long time. Hmm... what if we pipe the
+output to /dev/null? That would assume the server can suck out as much data as
+possible, and test how fast flicker can deliver the data. This is an
+interesting question.
+
+The answer:
+
+width: 640
+height: 480
+frames: 100
+
+real    0m7.774s
+user    0m2.009s
+sys     0m5.762s
+
+Which means... a while.
+
+Another thing I could do: start sdlcsr, and watch top. See which process is
+flooring the cpu, which is waiting, and so on.
+
+Top shows sdlcsr as taking 99% cpu while flicker takes 95% cpu. The whole
+thing takes about 30 seconds. Not sure if that means anything.
+
+All of which suggests... I'm not sure. That the communication link is slow
+certainly...
+
+Well, if I'm really concerned, I could try implementng an alternate version of
+ctermer. One whose implementation is directly in SDL instead of using
+consoler. If the performance of that is fine, I'll know SDL isn't a big
+bottleneck. If the performance of that sucks, perhaps SDL is a problem.
+
+Of course, fbterm is pure SDL and it doesn't have any problems...
+
+I should run this experiment.
+
