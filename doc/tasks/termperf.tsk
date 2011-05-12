@@ -250,3 +250,44 @@ Of course, fbterm is pure SDL and it doesn't have any problems...
 
 I should run this experiment.
 
+Thu May 12 17:01:05 EDT 2011
+
+I made an implementation of termer which uses SDL directly instead of
+consoler. It goes noticably faster, but it's still noticably slow.
+
+Which suggests there are many performance issues I'll have to deal with.
+
+Maybe it makes sense to get this version fast before adding the consoler
+stuff.
+
+I have the feeling doing FillRect to draw a pixel in SDL is bad. And I think
+updating the entire screen for a single character is bad. I propose fixing
+those two things to be the next steps in sdltermer.
+
+Unfortunately, it doesn't make sense to do that before I have some sort of way
+to evaluate how fast those changes are. I need a benchmark for the terminal
+emulator, some nice way to measure how fast it is.
+
+Well... the program I run could be different. Instead of running sh, I could
+run a script, it outputs a bunch of stuff (no input), time how long it takes.
+That sounds good to me.
+
+Thu May 12 17:17:09 EDT 2011
+
+I made a little test script. It just echos a bunch of stuff to the screen.
+
+On 640x480 pixels, 40x12 lines, fontsize 32, pacific with sdltermer:
+ It takes 18 seconds to run.
+
+In contrast, the amount of time it takes to run using sdlcsr...
+
+
+7m03 seconds. Wow. That's pretty big. 23x
+
+So yes, consoler definately is costly. And now I can do my performance
+measurements.
+
+Just for reference, fbcon gets .029s, so I've got a ways to go. Especially
+considering fbcon is something I would consider slow.
+
+

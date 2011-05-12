@@ -1,4 +1,8 @@
 
+// A version of ctermer which uses sdl directly rather than going through
+// consoler.
+
+
 #include <math.h>
 #include <pty.h>
 #include <stdio.h>
@@ -10,7 +14,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "consoler.h"
+#include <SDL/SDL.h>
 #include "ctermer.h"
 
 #define WIDTH 640
@@ -18,8 +22,8 @@
 
 typedef struct {
     // The most recently gotten event.
-    CNSL_Event event;
-    CNSL_Display display;
+    SDL_Event event;
+    SDL_Surface* display;
 
     FT_Library library;
     FT_Face face;
@@ -103,31 +107,45 @@ int ctermer_Init()
     gstate.cell_height = (int)ceil(h*p/em);
     gstate.char_ascender = (int)ceil(a*p/em);
 
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        fprintf(stderr, "sdl init: %s\n", SDL_GetError());
+        return;
+    }
+    atexit(SDL_Quit);
 
-    CNSL_Init();
-    gstate.display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+    gstate.display = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE);
+    if (gstate.display == NULL) {
+        fprintf(stderr, "sdl: %s\n", SDL_GetError());
+        SDL_Quit();
+    }
 
     return 0;
 }
 
 void ctermer_DeInit()
 {
-    CNSL_Quit();
+    SDL_Quit();
 }
 
 void ctermer_EventGet()
 {
-    CNSL_RecvEvent(stdcon, &gstate.event);
+    do {
+        SDL_WaitEvent(&gstate.event);
+    } while (ctermer_EventType() < 0);
 }
 
 int ctermer_EventType()
 {
-    return gstate.event.type;
+    switch (gstate.event.type) {
+        case SDL_KEYDOWN: return 0;
+        case SDL_KEYUP: return 1;
+    }
+    return -1;
 }
 
 int ctermer_EventValue()
 {
-    return gstate.event.value;
+    return gstate.event.key.keysym.sym;
 }
 
 void ctermer_ToTermClient(char c)
@@ -181,11 +199,8 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     int x, y;
 
     // blank the cell first
-    for (x = 0; x < gstate.cell_width; x++) {
-        for (y = 0; y < gstate.cell_height; y++) {
-            CNSL_SetPixel(gstate.display, xdst + x, ydst + y, 0);
-        }
-    }
+    SDL_Rect dst = {xdst, ydst, gstate.cell_width, gstate.cell_height};
+    SDL_FillRect(gstate.display, &dst, 0);
 
     // Now draw the character.
     for (x = 0; x < w; x++) {
@@ -196,15 +211,16 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
             int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
             int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
             int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
-            CNSL_Color c = CNSL_MakeColor(red, green, blue);
 
-            CNSL_SetPixel(gstate.display, xdst + l + x, ydst + gstate.char_ascender - t + y, c);
+            SDL_Rect dst = {xdst + l + x, ydst + gstate.char_ascender-t+y, 1, 1};
+            SDL_FillRect(gstate.display, &dst, SDL_MapRGB(gstate.display->format, red, green, blue));
         }
     }
 }
 
 void ctermer_ShowDisplay()
 {
-    CNSL_SendDisplay(stdcon, gstate.display, 0, 0, 0, 0, WIDTH, HEIGHT);
+    SDL_UpdateRect(gstate.display, 0, 0, 0, 0);
 }
+
 
