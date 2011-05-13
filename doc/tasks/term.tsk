@@ -739,7 +739,7 @@ Bug review:
  - enter at bottom of terminal does bad things.
  + bottoms of low characters like p and g are getting cut off.
    (termcharsize.tsk)
- - it's really really really really really slow.
+ + it's really really really really really slow.
    (termperf.tsk)
  - cursor isn't displayed
 
@@ -755,4 +755,15 @@ right size terminal, see how slow it goes, then do what it says in
 termperf.tsk to make it go faster. Probably I'll just experiment rather than
 really figuring out what's going on, because figuring out how to profile stuff
 will be lots of work.
+
+Thu May 12 21:33:08 EDT 2011
+
+More bug reports:
+ - backspace doesn't move the cursor backwards.
+ - enter at bottom of terminal does bad things.
+ - cursor isn't displayed
+ + ls --color causes bad sequence: 0m
+    0m should be the same as turn off character attributes according to vt102
+    manual. same as the control sequence m if I support that.
+ - ls --color causes bad sequence: 1;
 

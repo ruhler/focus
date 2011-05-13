@@ -43,6 +43,8 @@ termer,
 
     bold=\E[1m,
     rev=\E[7m,
+
+# \E[0m also accepted for exit_attributes_mode
     sgr0=\E[0;10m,
 
     colors#8, 

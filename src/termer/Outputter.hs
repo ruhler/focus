@@ -64,6 +64,7 @@ outputter term getf updatef = do
                   (Nothing, 'M') -> updatef delete_line
                   (Nothing, 'P') -> updatef delete_character
                   (Just 1, 'K') -> updatef clr_bol
+                  (Just 0, 'm') -> updatef exit_attribute_mode
                   (Just 1, 'm') -> updatef enter_bold_mode
                   (Just 7, 'm') -> updatef $ enter_reverse_mode
                   (Just 30, 'm') -> updatef $ set_foreground BLACK

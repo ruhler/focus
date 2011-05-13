@@ -53,6 +53,14 @@ test = "OutputterTest" ~: [
         modify $ put_char 'b'
         modify $ newline
         modify $ put_char 'c'
+        ),
+
+    "ESC[0m" ~: (run 6 4 "ab\ESC[0mc" $ do
+        modify $ put_char 'a'
+        modify $ put_char 'b'
+        modify $ exit_attribute_mode
+        modify $ put_char 'c'
         )
+
     ]
 

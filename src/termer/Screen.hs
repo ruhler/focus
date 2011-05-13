@@ -242,7 +242,11 @@ enter_reverse_mode scr
     in scr { sattrs = nattrs }
 
 -- Turn off all attributes
-exit_attribute_mode scr = scr { style = normal, fgcolor = WHITE, bgcolor = BLACK }
+exit_attribute_mode :: Screen -> Screen
+exit_attribute_mode scr
+  = let attr = sattrs scr
+        nattrs = attr { style = normal, fgcolor = WHITE, bgcolor = BLACK }
+    in scr { sattrs = nattrs }
 
 -- Set the forground color
 set_foreground :: Color -> Screen -> Screen
