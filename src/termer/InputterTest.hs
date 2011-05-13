@@ -45,6 +45,10 @@ test = "InputterTest" ~: [
         Keypress LSHIFT,
         Keypress B, Keyrelease B,
         Keyrelease LSHIFT,
-        Keypress C, Keyrelease C])
+        Keypress C, Keyrelease C]),
+
+    "--" ~: "--" ~=? (try [
+        Keypress MINUS, Keyrelease MINUS,
+        Keypress MINUS, Keyrelease MINUS])
     ]
  

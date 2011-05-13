@@ -195,8 +195,8 @@ press iput SLASH _ True = iput '\US'
 press iput SLASH False False = iput '/'
 press iput SLASH True False = iput '?'
 
-press iput UNDERSCORE False _ = iput '-'
-press iput UNDERSCORE True _ = iput '_'
+press iput MINUS False _ = iput '-'
+press iput MINUS True _ = iput '_'
 
 press iput EQUALS False _ = iput '='
 press iput EQUALS True _ = iput '+'
