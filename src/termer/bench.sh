@@ -1,3 +1,4 @@
+sh
 
 set -v on
 

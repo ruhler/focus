@@ -106,7 +106,7 @@ int ctermer_Init()
     gstate.cell_width = (int)ceil(w*p/em);
     gstate.cell_height = (int)ceil(h*p/em);
     gstate.char_ascender = (int)ceil(a*p/em);
-
+    
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "sdl init: %s\n", SDL_GetError());
         return;
@@ -202,20 +202,25 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     SDL_Rect dst = {xdst, ydst, gstate.cell_width, gstate.cell_height};
     SDL_FillRect(gstate.display, &dst, 0);
 
+
     // Now draw the character.
+    SDL_LockSurface(gstate.display);
     for (x = 0; x < w; x++) {
         for (y = 0; y < h; y++) {
             int index = y * w + x;
             int level = gstate.face->glyph->bitmap.buffer[index];
 
-            int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
-            int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
-            int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
+            unsigned int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
+            unsigned int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
+            unsigned int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
 
-            SDL_Rect dst = {xdst + l + x, ydst + gstate.char_ascender-t+y, 1, 1};
-            SDL_FillRect(gstate.display, &dst, SDL_MapRGB(gstate.display->format, red, green, blue));
+            int px = xdst + l + x;
+            int py = ydst + gstate.char_ascender-t+y;
+
+            ((unsigned int*)gstate.display->pixels)[py * gstate.display->w + px] = (red << 16) | (green << 8) | blue;
         }
     }
+    SDL_UnlockSurface(gstate.display);
 }
 
 void ctermer_ShowDisplay()

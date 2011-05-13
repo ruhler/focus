@@ -16,9 +16,10 @@ updatef f =
     let draw scr pos = CTermer.drawCell pos (cellat pos scr)
     in do
         modify f
-        scr <- get
-        lift $ mapM_ (draw scr) [Position x y | x <- [0..(cols-1)], y <- [0..(lns-1)]]
+        r <- gets recent
+        lift $ mapM_ (\(p, c) -> CTermer.drawCell p c) r
         lift $ CTermer.showDisplay
+        modify $ clear_recent
     
 
 main :: IO ()

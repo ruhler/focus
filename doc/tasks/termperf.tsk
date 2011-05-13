@@ -290,4 +290,129 @@ measurements.
 Just for reference, fbcon gets .029s, so I've got a ways to go. Especially
 considering fbcon is something I would consider slow.
 
+Thu May 12 20:03:45 EDT 2011
+
+Summary:
+ pacific consoler: 243s
+ pacific sdl:       18s
+ losaltos consoler:121s
+ losaltos sdl:       9s
+
+Next task: I have to profile sdltermer. Let me turn on profiling with ghc, see
+if that works.
+
+It works! Wonderful. And what it says: 80% of the time is spent in drawCell.
+
+Now, if only I could tell what part of drawcell...
+
+It's either in rendering the character, or updating the sdl surface.
+
+Let me try doing a more memcopy like thing to update the pixels rather than
+this fillrect thing, see if that improves anything. The other thing I can do
+is cache glyphs. Maybe have a lookup table for the colors...
+
+Okay, make a list. Reasons this might be going slow:
+- glyph render is slow
+    So cache the glyphs.
+
+    Let me always use the same glyph: say #, which is fairly large.
+    And only render it once. Then we'll see how much rendering costs us.
+
+    Um, bad experiment, because now spaces are drawn with '#', which takes a
+    long time. Interesting that it takes a long time though, even though we
+    aren't rerendering... went from 6 to 10 seconds. Now what if I use space
+    instead? Went down to 2 seconds. Notice rending const is not participating
+    in these two seconds (or the 10 seconds).
+    
+    This suggests the biggest cost is copying pixels to the screen surface.
+    I wonder what if I don't use a hardware surface? That's seems like a
+    worthy experiment.
+
+    It went from 6 to 8 seconds.
+
+
+- we call it too much
+    Higher level concern, not my focus right now.
+
+- Calculating colors is slow
+    Maybe use a lookup table.
+
+    I switch to always using 0xFFFFFF, it made no difference at all, so this
+    clearly isn't the problem.
+
+- fillrect is slow
+    Don't fill rect, lock the surface, do the loop setting pixels, then unlock
+    the surface.
+
+    I switch this over, reduced time from 9 seconds to 6. So this is certainly
+    significant. 30% improvement.
+
+    Now what if I don't blank the cell backgrounds, is that costing us?
+    Drops from 6 to maybe 5 seconds.
+
+    Now, what if I render the glyph, but don't actually update the display?
+    It takes 3 seconds.
+
+    And if I now don't render any glyphs? It takes 1 second. Profiling still
+    says 30% of the time of the program is spent in DrawCell.
+
+
+What can I conclude from my experiments?
+
+- copying pixels from the glyph bit map to the display surface is expensive.
+- calculating colors cost us nothing
+- rendering the glyph takes not an enormous amount of time, but a noticable
+  amount of time.
+
+What do I propose to do to fix this?
+
+I propose the following:
+ - only update cells whose contents have changed
+ - have a glyph cache
+    Ideally we could cache CELL sized surfaces, and blit them to the screen,
+    which I hope can be the fastest way of getting the pixels there.
+    I'm not sure how to deal with the colors though. Use alpha blending of
+    some sort to take advantage of the hardware acceleration?
+
+Okay, so I've left it at around 6 seconds. Next step is to only update cells
+whose contents have changed. This should make a huge difference.
+
+Question is, how do I implement it?
+
+It would be cool if we could diff two screens. Then keep the previous screen,
+keep the next screen, and compare. But that, admittedly, wouldn't be the most
+efficient thing to do. I think more efficient would be to have each screen
+operation save what cells it changed. We have to generate those lists anyway,
+may as well save them.
+
+Or just do the diff. That would be easier. Have a function that takes two
+screens, returns a list of (Position, Cell) that have changed from the first
+to the second.
+
+Err... but really that's a waste to check each cell if there have been very
+few changes, as is most often the case. What if each screen command returned a
+list of the (Position, Cell) it changed? Those are exactly what we already
+compute.
+
+I feel like this isn't ideal. Maybe we could just cache those changes as part
+of a data structure? Like, it would be nice of a screen kept track of recent
+changes, and I could clear the changes, and I could get the changes. So add a
+function:
+
+recent :: Screen -> [(Position, Cell)]
+clear_recent :: Screen -> Screen
+
+Hey, I like that. And I think the implementation can be: save a list of the
+Positions which have changed, when they ask for recent, nub it and map that
+over cellat to get the cells. 
+
+Cool, let me try this now.
+
+Thu May 12 21:15:22 EDT 2011
+
+I implemented it just like that. Reduces the 6 second runtime down to a little
+less than a half a second. Which is quite nice, I must say.
+
+Wonderful. And now I can start using it well enough to make good progress
+finding bugs.
 

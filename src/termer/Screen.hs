@@ -11,12 +11,13 @@ module Screen (
     delete_line, parm_delete_line, erase_chars, insert_character,
     parm_ich, insert_line, parm_insert_line, scroll_forward,
     parm_index, scroll_reverse, parm_rindex,
-    put_char, cursor, cellat 
+    put_char, cursor, cellat, recent, clear_recent
     )
   where
 
 import Prelude hiding (reverse, lines)
 import Data.Array
+import Data.List(nub)
 
 data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
     deriving(Eq, Show)
@@ -85,20 +86,32 @@ data Screen = Screen {
     lines :: Integer,
     cursor :: Position,
     cells :: Array Position Cell,
-    sattrs :: Attributes
+    sattrs :: Attributes,
+    m_recent :: [Position]
 } deriving (Eq, Show)
 
 -- make an array where every element is the same
 uniformArray :: (Ix i) => (i, i) -> a -> Array i a
 uniformArray bounds x = listArray bounds (repeat x)
 
+-- Update some cells in the screen.
+updcells :: [(Position, Cell)] -> Screen -> Screen
+updcells upds scr
+  = let oldcells = cells scr
+        newcells = oldcells//upds
+        oldrecent = m_recent scr
+        newrecent = (map fst upds) ++ oldrecent
+    in scr { cells = newcells, m_recent = newrecent }
+
 -- screen columns lines
 -- Return a clear screen with the given number of rows and columns.
 screen :: Integer -> Integer -> Screen
 screen cols lns
   = let bounds = (Position 0 0, Position cols lns)
-        cells = uniformArray bounds defaultcell
-    in Screen cols lns home cells default_attributes
+        cells = array bounds [(Position x y, defaultcell)
+                    | x <- [0..cols],
+                      y <- [0..lns]]
+    in Screen cols lns home cells default_attributes []
 
 blank :: Screen -> Cell
 blank scr = Cell ' ' (sattrs scr)
@@ -181,8 +194,10 @@ parm_down_cursor n scr = row_address ((line . cursor $ scr) + n) scr
 clear_screen :: Screen -> Screen
 clear_screen scr 
   = let bounds = (Position 0 0, Position (columns scr) (lines scr))
-        cells = uniformArray bounds (blank scr)
-    in scr { cells = cells, cursor = home }
+        cells = [(Position x y, blank scr)
+                    | x <- [0..(columns scr)],
+                      y <- [0..(lines scr)]]
+    in updcells cells (scr { cursor = home })
 
 -- Clear from the beggining of the line to the current cursor position
 -- inclusive, leaving the cursor where it is.
@@ -191,8 +206,7 @@ clr_bol scr
   = let cline = line . cursor $ scr
         ccol = column . cursor $ scr
         upds = [(Position x cline, blank scr) | x <- [0..ccol]]
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Clear from the cursor position to the end of the line, leaving the cursor
 -- where it is.
@@ -201,8 +215,7 @@ clr_eol scr
   = let cline = line . cursor $ scr
         ccol = column . cursor $ scr
         upds = [(Position x cline, blank scr) | x <- [ccol..(columns scr)]]
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Clear from the current cursor position to the end of the display.
 clr_eos :: Screen -> Screen
@@ -212,8 +225,7 @@ clr_eos scr
         lupds = [(Position x cline, blank scr) | x <- [ccol..(columns scr)]]
         supds = [(Position x y, blank scr) | x <- [0..(lines scr)], y <- [(cline+1)..(lines scr)]]
         upds = lupds ++ supds
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Enter bold mode
 enter_bold_mode :: Screen -> Screen
@@ -255,8 +267,7 @@ parm_dch n scr
                   else (cells scr) ! (Position (x+n) cline)
         
         upds = [(Position x cline, f x) | x <- [ccol..(columns scr)]]
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Delete the line at the cursor position
 delete_line :: Screen -> Screen
@@ -270,8 +281,7 @@ parm_delete_line n scr
                   then blank scr
                   else (cells scr) ! (Position x (y+n))
         upds = [(Position x y, f x y) | x <- [0..(columns scr)], y <- [cline..(lines scr)]] 
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- erase n characters (clear them) at the cursor position without moving the
 -- cursor.
@@ -280,8 +290,7 @@ erase_chars n scr
   = let cline = line . cursor $ scr
         ccol = column . cursor $ scr
         upds = [(Position x cline, blank scr) | x <- [ccol..(ccol+n)]]
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Insert a (blank) character at the cursor position without moving the cursor
 -- position. Shifts following characters on the line over.
@@ -302,8 +311,7 @@ parm_ich n scr
         blks = [(Position x cline, blank scr) | x <- [ccol..(ccol + n)]]
         shfts = [(Position x cline, f x) | x <- [(ccol+n)..(columns scr)]]
         upds = blks ++ shfts
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Insert a line at the cursor position without moving the cursor.
 insert_line :: Screen -> Screen
@@ -320,8 +328,7 @@ parm_insert_line n scr
         blks = [(Position x y, blank scr) | x <- [0..(columns scr)], y <- [cline..(cline+n)]]
         shfts = [(Position x y, f x y) | x <- [0..(columns scr)], y <- [(cline+n)..(lines scr)]]
         upds = blks ++ shfts
-        ncells = (cells scr)//upds
-    in scr { cells = ncells }
+    in updcells upds scr
 
 -- Scroll forward one line
 scroll_forward :: Screen -> Screen
@@ -351,8 +358,8 @@ scroll n scr
           = if (y + n >=0 && y + n < lns)
             then (cells scr) ! (Position x (y+n))
             else blank scr
-        ncells = array bounds [(Position x y, f (Position x y)) | x <- [0..cols], y <- [0..lns]]
-    in scr { cells = ncells }
+        upds = [(Position x y, f (Position x y)) | x <- [0..cols], y <- [0..lns]]
+    in updcells upds scr
 
 
 
@@ -368,7 +375,7 @@ put_char c scr
         ncursor = if (cc +1 >= columns scr)
                     then Position 0 (cl+1)
                     else Position (cc+1) cl
-        nscr = scr { cells = ((cells scr)//[(cursor scr, (blank scr) { character = c } )]) }
+        nscr = updcells [(cursor scr, (blank scr) { character = c } )] scr
     in if needscroll
          then put_char c (cursor_up (scroll_forward scr))
          else cursor_address ncursor nscr
@@ -376,4 +383,12 @@ put_char c scr
 -- Get the cell at the given position
 cellat :: Position -> Screen -> Cell
 cellat pos scr = (cells scr) ! pos
+
+-- Get a list of cells which have changed recently.
+recent :: Screen -> [(Position, Cell)]
+recent scr = [(p, cellat p scr) | p <- nub $ m_recent scr]
+
+-- Clear the list of recent cells which have changed.
+clear_recent :: Screen -> Screen
+clear_recent scr = scr { m_recent = [] }
 
