@@ -759,11 +759,81 @@ will be lots of work.
 Thu May 12 21:33:08 EDT 2011
 
 More bug reports:
- - backspace doesn't move the cursor backwards.
+ + backspace doesn't move the cursor backwards.
  - enter at bottom of terminal does bad things.
  - cursor isn't displayed
  + ls --color causes bad sequence: 0m
     0m should be the same as turn off character attributes according to vt102
     manual. same as the control sequence m if I support that.
+ + man says terminal not fully functional
+    Problem was I hadn't installed my terminfo file on this computer.
+ + man sends ESC [ m and we crash.
+ + man sends ESC [ 22 m and we crash.
+    This means set normal intensity, so turns off bold?
+    I don't know how to specify this in terminfo.
+ - man sends ESC [ 4 m and we crash.
+    That's underscore. Um... what do I do if I don't support underscore?
+    Perhaps I should support it.
+    Why doesn't the man page have any underscore when I print it using fbterm?
+    Maybe screen takes care of that?
+
+ + screen sends ESC[0;(Just 10,'m')
+    And then we die. But wait, isn't that in the terminfo? Yes, so I should
+    support it.
+
+ + vim sends ESC[24;(Just 1,'H')
+    And then we die.
+
+ + vim within screen sends ESC[(Just 23,'B')
+    And then we die.
+ 
  - ls --color causes bad sequence: 1;
+    1; means 1 is the first parameter, not sure what the next are. I should
+    print that out too.   getting: ESC[1;34m
+    What, exactly, does that mean?
+
+    1 means turn on bold, 34m means set foreground blue.
+    I guess I need to support this.
+    I'll also need to suport 0;#m. Kind of annoying...
+ 
+ - reverse video (I think) looks totally messed up
+
+
+You know what? I think rather than erroring out when I get a bad control
+sequence, I should just print a warning and ignore it.
+
+Yes, now that I do that, I can make much more progress, and I get this
+wonderfully long list of character codes that need to be supported.
+
+Perhaps I ought to just collect values on this list? And tackle them one at a
+time. Yup.
+
+What can I use as my milestone? What is the first goal towards making a
+useful terminal emulator? How about this. If I can fix my bug in the terminal
+emulator, it's in good shape.
+
+Let me give a first stab at that, see how it goes.
+
+Here's how it went (with lots of redundancies cut out)
+
+unhandled control sequence ESC[24;(Just 1,'H')
+    + cup isn't implemented in the outputter? why not?
+unhandled control sequence ESC[(Just 8,'C')
+    + parm cursor right not implemented? Why not?
+
+These should be simple to fix.
+
+Well, I'm making progress maybe, but vim is still totally unusable, even
+though it isn't given undefined control sequences anymore. There must be a bug
+in the control sequences or something that's messing with things.
+
+Here is a review of the known so far:
+
+- tabs print box
+- reverse video (I think) looks totally messed up
+- sequence: ESC[1;34m   - bold blue
+- sequence: ESC[4m      - underscore attribute
+- enter at bottom of terminal does bad things.
+- cursor isn't displayed
+- vim totally doesn't work (not sure why)
 

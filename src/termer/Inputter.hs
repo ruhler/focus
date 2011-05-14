@@ -201,6 +201,9 @@ press iput MINUS True _ = iput '_'
 press iput EQUALS False _ = iput '='
 press iput EQUALS True _ = iput '+'
 
+press iput SEMICOLON False _ = iput ';'
+press iput SEMICOLON True _ = iput ':'
+
 press iput COMMA False _ = iput ','
 press iput COMMA True _ = iput '<'
 

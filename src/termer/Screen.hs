@@ -6,7 +6,7 @@ module Screen (
     cursor_address, cursor_down, cursor_home, cursor_left, cursor_right,    
     cursor_to_ll, cursor_up, parm_left_cursor, parm_right_cursor, parm_up_cursor,
     parm_down_cursor, clear_screen, clr_bol, clr_eol, clr_eos,
-    enter_bold_mode, enter_reverse_mode, exit_attribute_mode,
+    enter_bold_mode, enter_reverse_mode, exit_attribute_mode, exit_bold_mode,
     set_foreground, set_background, delete_character, parm_dch,
     delete_line, parm_delete_line, erase_chars, insert_character,
     parm_ich, insert_line, parm_insert_line, scroll_forward,
@@ -247,6 +247,16 @@ exit_attribute_mode scr
   = let attr = sattrs scr
         nattrs = attr { style = normal, fgcolor = WHITE, bgcolor = BLACK }
     in scr { sattrs = nattrs }
+
+-- Turn off bold
+exit_bold_mode :: Screen -> Screen
+exit_bold_mode scr
+  = let attr = sattrs scr
+        sty = style attr
+        nsty = sty { bold = False }
+        nattr = attr { style = nsty }
+    in scr { sattrs = nattr }
+
 
 -- Set the forground color
 set_foreground :: Color -> Screen -> Screen

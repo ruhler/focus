@@ -7,8 +7,8 @@ import Inputter
 import Outputter
 import Screen
 
-lns = 12
-cols = 40
+lns = 24
+cols = 80
 
 
 updatef :: (Screen -> Screen) -> StateT Screen IO ()

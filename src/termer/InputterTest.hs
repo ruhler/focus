@@ -49,6 +49,9 @@ test = "InputterTest" ~: [
 
     "--" ~: "--" ~=? (try [
         Keypress MINUS, Keyrelease MINUS,
-        Keypress MINUS, Keyrelease MINUS])
+        Keypress MINUS, Keyrelease MINUS]),
+
+    "semicolon" ~: ";" ~=? (try [
+        Keypress SEMICOLON, Keyrelease SEMICOLON])
     ]
  

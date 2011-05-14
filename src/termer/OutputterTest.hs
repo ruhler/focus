@@ -55,11 +55,49 @@ test = "OutputterTest" ~: [
         modify $ put_char 'c'
         ),
 
+    "backspace" ~: (run 6 4 "ab\BSc" $ do
+        modify $ put_char 'a'
+        modify $ put_char 'b'
+        modify $ cursor_left
+        modify $ put_char 'c'
+        ),
+
+    "ESC[m" ~: (run 6 4 "ab\ESC[mc" $ do
+        modify $ put_char 'a'
+        modify $ put_char 'b'
+        modify $ exit_attribute_mode
+        modify $ put_char 'c'
+        ),
+
     "ESC[0m" ~: (run 6 4 "ab\ESC[0mc" $ do
         modify $ put_char 'a'
         modify $ put_char 'b'
         modify $ exit_attribute_mode
         modify $ put_char 'c'
+        ),
+
+    "sgr: ESC[0;10m" ~: (run 6 4 "a\ESC[1mb\ESC[0;10mc" $ do
+        modify $ put_char 'a'
+        modify $ enter_bold_mode
+        modify $ put_char 'b'
+        modify $ exit_attribute_mode
+        modify $ put_char 'c'
+        ),
+
+    "boldoff: ESC[22m" ~: (run 6 4 "a\ESC[1mb\ESC[22mc" $ do
+        modify $ put_char 'a'
+        modify $ enter_bold_mode
+        modify $ put_char 'b'
+        modify $ exit_bold_mode
+        modify $ put_char 'c'
+        ),
+
+    "cup: ESC[4;3H" ~: (run 6 4 "\ESC[4;3H" $ do
+        modify $ cursor_address (Position 3 4)
+        ),
+
+    "cuf: ESC[4C" ~: (run 6 4 "\ESC[4C" $ do
+        modify $ parm_right_cursor 4
         )
 
     ]
