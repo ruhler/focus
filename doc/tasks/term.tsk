@@ -838,16 +838,35 @@ Here is a review of the known so far:
     The background thing may have fixed this.
 - sequence: ESC[4m      - underscore attribute
 - enter at bottom of terminal does bad things.
-- vim totally doesn't work (not sure why)
+    It should automaticall scroll down, right? Or shouldn't it?
+    How should I know?
+
++ vim totally doesn't work (not sure why)
     It looks like how it clears the screen doesn't work at all or something.
     when I press h, or j, the cursor jumps down to the bottom right of the
     screen, which is causing issues (it doesn't jump back as I expect).
     It might be nice to trace all the character sequences we get, see which
     one's vim is using that might be causing the problem.
+
+    We weren't decrementing the arguments to the cup command. That made a big
+    difference.
+
 - doesn't recognize the function key on my laptop as a keysym.
 - bell output as square
-- we don't redraw the cell where the cursor used to be.
++ we don't redraw the cell where the cursor used to be.
     whose job is it? should screen say it has changed? should screen change
     the character attributes to account for the cursor when you call cellat
     too? That might be nice.
+
+    To put of the decision about drawing the cursor I just added source and
+    destination of cursor moves to the m_recent list.
++ clearing the screen in vim appears to only clear the first 24 columns?
+    As if, perhaps I use rows when I should be using columns...
+
+    Yup, I see the bug in the clr_eos implementation. It uses lines instead of
+    columns. How to test this...
+
+    Tested and fixed. Much better now.
+- control-e in vim... doesn't do the scroll it seems. Or rather, the scroll
+    isn't displayed.
 

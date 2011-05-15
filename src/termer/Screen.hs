@@ -125,7 +125,7 @@ carriage_return scr = column_address 0 scr
 
 -- Move the the first column of the next line
 newline :: Screen -> Screen
-newline = cursor_down . carriage_return
+newline = carriage_return . cursor_down 
 
 -- Advance the cursor column to the next 8-space tab stop
 tab :: Screen -> Screen
@@ -146,7 +146,10 @@ row_address nrow scr
 -- cursor_address pos
 -- Move the cursor to the given position
 cursor_address :: Position -> Screen -> Screen
-cursor_address pos scr = scr { cursor = pos }
+cursor_address pos scr
+ = let oldpos = cursor scr
+       oldrec = m_recent scr
+   in scr { cursor = pos, m_recent = pos:oldpos:oldrec }
 
 -- Move cursor down one line
 cursor_down :: Screen -> Screen
@@ -223,7 +226,7 @@ clr_eos scr
   = let cline = line . cursor $ scr
         ccol = column . cursor $ scr
         lupds = [(Position x cline, blank scr) | x <- [ccol..(columns scr)]]
-        supds = [(Position x y, blank scr) | x <- [0..(lines scr)], y <- [(cline+1)..(lines scr)]]
+        supds = [(Position x y, blank scr) | x <- [0..(columns scr)], y <- [(cline+1)..(lines scr)]]
         upds = lupds ++ supds
     in updcells upds scr
 

@@ -93,7 +93,7 @@ test = "OutputterTest" ~: [
         ),
 
     "cup: ESC[4;3H" ~: (run 6 4 "\ESC[4;3H" $ do
-        modify $ cursor_address (Position 3 4)
+        modify $ cursor_address (Position 2 3)
         ),
 
     "cuf: ESC[4C" ~: (run 6 4 "\ESC[4C" $ do

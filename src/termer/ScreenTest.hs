@@ -149,6 +149,14 @@ test = "ScreenTest" ~: [
             modify $ cursor_address (Position 0 3) 
             mapM_ (modify . put_char) "abcdefGHIJKLmno"
             gets $ cellat (Position 3 2)
+            ),
+
+    "clr_eos clears full line" ~: Cell ' ' (Attributes WHITE BLACK (Style False False))
+        ~=? (run 6 3 $ do
+            mapM_ (modify . put_char) "abcdefGHIJKLmno"
+            modify $ cursor_home
+            modify $ clr_eos
+            gets $ cellat (Position 4 1)
             )
 
     ]
