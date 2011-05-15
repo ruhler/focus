@@ -829,11 +829,25 @@ in the control sequences or something that's messing with things.
 
 Here is a review of the known so far:
 
-- tabs print box
++ tabs print box
++ cursor isn't displayed
++ should blank the cell with the background color!
++ sequence: ESC[1;34m   - bold blue
+    I get ls color now.
 - reverse video (I think) looks totally messed up
-- sequence: ESC[1;34m   - bold blue
+    The background thing may have fixed this.
 - sequence: ESC[4m      - underscore attribute
 - enter at bottom of terminal does bad things.
-- cursor isn't displayed
 - vim totally doesn't work (not sure why)
+    It looks like how it clears the screen doesn't work at all or something.
+    when I press h, or j, the cursor jumps down to the bottom right of the
+    screen, which is causing issues (it doesn't jump back as I expect).
+    It might be nice to trace all the character sequences we get, see which
+    one's vim is using that might be causing the problem.
+- doesn't recognize the function key on my laptop as a keysym.
+- bell output as square
+- we don't redraw the cell where the cursor used to be.
+    whose job is it? should screen say it has changed? should screen change
+    the character attributes to account for the cursor when you call cellat
+    too? That might be nice.
 

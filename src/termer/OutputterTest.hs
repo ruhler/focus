@@ -98,6 +98,19 @@ test = "OutputterTest" ~: [
 
     "cuf: ESC[4C" ~: (run 6 4 "\ESC[4C" $ do
         modify $ parm_right_cursor 4
+        ),
+
+    "tab" ~: (run 18 4 "a\tb" $ do
+        modify $ put_char 'a'
+        modify $ tab
+        modify $ put_char 'b'
+        ),
+
+    "ESC[1;34m" ~: (run 18 4 "a\ESC[1;34mb" $ do
+        modify $ put_char 'a'
+        modify $ enter_bold_mode
+        modify $ set_foreground BLUE
+        modify $ put_char 'b'
         )
 
     ]

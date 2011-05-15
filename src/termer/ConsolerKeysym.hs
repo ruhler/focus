@@ -293,4 +293,5 @@ instance Enum Keysym
     toEnum 320 = POWER
     toEnum 321 = EURO
     toEnum 322 = UNDO
+    toEnum x = error $ "Don't know about keysym number " ++ show x
 

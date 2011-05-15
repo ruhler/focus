@@ -199,8 +199,9 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     int x, y;
 
     // blank the cell first
+    int bgc = (redof(bgcolor, style) << 16) | (blueof(bgcolor, style) << 8) | greenof(bgcolor, style);
     SDL_Rect dst = {xdst, ydst, gstate.cell_width, gstate.cell_height};
-    SDL_FillRect(gstate.display, &dst, 0);
+    SDL_FillRect(gstate.display, &dst, bgc);
 
 
     // Now draw the character.

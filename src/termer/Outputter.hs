@@ -32,6 +32,31 @@ getnum_aux x getf = do
       else return (Just x, c)
 
     
+-- Given the update function to change a mode for the given integer
+mode :: Integer -> (Screen -> Screen)
+mode 0 = exit_attribute_mode
+mode 1 = enter_bold_mode
+mode 7 = enter_reverse_mode
+mode 10 = id    -- primary font ??
+mode 22 = exit_bold_mode
+mode 30 = set_foreground BLACK
+mode 31 = set_foreground RED
+mode 32 = set_foreground GREEN
+mode 33 = set_foreground YELLOW
+mode 34 = set_foreground BLUE
+mode 35 = set_foreground MAGENTA
+mode 36 = set_foreground CYAN
+mode 37 = set_foreground WHITE
+mode 39 = set_foreground WHITE
+mode 40 = set_background BLACK
+mode 41 = set_background RED
+mode 42 = set_background GREEN
+mode 43 = set_background YELLOW
+mode 44 = set_background BLUE
+mode 45 = set_background MAGENTA
+mode 46 = set_background CYAN
+mode 47 = set_background WHITE
+mode 49 = set_background WHITE
 
 -- outputter term getf updatef
 --  term - character sent when outputter should stop (or Nothing to go forever)
@@ -44,6 +69,7 @@ outputter term getf updatef = do
       Just x | x == c -> return ()
       _ -> do
         case c of
+          '\HT' -> updatef tab
           '\LF' -> updatef cursor_down
           '\BS' -> updatef cursor_left
           '\CR' -> updatef carriage_return
@@ -67,28 +93,7 @@ outputter term getf updatef = do
                   (Nothing, 'P') -> updatef delete_character
                   (Nothing, 'm') -> updatef exit_attribute_mode
                   (Just 1, 'K') -> updatef clr_bol
-                  (Just 0, 'm') -> updatef exit_attribute_mode
-                  (Just 1, 'm') -> updatef enter_bold_mode
-                  (Just 7, 'm') -> updatef enter_reverse_mode
-                  (Just 22, 'm') -> updatef exit_bold_mode
-                  (Just 30, 'm') -> updatef $ set_foreground BLACK
-                  (Just 31, 'm') -> updatef $ set_foreground RED
-                  (Just 32, 'm') -> updatef $ set_foreground GREEN
-                  (Just 33, 'm') -> updatef $ set_foreground YELLOW
-                  (Just 34, 'm') -> updatef $ set_foreground BLUE
-                  (Just 35, 'm') -> updatef $ set_foreground MAGENTA
-                  (Just 36, 'm') -> updatef $ set_foreground CYAN
-                  (Just 37, 'm') -> updatef $ set_foreground WHITE
-                  (Just 39, 'm') -> updatef $ set_foreground WHITE
-                  (Just 40, 'm') -> updatef $ set_background BLACK
-                  (Just 41, 'm') -> updatef $ set_background RED
-                  (Just 42, 'm') -> updatef $ set_background GREEN
-                  (Just 43, 'm') -> updatef $ set_background YELLOW
-                  (Just 44, 'm') -> updatef $ set_background BLUE
-                  (Just 45, 'm') -> updatef $ set_background MAGENTA
-                  (Just 46, 'm') -> updatef $ set_background CYAN
-                  (Just 47, 'm') -> updatef $ set_background WHITE
-                  (Just 49, 'm') -> updatef $ set_background WHITE
+                  (Just x, 'm') -> updatef $ mode x
                   (Just x, 'A') -> updatef $ parm_up_cursor x
                   (Just x, 'B') -> updatef $ parm_down_cursor x
                   (Just x, 'C') -> updatef $ parm_right_cursor x
@@ -105,7 +110,9 @@ outputter term getf updatef = do
                   (Just x, ';') -> do
                       c <- getnum getf
                       case c of
-                          (Just 10, 'm') | x == 0 -> updatef exit_attribute_mode
+                          (Just y, 'm') -> do
+                              updatef $ mode x
+                              updatef $ mode y
                           (Just y, 'H') -> updatef $ cursor_address (Position y x)
                           _ -> trace ("unhandled control sequence ESC[" ++ (show x) ++ ";" ++ (show c)) (return ())
                   x -> trace ("unhandled control sequence ESC[" ++ (show x)) (return ())

@@ -10,6 +10,9 @@ import Screen
 lns = 24
 cols = 80
 
+-- Change the contents of the cursor cell to make it apparent
+curserify :: Cell -> Cell
+curserify (Cell char (Attributes fg bg s)) = Cell char (Attributes BLACK WHITE s)
 
 updatef :: (Screen -> Screen) -> StateT Screen IO ()
 updatef f =
@@ -17,8 +20,12 @@ updatef f =
     in do
         modify f
         r <- gets recent
-        lift $ mapM_ (\(p, c) -> CTermer.drawCell p c) r
-        lift $ CTermer.showDisplay
+        scr <- get
+        let pcur = cursor scr
+        lift $ do
+            mapM_ (\(p, c) -> CTermer.drawCell p c) r
+            CTermer.drawCell pcur (curserify (cellat pcur scr))
+            CTermer.showDisplay
         modify $ clear_recent
     
 
