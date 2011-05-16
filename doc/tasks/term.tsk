@@ -875,21 +875,54 @@ Here is a review of the known so far:
     
     Maybe this is fixed now.
     Yes, it appears to be so.
++ colors are crazy when reverse with fg and bg different.
+    It looks like the fill color is not being set the same as the background
+    color in that case, and the fg is just plain black.
 
-- sequence: ESC[4m      - underscore attribute
-- doesn't recognize the function key on my laptop as a keysym.
-- bell output as square
-- performance is annoyingly poor.
+    I switch green and blue. That might solve it.
+    Yup. Fixed.
++ performance is annoyingly poor.
     profiling suggests showDisplay dominates.
     That should be pretty easy to fix, right? Just update that part of the
     display that has changed rather than the whole thing.
 
     And we also allocate tons of memory for calling nub to get the list of
     recent changes, which seems wrong to me...
-- sequence: \e[%
-- there is no key repeat
-- colors are crazy when reverse with fg and bg different.
-    It looks like the fill color is not being set the same as the background
-    color in that case, and the fg is just plain black.
 
+    I updated the ShowDisplay function to only show part of the display...
+    wait, or did I? No, I forgot. Good, that could explain why performance
+    didn't improve any.
+
+    I changed ShowDisplay to only show the part of the display which changed.
+    It is noticably much faster. Good. Though scrolling is pretty bad still.
+    Updating the whole display seems to be rather slow.
+
+    Scrolling is noticably slow now, but the rest is fine.
+
+- sequence: ESC[4m      - underscore attribute
+- doesn't recognize the function key on my laptop as a keysym.
+- bell output as square
+- sequence: \e[%
+    Triggered when visiting man pages.
+- there is no key repeat
+- Every now and then vim prints: dch=p1%dP. I wonder if I forgot a \E in the t
+  erminfo file?
+- in vim, the status line sometimes get's copied too low, so it gets
+  duplicated. It's showing up off the bottom of the terminal...
+    This is a problem with using (lines scr) instead of (lines scr)-1 all over
+    the place. I should be able to write a test case which would write to that
+    part of the screen (with an insert line perhaps), and verify none of
+    "recent" is outside the bounds of the screen.
+- profile shows == taking 90% allocation
+    What's up with that?
+    I feel like that shouldn't be the case.
+    It's when getting the recently changed cells. Why don't I just use a set
+    of positions rather than a list which I nub? Will that take up so much
+    allocation?
+
+    I switched to Data.Set. I'm running now. Performance is maybe... much
+    better? Scrolling seems much faster to me now. That's a little surprising
+    to me.
+
+    Oh well, it's nice I guess. Let me check out the profile.
 

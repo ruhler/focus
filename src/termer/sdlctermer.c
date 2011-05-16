@@ -3,6 +3,7 @@
 // consoler.
 
 
+#include <assert.h>
 #include <math.h>
 #include <pty.h>
 #include <stdio.h>
@@ -17,9 +18,6 @@
 #include <SDL/SDL.h>
 #include "ctermer.h"
 
-#define WIDTH 640
-#define HEIGHT 480
-
 typedef struct {
     // The most recently gotten event.
     SDL_Event event;
@@ -33,6 +31,12 @@ typedef struct {
     int cell_height;
     int char_ascender;
          
+    // bounds of cells which have changed and need redisplay
+    // -1 means they have not been set yet.
+    int maxcol;
+    int mincol;
+    int maxrow;
+    int minrow;
     
     // terminal client file descriptor.
     int tcfd;
@@ -119,6 +123,11 @@ int ctermer_Init()
         SDL_Quit();
     }
 
+    gstate.mincol = -1;
+    gstate.maxcol = -1;
+    gstate.minrow = -1;
+    gstate.maxrow = -1;
+
     return 0;
 }
 
@@ -194,6 +203,19 @@ double fromfixed(signed long x)
 
 void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgcolor)
 {
+    if (gstate.mincol == -1 || gstate.mincol > col) {
+        gstate.mincol = col;
+    }
+    if (gstate.maxcol == -1 || gstate.maxcol < col) {
+        gstate.maxcol = col;
+    }
+    if (gstate.minrow == -1 || gstate.minrow > row) {
+        gstate.minrow = row;
+    }
+    if (gstate.maxrow == -1 || gstate.maxrow < row) {
+        gstate.maxrow = row;
+    }
+
     FT_Load_Char(gstate.face, c, FT_LOAD_RENDER);
 
     int xdst = col * gstate.cell_width;
@@ -207,7 +229,7 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     int x, y;
 
     // blank the cell first
-    int bgc = (redof(bgcolor, style) << 16) | (blueof(bgcolor, style) << 8) | greenof(bgcolor, style);
+    int bgc = (redof(bgcolor, style) << 16) | (greenof(bgcolor, style) << 8) | blueof(bgcolor, style);
     SDL_Rect dst = {xdst, ydst, gstate.cell_width, gstate.cell_height};
     SDL_FillRect(gstate.display, &dst, bgc);
 
@@ -234,7 +256,36 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
 
 void ctermer_ShowDisplay()
 {
-    SDL_UpdateRect(gstate.display, 0, 0, 0, 0);
+    int x = 0;
+    int y = 0;
+    int w = 0;
+    int h = 0;
+
+    if (gstate.mincol != -1) {
+        assert(gstate.maxcol != -1);
+        assert(gstate.minrow != -1);
+        assert(gstate.maxrow != -1);
+
+        x = gstate.cell_width * gstate.mincol;
+        y = gstate.cell_height * gstate.minrow;
+        w = gstate.cell_width * (gstate.maxcol - gstate.mincol + 1);
+        h = gstate.cell_height * (gstate.maxrow - gstate.minrow + 1);
+
+        if (x+w > gstate.display->w) {
+            w = gstate.display->w - x;
+        }
+
+        if (y+h > gstate.display->h) {
+            h = gstate.display->h - y;
+        }
+    }
+
+    SDL_UpdateRect(gstate.display, x, y, w, h);
+
+    gstate.mincol = -1;
+    gstate.maxcol = -1;
+    gstate.minrow = -1;
+    gstate.maxrow = -1;
 }
 
 

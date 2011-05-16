@@ -17,7 +17,7 @@ module Screen (
 
 import Prelude hiding (reverse, lines)
 import Data.Array
-import Data.List(nub)
+import qualified Data.Set as Set
 
 data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
     deriving(Eq, Show)
@@ -87,7 +87,7 @@ data Screen = Screen {
     cursor :: Position,
     cells :: Array Position Cell,
     sattrs :: Attributes,
-    m_recent :: [Position]
+    m_recent :: Set.Set Position
 } deriving (Eq, Show)
 
 -- make an array where every element is the same
@@ -100,7 +100,7 @@ updcells upds scr
   = let oldcells = cells scr
         newcells = oldcells//upds
         oldrecent = m_recent scr
-        newrecent = (map fst upds) ++ oldrecent
+        newrecent = Set.union (Set.fromList (map fst upds)) oldrecent
     in scr { cells = newcells, m_recent = newrecent }
 
 -- screen columns lines
@@ -111,7 +111,7 @@ screen cols lns
         cells = array bounds [(Position x y, defaultcell)
                     | x <- [0..cols],
                       y <- [0..lns]]
-    in Screen cols lns home cells default_attributes []
+    in Screen cols lns home cells default_attributes Set.empty
 
 blank :: Screen -> Cell
 blank scr = Cell ' ' (sattrs scr)
@@ -149,7 +149,8 @@ cursor_address :: Position -> Screen -> Screen
 cursor_address pos scr
  = let oldpos = cursor scr
        oldrec = m_recent scr
-   in scr { cursor = pos, m_recent = pos:oldpos:oldrec }
+       newrec = Set.insert pos (Set.insert oldpos oldrec)
+   in scr { cursor = pos, m_recent = newrec }
 
 -- Move cursor down one line
 -- If we are at the last line, scrolls the text up instead.
@@ -407,9 +408,9 @@ cellat pos scr = (cells scr) ! pos
 
 -- Get a list of cells which have changed recently.
 recent :: Screen -> [(Position, Cell)]
-recent scr = [(p, cellat p scr) | p <- nub $ m_recent scr]
+recent scr = [(p, cellat p scr) | p <- Set.toList $ m_recent scr]
 
 -- Clear the list of recent cells which have changed.
 clear_recent :: Screen -> Screen
-clear_recent scr = scr { m_recent = [] }
+clear_recent scr = scr { m_recent = Set.empty }
 
