@@ -157,6 +157,15 @@ test = "ScreenTest" ~: [
             modify $ cursor_home
             modify $ clr_eos
             gets $ cellat (Position 4 1)
+            ),
+
+    "newline at bottom scrolls" ~: Cell 'K' (Attributes WHITE BLACK (Style False False))
+        ~=? (run 6 4 $ do
+            modify $ cursor_down
+            mapM_ (modify . put_char) "abcdefGHIJKLmno"
+            modify $ cursor_address (Position 0 3)
+            modify $ newline
+            gets $ cellat (Position 4 1)
             )
 
     ]

@@ -834,13 +834,8 @@ Here is a review of the known so far:
 + should blank the cell with the background color!
 + sequence: ESC[1;34m   - bold blue
     I get ls color now.
-- reverse video (I think) looks totally messed up
++ reverse video (I think) looks totally messed up
     The background thing may have fixed this.
-- sequence: ESC[4m      - underscore attribute
-- enter at bottom of terminal does bad things.
-    It should automaticall scroll down, right? Or shouldn't it?
-    How should I know?
-
 + vim totally doesn't work (not sure why)
     It looks like how it clears the screen doesn't work at all or something.
     when I press h, or j, the cursor jumps down to the bottom right of the
@@ -850,9 +845,6 @@ Here is a review of the known so far:
 
     We weren't decrementing the arguments to the cup command. That made a big
     difference.
-
-- doesn't recognize the function key on my laptop as a keysym.
-- bell output as square
 + we don't redraw the cell where the cursor used to be.
     whose job is it? should screen say it has changed? should screen change
     the character attributes to account for the cursor when you call cellat
@@ -867,6 +859,37 @@ Here is a review of the known so far:
     columns. How to test this...
 
     Tested and fixed. Much better now.
-- control-e in vim... doesn't do the scroll it seems. Or rather, the scroll
++ control-e in vim... doesn't do the scroll it seems. Or rather, the scroll
     isn't displayed.
+    vim outputs a literal control-e, so I guess that should be part of the
+    terminfo maybe? What? That doesn't make sense. I can't do ^E normally...
+    I bet the printed ^E is for when I type it.
+
+    No the thing it does is: \e[24;1H\r\n
+    That should scroll the screen down.
+
+    Fixed.
++ enter at bottom of terminal does bad things.
+    It should automaticall scroll down, right? Or shouldn't it?
+    How should I know?
+    
+    Maybe this is fixed now.
+    Yes, it appears to be so.
+
+- sequence: ESC[4m      - underscore attribute
+- doesn't recognize the function key on my laptop as a keysym.
+- bell output as square
+- performance is annoyingly poor.
+    profiling suggests showDisplay dominates.
+    That should be pretty easy to fix, right? Just update that part of the
+    display that has changed rather than the whole thing.
+
+    And we also allocate tons of memory for calling nub to get the list of
+    recent changes, which seems wrong to me...
+- sequence: \e[%
+- there is no key repeat
+- colors are crazy when reverse with fg and bg different.
+    It looks like the fill color is not being set the same as the background
+    color in that case, and the fg is just plain black.
+
 

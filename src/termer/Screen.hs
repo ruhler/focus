@@ -152,8 +152,12 @@ cursor_address pos scr
    in scr { cursor = pos, m_recent = pos:oldpos:oldrec }
 
 -- Move cursor down one line
+-- If we are at the last line, scrolls the text up instead.
 cursor_down :: Screen -> Screen
-cursor_down = parm_down_cursor 1
+cursor_down scr
+  = if ((line . cursor $ scr) == (lines scr)-1)
+      then scroll_forward scr
+      else parm_down_cursor 1 scr
 
 -- Move cursor to the home position
 cursor_home :: Screen -> Screen

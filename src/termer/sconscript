@@ -23,8 +23,8 @@ env.Depends('termer', 'ctermer.h')
 env.Default(env.GHCProgram('sdltermer',
     ['termer.hs', 'sdlctermer.c'],
     LIBS=['freetype', 'fontconfig', 'util', 'SDL'],
-    GHCFLAGS=['-threaded']))
-    #GHCFLAGS=['-threaded', '-prof', '-auto-all']))
+    GHCFLAGS=['-threaded', '-prof', '-auto-all']))
+    #GHCFLAGS=['-threaded']))
 env.Depends('sdltermer', 'ctermer.h')
 
 
