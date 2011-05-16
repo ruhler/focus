@@ -898,22 +898,7 @@ Here is a review of the known so far:
     Updating the whole display seems to be rather slow.
 
     Scrolling is noticably slow now, but the rest is fine.
-
-- sequence: ESC[4m      - underscore attribute
-- doesn't recognize the function key on my laptop as a keysym.
-- bell output as square
-- sequence: \e[%
-    Triggered when visiting man pages.
-- there is no key repeat
-- Every now and then vim prints: dch=p1%dP. I wonder if I forgot a \E in the t
-  erminfo file?
-- in vim, the status line sometimes get's copied too low, so it gets
-  duplicated. It's showing up off the bottom of the terminal...
-    This is a problem with using (lines scr) instead of (lines scr)-1 all over
-    the place. I should be able to write a test case which would write to that
-    part of the screen (with an insert line perhaps), and verify none of
-    "recent" is outside the bounds of the screen.
-- profile shows == taking 90% allocation
++ profile shows == taking 90% allocation
     What's up with that?
     I feel like that shouldn't be the case.
     It's when getting the recently changed cells. Why don't I just use a set
@@ -925,4 +910,42 @@ Here is a review of the known so far:
     to me.
 
     Oh well, it's nice I guess. Let me check out the profile.
+    Yes, that helps, but we still do a lot of allocation for the set.
+    I wonder if it wouldn't be more efficient to just diff with the previous
+    version of the screen. Or maybe if enough has changed, I can keep track of
+    that? Or, what about this. How about I keep track of the rectangle which
+    has changed. A single bounding box, like I do for the sdl display. This
+    way for small changes, you can capture them fine, and same for big
+    changes. The only loss is when you have two changes in different parts of
+    the screen, such as going to the end of the line, or moving the cursor to
+    an arbitrary position. That would be pretty bad maybe.
++ Every now and then vim prints: dch=p1%dP. I wonder if I forgot a \E in the t
+  erminfo file?
+    I had forgotten a comma. Should be fixed now.
+
+- sequence: ESC[4m      - underscore attribute
+- doesn't recognize the function key on my laptop as a keysym.
+- bell output as square
+- sequence: \e[%
+    Triggered when visiting man pages. Not sure what this is supposed to do.
+- there is no key repeat
+- in vim, the status line sometimes get's copied too low, so it gets
+  duplicated. It's showing up off the bottom of the terminal...
+    This is a problem with using (lines scr) instead of (lines scr)-1 all over
+    the place. I should be able to write a test case which would write to that
+    part of the screen (with an insert line perhaps), and verify none of
+    "recent" is outside the bounds of the screen.
+- elinks caused some bad escape sequence.
+    ESC followed by not [. I put tracing in to record what the next thing was
+    so I can try to figure out the problem.
+
+    From elinks list of unhandled:
+    \E)     - start defining sequence G1
+    \E7     - save state
+    \E8     - restore state
+    \E[?    - private mode thing (usually has additional chars)
+    \E[2J   - erase whole display
+    \E]     - operating system command? set color palette
+    \E0;30; ... - longer length mode sequences
+
 

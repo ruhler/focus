@@ -116,6 +116,7 @@ outputter term getf updatef = do
                           (Just y, 'H') -> updatef $ cursor_address (Position (y-1) (x-1))
                           _ -> trace ("unhandled control sequence ESC[" ++ (show x) ++ ";" ++ (show c)) (return ())
                   x -> trace ("unhandled control sequence ESC[" ++ (show x)) (return ())
+              x -> trace ("unhandled escape sequence ESC" ++ (show x)) (return ())
           c -> updatef $ put_char c         
         outputter term getf updatef
 

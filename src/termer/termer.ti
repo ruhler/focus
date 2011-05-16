@@ -37,7 +37,7 @@ termer,
     ech=\E[%p1%dX,
     
     dl=\E[%p1%dM,
-    dl1=\E[M
+    dl1=\E[M,
     dch=\E[%p1%dP,
     dch1=\E[P,
 
