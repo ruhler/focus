@@ -949,3 +949,19 @@ Here is a review of the known so far:
     \E0;30; ... - longer length mode sequences
 
 
+Mon May 16 18:02:10 EDT 2011
+
+What do I want to do with this now?
+Ideally I can make it useable. Even more ideally, for milestone whatever we're
+on, it should be useable using the consoler backend, so that I can use it with
+green.
+
+Let me work toward the latter, see how things go.
+
+Mon May 16 18:11:17 EDT 2011
+
+It works great! Except, I forgot to compile my terminfo on pacific, and
+scrolling is decidedly slow. It's kind of fun to run top in my terminal. You
+can see all the refershing.
+
+

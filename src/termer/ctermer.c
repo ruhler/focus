@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include <math.h>
 #include <pty.h>
 #include <stdio.h>
@@ -29,6 +30,12 @@ typedef struct {
     int cell_height;
     int char_ascender;
          
+    // bounds of cells which have changed and need redisplay
+    // -1 means they have not been set yet.
+    int maxcol;
+    int mincol;
+    int maxrow;
+    int minrow;
     
     // terminal client file descriptor.
     int tcfd;
@@ -59,7 +66,7 @@ int forkterminalclient()
 int ctermer_Init()
 {
     const char* font = "Monospace:Bold";
-    const int size = 26;
+    const int size = 12;
 
     if (forkterminalclient() != 0) {
         fprintf(stderr, "error forking terminal client\n");
@@ -106,6 +113,10 @@ int ctermer_Init()
 
     CNSL_Init();
     gstate.display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+    gstate.mincol = -1;
+    gstate.maxcol = -1;
+    gstate.minrow = -1;
+    gstate.maxrow = -1;
 
     return 0;
 }
@@ -168,6 +179,19 @@ double fromfixed(signed long x)
 
 void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgcolor)
 {
+    if (gstate.mincol == -1 || gstate.mincol > col) {
+        gstate.mincol = col;
+    }
+    if (gstate.maxcol == -1 || gstate.maxcol < col) {
+        gstate.maxcol = col;
+    }
+    if (gstate.minrow == -1 || gstate.minrow > row) {
+        gstate.minrow = row;
+    }
+    if (gstate.maxrow == -1 || gstate.maxrow < row) {
+        gstate.maxrow = row;
+    }
+
     FT_Load_Char(gstate.face, c, FT_LOAD_RENDER);
 
     int xdst = col * gstate.cell_width;
@@ -181,9 +205,10 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
     int x, y;
 
     // blank the cell first
+    int bgc = (redof(bgcolor, style) << 16) | (greenof(bgcolor, style) << 8) | blueof(bgcolor, style);
     for (x = 0; x < gstate.cell_width; x++) {
         for (y = 0; y < gstate.cell_height; y++) {
-            CNSL_SetPixel(gstate.display, xdst + x, ydst + y, 0);
+            CNSL_SetPixel(gstate.display, xdst + x, ydst + y, bgc);
         }
     }
 
@@ -193,18 +218,50 @@ void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgco
             int index = y * w + x;
             int level = gstate.face->glyph->bitmap.buffer[index];
 
-            int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
-            int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
-            int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
+            unsigned int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
+            unsigned int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
+            unsigned int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
             CNSL_Color c = CNSL_MakeColor(red, green, blue);
 
-            CNSL_SetPixel(gstate.display, xdst + l + x, ydst + gstate.char_ascender - t + y, c);
+            int px = xdst + l + x;
+            int py = ydst + gstate.char_ascender-t+y;
+            CNSL_SetPixel(gstate.display, px, py, c);
         }
     }
 }
 
 void ctermer_ShowDisplay()
 {
-    CNSL_SendDisplay(stdcon, gstate.display, 0, 0, 0, 0, WIDTH, HEIGHT);
+    int x = 0;
+    int y = 0;
+    int w = 0;
+    int h = 0;
+
+    if (gstate.mincol != -1) {
+        assert(gstate.maxcol != -1);
+        assert(gstate.minrow != -1);
+        assert(gstate.maxrow != -1);
+
+        x = gstate.cell_width * gstate.mincol;
+        y = gstate.cell_height * gstate.minrow;
+        w = gstate.cell_width * (gstate.maxcol - gstate.mincol + 1);
+        h = gstate.cell_height * (gstate.maxrow - gstate.minrow + 1);
+
+        if (x+w > WIDTH) {
+            w = WIDTH - x;
+        }
+
+        if (y+h > HEIGHT) {
+            h = HEIGHT - y;
+        }
+    }
+
+    CNSL_SendDisplay(stdcon, gstate.display, x, y, x, y, w, h);
+
+    gstate.mincol = -1;
+    gstate.maxcol = -1;
+    gstate.minrow = -1;
+    gstate.maxrow = -1;
 }
+
 
