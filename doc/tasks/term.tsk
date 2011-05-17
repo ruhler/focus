@@ -923,7 +923,6 @@ Here is a review of the known so far:
   erminfo file?
     I had forgotten a comma. Should be fixed now.
 
-- sequence: ESC[4m      - underscore attribute
 - doesn't recognize the function key on my laptop as a keysym.
 - bell output as square
 - sequence: \e[%
@@ -947,7 +946,18 @@ Here is a review of the known so far:
     \E[2J   - erase whole display
     \E]     - operating system command? set color palette
     \E0;30; ... - longer length mode sequences
+- sequence: ESC[4m      - underscore attribute
+- sequence: ESC[24m     - underline off
+- sequence ESC M        - reverse linefeed?
 - on pacific with ctermer, the first column sometimes is blanked out. 
+- arrow keys don't work.
+- Want a way to specify font size so I can use same compiled program on both
+  pacific and losaltos.
+    Though I'm not sure I can automatically figure out the font size given the
+    screen size, and using consoler we don't have a way to figure out the
+    screen size yet.
+- running `ps u` near bottom of screen causes an index out of bounds error.
+  Also: quitting the top command.
 
 
 Mon May 16 18:02:10 EDT 2011
@@ -970,5 +980,14 @@ Mon May 16 18:16:34 EDT 2011
 I'm using the terminal emulator now. So let's say I'll keep using it, and fix
 things as I need to. Which means I can claim it's ready, and move on to the
 next part of the milestone!
+
+Mon May 16 21:26:08 EDT 2011
+
+Performance is still an issue. I wonder if we can evaluate performance by
+looking at the steady state CPU usage of the terminal running top? fbterm is
+2% cpu on losaltos. sdltermer takes 34% cpu. sdlcsr and termer are all over
+the place between 25% and 50% cpu each.
+
+I don't understand what takes so much cpu.
 
 

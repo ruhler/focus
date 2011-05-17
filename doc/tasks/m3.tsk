@@ -22,5 +22,21 @@ So, let me focus on the terminal emulator next. Termer.
 Mon May 16 18:18:38 EDT 2011
 
 Termer, while admittedly in need of a little work, is still useable, so let's
-switch to the next task. (Though I fear my batter will run low pretty quickly
+switch to the next task. (Though I fear my battery will run low pretty quickly
 using this terminal.
+
+Mon May 16 21:08:33 EDT 2011
+
+It almost works! I can start termer and boxer, and multiple termers. And I can
+switch between them with the number keys. This is cool.
+
+What are the problems?
+ - It would be nice if sgreen started a terminal or something by default, or
+   had some key code to do it. That would make it easier to start programs in
+   sgreen.
+ - Obviously using the number keys is not sufficient, because I'll certainly
+   want a way to enter numbers to the specific clients.
+ - CPU is floored doing this.
+    Why? What's taking up so much cpu? Why don't things sleep?
+    Or is it doing that much work that it needs to take up lots of cpu?
+

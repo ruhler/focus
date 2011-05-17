@@ -416,3 +416,45 @@ less than a half a second. Which is quite nice, I must say.
 Wonderful. And now I can start using it well enough to make good progress
 finding bugs.
 
+Mon May 16 21:42:02 EDT 2011
+
+Performance issues still.
+
+When run with profiling, using the command: top -d .1, we see:
+
+showDisplay takes 26% time, 0% alloc
+drawCell takes 24% time, 5% alloc
+updatecells takes 20% time, 65% alloc
+updatef takes 8% time 9%alloc.
+
+What can I do about this?
+Let me brainstorm, then sleep on it.
+- don't call showDisplay so often. Maybe only after a bunch of updates have
+  been made?
+- be more precise about what parts of the display have to be updated
+  And only update them. Rather than this bounding box thing, which could be
+  overkill.
+- Track x, y, w, and h as we do cell updates rather than in show display?
+- Cache glyphs rather than rerendering every time we call draw cell.
+  Maybe blitting to the surface rather than copying pixel by pixel.
+- Update cells in some sort of order (if we don't already) to improve caching?
+- Don't draw cell unless it has actually changed from last time we drew it.
+- Use the ST monad to update cells in place rather than allocating memory?
+- Don't keep set of positions that changed, but rather keep a bounding box.
+  May reduce memory usage.
+- Move code all into C, out of haskell?
+- Read more than a single character at a time from the client
+    Perhaps if we read a bunch, apply the bunch, then update the screen, that
+    would help things?
+- Don't keep track of recent updates, but instead perform a diff between two
+  screens (possibly based on a recent bounds thing) to figure out what has
+  changed?
+
+
+That's quite a few ideas. It would be interesting to see what helps the most.
+I suggest I rank them according to which I like best, then go down the line
+experimenting with them. I'll definately want a way to evaluate performance to
+see if things are getting better. Maybe download an ebook and cat part of that
+out. Though the top thing is nice because the cursor jumps all over the place.
+It's just bad because it's so nondeterministic. Hmm...
+

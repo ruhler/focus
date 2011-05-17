@@ -57,6 +57,7 @@ mode 45 = set_background MAGENTA
 mode 46 = set_background CYAN
 mode 47 = set_background WHITE
 mode 49 = set_background WHITE
+mode x = trace ("uknown mode parameter: " ++ show x) id
 
 -- outputter term getf updatef
 --  term - character sent when outputter should stop (or Nothing to go forever)
