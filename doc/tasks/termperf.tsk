@@ -429,6 +429,15 @@ updatef takes 8% time 9%alloc.
 
 What can I do about this?
 Let me brainstorm, then sleep on it.
+- Don't draw cell unless it has actually changed from last time we drew it.
+- Don't keep track of recent updates, but instead perform a diff between two
+  screens (possibly based on a recent bounds thing) to figure out what has
+  changed?
+- Don't keep set of positions that changed, but rather keep a bounding box.
+  May reduce memory usage.
+- Read more than a single character at a time from the client
+    Perhaps if we read a bunch, apply the bunch, then update the screen, that
+    would help things?
 - don't call showDisplay so often. Maybe only after a bunch of updates have
   been made?
 - be more precise about what parts of the display have to be updated
@@ -438,17 +447,8 @@ Let me brainstorm, then sleep on it.
 - Cache glyphs rather than rerendering every time we call draw cell.
   Maybe blitting to the surface rather than copying pixel by pixel.
 - Update cells in some sort of order (if we don't already) to improve caching?
-- Don't draw cell unless it has actually changed from last time we drew it.
 - Use the ST monad to update cells in place rather than allocating memory?
-- Don't keep set of positions that changed, but rather keep a bounding box.
-  May reduce memory usage.
 - Move code all into C, out of haskell?
-- Read more than a single character at a time from the client
-    Perhaps if we read a bunch, apply the bunch, then update the screen, that
-    would help things?
-- Don't keep track of recent updates, but instead perform a diff between two
-  screens (possibly based on a recent bounds thing) to figure out what has
-  changed?
 
 
 That's quite a few ideas. It would be interesting to see what helps the most.
@@ -457,4 +457,80 @@ experimenting with them. I'll definately want a way to evaluate performance to
 see if things are getting better. Maybe download an ebook and cat part of that
 out. Though the top thing is nice because the cursor jumps all over the place.
 It's just bad because it's so nondeterministic. Hmm...
+
+Tue May 17 20:54:06 EDT 2011
+
+I have an idea for a nice test I can run to evaluate performance.
+I'll record the output from running top -d .01, or whatever, and play that
+back. It exercises lots of different stuff, and in a totally determinate
+fashion.
+
+So, let me record something now. Let's say, 30 seconds ish, but without the
+time, so maybe I'll record 40 seconds worth of top -d 1. I can always cut it
+shorter if I need to.
+
+sdltermer:
+    real    0m49.368s
+    user    0m38.375s
+    sys     0m3.680s
+
+sdlcsr termer (with smaller font)
+    real    0m49.225s
+    user    0m5.590s
+    sys     0m34.840s
+
+
+Now, to try some optimizations, see if they help.
+
+I feel like it would be cool to do the following:
+- Read in a string of characters at a time from the client, rather than one.
+- Apply all those changes to the screen
+- Only then update the whole screen
+    Performing a diff in a single bounding box to figure out what changed.
+
+The trouble here is what if we read a partial sequence, how do we know when to
+update the screen? I guess we can keep track of which characters have been
+consumed, and wait for a character to be consumed.
+
+That is, we do as follows: The outputters getf function does:
+    1. update the screen (if buffer empty)
+    2. read a string of characters into buffer (if buffer empty)
+    3. return the next character from the buffer (if buffer not empty)
+
+I think we'll update the screen often enough this way: we won't wait doing
+nothing without having updated the display, and we won't processes gobs and
+gobs of output without updating the display.
+
+This optimization has parts, which should be tried separately.
+A. Read characters a string at a time into a buffer rather than one at a time.
+B. Using bounding box and diff to figure out which cells need to be updated on
+display.
+C. Only update the display when the buffer is emptied.
+
+I suppose first I should run profiling.
+
+Profiling says drawCell, showDisplay, and updcells is most costly, so all the
+above should be beneficial.
+
+Let me start with (B), because I think it's fairly isolated. In fact, I could
+do the whole thing inside the Screen module if I wanted, we just have to keep
+a copy of the old... or we could do it outside? There are two ideas. Use diff,
+and use a bounding box to speed up diff. Let's just do diff to start.
+
+So you'd like a way to diff two screens:
+diff :: Screen -> Screen -> [(Position, Cell)]
+    With cursor cells included.
+
+Of course, if the diff happens rarely, then you might be better off, which
+suggests doing (C) would be better. But before (C), we need (A). I don't have
+time tonight to do any of these. Instead let me investigate how hard it is to
+pass a C string from c to haskell.
+
+Well, there's something called a CString, and functions to convert a CString
+to a haskell String in IO.
+
+So maybe in my foreign function I return a CString, then convert it. The
+CString can be statically allocated on the c side if that would help anything.
+
+I don't know.
 

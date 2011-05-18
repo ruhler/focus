@@ -958,6 +958,9 @@ Here is a review of the known so far:
     screen size yet.
 - running `ps u` near bottom of screen causes an index out of bounds error.
   Also: quitting the top command.
+    Looks like quitting top command does a ^[[25;1H. so I should figure out
+    what that should do and make it work.
+    
 
 
 Mon May 16 18:02:10 EDT 2011
