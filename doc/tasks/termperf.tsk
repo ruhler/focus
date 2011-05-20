@@ -568,4 +568,30 @@ instead of a character at a time on the c side.
 
 Fine. Now what was the next thing I was going to do?
 
+Fri May 20 19:36:16 EDT 2011
+
+Next step: Only update the screen when the buffer is empty.
+
+Will hopefully improve the performance a bunch.
+
+Note, the way the benchmark is set up, the buffer will always be totally
+filled, because we have the data ready. In real life interaction that will not
+be the case.
+
+I claim this is not misleading, because if the buffer isn't full, there's not
+much to do, so performance isn't a big deal. It's when the buffer is full that
+I care about performance.
+
+Fri May 20 19:45:42 EDT 2011
+
+Implemented it easy. Now down to 14 seconds, and this time a big change in the
+profile (c.prof).
+
+showdisplay, which used to be top time consumer, has dropped a bunch down the
+list. Exactly as desired. Let me just double check to make sure the terminal
+is still usable like this.
+
+Yup. It certainly is usable still. And much more fluent if I might say so
+myself.
+
 

@@ -22,25 +22,29 @@ data TermerState = TermerState {
 initialts :: TermerState
 initialts = TermerState (screen cols lns) ""
 
+showdisplay :: Screen -> IO ()
+showdisplay scr = do
+    let pcur = cursor scr
+    mapM_ (\(p, c) -> CTermer.drawCell p c) (recent scr)
+    CTermer.drawCell pcur (curserify (cellat pcur scr))
+    CTermer.showDisplay
+    
+
 updatef :: (Screen -> Screen) -> StateT TermerState IO ()
 updatef f =
     let draw scr pos = CTermer.drawCell pos (cellat pos scr)
-    in do
-        modify (\s -> s { m_screen = f (m_screen s) })
-        r <- gets $ recent . m_screen
-        scr <- gets m_screen
-        let pcur = cursor scr
-        lift $ do
-            mapM_ (\(p, c) -> CTermer.drawCell p c) r
-            CTermer.drawCell pcur (curserify (cellat pcur scr))
-            CTermer.showDisplay
-        modify (\s -> s { m_screen = clear_recent (m_screen s) })
+    in modify (\s -> s { m_screen = f (m_screen s) })
 
 getf :: StateT TermerState IO Char
 getf = do
     fc <- gets m_fromclient
     case fc of
       [] -> do
+        -- update the screen now, then ask for more input.
+        scr <- gets m_screen
+        lift $ showdisplay scr
+        modify (\s -> s { m_screen = clear_recent (m_screen s) })
+
         cs <- lift $ CTermer.fromTermClient
         case cs of
           [] -> return '\0';
