@@ -7,6 +7,8 @@ module CTermer (
   where
 
 import Prelude hiding (init, reverse)
+import Foreign.C.String
+
 import Consoler
 import Screen
 
@@ -36,8 +38,8 @@ getEvent = do
 toTermClient :: Char -> IO ()
 toTermClient = ctermer_ToTermClient
 
-fromTermClient :: IO Char
-fromTermClient = ctermer_FromTermClient
+fromTermClient :: IO String
+fromTermClient = ctermer_FromTermClient >>= peekCAString
 
 drawCell :: Position -> Cell -> IO ()
 drawCell pos cell =
@@ -74,7 +76,7 @@ foreign import ccall "ctermer.h"
     ctermer_ToTermClient :: Char -> IO ()
 
 foreign import ccall "ctermer.h"
-    ctermer_FromTermClient :: IO Char
+    ctermer_FromTermClient :: IO CString
 
 foreign import ccall "ctermer.h"
     ctermer_DrawCell :: Int -> Int -> Char -> Int -> Int -> Int -> IO ()

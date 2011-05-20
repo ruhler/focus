@@ -146,11 +146,17 @@ void ctermer_ToTermClient(char c)
     write(gstate.tcfd, &c, 1);
 }
 
-char ctermer_FromTermClient()
+char fromtermclientbuf[BUFSIZ+1];
+
+char* ctermer_FromTermClient()
 {
-    char c = '\0';
-    read(gstate.tcfd, &c, 1);
-    return c;
+    int red = read(gstate.tcfd, fromtermclientbuf, BUFSIZ);
+    if (red < 0) {
+        perror("read");
+        red = 0;
+    }
+    fromtermclientbuf[red] = '\0';
+    return fromtermclientbuf;
 }
 
 int redof(int color, int style)

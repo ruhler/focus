@@ -23,8 +23,11 @@ int ctermer_EventValue();
 // Send the given character to the terminal client
 void ctermer_ToTermClient(char c);
 
-// Get the next character from the terminal client.
-char ctermer_FromTermClient();
+// Get a string of the next characters from the terminal client.
+// The string returned is a pointer to a static buffer. It will remain valid
+// until this function is called again, in which case the buffer will be
+// updated with the new string.
+char* ctermer_FromTermClient();
 
 // Cell styles
 #define CTERMER_STYLE_NORMAL 0

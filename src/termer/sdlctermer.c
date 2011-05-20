@@ -162,19 +162,17 @@ void ctermer_ToTermClient(char c)
     write(gstate.tcfd, &c, 1);
 }
 
-char ctermer_FromTermClient()
-{
-    char c = '\0';
-    read(gstate.tcfd, &c, 1);
+char fromtermclientbuf[BUFSIZ+1];
 
-    //// For debugging:
-    //switch (c) {
-    //    case 0x1b: fprintf(stderr, "\\e"); break;
-    //    case '\r': fprintf(stderr, "\\r"); break;
-    //    case '\n': fprintf(stderr, "\\n"); break;
-    //    default: fprintf(stderr, "%c", c);
-    //}
-    return c;
+char* ctermer_FromTermClient()
+{
+    int red = read(gstate.tcfd, fromtermclientbuf, BUFSIZ);
+    if (red < 0) {
+        perror("read");
+        red = 0;
+    }
+    fromtermclientbuf[red] = '\0';
+    return fromtermclientbuf;
 }
 
 int redof(int color, int style)

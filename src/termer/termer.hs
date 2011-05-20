@@ -14,26 +14,49 @@ cols = 80
 curserify :: Cell -> Cell
 curserify (Cell char (Attributes fg bg s)) = Cell char (Attributes BLACK WHITE s)
 
-updatef :: (Screen -> Screen) -> StateT Screen IO ()
+data TermerState = TermerState {
+    m_screen :: Screen,
+    m_fromclient :: String
+};
+
+initialts :: TermerState
+initialts = TermerState (screen cols lns) ""
+
+updatef :: (Screen -> Screen) -> StateT TermerState IO ()
 updatef f =
     let draw scr pos = CTermer.drawCell pos (cellat pos scr)
     in do
-        modify f
-        r <- gets recent
-        scr <- get
+        modify (\s -> s { m_screen = f (m_screen s) })
+        r <- gets $ recent . m_screen
+        scr <- gets m_screen
         let pcur = cursor scr
         lift $ do
             mapM_ (\(p, c) -> CTermer.drawCell p c) r
             CTermer.drawCell pcur (curserify (cellat pcur scr))
             CTermer.showDisplay
-        modify $ clear_recent
+        modify (\s -> s { m_screen = clear_recent (m_screen s) })
+
+getf :: StateT TermerState IO Char
+getf = do
+    fc <- gets m_fromclient
+    case fc of
+      [] -> do
+        cs <- lift $ CTermer.fromTermClient
+        case cs of
+          [] -> return '\0';
+          c:cs -> do
+            modify (\s -> s { m_fromclient = cs })
+            return c
+      c:cs -> do
+        modify (\s -> s { m_fromclient = cs })
+        return c
     
 
 main :: IO ()
 main = do
     CTermer.init
     forkIO $ inputter CTermer.getEvent CTermer.toTermClient
-    _ <- runStateT (outputter (Just '\0') (lift CTermer.fromTermClient) updatef) (screen cols lns)
+    _ <- runStateT (outputter (Just '\0') getf updatef) initialts
     return ()
 
 

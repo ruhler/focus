@@ -534,3 +534,38 @@ CString can be statically allocated on the c side if that would help anything.
 
 I don't know.
 
+Fri May 20 19:01:57 EDT 2011
+
+Here's the first step.
+
+The FromTermClient should return a char*, which is a pointer into a static
+buffer, and we should read in a buffers worth at a time.
+
+That will be converted into a String on the haskell side.
+A new fromTermClient wrapper will have to be implemented, so add string to the
+state monad to make that work.
+
+That's the first step. I would be interested to see how it improves or not
+performance.
+
+Let me do some profiling to make measurements, and do a better job saving the
+profiles.
+
+Baseline current: a.prof. This is the one that takes 50 seconds.
+
+Now I'll make my string change. Let's focus on the sdltermer implementation.
+
+
+I made the change. Time now is: 34 seconds. Profile is b.prof.
+It was pretty easy to do and works.
+
+Just as a reference: fbterm gets 0.7 seconds, and fbcon 0.5 seconds.
+
+Profiling says getf ends up doing a lot more allocation than fromtermclient
+did before. Otherwise the profiles look pretty much the same to me. The
+performance improvement is, I suspect, from reading in a buffer at a time
+instead of a character at a time on the c side.
+
+Fine. Now what was the next thing I was going to do?
+
+
