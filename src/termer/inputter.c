@@ -31,7 +31,6 @@ void setctrl(InputterState* is, bool x)
     is->ctrlon = x;
 }
 
-
 void inputter(GetEventFunction iget, PutCharFunction iput)
 {
     InputterState is = initial();

@@ -175,3 +175,15 @@ walk. You know? That's much more appealing to me right now. When I come back I
 can implement termerc, and outputtertest if I feel like it or termerc doesn't
 work.
 
+Sat May 21 14:57:36 EDT 2011
+
+My ctermer implementation seems to be working fine.
+On pacific, using sdlcsr, I'm getting:
+
+haskell: 44 seconds
+c:       17 seconds
+
+I would be interested in seeing how well we do with sdltermer (and I suppose I
+should make an sdlctermer) on losaltos. This suggests by just literally
+translating from haskell to c we get a 2x speedup.
+

@@ -1,9 +1,10 @@
 
 #include <ctype.h>
+#include <stdio.h>
 
-#include "screen.h"
+#include "outputter.h"
 
-typedef char (GetCharFunction)();
+void getnum_aux(GetCharFunction getf, int x, int* iout, char* cout);
 
 int digit2int(char c)
 {
@@ -41,7 +42,7 @@ void mode(SCREEN_Screen* scr, int x)
 {
     switch (x) {
         case 0: exit_attribute_mode(scr); break;
-        case 1: enter_attribute_mode(scr); break;
+        case 1: exit_attribute_mode(scr); break;
         case 7: enter_reverse_mode(scr); break;
         case 10: break;
         case 22: exit_bold_mode(scr); break;
