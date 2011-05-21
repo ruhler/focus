@@ -7,6 +7,7 @@ env['GHC'] = '/pkg/haskell/install/bin/ghc'
 env['ENV']['GHC_PACKAGE_PATH'] = '/pkg/haskell/install/lib/ghc-7.0.3/package.conf.d/'
 
 env['CPPPATH'] = [
+    '#/build/src',
     'build/src',
     '/pkg/sdl-1.2.14/install/include',
     '/pkg/libpng-1.5.2/install/include',

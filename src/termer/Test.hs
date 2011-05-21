@@ -2,7 +2,7 @@
 module Test (Test, (~:), (~=?), runtests)
   where
 
-import System
+import System.Exit
 import Test.HUnit
 
 
