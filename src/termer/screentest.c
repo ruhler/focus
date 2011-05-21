@@ -168,6 +168,13 @@ void test(bool* result)
     newline(&scr);
     SCREEN_Cell want_5 = {'K', SCREEN_COLOR_WHITE, SCREEN_COLOR_BLACK, {false, false}};
     update(result, tcelleq("newline at bottom scrolls", want_5, cellat(&scr, mkpos(4,1))));
+
+    scr = screen(6, 4);
+    put_chars(&scr, "abcdefGHIJKLmno");
+    cursor_address(&scr, mkpos(0, 0));
+    insert_line(&scr);
+    SCREEN_Cell want_6 = {' ', SCREEN_COLOR_WHITE, SCREEN_COLOR_BLACK, {false, false}};
+    update(result, tcelleq("insert_line clears full line", want_6, cellat(&scr, mkpos(5,0))));
 }
 
 int main()

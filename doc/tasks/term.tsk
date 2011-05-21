@@ -1036,3 +1036,21 @@ So let me first do the grunt work: implement the eq_screen function.
 
 1. done.
 
+Sat May 21 18:44:51 EDT 2011
+
+Bugs:
+ + Can't type the digit 0, and some of the other digits are off.
+    Fixed.
+ + Sometimes we don't clear the whole screen in vim when scrolling.
+    Looks like I used lines instead of cols for one of the clr functions.
+    Yup. Found it. Bug is in parm_insert_line.
+
+    Now, how do I test it?
+    Fill up a line with text. Then insert a line there, and verify the whole
+    line (or just a later character) is blanked.
+
+    Fixed. And guess what. This my first bug entirely fixed from within the
+    terminal emulator itself!
+ - No key repeat. It's kind of annoying.
+    
+

@@ -3,31 +3,6 @@
 
 Import('env')
 
-env['GHCPATH'] = Dir(".")
-#env['GHCFLAGS'] = "-optc -ggdb -optc -O0"
-#env['GHCFLAGS'] = "-prof -auto-all"
-
-# Unit Tests
-termertest = env.GHCProgram('termertest')
-env.Default(env.Command('termertest.out', termertest, "$SOURCE > $TARGET"))
-
-# termer main app
-env.Default(env.GHCProgram('termer',
-    ['termer.hs', 'ctermer.c', '../consoler.o'],
-    LIBS=['freetype', 'fontconfig', 'util'],
-    GHCFLAGS=['-threaded']))
-env.Depends('termer', 'ctermer.h')
-
-
-# sdltermer
-env.Default(env.GHCProgram('sdltermer',
-    ['termer.hs', 'sdlctermer.c'],
-    LIBS=['freetype', 'fontconfig', 'util', 'SDL'],
-    GHCFLAGS=['-threaded', '-prof', '-auto-all']))
-    #GHCFLAGS=['-threaded']))
-env.Depends('sdltermer', 'ctermer.h')
-
-
 bool_o = env.Object('bool.o', 'bool.c')
 
 # inputtertest
@@ -46,8 +21,13 @@ outputtertest = env.Program('outputtertest',
         ['outputtertest.c', outputter_o, screen_o, bool_o])
 env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET"))
 
-# termerc
-env.Default(env.Program('termerc',
-    ['termerc.c', 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
+# termer
+env.Default(env.Program('termer',
+    ['termer.c', 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm']))
+
+# sdltermer
+env.Default(env.Program('sdltermer',
+    ['termer.c', 'sdlctermer.c', inputter_o, outputter_o, screen_o, bool_o],
+    LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'SDL']))
 

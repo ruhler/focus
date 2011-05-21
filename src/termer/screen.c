@@ -306,7 +306,7 @@ void parm_insert_line(SCREEN_Screen* scr, int n)
     }
 
     for (y = scr->cursor.line; y < scr->cursor.line+n; y++) {
-        for (x = 0; x < scr->lines; x++) {
+        for (x = 0; x < scr->columns; x++) {
             setcell(scr, x, y, blank(scr));
         }
     }

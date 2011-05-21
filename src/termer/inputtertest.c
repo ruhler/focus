@@ -83,6 +83,15 @@ void test(bool* result)
         {CNSLE_QUIT, 0}
     };
     update(result, streq("semicolon", ";", try(semicolon)));
+
+    CNSL_Event t0123[] = {
+        {CNSLE_KEYPRESS, CNSLK_0}, {CNSLE_KEYRELEASE, CNSLK_0},
+        {CNSLE_KEYPRESS, CNSLK_1}, {CNSLE_KEYRELEASE, CNSLK_1},
+        {CNSLE_KEYPRESS, CNSLK_2}, {CNSLE_KEYRELEASE, CNSLK_2},
+        {CNSLE_KEYPRESS, CNSLK_3}, {CNSLE_KEYRELEASE, CNSLK_3},
+        {CNSLE_QUIT, 0}
+    };
+    update(result, streq("0123", "0123", try(t0123)));
 }
 
 int main()

@@ -83,8 +83,9 @@ void press(InputterState* is, PutCharFunction iput, CNSL_Keysym key, bool shift,
         case CNSLK_RETURN: iput('\r'); return;
         case CNSLK_ESCAPE: iput(0x1b); return;
         case CNSLK_SPACE: ctrl ? iput('\0') : iput(' '); return;
-        case CNSLK_0: shift ? iput(')') : iput('1'); return;
-        case CNSLK_1: shift ? iput('!') : iput('2'); return;
+        case CNSLK_0: shift ? iput(')') : iput('0'); return;
+        case CNSLK_1: shift ? iput('!') : iput('1'); return;
+        case CNSLK_2: shift ? iput('@') : iput('2'); return;
         case CNSLK_3: shift ? iput('#') : iput('3'); return;
         case CNSLK_4: shift ? iput('$') : iput('4'); return;
         case CNSLK_5: shift ? iput('%') : iput('5'); return;

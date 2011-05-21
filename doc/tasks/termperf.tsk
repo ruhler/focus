@@ -698,3 +698,9 @@ Is there some way I can reduce the cost of diff?
 
 I don't know. I'll think about it some more and get back to you.
 
+Sat May 21 18:42:42 EDT 2011
+
+Well well. What do you know? I translated the front end from haskell to c,
+pretty much directly, and now: 0.3 seconds to run the benchmark. That is...
+sad for haskell. But good I should think.
+
