@@ -40,8 +40,13 @@ screen_o = env.Object('screen.o', 'screen.c')
 screentest = env.Program('screentest', ['screentest.c', screen_o, bool_o])
 env.Default(env.Command('screentest.out', screentest, "$SOURCE > $TARGET"))
 
-# termerc
+# outputtertest
 outputter_o = env.Object('outputter.o', 'outputter.c')
+outputtertest = env.Program('outputtertest',
+        ['outputtertest.c', outputter_o, screen_o, bool_o])
+env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET"))
+
+# termerc
 env.Default(env.Program('termerc',
     ['termerc.c', 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm']))

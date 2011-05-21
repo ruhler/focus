@@ -42,7 +42,7 @@ void mode(SCREEN_Screen* scr, int x)
 {
     switch (x) {
         case 0: exit_attribute_mode(scr); break;
-        case 1: exit_attribute_mode(scr); break;
+        case 1: enter_bold_mode(scr); break;
         case 7: enter_reverse_mode(scr); break;
         case 10: break;
         case 22: exit_bold_mode(scr); break;
@@ -118,7 +118,7 @@ void outputter(SCREEN_Screen* scr, int terminator, GetCharFunction getf)
                                                 mode(scr, y);
                                                 break;
 
-                                            case 'H': cursor_address(scr, mkpos(x, y)); break;
+                                            case 'H': cursor_address(scr, mkpos(y-1, x-1)); break;
                                             default: 
                                                 fprintf(stderr, "unhandled: ESC[%i;%i%c\n", x, y, c);
                                                 break;

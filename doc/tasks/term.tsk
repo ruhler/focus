@@ -993,4 +993,46 @@ the place between 25% and 50% cpu each.
 
 I don't understand what takes so much cpu.
 
+Sat May 21 17:47:39 EDT 2011
+
+I now have 2 different front ends and 2 different backends for my terminal
+emulator.
+
+- haskell front end
+    original front end for terminal emulator.
+- c front end
+    ported from haskell front end in hopes of improving performance.
+- sdl back end
+    ported from consoler back end in hopes of improving performance.
+- consoler back end
+    original back end for terminal emulator.
+
+Remember the goal: use this with consoler to support my own windowing system.
+This means the target back end will be consoler. The advantages of using
+haskell seem slim to me now for the front end, so let me abandon the haskell
+front end once the c front end is caught up to it (ie, tested).
+
+I think, probably want to keep sdl backend around until I really understand
+the performance issues.
+
+One last note: my terminal emulator is basically not useable on pacific right
+now because it burns through battery.
+
+So I think the path is clear:
+1. catch c front end up to haskell front end
+2. dump haskell front end.
+3. improve performance of c front + sdl back to acceptable.
+4. improve performance of c front + consoler back to acceptable.
+5. dump sdl back end.
+
+Let me get to work.
+
+A problem with (1) was I need a way to test if two screens are equal, because
+that's how I want to implement my test cases. Test cases will be: create two
+screens. Update one using outputter, update the other using manual commands,
+verify they are the same.
+
+So let me first do the grunt work: implement the eq_screen function.
+
+1. done.
 

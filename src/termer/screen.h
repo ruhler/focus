@@ -20,23 +20,29 @@ typedef struct {
     bool bold;
 } SCREEN_Style;
 
+bool eq_style(const SCREEN_Style* a, const SCREEN_Style* b);
+
 typedef struct {
     SCREEN_Color fgcolor;
     SCREEN_Color bgcolor;
     SCREEN_Style style;
 } SCREEN_Attributes;
 
+bool eq_attributes(const SCREEN_Attributes* a, const SCREEN_Attributes* b);
+
 typedef struct {
     char character;
     SCREEN_Attributes cattrs;
 } SCREEN_Cell;
 
-bool celleq(const SCREEN_Cell* a, const SCREEN_Cell* b);
+bool eq_cell(const SCREEN_Cell* a, const SCREEN_Cell* b);
 
 typedef struct {
     int column;
     int line;
 } SCREEN_Position;
+
+bool eq_position(const SCREEN_Position* a, const SCREEN_Position* b);
 
 SCREEN_Position mkpos(int col, int line);
 
@@ -48,6 +54,8 @@ typedef struct {
     SCREEN_Cell* oldcells;
     SCREEN_Attributes sattrs;
 } SCREEN_Screen;
+
+bool eq_screen(const SCREEN_Screen* a, const SCREEN_Screen* b);
 
 
 // TODO: this leaks memory. So don't call this a lot, or write a function

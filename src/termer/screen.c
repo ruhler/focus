@@ -3,6 +3,18 @@
 
 #include "screen.h"
 
+bool eq_style(const SCREEN_Style* a, const SCREEN_Style* b)
+{
+    return a->reverse == b->reverse && a->bold == b->bold;
+}
+
+bool eq_attributes(const SCREEN_Attributes* a, const SCREEN_Attributes* b)
+{
+    return a->fgcolor == b->fgcolor
+        && a->bgcolor == b->bgcolor
+        && eq_style(&a->style, &b->style);
+}
+
 SCREEN_Position home()
 {
     SCREEN_Position pos = {0, 0};
@@ -362,13 +374,40 @@ SCREEN_Position cursor(SCREEN_Screen* scr)
     return scr->cursor;
 }
 
-bool celleq(const SCREEN_Cell* a, const SCREEN_Cell* b)
+bool eq_cell(const SCREEN_Cell* a, const SCREEN_Cell* b)
 {
-    return a->character == b->character
-        && a->cattrs.fgcolor == b->cattrs.fgcolor
-        && a->cattrs.bgcolor == b->cattrs.bgcolor
-        && a->cattrs.style.bold == b->cattrs.style.bold
-        && a->cattrs.style.reverse == b->cattrs.style.reverse;
+    return a->character == b->character && eq_attributes(&a->cattrs, &b->cattrs);
+}
+
+bool eq_position(const SCREEN_Position* a, const SCREEN_Position* b)
+{
+    return a->column == b->column && a->line == b->line;
+}
+
+bool eq_screen(const SCREEN_Screen* a, const SCREEN_Screen* b)
+{
+    if (a->columns != b->columns
+            || a->lines != b->lines
+            || !eq_position(&a->cursor, &b->cursor)
+            || !eq_attributes(&a->sattrs, &b->sattrs))
+    {
+        return false;
+    }
+
+    int x, y;
+    for (y = 0; y < a->lines; y++) {
+        for (x = 0; x < a->columns; x++) {
+            SCREEN_Cell* anew = &a->cells[y*a->columns + x];
+            SCREEN_Cell* aold = &a->oldcells[y*a->columns + x];
+            SCREEN_Cell* bnew = &b->cells[y*a->columns + x];
+            SCREEN_Cell* bold = &b->oldcells[y*a->columns + x];
+            if (!eq_cell(anew, bnew) || !eq_cell(aold, bold)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 void diff(SCREEN_Screen* scr, DiffFunction df)
@@ -378,7 +417,7 @@ void diff(SCREEN_Screen* scr, DiffFunction df)
         for (x = 0; x < scr->columns; x++) {
             SCREEN_Cell* new = &scr->cells[y*scr->columns + x];
             SCREEN_Cell* old = &scr->oldcells[y*scr->columns + x];
-            if (!celleq(old, new)) {
+            if (!eq_cell(old, new)) {
                 SCREEN_Position pos;
                 pos.line = y;
                 pos.column = x;

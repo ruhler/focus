@@ -4,7 +4,7 @@
 
 bool tcelleq(const char* name, SCREEN_Cell a, SCREEN_Cell b)
 {
-    if (!celleq(&a, &b)) {
+    if (!eq_cell(&a, &b)) {
         printf("%s: expected: ???, got: ???\n", name);
         return false;
     }
@@ -13,7 +13,7 @@ bool tcelleq(const char* name, SCREEN_Cell a, SCREEN_Cell b)
 
 bool tposeq(const char* name, SCREEN_Position a, SCREEN_Position b)
 {
-    if (a.line != b.line || a.column != b.column) {
+    if (!eq_position(&a, &b)) {
         printf("%s: expected: (%i, %i), got: (%i, %i)\n",
                 name, a.column, a.line, b.column, b.line);
         return false;
