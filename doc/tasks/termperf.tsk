@@ -594,4 +594,34 @@ is still usable like this.
 Yup. It certainly is usable still. And much more fluent if I might say so
 myself.
 
+Now we are dominated by updcells. For this benchmark practically the entire
+cost of that is from the put_char call. We are doing lots of comparisons, so I
+bet the set stuff is contributing to this.
+
+Which is exactly the support I wanted to justify my: switch to diff strategy.
+We'll figure out which chars have changed by diffing the screen from the old
+screen.
+
+So, get rid of recent and clear_recent functions in Screen.
+Replace with a diff function.
+
+diff :: Screen -> Screen -> [Position]
+
+Diffing a screen just says which positions are different between the two. You
+can then use cellat to get the cells for whichever screen you want. Let's say
+the diff does not include any info about the cursor, so the user should deal
+with that if he wants.
+ 
+Fri May 20 20:27:34 EDT 2011
+
+Switched to diff. Still takes 14 seconds, so that, I guess, didn't help so
+much. Let's look at profiling now...
+
+Profiling suggests things got a little better. We spend less time displaying
+cells. The diff is a ways down on the list, so it's not a major contributer to
+poor performance.
+
+But updcells is still dominating, even more so now. I think the cost is clear:
+any time you put a single character, you end up allocating an entirely new
+array and copying all those values in.
 

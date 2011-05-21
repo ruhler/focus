@@ -11,13 +11,12 @@ module Screen (
     delete_line, parm_delete_line, erase_chars, insert_character,
     parm_ich, insert_line, parm_insert_line, scroll_forward,
     parm_index, scroll_reverse, parm_rindex,
-    put_char, cursor, cellat, recent, clear_recent
+    put_char, cursor, cellat, diff
     )
   where
 
 import Prelude hiding (reverse, lines)
 import Data.Array
-import qualified Data.Set as Set
 
 data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
     deriving(Eq, Show)
@@ -86,8 +85,7 @@ data Screen = Screen {
     lines :: Integer,
     cursor :: Position,
     cells :: Array Position Cell,
-    sattrs :: Attributes,
-    m_recent :: Set.Set Position
+    sattrs :: Attributes
 } deriving (Eq, Show)
 
 -- make an array where every element is the same
@@ -99,9 +97,7 @@ updcells :: [(Position, Cell)] -> Screen -> Screen
 updcells upds scr
   = let oldcells = cells scr
         newcells = oldcells//upds
-        oldrecent = m_recent scr
-        newrecent = Set.union (Set.fromList (map fst upds)) oldrecent
-    in scr { cells = newcells, m_recent = newrecent }
+    in scr { cells = newcells }
 
 -- screen columns lines
 -- Return a clear screen with the given number of rows and columns.
@@ -111,7 +107,7 @@ screen cols lns
         cells = array bounds [(Position x y, defaultcell)
                     | x <- [0..cols],
                       y <- [0..lns]]
-    in Screen cols lns home cells default_attributes Set.empty
+    in Screen cols lns home cells default_attributes
 
 blank :: Screen -> Cell
 blank scr = Cell ' ' (sattrs scr)
@@ -146,11 +142,7 @@ row_address nrow scr
 -- cursor_address pos
 -- Move the cursor to the given position
 cursor_address :: Position -> Screen -> Screen
-cursor_address pos scr
- = let oldpos = cursor scr
-       oldrec = m_recent scr
-       newrec = Set.insert pos (Set.insert oldpos oldrec)
-   in scr { cursor = pos, m_recent = newrec }
+cursor_address pos scr = scr { cursor = pos }
 
 -- Move cursor down one line
 -- If we are at the last line, scrolls the text up instead.
@@ -406,11 +398,11 @@ put_char c scr
 cellat :: Position -> Screen -> Cell
 cellat pos scr = (cells scr) ! pos
 
--- Get a list of cells which have changed recently.
-recent :: Screen -> [(Position, Cell)]
-recent scr = [(p, cellat p scr) | p <- Set.toList $ m_recent scr]
-
--- Clear the list of recent cells which have changed.
-clear_recent :: Screen -> Screen
-clear_recent scr = scr { m_recent = Set.empty }
-
+-- Return a list of the positions which differ between the two screens.
+-- Assumes the screens are the same size.
+diff :: Screen -> Screen -> [Position]
+diff (Screen cols lns _ a _) (Screen _ _ _ b _)
+ = let all = [Position x y | x <- [0..(cols-1)], y <- [0..(lns-1)]]
+       differ pos = (a ! pos) /= (b ! pos)
+   in filter differ all
+   

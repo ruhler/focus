@@ -16,17 +16,21 @@ curserify (Cell char (Attributes fg bg s)) = Cell char (Attributes BLACK WHITE s
 
 data TermerState = TermerState {
     m_screen :: Screen,
+    m_lastshown :: Screen,
     m_fromclient :: String
 };
 
 initialts :: TermerState
-initialts = TermerState (screen cols lns) ""
+initialts = TermerState (screen cols lns) (screen cols lns) ""
 
-showdisplay :: Screen -> IO ()
-showdisplay scr = do
-    let pcur = cursor scr
-    mapM_ (\(p, c) -> CTermer.drawCell p c) (recent scr)
-    CTermer.drawCell pcur (curserify (cellat pcur scr))
+-- showdisplay old new
+showdisplay :: Screen -> Screen -> IO ()
+showdisplay old new = do
+    let ocur = cursor old
+    let ncur = cursor new
+    sequence [CTermer.drawCell p (cellat p new) | p <- diff old new]
+    CTermer.drawCell ocur (cellat ocur new)
+    CTermer.drawCell ncur (curserify (cellat ncur new))
     CTermer.showDisplay
     
 
@@ -41,9 +45,10 @@ getf = do
     case fc of
       [] -> do
         -- update the screen now, then ask for more input.
-        scr <- gets m_screen
-        lift $ showdisplay scr
-        modify (\s -> s { m_screen = clear_recent (m_screen s) })
+        new <- gets m_screen
+        old <- gets m_lastshown
+        lift $ showdisplay old new
+        modify (\s -> s { m_lastshown = new })
 
         cs <- lift $ CTermer.fromTermClient
         case cs of
