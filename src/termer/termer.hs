@@ -16,22 +16,25 @@ curserify (Cell char (Attributes fg bg s)) = Cell char (Attributes BLACK WHITE s
 
 data TermerState = TermerState {
     m_screen :: Screen,
-    m_lastshown :: Screen,
+    m_oldcur :: Position,
     m_fromclient :: String
 };
 
 initialts :: TermerState
-initialts = TermerState (screen cols lns) (screen cols lns) ""
+initialts
+  = let scr = screen cols lns
+    in TermerState scr (cursor scr) ""
 
--- showdisplay old new
-showdisplay :: Screen -> Screen -> IO ()
-showdisplay old new = do
-    let ocur = cursor old
-    let ncur = cursor new
-    sequence [CTermer.drawCell p (cellat p new) | p <- diff old new]
-    CTermer.drawCell ocur (cellat ocur new)
-    CTermer.drawCell ncur (curserify (cellat ncur new))
+-- showdisplay oldcursor screen
+showdisplay :: Position -> Screen -> IO Screen
+showdisplay ocur scr = do
+    let (nscr, diffs) = diff scr
+    let ncur = cursor scr
+    sequence [CTermer.drawCell p (cellat p scr) | p <- diffs]
+    CTermer.drawCell ocur (cellat ocur scr)
+    CTermer.drawCell ncur (curserify (cellat ncur scr))
     CTermer.showDisplay
+    return nscr
     
 
 updatef :: (Screen -> Screen) -> StateT TermerState IO ()
@@ -45,10 +48,10 @@ getf = do
     case fc of
       [] -> do
         -- update the screen now, then ask for more input.
-        new <- gets m_screen
-        old <- gets m_lastshown
-        lift $ showdisplay old new
-        modify (\s -> s { m_lastshown = new })
+        scr <- gets m_screen
+        ocur <- gets m_oldcur
+        nscr <- lift $ showdisplay ocur scr
+        modify (\s -> s { m_screen = nscr, m_oldcur = (cursor nscr) })
 
         cs <- lift $ CTermer.fromTermClient
         case cs of

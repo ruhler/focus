@@ -1,0 +1,240 @@
+
+Reimplemented diff to not read values from an old diffarray reference.
+
+	Fri May 20 21:49 2011 Time and Allocation Profiling Report  (Final)
+
+	   sdltermer +RTS -p -RTS
+
+	total time  =        9.82 secs   (491 ticks @ 20 ms)
+	total alloc = 1,179,923,768 bytes  (excludes profiling overheads)
+
+COST CENTRE                    MODULE               %time %alloc
+
+diff                           Screen                68.8   55.1
+updcells                       Screen                 5.7   11.5
+drawCell                       CTermer                5.1    0.3
+getf                           Main                   5.1    8.8
+unsafeIndex_a6FB               Screen                 2.0    7.5
+inRange_a6FQ                   Screen                 1.8    2.6
+showDisplay                    CTermer                1.6    0.0
+put_char                       Screen                 1.4    2.7
+outputter                      Outputter              1.2    3.3
+MAIN                           MAIN                   1.2    0.0
+scroll                         Screen                 1.0    0.1
+updatef                        Main                   0.6    2.5
+
+
+                                                                                               individual    inherited
+COST CENTRE              MODULE                                               no.    entries  %time %alloc   %time %alloc
+
+MAIN                     MAIN                                                   1           0   1.2    0.0   100.0  100.0
+ CAF                     Main                                                 314          16   0.0    0.0    97.6   99.3
+  m_oldcur               Main                                                 350           1   0.0    0.0     0.0    0.0
+  lns                    Main                                                 335           1   0.0    0.0     0.0    0.0
+  cols                   Main                                                 334           1   0.0    0.0     0.0    0.0
+  m_screen               Main                                                 332           1   0.0    0.0     0.0    0.0
+  initialts              Main                                                 329           1   0.0    0.0     0.2    0.0
+   cursor                Screen                                               351           1   0.0    0.0     0.0    0.0
+   screen                Screen                                               333           1   0.2    0.0     0.2    0.0
+  m_fromclient           Main                                                 328           1   0.0    0.0     0.0    0.0
+  getf                   Main                                                 327           1   0.0    0.0     0.2    0.4
+   cursor                Screen                                               471           1   0.0    0.0     0.0    0.0
+   showdisplay           Main                                                 330           1   0.0    0.0     0.2    0.4
+    showDisplay          CTermer                                              368           1   0.0    0.0     0.0    0.0
+    curserify            Main                                                 365           1   0.0    0.0     0.0    0.0
+    cursor               Screen                                               364           1   0.0    0.0     0.0    0.0
+    cellat               Screen                                               355           2   0.0    0.0     0.0    0.0
+     unsafeIndex_a6FB    Screen                                               367           1   0.0    0.0     0.0    0.0
+     inRange_a6FQ        Screen                                               366           1   0.0    0.0     0.0    0.0
+     cells               Screen                                               356           0   0.0    0.0     0.0    0.0
+    drawCell             CTermer                                              348           2   0.0    0.0     0.0    0.0
+     bgcolor             Screen                                               363           2   0.0    0.0     0.0    0.0
+     fgcolor             Screen                                               362           2   0.0    0.0     0.0    0.0
+     reverse             Screen                                               361           2   0.0    0.0     0.0    0.0
+     fromEnum_a6Kf       Screen                                               360           4   0.0    0.0     0.0    0.0
+     cattrs              Screen                                               359           8   0.0    0.0     0.0    0.0
+     style               Screen                                               358           4   0.0    0.0     0.0    0.0
+     bold                Screen                                               357           2   0.0    0.0     0.0    0.0
+     character           Screen                                               354           2   0.0    0.0     0.0    0.0
+     line                Screen                                               353           2   0.0    0.0     0.0    0.0
+     column              Screen                                               349           2   0.0    0.0     0.0    0.0
+    diff                 Screen                                               331           1   0.2    0.1     0.2    0.4
+     unsafeIndex_a6FB    Screen                                               342        3839   0.0    0.1     0.0    0.1
+     inRange_a6FQ        Screen                                               341        3839   0.0    0.0     0.0    0.0
+     /=_a6Gf             Screen                                               336        1920   0.0    0.0     0.0    0.0
+      ==_a6G8            Screen                                               337        1920   0.0    0.0     0.0    0.0
+       ==_a6H1           Screen                                               343        1920   0.0    0.0     0.0    0.0
+        ==_a6HZ          Screen                                               346        1920   0.0    0.0     0.0    0.0
+        ==_a6IL          Screen                                               345        3840   0.0    0.0     0.0    0.0
+  outputter              Outputter                                            326           1   1.2    3.3    97.1   98.9
+   cursor_address        Screen                                               403          97   0.0    0.0     0.0    0.0
+   mode                  Outputter                                            389       15464   0.0    0.4     0.0    0.5
+    enter_reverse_mode   Screen                                               404          49   0.0    0.0     0.0    0.0
+     style               Screen                                               465          35   0.0    0.0     0.0    0.0
+      sattrs             Screen                                               466          35   0.0    0.0     0.0    0.0
+     sattrs              Screen                                               456          49   0.0    0.0     0.0    0.0
+    exit_attribute_mode  Screen                                               392        4743   0.0    0.0     0.0    0.0
+     sattrs              Screen                                               453        4743   0.0    0.0     0.0    0.0
+    set_foreground       Screen                                               391        2965   0.0    0.0     0.0    0.0
+     sattrs              Screen                                               455        2965   0.0    0.0     0.0    0.0
+    set_background       Screen                                               390        2964   0.0    0.0     0.0    0.0
+     sattrs              Screen                                               454        2964   0.0    0.0     0.0    0.0
+   put_char              Screen                                               385       69660   1.4    2.7     8.6   17.5
+    column               Screen                                               411       69627   0.0    0.0     0.0    0.0
+    columns              Screen                                               410           0   0.0    0.1     0.0    0.1
+    updcells             Screen                                               409       69660   5.3   10.9     6.5   13.9
+     unsafeIndex_a6FB    Screen                                               426       69659   0.0    2.2     0.0    2.2
+     inRange_a6FQ        Screen                                               425       69659   1.0    0.8     1.0    0.8
+     cells               Screen                                               422           0   0.2    0.1     0.2    0.1
+    sattrs               Screen                                               408           0   0.2    0.1     0.2    0.1
+    cursor_address       Screen                                               407       69660   0.0    0.3     0.0    0.3
+    cursor               Screen                                               388      139287   0.2    0.1     0.2    0.1
+    line                 Screen                                               387       69660   0.2    0.0     0.2    0.0
+    lines                Screen                                               386           0   0.0    0.1     0.0    0.1
+   getnum                Outputter                                            373       16050   0.0    0.2    16.7   16.9
+    digit2int            Outputter                                            379       15609   0.2    0.2     0.2    0.2
+    getnum_aux           Outputter                                            376       15658   0.0    0.5    15.9   15.5
+     digit2int           Outputter                                            380       10672   0.0    0.1     0.0    0.1
+     getf                Main                                                 377           0   1.6    1.7    15.9   14.9
+      cursor             Screen                                               502           4   0.0    0.0     0.0    0.0
+      fromTermClient     CTermer                                              475           0   0.0    0.1     0.0    0.1
+      m_oldcur           Main                                                 470           4   0.0    0.0     0.0    0.0
+      m_screen           Main                                                 383           4   0.0    0.0     0.0    0.0
+      showdisplay        Main                                                 381           4   0.0    0.0    14.3   13.1
+       showDisplay       CTermer                                              474           4   0.0    0.0     0.0    0.0
+       curserify         Main                                                 473           4   0.0    0.0     0.0    0.0
+       cursor            Screen                                               472           4   0.0    0.0     0.0    0.0
+       cellat            Screen                                               446        1608   0.2    0.0     0.4    0.1
+        unsafeIndex_a6FB Screen                                               449        1608   0.0    0.1     0.0    0.1
+        inRange_a6FQ     Screen                                               448        1608   0.0    0.0     0.0    0.0
+        cells            Screen                                               447           0   0.2    0.0     0.2    0.0
+       drawCell          CTermer                                              442        1608   0.8    0.1     0.8    0.1
+        bgcolor          Screen                                               460        1608   0.0    0.0     0.0    0.0
+        fgcolor          Screen                                               459        1608   0.0    0.0     0.0    0.0
+        reverse          Screen                                               458        1608   0.0    0.0     0.0    0.0
+        fromEnum_a6Kf    Screen                                               457        3216   0.0    0.0     0.0    0.0
+        cattrs           Screen                                               452        6432   0.0    0.0     0.0    0.0
+        style            Screen                                               451        3216   0.0    0.0     0.0    0.0
+        bold             Screen                                               450        1608   0.0    0.0     0.0    0.0
+        character        Screen                                               445        1608   0.0    0.0     0.0    0.0
+        line             Screen                                               444        1608   0.0    0.0     0.0    0.0
+        column           Screen                                               443        1608   0.0    0.0     0.0    0.0
+       diff              Screen                                               382           4  12.8   12.0    13.0   12.9
+        unsafeIndex_a6FB Screen                                               441       18560   0.2    0.6     0.2    0.6
+        inRange_a6FQ     Screen                                               440       18560   0.0    0.2     0.0    0.2
+        /=_a6Gf          Screen                                               420        7680   0.0    0.0     0.0    0.2
+         ==_a6G8         Screen                                               421        7680   0.0    0.0     0.0    0.2
+          ==_a6H1        Screen                                               463        6245   0.0    0.1     0.0    0.1
+           ==_a6HZ       Screen                                               467        6080   0.0    0.0     0.0    0.0
+           ==_a6IL       Screen                                               464       12490   0.0    0.0     0.0    0.0
+      m_fromclient       Main                                                 378       26330   0.0    0.0     0.0    0.0
+    getf                 Main                                                 374           0   0.6    1.0     0.6    1.0
+     m_fromclient        Main                                                 375       16050   0.0    0.0     0.0    0.0
+   getf                  Main                                                 371           0   2.9    6.1    69.5   57.0
+    cursor               Screen                                               507          29   0.0    0.0     0.0    0.0
+    fromTermClient       CTermer                                              506           0   0.0    0.4     0.0    0.4
+    m_oldcur             Main                                                 501          30   0.0    0.0     0.0    0.0
+    m_screen             Main                                                 478          30   0.0    0.0     0.0    0.0
+    showdisplay          Main                                                 476          30   0.6    0.1    66.6   50.5
+     showDisplay         CTermer                                              505          30   1.6    0.0     1.6    0.0
+     curserify           Main                                                 504          30   0.0    0.0     0.0    0.0
+     cursor              Screen                                               503          30   0.0    0.0     0.0    0.0
+     cellat              Screen                                               490        6387   0.6    0.2     0.8    0.5
+      unsafeIndex_a6FB   Screen                                               493        6387   0.2    0.2     0.2    0.2
+      inRange_a6FQ       Screen                                               492        6387   0.0    0.1     0.0    0.1
+      cells              Screen                                               491           0   0.0    0.0     0.0    0.0
+     drawCell            CTermer                                              486        6387   4.3    0.2     4.7    0.2
+      bgcolor            Screen                                               500        6387   0.0    0.0     0.0    0.0
+      fgcolor            Screen                                               499        6387   0.0    0.0     0.0    0.0
+      reverse            Screen                                               498        6387   0.2    0.0     0.2    0.0
+      fromEnum_a6Kf      Screen                                               497       12774   0.0    0.0     0.0    0.0
+      cattrs             Screen                                               496       25548   0.0    0.0     0.0    0.0
+      style              Screen                                               495       12774   0.0    0.0     0.0    0.0
+      bold               Screen                                               494        6387   0.0    0.0     0.0    0.0
+      character          Screen                                               489        6387   0.0    0.0     0.0    0.0
+      line               Screen                                               488        6387   0.0    0.0     0.0    0.0
+      column             Screen                                               487        6387   0.2    0.0     0.2    0.0
+     diff                Screen                                               477          30  55.8   43.0    58.9   49.7
+      unsafeIndex_a6FB   Screen                                               482      126324   1.6    3.9     1.6    3.9
+      inRange_a6FQ       Screen                                               481      126324   0.8    1.4     0.8    1.4
+      /=_a6Gf            Screen                                               479       57600   0.2    0.2     0.6    1.4
+       ==_a6G8           Screen                                               480       57600   0.0    0.3     0.4    1.2
+        ==_a6H1          Screen                                               483       51359   0.4    0.6     0.4    0.9
+         ==_a6HZ         Screen                                               485       51310   0.0    0.3     0.0    0.3
+         ==_a6IL         Screen                                               484      102718   0.0    0.0     0.0    0.0
+    m_fromclient         Main                                                 372       95467   0.0    0.0     0.0    0.0
+   updatef               Main                                                 370       89000   0.6    2.5     1.2    3.8
+    clr_eos              Screen                                               405           1   0.0    0.0     0.0    0.2
+     blank               Screen                                               468          17   0.0    0.0     0.0    0.0
+      sattrs             Screen                                               469           0   0.0    0.0     0.0    0.0
+     lines               Screen                                               433           0   0.0    0.0     0.0    0.0
+     line                Screen                                               431           1   0.0    0.0     0.0    0.0
+     cursor              Screen                                               429           2   0.0    0.0     0.0    0.0
+     column              Screen                                               428           1   0.0    0.0     0.0    0.0
+     columns             Screen                                               427           0   0.0    0.0     0.0    0.0
+     updcells            Screen                                               406           1   0.0    0.1     0.0    0.2
+      unsafeIndex_a6FB   Screen                                               432        2025   0.0    0.1     0.0    0.1
+      inRange_a6FQ       Screen                                               430        2025   0.0    0.0     0.0    0.0
+      cells              Screen                                               424           0   0.0    0.0     0.0    0.0
+    cursor_home          Screen                                               401          49   0.0    0.0     0.0    0.0
+     cursor_address      Screen                                               402          49   0.0    0.0     0.0    0.0
+    clr_eol              Screen                                               399         342   0.0    0.1     0.4    0.8
+     blank               Screen                                               461        4303   0.0    0.0     0.2    0.0
+      sattrs             Screen                                               462           0   0.2    0.0     0.2    0.0
+     line                Screen                                               438         342   0.0    0.0     0.0    0.0
+     cursor              Screen                                               436         684   0.0    0.0     0.0    0.0
+     column              Screen                                               435         342   0.0    0.0     0.0    0.0
+     columns             Screen                                               434           0   0.0    0.0     0.0    0.0
+     updcells            Screen                                               400         342   0.2    0.4     0.2    0.7
+      unsafeIndex_a6FB   Screen                                               439        6485   0.0    0.2     0.0    0.2
+      inRange_a6FQ       Screen                                               437        6485   0.0    0.1     0.0    0.1
+      cells              Screen                                               423           0   0.0    0.0     0.0    0.0
+    carriage_return      Screen                                               396        2258   0.0    0.0     0.0    0.0
+     column_address      Screen                                               397        2258   0.0    0.0     0.0    0.0
+      cursor             Screen                                               412        2258   0.0    0.0     0.0    0.0
+      cursor_address     Screen                                               398        2258   0.0    0.0     0.0    0.0
+    cursor_down          Screen                                               393        1129   0.0    0.0     0.2    0.0
+     parm_down_cursor    Screen                                               414        1128   0.0    0.0     0.0    0.0
+      cursor             Screen                                               419        1064   0.0    0.0     0.0    0.0
+      line               Screen                                               418        1064   0.0    0.0     0.0    0.0
+      row_address        Screen                                               415        1128   0.0    0.0     0.0    0.0
+       cursor            Screen                                               417        1064   0.0    0.0     0.0    0.0
+       cursor_address    Screen                                               416        1128   0.0    0.0     0.0    0.0
+     lines               Screen                                               413           0   0.0    0.0     0.0    0.0
+     cursor              Screen                                               395        1129   0.0    0.0     0.0    0.0
+     line                Screen                                               394        1129   0.2    0.0     0.2    0.0
+    m_screen             Main                                                 384           0   0.0    0.2     0.0    0.2
+  inputter               Inputter                                             323           1   0.0    0.0     0.0    0.0
+   sinputter             Inputter                                             324           1   0.0    0.0     0.0    0.0
+  main                   Main                                                 320           1   0.0    0.0     0.0    0.0
+ CAF                     GHC.IO.Handle.FD                                     252           2   0.0    0.0     0.0    0.0
+ CAF                     System.Posix.Internals                               251           2   0.0    0.0     0.0    0.0
+ CAF                     GHC.Conc                                             235           7   0.0    0.0     0.0    0.0
+ CAF                     GHC.IO.Handle.Internals                              226           1   0.0    0.0     0.0    0.0
+ CAF                     GHC.IO.Encoding.Iconv                                220           3   0.0    0.0     0.0    0.0
+ CAF                     Screen                                               217          15   0.0    0.2     1.2    0.7
+  scroll_forward         Screen                                               508           2   0.0    0.0     1.2    0.4
+   scroll                Screen                                               510           1   1.0    0.1     1.2    0.4
+    blank                Screen                                               520          80   0.0    0.0     0.0    0.0
+     sattrs              Screen                                               521           0   0.0    0.0     0.0    0.0
+    unsafeIndex_a6FB     Screen                                               519        1839   0.0    0.1     0.0    0.1
+    inRange_a6FQ         Screen                                               518        1839   0.0    0.0     0.0    0.0
+    cells                Screen                                               517           0   0.0    0.0     0.0    0.0
+    columns              Screen                                               514           0   0.0    0.0     0.0    0.0
+    updcells             Screen                                               512           1   0.2    0.1     0.2    0.2
+     unsafeIndex_a6FB    Screen                                               516        2025   0.0    0.1     0.0    0.1
+     inRange_a6FQ        Screen                                               515        2025   0.0    0.0     0.0    0.0
+     cells               Screen                                               513           0   0.0    0.0     0.0    0.0
+    lines                Screen                                               511           0   0.0    0.0     0.0    0.0
+   parm_index            Screen                                               509           0   0.0    0.0     0.0    0.0
+  home                   Screen                                               352           1   0.0    0.0     0.0    0.0
+  normal                 Screen                                               347           1   0.0    0.0     0.0    0.0
+  default_attributes     Screen                                               344           1   0.0    0.0     0.0    0.0
+  defaultcell            Screen                                               340           1   0.0    0.0     0.0    0.0
+  unsafeIndex_a6FB       Screen                                               339        2033   0.0    0.1     0.0    0.1
+  inRange_a6FQ           Screen                                               338        2033   0.0    0.0     0.0    0.0
+ CAF                     Outputter                                            197           3   0.0    0.0     0.0    0.0
+ CAF                     CTermer                                              166           4   0.0    0.0     0.0    0.0
+  fromTermClient         CTermer                                              369           1   0.0    0.0     0.0    0.0
+  getEvent               CTermer                                              325           1   0.0    0.0     0.0    0.0
+  init                   CTermer                                              321           1   0.0    0.0     0.0    0.0

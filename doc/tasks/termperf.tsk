@@ -429,16 +429,16 @@ updatef takes 8% time 9%alloc.
 
 What can I do about this?
 Let me brainstorm, then sleep on it.
-- Don't draw cell unless it has actually changed from last time we drew it.
-- Don't keep track of recent updates, but instead perform a diff between two
++ Don't draw cell unless it has actually changed from last time we drew it.
++ Don't keep track of recent updates, but instead perform a diff between two
   screens (possibly based on a recent bounds thing) to figure out what has
   changed?
-- Don't keep set of positions that changed, but rather keep a bounding box.
+x Don't keep set of positions that changed, but rather keep a bounding box.
   May reduce memory usage.
-- Read more than a single character at a time from the client
++ Read more than a single character at a time from the client
     Perhaps if we read a bunch, apply the bunch, then update the screen, that
     would help things?
-- don't call showDisplay so often. Maybe only after a bunch of updates have
++ don't call showDisplay so often. Maybe only after a bunch of updates have
   been made?
 - be more precise about what parts of the display have to be updated
   And only update them. Rather than this bounding box thing, which could be
@@ -624,4 +624,77 @@ poor performance.
 But updcells is still dominating, even more so now. I think the cost is clear:
 any time you put a single character, you end up allocating an entirely new
 array and copying all those values in.
+
+Fri May 20 20:35:29 EDT 2011
+
+What's left? How do we fix this updcells issue?
+
+The problem is we put_char a lot, and that is very costly for an array. It's
+O(N) for the array.
+
+If I switched to a Map instead of an array it would be O(log N), but then
+getting at cells would be more expensive.
+
+No. Let's be really honest. You know what I want here. I know what I want
+here. I want to do in place updates. I want just one array I can modify in
+place.
+
+That's how it would be done in hardware. That's how it would be done in C
+code.
+
+I'll have to change my diff strategy, because that relies on making a copy.
+Maybe that's okay. Or maybe not. Let me not worry about that issue yet.
+Instead let me do research.
+
+ST monad. Can I make it work for me? And how?
+
+Here's what I read on the ST Monad.
+
+I can runST a monad inside which I have a place where I can make reference. I
+can modify these references, and the modifications will be in place (I gather).
+
+So how this could work, for example, is I sit running in ST. I allocate my
+array as a STRef, and do my mutations to the STRef, then I don't have to copy
+the array.
+
+Wow. The haskellwiki has a page on Arrays. Perhaps there's something better
+than ST for me here.
+
+Looks like they have this thing called a DiffArray, which looks and acts just
+like an array, but does updates efficiently. Perhaps all I need is to switch
+to that. It's still pure (though some yucky hacks I imagine, but maybe don't
+need to care about), so I could just drop it in.
+
+What do you think? Is it worth a try? It must be... I'm going to try it.
+
+Fri May 20 21:17:01 EDT 2011
+
+So I switched to DiffArray. It compiles, and tests pass. But it's slower. Now
+it takes 60 seconds to do the benchmark.
+
+Profile (e) shows not surprisingly that diff is very expensive now. So now I
+should worry about that. How can we make diffs cheap with a diffarray?
+
+What if I had each element of the array be a pair of cells, the old and the
+new. Then diff could just compare those, and I would want another function,
+cleardiff to update the screen. In other words, go back to the recent,
+clear_recent interface. But the difference is I still use diffs, so I still
+take advantage of not having to redraw middle characters that haven't changed.
+Why will this be efficient? Well, because we only ever do mutations to an
+array, we never use the old references. Those go away. The worst case is this
+cost to update the old cells when we cleardiff.
+
+Let me try it.
+
+Fri May 20 21:49:27 EDT 2011
+
+Okay, this is better. Now down to 11.5 seconds.
+
+Profiling still says diff is the top problem, though not so bad as before. We
+end up allocating a lot less than before we used DiffArrays, but the profile
+says we take more time now.
+
+Is there some way I can reduce the cost of diff?
+
+I don't know. I'll think about it some more and get back to you.
 

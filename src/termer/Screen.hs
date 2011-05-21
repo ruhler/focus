@@ -16,7 +16,8 @@ module Screen (
   where
 
 import Prelude hiding (reverse, lines)
-import Data.Array
+import Data.Array.IArray
+import Data.Array.Diff
 
 data Color = BLACK | RED | GREEN | YELLOW | BLUE | MAGENTA | CYAN | WHITE
     deriving(Eq, Show)
@@ -75,7 +76,6 @@ data Position = Position {
 } deriving(Eq, Show, Ord, Ix)
 
   
-
 -- The home cursor position
 home :: Position
 home = Position 0 0
@@ -84,12 +84,20 @@ data Screen = Screen {
     columns :: Integer,
     lines :: Integer,
     cursor :: Position,
-    cells :: Array Position Cell,
+    cells :: DiffArray Position Cell,
+    oldcells :: DiffArray Position Cell,
     sattrs :: Attributes
-} deriving (Eq, Show)
+} deriving (Show)
+
+instance Eq Screen where
+    (==) (Screen acols alns acur acells aocells asattrs) (Screen bcols blns bcur bcells bocells bsattrs)
+        = acols == bcols && alns == blns && acur == bcur
+            && asattrs == bsattrs
+            && and [acells ! (Position x y) == bcells ! (Position x y)
+                        | x <- [0..(acols-1)], y <- [0..(alns-1)]]
 
 -- make an array where every element is the same
-uniformArray :: (Ix i) => (i, i) -> a -> Array i a
+uniformArray :: (Ix i) => (i, i) -> a -> DiffArray i a
 uniformArray bounds x = listArray bounds (repeat x)
 
 -- Update some cells in the screen.
@@ -107,11 +115,10 @@ screen cols lns
         cells = array bounds [(Position x y, defaultcell)
                     | x <- [0..cols],
                       y <- [0..lns]]
-    in Screen cols lns home cells default_attributes
+    in Screen cols lns home cells cells default_attributes
 
 blank :: Screen -> Cell
 blank scr = Cell ' ' (sattrs scr)
-
 
 
 -- carriage_return
@@ -398,11 +405,13 @@ put_char c scr
 cellat :: Position -> Screen -> Cell
 cellat pos scr = (cells scr) ! pos
 
--- Return a list of the positions which differ between the two screens.
--- Assumes the screens are the same size.
-diff :: Screen -> Screen -> [Position]
-diff (Screen cols lns _ a _) (Screen _ _ _ b _)
+-- Return a list of the positions which differ since the last time the screen
+-- had the diff state rest, and returns a screen with the diff state reset.
+diff :: Screen -> (Screen, [Position])
+diff (Screen cols lns cur a b sattr)
  = let all = [Position x y | x <- [0..(cols-1)], y <- [0..(lns-1)]]
        differ pos = (a ! pos) /= (b ! pos)
-   in filter differ all
-   
+       diffs = filter differ all
+       nold = b//[(p, a ! p) | p <- diffs]
+   in (Screen cols lns cur a nold sattr, diffs)
+
