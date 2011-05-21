@@ -1,0 +1,106 @@
+
+Sat May 21 07:07:52 EDT 2011
+
+Task: How would I want to write termer if it was done entirely in C?
+
+So here's the thought I had, which is rather a tangent thought.
+
+The problem with performance seems to be related to haskell. I say this
+because I didn't have nearly so many problems when I did fbterm. And if I
+implement it in C, it is so much clearer what's going on, so it's that much
+easier to have better performance.
+
+So here's what I'm dreaming of. A language which compiles to "no-compromise"
+software. Something analogous to bluespec in the sense that all abstractions
+are no cost, then are compiled away completely.
+
+The idea is you describe exactly what you want in terms of what computations
+are done, and what memory is used, and so on. But at the same time try to
+retain all those good things about the functional language. So, what made me
+switch to using haskell instead of doing all of termer in C?
+
+Here's my brainstorm.
+- because I wanted to show it could be done in haskell
+- because I hated that I have to decide between
+    Do I pass around an Event, or an Event*?
+
+It was somehow nicer in haskell in other ways. Maybe
+- It's much easier to test under different conditions than runtime.
+For example, I can test the inputter by collecting the stream of characters it
+produces. It doesn't have to know about where the outputs are going. Or, I can
+test the outputter by running on a screen? But can I not do any of this in C?
+- It just encourages a more testable environment?
+
+Let me look at my thoughts early on that made me switch to haskell, see what
+it says.
+
+- I wanted to write a module which could pretend it was running in its own
+  thread. A function you give an input function and output function and it can
+  run the whole thing without having to yield control to elsewhere.
+
+
+The other thing I remember thinking is, wow, it's nice to be back in haskell.
+
+I want to compare my implementation (both fbterm and haskell) to the linux
+console, and fbcon maybe. Just to get an idea of how they implement things to
+be so fast.
+
+
+Things I envision my language as having:
+ - unbounded integers
+ - no pointers: we should just talk about values being passed around.
+ - no automatic garbage collection, unless you specify that you want it?
+ - strict. Not lazy
+ - Nice static type system
+    - like haskell's data types
+        Only with much better support for abstract data types.
+    - pattern matching? (maybe a fancy case expression)
+    - type classes
+    - maybe monads for embedded domain specific languages? Is that possible?
+ - Higher order functions ... but maybe with some restrictions.
+    partial application
+ - unicode characters
+
+
+You know what would be really revealing? Try to reimplement all the haskell
+stuff in c. Then I'll see what haskell allows that c doesn't, and I'll see how
+much performance we gain just by writing in c instead of haskell.
+
+Yes. Let me try that before looking at linux console code so it doesn't
+influence me in any way.
+
+Cool. This sounds like a plan. I shouldn't have to think too much, because I
+have all the code written. And all the tests. Let me do the full translation,
+recording anything that's painful to do in C.
+
+Here I go.
+
+- Complaint: c doesn't have a Bool type.
+- Have to choose: where is memory for things.
+    are things passed by value?
+    do I need to allocate them on the heap?
+    do they have a static location?
+- setting values of members is not a function (not first class)
+    so I have to write my own function for that.
+    and it feels like it will be very costly to pass in as a copy and return a
+    new result rather than mutating in place.
+- characters are ascii, not unicode
+- getting values of members is not a function (not first class)
+    so I have to write my own function for that.
+- support for recursion not so nice, forcing me to use loops instead.
+- no state monad, so threading state has to be explicit.
+    If I want a reference, I have to pass it as a pointer...
+- haskell automatically produces code to assert when you miss a case branch.
+- pattern matching isn't as fancy
+    so I can't for example, write case on two values at once.
+- syntax is less pleasent in C.
+- C doesn't have escape codes for \HT, \BS, etc...
+- library request: an HUnit like thing would be nice.
+- partial function application
+- initializing structures and lists is clunky
+
+Sat May 21 09:01:23 EDT 2011
+
+Well, aside from the list above, implementing inputter went pretty well. I'll
+take a little break, then lets come back to implement and test screen in c.
+

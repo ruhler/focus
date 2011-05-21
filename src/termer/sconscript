@@ -27,4 +27,9 @@ env.Default(env.GHCProgram('sdltermer',
     #GHCFLAGS=['-threaded']))
 env.Depends('sdltermer', 'ctermer.h')
 
+inputter_o = env.Object('inputter.o', 'inputter.c')
+
+# inputtertest
+inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o])
+env.Default(env.Command('inputtertest.out', inputtertest, "$SOURCE > $TARGET"))
 

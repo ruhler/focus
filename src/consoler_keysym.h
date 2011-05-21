@@ -4,6 +4,8 @@
 
 // keysyms specified to match SDL.
 
+typedef int CNSL_Keysym;
+
 #define CNSLK_BACKSPACE 8
 #define CNSLK_TAB 9
 #define CNSLK_CLEAR 12
@@ -42,9 +44,9 @@
 #define CNSLK_GREATER 62
 #define CNSLK_QUESTION 63
 #define CNSLK_AT  64
-#define CNSLK_LEFTBRACKET = 91
+#define CNSLK_LEFTBRACKET 91
 #define CNSLK_BACKSLASH 92
-#define CNSLK_RIGHTBRACKET = 93
+#define CNSLK_RIGHTBRACKET 93
 #define CNSLK_CARET 94
 #define CNSLK_UNDERSCORE 95
 #define CNSLK_BACKQUOTE 96

@@ -45,6 +45,7 @@ void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Co
 // Event types
 #define CNSLE_KEYPRESS 0
 #define CNSLE_KEYRELEASE 1
+#define CNSLE_QUIT 2
 
 typedef struct {
     int type;
