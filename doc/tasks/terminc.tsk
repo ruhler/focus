@@ -147,3 +147,31 @@ to write the code, and more clear what is going on. Writing test cases wasn't
 any harder once I got my abstractions right. It's too bad I have these
 potentialy integer overflow bugs and my memory leaks.
 
+Sat May 21 11:36:25 EDT 2011
+
+Okay! Next step: outputter. This could be interesting.
+
+The implementation is going to have to change a bit, because we can't do
+partial function application easily. So let's say it takes as input a screen,
+and updates the screen directly. The rest can stay the same. This will be a
+less general version than the haskell one because of this.
+ 
+Sat May 21 12:07:53 EDT 2011
+
+I ported outputter. I haven't ported the test cases. I'm discouraged from
+doing so because I don't feel like right the logic to compare if two screens
+are equal.
+
+Would it be easier to assemble a working terminal emulator now?
+
+We have ctermer. We have sdlctermer. We have all the major c code.
+All I need to do is implement a termerc.c 
+
+It will be a like a bizarre mix or something. It could go pretty well.
+Sure. Let me try real quick like.
+
+Or maybe it would be smarter to check everything I have in now, and go for a
+walk. You know? That's much more appealing to me right now. When I come back I
+can implement termerc, and outputtertest if I feel like it or termerc doesn't
+work.
+
