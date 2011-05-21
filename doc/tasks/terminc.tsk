@@ -76,6 +76,7 @@ recording anything that's painful to do in C.
 Here I go.
 
 - Complaint: c doesn't have a Bool type.
+- c doesn't have an unbounded integer type.
 - Have to choose: where is memory for things.
     are things passed by value?
     do I need to allocate them on the heap?
@@ -98,9 +99,51 @@ Here I go.
 - library request: an HUnit like thing would be nice.
 - partial function application
 - initializing structures and lists is clunky
+- no support for namespaces in c. It's really annoying to have to use a
+  prefix for everything.
+- deriving Eq and Show is pretty nice.
+- c doesn't have automatic memory management
+    dynamic sized arrays have to remember to be freed by someone.
+- complex structures need special deep copy.
+- no standard list library
+- I find that rather than returning a list of elements and letter the caller
+  iterate over them, I'm inclined to iterate over the elements for the caller.
+  That way I don't have to make this new list. I can iterate in place.
+- anonymous functions
+- in c, member access is much easier to do than member access in haskell,
+    especially with nested structures.
+- in c, setting the value of a nested member in a struct is WAY easier than in
+  haskell.
+- I'm not convinced gcc will do common subexpression elmination, so I have to
+  worry about stupid things like that. That's not the case in haskell.
+- I feel like c will have better caching behavior because it isn't lazy.
+- Polymorphism: I would like to write more abstract things like:
+   bool teq(str, a, a, bool(*p)(a, a));
 
 Sat May 21 09:01:23 EDT 2011
 
 Well, aside from the list above, implementing inputter went pretty well. I'll
 take a little break, then lets come back to implement and test screen in c.
+
+Sat May 21 09:25:56 EDT 2011
+
+Time for screen. Now, how can I do this fairly? Do we do updates in place? How
+do we do diff?
+
+I think the following is fair. Functions should take a pointer to a Screen and
+update it in place. If you want a copy, you can always make the copy first,
+then pass it in.
+
+For diff we'll use the same algorithmic strategy. That is, we keep two
+buffers, one with the old state, one with the new. When we do the diff we sync
+the two states.
+
+Here I go.
+
+Sat May 21 11:27:26 EDT 2011
+
+I implemented screen and screentest in c. Overall I would say it feels easier
+to write the code, and more clear what is going on. Writing test cases wasn't
+any harder once I got my abstractions right. It's too bad I have these
+potentialy integer overflow bugs and my memory leaks.
 

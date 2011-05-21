@@ -4,9 +4,6 @@
 
 #include "inputter.h"
 
-bool true = 1;
-bool false = 0;
-
 typedef struct {
     bool shifton;
     bool ctrlon;

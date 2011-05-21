@@ -27,9 +27,16 @@ env.Default(env.GHCProgram('sdltermer',
     #GHCFLAGS=['-threaded']))
 env.Depends('sdltermer', 'ctermer.h')
 
-inputter_o = env.Object('inputter.o', 'inputter.c')
+
+bool_o = env.Object('bool.o', 'bool.c')
 
 # inputtertest
-inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o])
+inputter_o = env.Object('inputter.o', 'inputter.c')
+inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o, bool_o])
 env.Default(env.Command('inputtertest.out', inputtertest, "$SOURCE > $TARGET"))
+
+# screentest
+screen_o = env.Object('screen.o', 'screen.c')
+screentest = env.Program('screentest', ['screentest.c', screen_o, bool_o])
+env.Default(env.Command('screentest.out', screentest, "$SOURCE > $TARGET"))
 
