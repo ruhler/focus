@@ -18,11 +18,8 @@ int main(int argc, char* argv[])
     int width = 640;
     int height = 480;
 
-    if (argc > 3) {
-        width = atoi(argv[2]);
-        height = atoi(argv[3]);
-    }
-    std::cerr << "using " << width << " " << height << std::endl;
+    CNSL_Init();
+    CNSL_GetGeometry(&width, &height);
 
     Pdfer* pdfer = Pdfer::load(pdffilename, width, height);
     if (!pdfer) {
@@ -30,7 +27,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    CNSL_Init();
     CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     pdfer->show(display);

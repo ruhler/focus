@@ -132,6 +132,17 @@ int CNSL_Init();
 // Deinitialize the consoler library.
 int CNSL_Quit();
 
+// Read the geometry of the window (from CNSLWIDTH and CNSLHEIGHT environment
+// variables). Returns the results in width, height. If nothing is specified,
+// the width and height are left unchanged.
+// Used by clients.
+void CNSL_GetGeometry(int* width, int* height);
+
+// Set the geometry of the window (by setting CNSLWIDTh and CNSLHEIGHT
+// environment variables).
+// Used by servers.
+void CNSL_SetGeometry(int width, int height);
+
 
 #endif//CONSOLER_H
 

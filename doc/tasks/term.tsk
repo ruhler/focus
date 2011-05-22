@@ -1177,6 +1177,7 @@ Didn't take long to find some issues.
  - control-g in vim seems to have some issues.
  - issues with man pages under screen: scrolling up doesn't work.
     I wonder if the way they scroll up is doing cursor_up at the top?
+    Looks like ESC M is the sequence I need to support (reverse line feed).
  - I'm having issues with readline. Maybe bell related?
     I disabled the bell. Let's see if that fixes things.
  - For useability, I need a version of sdltermer which doesn't read bench.

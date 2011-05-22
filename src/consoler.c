@@ -263,3 +263,27 @@ int CNSL_Quit()
     return 1;
 }
 
+void CNSL_GetGeometry(int* width, int* height)
+{
+    const char* widthenv = getenv("CNSLWIDTH");
+    const char* heightenv = getenv("CNSLHEIGHT");
+
+    if (widthenv) {
+        *width = atoi(widthenv);
+    }
+
+    if (heightenv) {
+        *height = atoi(heightenv);
+    }
+}
+
+void CNSL_SetGeometry(int width, int height)
+{
+    char widthstr[10] = {0};
+    char heightstr[10] = {0};
+    snprintf(widthstr, 10, "%i", width);
+    snprintf(heightstr, 10, "%i", height);
+    setenv("CNSLWIDTH", widthstr, 1);
+    setenv("CNSLHEIGHT", heightstr, 1);
+}
+

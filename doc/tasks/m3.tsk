@@ -87,11 +87,20 @@ Here are the details to take care of:
     now makes sense. That way I don't have to deal with dpi things.
 + Get font name from TERMERFONT environment variable.
     Done.
-- How do we choose lines, columns, height, width, font size in termer?
++ How do we choose lines, columns, height, width, font size in termer?
     Because if you specify them all, they might not all line up...
-- Write CNSL_GetGeometry function to get width and height
+    Traditionally, and perhaps best, is adjust columns and lines so it fits in
+    the given window. nobody changes font size. xterm lets you adjust font
+    size dynamically.
+
+    I think for me, appropriate would be: maximize lines and columns. Maybe I
+    have to set the environment variables LINES and COLUMNS for this to work?
+    That's what ncurses deals with, and we automatically keep things in bounds
+    as it is, so that's fine with me.
++ Write CNSL_GetGeometry function to get width and height
     Reads from CNSLWIDTH and CNSLHEIGHT environment variables.
     So sdlcsr should set those variable when it starts up.
+
 - Parse cntrl-' escape sequences in sgreen.
 - Have sgreen start by launching termer.
 - Make termer use login shell (or whatever is approriate (what does xterm do?

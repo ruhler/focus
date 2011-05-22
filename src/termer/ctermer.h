@@ -8,7 +8,9 @@
 //  - initializes CNSL, freetype,
 //  - forks terminal client process /bin/bash
 // Returns 0 on success, nonzero on error.
-int ctermer_Init();
+// Sets cols and lines to the maximum number of columns and lines that 
+// will be visible on the screen.
+int ctermer_Init(int* cols, int* lines);
 void ctermer_DeInit();
 
 // Make it so anyone blocked in ctermer_EventGet will get a QuitEvent.

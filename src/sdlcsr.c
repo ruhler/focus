@@ -37,23 +37,35 @@ int handle_output(void* usrdata)
     return 0;
 }
 
-void runserver()
+int main(int argc, char* argv[])
 {
+    if (argc < 2) {
+        fprintf(stderr, "csr prg\n");
+        return 1;
+    }
+
+    int pargc = argc - 1;
+    char** pargv = argv+1;
+
+    CNSL_Init();
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "sdl init: %s\n", SDL_GetError());
-        return;
+        return 1;
     }
-    atexit(SDL_Quit);
 
     screen = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE);
     if (screen == NULL) {
         fprintf(stderr, "sdl: %s\n", SDL_GetError());
         SDL_Quit();
-        return;
+        return 1;
     }
 
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL/2);
     SDL_ShowCursor(SDL_DISABLE);
+
+    // Launch the client.
+    CNSL_SetGeometry(screen->w, screen->h);
+    client = CNSL_LaunchClient(pargv[0], pargv);
 
     // Lauch a thread to handle the output.
     SDL_CreateThread(handle_output, NULL);
@@ -87,22 +99,6 @@ void runserver()
     }
 
     SDL_Quit();
-}
-
-int main(int argc, char* argv[])
-{
-    if (argc < 2) {
-        fprintf(stderr, "csr prg\n");
-        return 1;
-    }
-
-    int pargc = argc - 1;
-    char** pargv = argv+1;
-
-    CNSL_Init();
-    client = CNSL_LaunchClient(pargv[0], pargv);
-    runserver();
-
     CNSL_Quit();
     return 0;
 }

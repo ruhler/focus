@@ -14,9 +14,6 @@
 #include "consoler.h"
 #include "ctermer.h"
 
-#define WIDTH 1280
-#define HEIGHT 800
-
 typedef struct {
     // The most recently gotten event.
     CNSL_Event event;
@@ -24,6 +21,10 @@ typedef struct {
 
     FT_Library library;
     FT_Face face;
+
+    // Window size
+    int width;
+    int height;
 
     // Character metrics.
     int cell_width;
@@ -63,16 +64,11 @@ int forkterminalclient()
 }
 
 
-int ctermer_Init()
+int ctermer_Init(int* cols, int* lines)
 {
     const char* font = getenv("TERMERFONT");
     if (!font) {
         font = "Monospace";
-    }
-
-    if (forkterminalclient() != 0) {
-        fprintf(stderr, "error forking terminal client\n");
-        return 1;
     }
 
     if (FT_Init_FreeType(&gstate.library) != 0) {
@@ -116,13 +112,30 @@ int ctermer_Init()
     gstate.cell_height = (int)ceil(h*p/em);
     gstate.char_ascender = (int)ceil(a*p/em);
 
+    gstate.width = 640;
+    gstate.height = 480;
+    CNSL_GetGeometry(&gstate.width, &gstate.height);
 
     CNSL_Init();
-    gstate.display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+    gstate.display = CNSL_AllocDisplay(gstate.width, gstate.height);
     gstate.mincol = -1;
     gstate.maxcol = -1;
     gstate.minrow = -1;
     gstate.maxrow = -1;
+
+    *cols = gstate.width / gstate.cell_width;
+    *lines = gstate.height / gstate.cell_height;
+    char colsstr[10] = {0};
+    char linesstr[10] = {0};
+    snprintf(colsstr, 10, "%i", *cols);
+    snprintf(linesstr, 10, "%i", *lines);
+    setenv("COLUMNS", colsstr, 1);
+    setenv("LINES", linesstr, 1);
+
+    if (forkterminalclient() != 0) {
+        fprintf(stderr, "error forking terminal client\n");
+        return 1;
+    }
 
     return 0;
 }
@@ -265,12 +278,12 @@ void ctermer_ShowDisplay()
         w = gstate.cell_width * (gstate.maxcol - gstate.mincol + 1);
         h = gstate.cell_height * (gstate.maxrow - gstate.minrow + 1);
 
-        if (x+w > WIDTH) {
-            w = WIDTH - x;
+        if (x+w > gstate.width) {
+            w = gstate.width - x;
         }
 
-        if (y+h > HEIGHT) {
-            h = HEIGHT - y;
+        if (y+h > gstate.height) {
+            h = gstate.height - y;
         }
     }
 

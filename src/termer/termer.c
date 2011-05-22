@@ -69,9 +69,10 @@ void* runoutputter(void* ud)
 
 int main()
 {
-    ctermer_Init();
+    int cols, lines;
+    ctermer_Init(&cols, &lines);
 
-    scr = screen(80, 24);
+    scr = screen(cols, lines);
 
     pthread_t othread;
     pthread_create(&othread, NULL, &runoutputter, NULL);
