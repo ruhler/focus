@@ -3,15 +3,15 @@
 
 Import('env')
 
-env['GHC'] = '/usr/bin/ghc'
-env['ENV']['GHC_PACKAGE_PATH'] = '/mit/ruhler/.ghc/x86_64-linux-6.12.1/package.conf.d:/var/lib/ghc-6.12.1/package.conf.d'
-
 env['CPPPATH'] = [
+    '#/build/src',
     'build/src',
     '/usr/include/freetype2/',
+    '/usr/include/fontconfig/',
     '/mit/ruhler/local/include',
     '/mit/ruhler/local/include/poppler/cpp'
     ]
 
 env['LIBPATH'] = ['/mit/ruhler/local/lib']
 env['LIBS'] = ['SDL']
+
