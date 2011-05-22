@@ -28,8 +28,3 @@ env.Default(env.Program('termer',
     [termer_o, 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm']))
 
-# sdltermer
-env.Default(env.Program('sdltermer',
-    [termer_o, 'sdlctermer.c', inputter_o, outputter_o, screen_o, bool_o],
-    LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'SDL']))
-

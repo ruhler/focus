@@ -69,3 +69,36 @@ of, and I'll have niftily working system.
 I'm so going to do this today. But now I think would be a good time for a
 short break.
 
+Sun May 22 13:02:14 EDT 2011
+
+Here are the details to take care of:
+
++ Remove sdl termer back end, as the ctermer has fine performance now.
+    done.
++ enable keyrepeat in sdlcsr
+    done.
+- Get font size from fontconfig (so it comes from font name)
+    size in the fontconfig gives a point size.
+    pixelsize gives a pixelsize. Let me play with fontconfiger to see what it
+    tells me for both of those. pixelsize should be just fine. Both doubles.
+
+    They are both the sameish, except pixelsize is a little bigger.
+    I'm thinking using pixelsize and the same set pixels sizes function I have
+    now makes sense. That way I don't have to deal with dpi things.
+
+- Get font name from TERMERFONT environment variable.
+- Write CNSL_GetGeometry function to get width and height
+    Reads from CNSLWIDTH and CNSLHEIGHT environment variables.
+    So sdlcsr should set those variable when it starts up.
+- Parse cntrl-' escape sequences in sgreen.
+- Have sgreen start by launching termer.
+- Make termer use login shell (or whatever is approriate (what does xterm do?
+  screen?)) by default rather than bench. And I think I can get rid of bench
+  now.
+- Work out issues with /tmp/green file. Maybe use an environment variable like
+  screen does: SGREEN
+
+And after all that: Start using it. Work out any remaining issues.
+This should be fun. Let me get started.
+
+

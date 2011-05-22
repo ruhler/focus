@@ -45,24 +45,15 @@ void runserver()
     }
     atexit(SDL_Quit);
 
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
-    fprintf(stderr, "hw_available: %i\n", info->hw_available);
-    fprintf(stderr, "wm_available: %i\n", info->wm_available);
-    fprintf(stderr, "blit_hw: %i\n", info->blit_hw);
-    fprintf(stderr, "blit_hw_CC: %i\n", info->blit_hw_CC);
-    fprintf(stderr, "blit_hw_A: %i\n", info->blit_hw_A);
-    fprintf(stderr, "blit_sw: %i\n", info->blit_sw);
-    fprintf(stderr, "blit_sw_CC: %i\n", info->blit_sw_CC);
-    fprintf(stderr, "blit_sw_A: %i\n", info->blit_sw_A);
-    fprintf(stderr, "blit_fill: %i\n", info->blit_fill);
-    fprintf(stderr, "video_mem: %i\n", info->video_mem);
-
     screen = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE);
     if (screen == NULL) {
         fprintf(stderr, "sdl: %s\n", SDL_GetError());
         SDL_Quit();
         return;
     }
+
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL/2);
+    SDL_ShowCursor(SDL_DISABLE);
 
     // Lauch a thread to handle the output.
     SDL_CreateThread(handle_output, NULL);

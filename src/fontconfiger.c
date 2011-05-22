@@ -6,10 +6,17 @@
 // Application to test out using fontconfig.
 // It tries to print the font file for Monospace:Bold
 
-int main()
+int main(int argc, char* argv[])
 {
+    const char* name = "Monospace:Bold";
+    if (argc > 1) {
+        name = argv[1];
+    }
+
+    printf("Using font name: %s\n", name);
+
     FcInit();
-    FcPattern* pattern = FcNameParse("Monospace:Bold");
+    FcPattern* pattern = FcNameParse(name);
     FcConfigSubstitute(NULL, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
     FcPattern* match = FcFontMatch(NULL, pattern, NULL);
@@ -17,6 +24,14 @@ int main()
     FcValue file;
     FcPatternGet(match, "file", 0, &file);
     printf("font file: %s\n", file.u.s);
+
+    FcValue size;
+    FcPatternGet(match, "size", 0, &size);
+    printf("font size: %f\n", size.u.d);
+
+    FcValue psize;
+    FcPatternGet(match, "pixelsize", 0, &psize);
+    printf("font pixel size: %f\n", psize.u.d);
 
     FcPatternDestroy(pattern);
     FcPatternDestroy(match);
