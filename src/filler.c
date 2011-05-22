@@ -38,8 +38,8 @@ int main()
     colors[GREEN] = CNSL_MakeColor(0, 255, 0);
     colors[BLUE] = CNSL_MakeColor(0, 0, 255);
     colors[CYAN] = CNSL_MakeColor(0, 255, 255);
-    colors[YELLOW] = CNSL_MakeColor(255, 0, 255);
-    colors[PURPLE] = CNSL_MakeColor(255, 255, 0);
+    colors[YELLOW] = CNSL_MakeColor(255, 255, 0);
+    colors[PURPLE] = CNSL_MakeColor(255, 0, 255);
     colors[WHITE] = CNSL_MakeColor(255, 255, 255);
 
     CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);

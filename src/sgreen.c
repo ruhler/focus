@@ -35,14 +35,6 @@ void switch_to_window(int windowid)
     }
 }
 
-void tobuffer(void* vb, int x, int y, CNSL_Color c)
-{
-    CNSL_Display b = (CNSL_Display)vb;
-    if (x >= 0 && x < b->width && y >= 0 && y < b->height) {
-        CNSL_SetPixel(b, x, y, c);
-    }
-}
-
 // Handle output 
 // Input is pointer to integer specifying which output to handle.
 // That pointer will be freed by this function, so make sure it's been
@@ -59,7 +51,7 @@ void* handle_output(void* vwid) {
 
     while (1) {
         int x, y, w, h;
-        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, tobuffer, (void*)display) == 0) {
+        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)display) == 0) {
             break;
         }
 

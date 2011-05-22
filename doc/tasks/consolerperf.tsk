@@ -43,3 +43,58 @@ should update the display, and when the server is done updating the display.
 Could we use signals for that instead? Would that be more or less efficient? I
 should do the pipe first.
 
+Sun May 22 10:35:55 EDT 2011
+
+I'm surprised at my initial results:
+
+a 640 480 1000      1s
+b 640 480 1000      4s
+f 640 480 1000      4s
+g 640 480 1000      4s
+
+Which suggests using a pipe does not actually cost us a whole lot. It's
+drawing thing on the screen pixel by pixel which is costly.
+
+Hmm... This gives an idea. For sdlcsr, and really for RecvDisplay, what I
+really want is a function which gives me a pointer to a row's worth of data at
+a time. You specify the x, y, and width. Maybe that's all we need to go way
+faster?
+
+Sun May 22 11:17:17 EDT 2011
+
+I changed up the interface for Recieving a display. It should support much
+better performance I think.
+
+Instead of writing a pixel at a time, we write a row at a time.
+Instead of reading a pixel at a time, we read a row at a time, directly into
+the target buffer.
+
+The problem is, it doesn't work right. We aren't getting all the right pixel
+data for some reason. I don't understand.
+
+Let me do a code review. I need to review 3 things:
+
+1. SendDisplay. - bug found
+2. RecvDisplay. - no bug found
+3. toscreen. -  - added check for y out of bounds.
+
+Of course, if I were smart I would have done (1) before (2) and (3)...
+Oh well.
+
+But that didn't fix the issue. fillter works, boxer doesn't, pdfer
+doesn't, pnger doesn't.
+
+Let's focus on boxer. Look at the data sent, look at the data read.
+For boxer, it appears we don't send any non-black pixels.
+
+Oops. I found the bug. I was just repeatedly sending the first line.
+Now things work.
+
+And guess what! Performance is great!
+
+Wow. Wonderful. So, I think, until further notice, we shall consider the
+performance issue to be solved.
+
+The deal: use buffered IO (which I've seen before to be a big problem), and
+avoid extra copying.
+

@@ -178,13 +178,10 @@ int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
     unsigned int header[] = {dstx, dsty, width, height};
     write(console->fdout, header, 4*sizeof(unsigned int));
 
-    int x;
     int y;
     for (y = srcy; y < height+srcy; y++) {
-        for (x = srcx; x < width + srcx; x++) {
-            CNSL_Color c = CNSL_GetPixel(display, x, y);
-            write(console->fdout, &c, sizeof(CNSL_Color));
-        }
+        CNSL_Color* line = display->pixels + (y * display->width) + srcx;
+        write(console->fdout, line, width*sizeof(CNSL_Color));
     }
     return 1;
 }
@@ -195,6 +192,9 @@ int CNSL_RecvDisplay(CNSL_Client client,
         unsigned int* width, unsigned int* height,
         CNSL_RDFunction f, void* ud)
 {
+    static CNSL_Color* junk = NULL;
+    static junkwidth = 0;
+
     unsigned int header[4] = {0};
     if (read(client->fdin, header, 4 * sizeof(unsigned int)) < 4) {
         return 0;
@@ -204,17 +204,37 @@ int CNSL_RecvDisplay(CNSL_Client client,
     *dsty = header[1];
     *width = header[2];
     *height = header[3];
-    int r = 0;
-    int c = 0;
-    for (r = 0; r < *height; r++) {
-        for (c = 0; c < *width; c++) {
-            CNSL_Color col;
-            read(client->fdin, &col, sizeof(CNSL_Color));
-            f(ud, c+*dstx, r+*dsty, col);
-        }
+
+    if (*width > junkwidth) {
+        // We introduce a small memory leak here. I think it's okay.
+        junk = realloc(junk, (*width) * sizeof(CNSL_Color));
+        junkwidth = *width;
+    }
+
+    int y;
+    for (y = *dsty; y < *dsty + *height; y++) {
+        int wmax = 0;
+        CNSL_Color* buf = f(ud, *dstx, y, &wmax);
+
+        int wuse = wmax < *width ? wmax : *width;
+        int wleft = *width - wuse;
+
+        read(client->fdin, buf, wuse * sizeof(CNSL_Color));
+        read(client->fdin, junk, wleft * sizeof(CNSL_Color));
     }
 
     return 1;
+}
+
+CNSL_Color* CNSL_RDToDisplay(void* ud, int x, int y, int* w)
+{
+    CNSL_Display dsp = (CNSL_Display)ud;
+    if (y < dsp->height) {
+        *w = (dsp->width - x) < 0 ? 0 : (dsp->width - x);
+        return dsp->pixels + dsp->width * y + x;
+    }
+    *w = 0;
+    return NULL;
 }
 
 int CNSL_PollDisplay(CNSL_Client client)

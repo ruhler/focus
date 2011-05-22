@@ -44,7 +44,7 @@ int main()
                 case 'l': x += 10; break;
             }
 
-            fill(display, x, y, 10, 10, CNSL_MakeColor(0, 255, 0));
+            fill(display, x, y, 10, 10, 0x00FFFFFF);
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, 640, 480);
         }
     }

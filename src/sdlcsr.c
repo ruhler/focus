@@ -9,17 +9,15 @@
 CNSL_Client client;
 SDL_Surface* screen;
 
-void pixel(int x, int y, int r, int g, int b)
+CNSL_Color* toscreen(void* ud, int x, int y, int* w)
 {
-    if (x >= 0 && x <= screen->w && y >= 0 && y <= screen->h) {
-        SDL_Rect dst = {x, y, 1, 1};
-        SDL_FillRect(screen, &dst, SDL_MapRGB(screen->format, r, g, b));
+    CNSL_Color* pixels = (CNSL_Color*)screen->pixels;
+    if (y < screen->h) {
+        *w = (screen->w - x) < 0 ? 0 : (screen->w - x);
+        return pixels + y*screen->w + x;
     }
-}
-
-void pixel_(void* ud, int x, int y, CNSL_Color c)
-{
-    pixel(x, y, CNSL_GetRed(c), CNSL_GetGreen(c), CNSL_GetBlue(c));
+    *w = 0;
+    return NULL;
 }
 
 int handle_output(void* usrdata)
@@ -27,7 +25,7 @@ int handle_output(void* usrdata)
     CNSL_Display display = CNSL_AllocDisplay(screen->w, screen->h);
     while (1) {
         int x, y, w, h;
-        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, pixel_, NULL) == 0) {
+        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, toscreen, NULL) == 0) {
             SDL_Event e;
             e.type = SDL_QUIT;
             SDL_PushEvent(&e);

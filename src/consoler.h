@@ -104,14 +104,21 @@ int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
 
 // Get a screen update from the client.
 // This is a blocking call.
-// Calls function f for each pixel to be updated. Returns the updated
-// rectangle via x, y, w, and h.
+// Calls function f to get a buffer for each row to copy into.
+//  x, y are the position of the left pixel of the row in the display
+//  w should be filled in with the size (in pixels) of the returned buffer.
+// Returns the updated rectangle via x, y, w, and h.
 // Returns nonzero on success, zero on end of file, -1 on error.
-typedef void (CNSL_RDFunction)(void* ud, int x, int y, CNSL_Color c);
+typedef CNSL_Color* (*CNSL_RDFunction)(void* ud, int x, int y, int* w);
 int CNSL_RecvDisplay(CNSL_Client client,
         unsigned int* dstx, unsigned int* dsty,
         unsigned int* width, unsigned int* height,
         CNSL_RDFunction f, void* ud);
+
+// Function to pass to CNSL_RecvDisplay which loads the display into another
+// CNSL_Display. The CNSL_Display to load into should be given as the user
+// data, and display->width should be used for max width.
+CNSL_Color* CNSL_RDToDisplay(void* ud, int x, int y, int* w);
 
 // Check whether a display is pending reception.
 // Returns nonzero if a call to RecvDisplay will not block.

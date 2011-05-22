@@ -1,12 +1,6 @@
 
-all: a b g
+all: a b g fserver fclient
 
-a: a.c
-	gcc -o $@ -I/pkg/sdl-1.2.14/install/include/SDL $< -L/pkg/sdl-1.2.14/install/lib -lSDL
-
-b: b.c
-	gcc -o $@ -I/pkg/sdl-1.2.14/install/include/SDL $< -L/pkg/sdl-1.2.14/install/lib -lSDL
-
-g: g.c
+%: %.c
 	gcc -o $@ -I/pkg/sdl-1.2.14/install/include/SDL $< -L/pkg/sdl-1.2.14/install/lib -lSDL
 
