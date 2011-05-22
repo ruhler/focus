@@ -24,7 +24,7 @@ SCREEN_Position home()
 
 SCREEN_Style normal()
 {
-    SCREEN_Style style = { false, false};
+    SCREEN_Style style = { false, false };
     return style;
 }
 

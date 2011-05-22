@@ -177,7 +177,6 @@ char* ctermer_FromTermClient()
 
     // for debugging:
     //write(2, fromtermclientbuf, red);
-    //fsync(2);
 
     fromtermclientbuf[red] = '\0';
     return fromtermclientbuf;

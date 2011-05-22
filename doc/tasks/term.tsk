@@ -1080,8 +1080,9 @@ Bugs:
     like that. It seems to be fixed now.
  + No key repeat. It's kind of annoying.
     enabled in sdltermer.
+ + Trouble with screen: It's like reverse mode gets stuck on or something.
+    set default background was set to white instead of black. Fixed now.
 
- - Trouble with screen: It's like reverse mode gets stuck on or something.
  - doesn't end cleanly: I always see like: read error, or some other such
    assertion.
 

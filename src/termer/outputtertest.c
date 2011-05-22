@@ -169,6 +169,15 @@ void test(bool* result)
     set_foreground(&wnt, SCREEN_COLOR_BLUE);
     put_char(&wnt, 'b');
     update(result, tscreq("ESC[1;34m", &wnt, &got));
+
+    wnt = screen(6, 4);
+    got = screen(6, 4);
+    runstring(&got, "\e[42ma\e[49mb");
+    set_background(&wnt, SCREEN_COLOR_GREEN);
+    put_char(&wnt, 'a');
+    set_background(&wnt, SCREEN_COLOR_BLACK);
+    put_char(&wnt, 'b');
+    update(result, tscreq("default background color", &wnt, &got));
 }
 
 int main()

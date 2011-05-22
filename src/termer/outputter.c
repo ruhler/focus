@@ -63,7 +63,7 @@ void mode(SCREEN_Screen* scr, int x)
         case 45: set_background(scr, SCREEN_COLOR_MAGENTA); break;
         case 46: set_background(scr, SCREEN_COLOR_CYAN); break;
         case 47: set_background(scr, SCREEN_COLOR_WHITE); break;
-        case 49: set_background(scr, SCREEN_COLOR_WHITE); break;
+        case 49: set_background(scr, SCREEN_COLOR_BLACK); break;
         default: 
             fprintf(stderr, "uknown mode parameter: %i\n", x);
             break;
