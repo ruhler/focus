@@ -1,11 +1,11 @@
 
-# TODO: how do I get env.Program without using 'default'?
-env = Environment(tools=['default'], toolpath=['scons'])
+AddOption('--prefix', dest='prefix', type='string', nargs=1, action='store',
+        metavar='DIR', default='/usr/local', help='installation prefix')
+
+env = Environment(PREFIX = GetOption('prefix'))
 Export('env')
 
 env['CFLAGS'] = ['-ggdb']
-#env['CFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
-#env['LINKFLAGS'] = ['-pg', '-fprofile-arcs', '-ftest-coverage']
 
 # Local host based stuff
 SConscript('scons/local')
@@ -13,4 +13,6 @@ SConscript('scons/local')
 # The main program
 SConscript('src/sconscript')
 SConscript('src/termer/sconscript')
+
+env.Alias('install', '$PREFIX')
 

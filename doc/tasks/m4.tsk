@@ -24,4 +24,6 @@ Things like:
  - make a nice installer
  - figure out how to make a clean termination of clients
  - termer support for mode sequences with more than 2 parameters
+ - turn consoler into a library
+ - write man pages for everything
 

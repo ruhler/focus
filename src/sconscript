@@ -58,3 +58,7 @@ flicker_prof = env.Program('flicker_prof', [flicker_prof_o, consoler_o],
         CFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'],
         LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
 env.Default(flicker_prof)
+
+
+env.Install("$PREFIX/bin", [sdlcsr, filler, boxer, pnger, sgreen, cgreen, pdfer])
+

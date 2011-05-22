@@ -118,7 +118,7 @@ void new_client(char* const argv[])
 
 void new_shellclient()
 {
-    char* argv[] = {"./build/src/termer/termer", "./build/src/termer/termer", NULL};
+    char* argv[] = {"termer", "termer", NULL};
     new_client(argv);
 }
 

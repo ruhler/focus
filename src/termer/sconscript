@@ -24,7 +24,11 @@ env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET")
 
 # termer
 termer_o = env.Object('termer.o', 'termer.c')
-env.Default(env.Program('termer',
+
+termer = env.Program('termer',
     [termer_o, 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
-    LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm']))
+    LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm'])
+env.Default(termer)
+
+env.Install("$PREFIX/bin", [termer])
 
