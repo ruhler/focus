@@ -1,0 +1,27 @@
+
+Sun May 22 15:42:02 EDT 2011
+
+Task: I need a milestone 4.
+
+I'm not sure what it should be yet. I'm thinking maybe it should just be:
+start using focus wherever I can. Make the default. Fix all the little odds
+and ends that come up.
+
+Things like:
+ - sgreen has no way to view the active windows
+ - sgreen should add a way to kill windows
+ - sgreen maybe should have a split feature
+ - termer doesn't handle everything elinks (not under screen) spits at it
+ - pdfer should have a goto command
+ - pdfer should have a way to show the number of pages in the document
+ - termer implement underline, italics
+ - termer support of dynamic font resizing?
+ - tk server
+ - gtk server?
+ - release source code
+ - rewrite sgreen to be better
+ - implement a remote client server
+ - make a nice installer
+ - figure out how to make a clean termination of clients
+ - termer support for mode sequences with more than 2 parameters
+
