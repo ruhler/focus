@@ -26,4 +26,5 @@ Things like:
  - termer support for mode sequences with more than 2 parameters
  - turn consoler into a library
  - write man pages for everything
+ - profile termer and make it more efficient (save battery life)
 
