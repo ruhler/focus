@@ -131,7 +131,7 @@ void outputter(SCREEN_Screen* scr, int terminator, GetCharFunction getf)
                                     } break;
 
                                     default:
-                                        fprintf(stderr, "unahndled: ESC[%i%c\n", c);
+                                        fprintf(stderr, "unahndled: ESC[%i%c\n", x, c);
                                         break;
                                 }
                             }
@@ -157,6 +157,10 @@ void outputter(SCREEN_Screen* scr, int terminator, GetCharFunction getf)
                         }
 
                     } break;
+
+                    case 'M':
+                        scroll_reverse(scr);
+                        break;
 
                     default:
                         fprintf(stderr, "unhandled: ESC%c\n", c);

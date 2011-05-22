@@ -185,6 +185,14 @@ void test(bool* result)
     put_char(&wnt, 0x2018);
     put_char(&wnt, 'm');
     update(result, tscreq("unicode", &wnt, &got));
+
+    wnt = screen(6, 4);
+    got = screen(6, 4);
+    runstring(&got, "\e[3;3Ha\eM");
+    cursor_address(&wnt, mkpos(2, 2));
+    put_char(&wnt, 'a');
+    scroll_reverse(&wnt);
+    update(result, tscreq("ESC M", &wnt, &got));
 }
 
 int main()

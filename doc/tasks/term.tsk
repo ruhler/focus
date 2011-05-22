@@ -1173,11 +1173,16 @@ Didn't take long to find some issues.
 
     It doesn't crash now, but it also doesn't update the screen again when
     coming back, which is a little annoying.
-
- - control-g in vim seems to have some issues.
- - issues with man pages under screen: scrolling up doesn't work.
+ + issues with man pages under screen: scrolling up doesn't work.
     I wonder if the way they scroll up is doing cursor_up at the top?
     Looks like ESC M is the sequence I need to support (reverse line feed).
+    The question is, what does reverse line feed mean?
+    vt100 guide says ESC M is reverse index. So maybe just do an ri.
+
+    Fixed.
+
+ - control-g in vim seems to have some issues.
+    maybe was the reverse_index command that I fixed.
  - I'm having issues with readline. Maybe bell related?
     I disabled the bell. Let's see if that fixes things.
  - For useability, I need a version of sdltermer which doesn't read bench.
