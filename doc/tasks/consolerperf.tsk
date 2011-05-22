@@ -1,0 +1,24 @@
+
+Sat May 21 21:34:23 EDT 2011
+
+Task: consoler performance is yucky, how do I make it better?
+
+Specifically I suspect a big problem is the api for transfering pixel data
+from a client to a pipe to a server buffer to a graphcis surface.
+
+I should test some things. Perhaps using flicker.
+
+A. FillRect -> sdl surface
+B. fill -> sdl surface
+C. fill -> memory mapped sdl surface
+D. fill -> memory mapped cnsldisplay -> sdl surface
+E. fill -> cnsldisplay -> pipe -> sdl surface
+F. fill -> cnsldisplay -> pipe -> cnsldisplay -> sdl surface
+G. fill -> sdl surface -> sdl surface
+
+This should give me plenty of insight into the kind of API I'll be wanting.
+I might want to make a special directory (under rsrch?) for these tests.
+
+The API should hopefully allow for really efficient green like functionality.
+That is the clients may be multiple hops away from the server.
+

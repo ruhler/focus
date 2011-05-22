@@ -79,6 +79,7 @@ void outputter(SCREEN_Screen* scr, int terminator, GetCharFunction getf)
         }
 
         switch (c) {
+            case '\a': break;   // TODO: alert?
             case '\t': tab(scr); break;
             case '\n': cursor_down(scr); break;
             case '\b': cursor_left(scr); break;

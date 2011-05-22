@@ -714,3 +714,47 @@ Sat May 21 20:04:01 EDT 2011
 I should be pleased. sdltermer is now much faster than fbterm. One fears
 fbterm doesn't have very long to live...
 
+Sat May 21 21:19:39 EDT 2011
+
+Focus now, besides fixing the minor bugs in termer, is to get ctermer
+performance up and good.
+
+Here's what we know: rendering fast enough is not a problem.
+This means if I can get the communication channel between consoler server and
+client, performance should be awesome.
+
+As far as I can tell, there are only three differences between consoler and
+sdltermer with respect to performance:
+
+1. sdltermer using a FillRect to do the background of cells.
+This could potentially be taking advantage of underlying hardware acceleration
+which we will not get if we flatten it to a bunch of pixels to cross over the
+consoler link.
+
+2. sdlcsr uses FillRect to draw pixels instead of accessing raw memory.
+We saw with previous experiments this is bad.
+One issue is we have to lock the screen, and we would like to lock it not so
+often, but the api doesn't provide a way currently to specify that.
+
+3. The communication cost.
+Instead of drawing to the screen, we
+ - draw to a buffer.
+ - write to a pipe.
+ - read from a pipe to a buffer.
+ - copy from the buffer to the screen.
+
+I suspect this is the majority of the time sink.
+
+Now, how could we solve (3)?
+
+Here's an idea I had before, I don't know if I wrote it down or not yet. We
+set up something called the stddisplay. This is a display buffer allocated to
+clients when launched which they can use. It is the proper screen size. And it
+is memory mapped so that the server has as fast an access to it as the client.
+
+Now in theory we could: draw to this buffer, then copy that to the screen.
+Still a little bit of an overhead, admittedly... I wonder, could we memory map
+the SDL_Surface itself? There are some api issues to work out here. It would
+be worth experimenting though certainly. This should go in a different task. A
+consoler performance task. Let me continue there.
+

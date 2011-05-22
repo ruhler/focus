@@ -130,12 +130,12 @@ void press(InputterState* is, PutCharFunction iput, CNSL_Keysym key, bool shift,
         case CNSLK_COMMA: shift ? iput('<') : iput(','); return;
         case CNSLK_PERIOD: shift ? iput('>') : iput('.'); return;
         case CNSLK_QUOTE: shift ? iput('"') : iput('\''); return;
-        case CNSLK_UP: many(iput, "\eA"); return;
-        case CNSLK_DOWN: many(iput, "\eB"); return;
-        case CNSLK_LEFT: many(iput, "\eC"); return;
-        case CNSLK_RIGHT: many(iput, "\eD"); return;
-        case CNSLK_HOME: many(iput, "\eH"); return;
-        case CNSLK_END: many(iput, "\e4~"); return;
+        case CNSLK_UP: many(iput, "\e[A"); return;
+        case CNSLK_DOWN: many(iput, "\e[B"); return;
+        case CNSLK_RIGHT: many(iput, "\e[C"); return;
+        case CNSLK_LEFT: many(iput, "\e[D"); return;
+        case CNSLK_HOME: many(iput, "\e[H"); return;
+        case CNSLK_END: many(iput, "\e[4~"); return;
         case CNSLK_DELETE: iput(0x7F); return;
         default: assert(false && "unhandled input keysym");
     }

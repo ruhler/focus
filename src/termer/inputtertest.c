@@ -92,6 +92,16 @@ void test(bool* result)
         {CNSLE_QUIT, 0}
     };
     update(result, streq("0123", "0123", try(t0123)));
+
+    CNSL_Event arrows[] = {
+        {CNSLE_KEYPRESS, CNSLK_UP}, {CNSLE_KEYRELEASE, CNSLK_UP},
+        {CNSLE_KEYPRESS, CNSLK_DOWN}, {CNSLE_KEYRELEASE, CNSLK_DOWN},
+        {CNSLE_KEYPRESS, CNSLK_LEFT}, {CNSLE_KEYRELEASE, CNSLK_LEFT},
+        {CNSLE_KEYPRESS, CNSLK_RIGHT}, {CNSLE_KEYRELEASE, CNSLK_RIGHT},
+        {CNSLE_QUIT, 0}
+    };
+    update(result, streq("arrows", "\e[A\e[B\e[D\e[C", try(arrows)));
+
 }
 
 int main()

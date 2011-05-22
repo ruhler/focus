@@ -1144,3 +1144,16 @@ I know have all known bugs worked out for sdltermer. And while I expect it
 will probably not work very well with elinks, I bet it is totally usable at
 this point. I should start using it instead of fbterm.
 
+Sat May 21 21:17:31 EDT 2011
+
+Didn't take long to find some issues.
+ + arrow keys don't work. Like, readline history.
+    I'm inputting the wrong strings: \eA, \eB instead of \e[A \e[B
+ - control-g in vim seems to have some issues.
+ - I'm having issues with readline. Maybe bell related?
+    I disabled the bell. Let's see if that fixes things.
+
+    
+I would say (2) and (3) are done now. Which basically says the next step is
+improving the performance of sdlcsr. Because let's face it, it's bad.
+
