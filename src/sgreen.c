@@ -10,8 +10,6 @@
 #include "consoler.h"
 
 #define MAX_WINDOWS 10
-#define WIDTH 640
-#define HEIGHT 480
 
 typedef struct {
     CNSL_Client client;
@@ -24,10 +22,11 @@ ClientInfo g_clients[MAX_WINDOWS];
 
 // The currently active window.
 int g_curwin;
+int done = 0;
+int lsfd = 0;
 
 void switch_to_window(int windowid)
 {
-    fprintf(stderr, "switching to window %i\n", windowid);
     if (g_clients[windowid].client) {
         g_curwin = windowid;
         CNSL_Display b = g_clients[windowid].display;
@@ -70,15 +69,18 @@ void* handle_output(void* vwid) {
         int i;
         for (i = 0; i < MAX_WINDOWS; i++) {
             if (g_clients[i].client) {
-                g_curwin = i;
-                break;
+                switch_to_window(i);
+                return;
             }
         }
+
+        // we are out of clients. Time to stop.
+        fprintf(stderr, "sgreen: all clients finished\n");
+        done = 1;
     }
 
     return NULL;
 }
-
 
 void new_client(char* const argv[])
 {
@@ -98,8 +100,12 @@ void new_client(char* const argv[])
     }
     fprintf(stderr, "sgreen: new client (id = %i)\n", id);
 
+    int width = 640;
+    int height = 480;
+    CNSL_GetGeometry(&width, &height);
+
     g_clients[id].client = CNSL_LaunchClient(argv[0], argv);
-    g_clients[id].display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+    g_clients[id].display = CNSL_AllocDisplay(width, height);
     switch_to_window(id);
 
     // Spawn the thread to handle output from this client.
@@ -110,12 +116,19 @@ void new_client(char* const argv[])
     pthread_create(&thread, NULL, &handle_output, (void*)vid);
 }
 
+void new_shellclient()
+{
+    char* argv[] = {"./build/src/termer/termer", "./build/src/termer/termer", NULL};
+    new_client(argv);
+}
+
 void* serve_clients(void* arg)
 {
     // Start listening on /tmp/green for client connections.
-    int lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (lsfd < 0) {
         perror("socket");
+        done = 1;
         return NULL;
     }
 
@@ -125,11 +138,13 @@ void* serve_clients(void* arg)
 
     if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {
         perror("bind");
+        done = 1;
         return NULL;
     }
 
     if (listen(lsfd, 3) < 0) {
         perror("listen");
+        done = 1;
         return NULL;
     }
 
@@ -139,12 +154,14 @@ void* serve_clients(void* arg)
         int pfd = accept(lsfd, (struct sockaddr*) &paddr, &paddr_size);
         if (pfd < 0) {
             perror("accept");
+            done = 1;
             return NULL;
         }
 
         FILE* pf = fdopen(pfd, "r");
         if (!pf) {
             perror("fdopen");
+            done = 1;
             return NULL;
         }
 
@@ -177,15 +194,32 @@ void* serve_clients(void* arg)
 void handle_input()
 {
     CNSL_Event event;
-    while (1) {
+    int ctrlon = 0;
+    int commandpending = 0;
+    while (!done) {
         CNSL_RecvEvent(stdcon, &event);
         int sym;
 
-        // Check for a control sequence.
+        if (CNSL_IsKeypress(&event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
+            ctrlon = 1;
+        }
+
+        if (CNSL_IsKeyrelease(&event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
+            ctrlon = 0;
+        }
+
         // (for now: number keys choose the window)
-        if (CNSL_IsKeypress(&event, &sym) && sym >= CNSLK_0 && sym <= CNSLK_9) {
-            // Switch to the given window
-            switch_to_window(sym - CNSLK_0);
+        if (ctrlon && CNSL_IsKeypress(&event, &sym) && sym == CNSLK_QUOTE) {
+            // This is a control sequence. Mark it.
+            commandpending = 1;
+        } else if (commandpending && CNSL_IsKeypress(&event, &sym)) {
+            if (sym >= CNSLK_0 && sym <= CNSLK_9) {
+                switch_to_window(sym - CNSLK_0);
+            } else if (sym == CNSLK_c) {
+                new_shellclient();
+            }
+
+            commandpending = 0;
         } else {
             // Forward the event to the current window
             if (g_clients[g_curwin].client) {
@@ -210,8 +244,10 @@ int main(int argc, char* argv[])
     pthread_t scthread;
     pthread_create(&scthread, NULL, &serve_clients, NULL);
 
+    new_shellclient();
     handle_input();
 
+    unlink("/tmp/green");
     CNSL_Quit();
     return 0;
 }

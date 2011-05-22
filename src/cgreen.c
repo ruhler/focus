@@ -19,11 +19,12 @@ int main(int argc, char* argv[])
     saddr.sun_family = AF_UNIX;
     strcpy(saddr.sun_path, "/tmp/green");
 
+    printf("attempting to connect to /tmp/green...");
     if (connect(sfd, (struct sockaddr*) &saddr, sizeof(struct sockaddr_un)) < 0) {
         perror("connect");
         return 1;
     }
-    printf("connected to server");
+    printf("connected to server\n");
 
     FILE* pf = fdopen(sfd, "w");
     if (!pf) {

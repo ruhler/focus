@@ -107,14 +107,54 @@ Here are the details to take care of:
     screen says is uses $SHELL, or /bin/sh if that's not available.
     it looks like we are talking non-login shells here. So let me do this: run
     $SHELL, or /bin/sh, no arguments.
++ Parse cntrl-' escape sequences in sgreen.
+    I added this, but it... well, screen has some problems, so it's not clear
+    if it works yet.
 
-- Parse cntrl-' escape sequences in sgreen.
+    Okay, it works.
++ sgreen doesn't refresh the display when we switch away from a client.
+    That is, when a client terminates.
+    how do we know when a client has terminated?
+    Either we get end of file on an input, or end of file on an output.
+
++ sgreen should terminate when last client has terminated.
+    Right now it just sort of...dies.
+    I made it so the input handler checks for done from the output handlers
+    after each event. it seems to work right now.
+
 - Have sgreen start by launching termer.
+    Or maybe use CNSLSHELL?
+    The issue is, how do I find termer? It doesn't have a standard location
+    like sh.
 
-- Work out issues with /tmp/green file. Maybe use an environment variable like
+    I've hardcoded ./build/src/termer/termer for now. Obviously that will have
+    to change eventually, but I think it's okay for now.
+
++ Work out issues with /tmp/green file. Maybe use an environment variable like
   screen does: SGREEN
+    
+  If I'm using sgreen, what it could do is just bail out if someone else is
+  already using it. The key is, we have to remember to remove it when sgreen
+  finishes. That should work fine.
 
 And after all that: Start using it. Work out any remaining issues.
 This should be fun. Let me get started.
 
+Sun May 22 15:26:18 EDT 2011
+
+Uh, okay, so after milestone 3, I think I totally need to rethink the
+implementation of green so it isn't so hacky.
+
+Sun May 22 15:34:15 EDT 2011
+
+Okay! Here we are. Time to evaluate. Is milestone 3 complete?
+
+I need to run elinks, select a png image as a linke, and have it pop up a new
+image. Here I go...
+
+Sun May 22 15:39:32 EDT 2011
+
+It works! I did it!
+
+Milestone 3 is complete.
 
