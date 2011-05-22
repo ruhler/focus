@@ -95,8 +95,21 @@ void row_address(SCREEN_Screen* scr, int row)
 
 void cursor_address(SCREEN_Screen* scr, SCREEN_Position pos)
 {
-    assert(pos.column < scr->columns && pos.line < scr->lines);
     scr->cursor = pos;
+
+    // Move the position in bounds if it isn't.
+    // TODO: is that the right behavior?
+    if (scr->cursor.column < 0) {
+        scr->cursor.column = 0;
+    } else if (scr->cursor.column >= scr->columns) {
+        scr->cursor.column = scr->columns-1;
+    }
+
+    if (scr->cursor.line < 0) {
+        scr->cursor.line = 0;
+    } else if (scr->cursor.line >= scr->lines) {
+        scr->cursor.line = scr->lines-1;
+    }
 }
 
 void cursor_down(SCREEN_Screen* scr)

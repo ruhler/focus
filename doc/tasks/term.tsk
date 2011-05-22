@@ -1129,5 +1129,18 @@ Bugs:
 
     I'm not sure. I'll just ignore it for now and claim this is fixed.
 
-  - typing q after top gives an assertion error.
+  + typing q after top gives an assertion error.
+    Yes. top is outputting a cursor_address call to 26, which is line 25.
+    
+    On the linux console that is approximated as going to the last line. I
+    don't know what it should do. Simplest would be to the nearest in bounds
+    location. If it's undefined it doesn't matter what I do right?
+
+    I just do that now.
+        
+Sat May 21 21:14:31 EDT 2011
+
+I know have all known bugs worked out for sdltermer. And while I expect it
+will probably not work very well with elinks, I bet it is totally usable at
+this point. I should start using it instead of fbterm.
 
