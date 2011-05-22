@@ -704,3 +704,13 @@ Well well. What do you know? I translated the front end from haskell to c,
 pretty much directly, and now: 0.3 seconds to run the benchmark. That is...
 sad for haskell. But good I should think.
 
+Sat May 21 19:37:49 EDT 2011
+
+I should note, sdlcsr + termer is much much slower than sdltermer. So I've
+still got to work on that link between consoler client and server.
+
+Sat May 21 20:04:01 EDT 2011
+
+I should be pleased. sdltermer is now much faster than fbterm. One fears
+fbterm doesn't have very long to live...
+

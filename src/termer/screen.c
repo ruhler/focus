@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "screen.h"
@@ -68,7 +69,12 @@ void newline(SCREEN_Screen* scr)
 
 void tab(SCREEN_Screen* scr)
 {
-    parm_right_cursor(scr, 8 - (scr->cursor.column % 8));
+    int target = scr->cursor.column + (8 - (scr->cursor.column % 8));
+    if (target >= scr->columns) {
+        newline(scr);
+    } else {
+        column_address(scr, target);
+    }
 }
 
 void column_address(SCREEN_Screen* scr, int col)
@@ -89,6 +95,7 @@ void row_address(SCREEN_Screen* scr, int row)
 
 void cursor_address(SCREEN_Screen* scr, SCREEN_Position pos)
 {
+    assert(pos.column < scr->columns && pos.line < scr->lines);
     scr->cursor = pos;
 }
 
@@ -131,22 +138,22 @@ void cursor_up(SCREEN_Screen* scr)
 
 void parm_left_cursor(SCREEN_Screen* scr, int n)
 {
-    scr->cursor.column -= n;
+    column_address(scr, scr->cursor.column - n);
 }
 
 void parm_right_cursor(SCREEN_Screen* scr, int n)
 {
-    scr->cursor.column += n;
+    column_address(scr, scr->cursor.column + n);
 }
 
 void parm_up_cursor(SCREEN_Screen* scr, int n)
 {
-    scr->cursor.line -= n;
+    row_address(scr, scr->cursor.line - n);
 }
 
 void parm_down_cursor(SCREEN_Screen* scr, int n)
 {
-    scr->cursor.line += n;
+    row_address(scr, scr->cursor.line + n);
 }
 
 SCREEN_Cell blank(const SCREEN_Screen* scr)
@@ -164,6 +171,7 @@ SCREEN_Cell getcell(SCREEN_Screen* scr, int x, int y)
 
 void setcell(SCREEN_Screen* scr, int x, int y, SCREEN_Cell cell)
 {
+    assert(x >= 0 && x < scr->columns && y >= 0 && y < scr->lines);
     scr->cells[y*scr->columns + x] = cell;
 }
 
@@ -346,21 +354,13 @@ void parm_rindex(SCREEN_Screen* scr, int n)
 
 void put_char(SCREEN_Screen* scr, char c)
 {
-    if (scr->cursor.line == scr->lines)
-    {
-        scroll_forward(scr);
-        cursor_up(scr);
-        put_char(scr, c);
+    SCREEN_Cell ncell = blank(scr);
+    ncell.character = c;
+    setcell(scr, scr->cursor.column, scr->cursor.line, ncell);
+    if (scr->cursor.column+1 == scr->columns) {
+        newline(scr);
     } else {
-        SCREEN_Cell ncell = blank(scr);
-        ncell.character = c;
-        setcell(scr, scr->cursor.column, scr->cursor.line, ncell);
-        if (scr->cursor.column+1 >= scr->columns) {
-            scr->cursor.column = 0;
-            scr->cursor.line++;
-        } else {
-            scr->cursor.column++;
-        }
+        cursor_right(scr);
     }
 }
 

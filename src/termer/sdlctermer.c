@@ -171,6 +171,11 @@ char* ctermer_FromTermClient()
         perror("read");
         red = 0;
     }
+
+    // for debugging:
+    //write(2, fromtermclientbuf, red);
+    //fsync(2);
+
     fromtermclientbuf[red] = '\0';
     return fromtermclientbuf;
 }

@@ -39,27 +39,27 @@ void inputter(GetEventFunction iget, PutCharFunction iput)
 
 void sinputter(InputterState* is, GetEventFunction iget, PutCharFunction iput)
 {
-    CNSL_Event event = iget();
-    bool shift = is->shifton;
-    bool ctrl = is->ctrlon;
+    while (1) {
+        CNSL_Event event = iget();
+        bool shift = is->shifton;
+        bool ctrl = is->ctrlon;
 
-    switch (event.type) {
-        case CNSLE_QUIT:
-            return;
+        switch (event.type) {
+            case CNSLE_QUIT:
+                return;
 
-        case CNSLE_KEYPRESS:
-            press(is, iput, event.value, shift, ctrl);
-            sinputter(is, iget, iput);
-            break;
+            case CNSLE_KEYPRESS:
+                press(is, iput, event.value, shift, ctrl);
+                break;
 
-        case CNSLE_KEYRELEASE:
-            release(is, event.value);
-            sinputter(is, iget, iput);
-            break;
+            case CNSLE_KEYRELEASE:
+                release(is, event.value);
+                break;
 
-        default:
-            assert(false && "unexepected event type");
-            break;
+            default:
+                assert(false && "unexepected event type");
+                break;
+        }
     }
 }
 

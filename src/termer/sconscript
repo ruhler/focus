@@ -2,6 +2,7 @@
 # vim: ft=python
 
 Import('env')
+env['CFLAGS'] = ['-ggdb']
 
 bool_o = env.Object('bool.o', 'bool.c')
 
@@ -22,12 +23,13 @@ outputtertest = env.Program('outputtertest',
 env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET"))
 
 # termer
+termer_o = env.Object('termer.o', 'termer.c')
 env.Default(env.Program('termer',
-    ['termer.c', 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
+    [termer_o, 'ctermer.c', '../consoler.o', inputter_o, outputter_o, screen_o, bool_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm']))
 
 # sdltermer
 env.Default(env.Program('sdltermer',
-    ['termer.c', 'sdlctermer.c', inputter_o, outputter_o, screen_o, bool_o],
+    [termer_o, 'sdlctermer.c', inputter_o, outputter_o, screen_o, bool_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'SDL']))
 

@@ -153,8 +153,8 @@ void test(bool* result)
     parm_right_cursor(&wnt, 4);
     update(result, tscreq("cuf: ESC[4C", &wnt, &got));
 
-    wnt = screen(6, 4);
-    got = screen(6, 4);
+    wnt = screen(24, 4);
+    got = screen(24, 4);
     runstring(&got, "a\tb");
     put_char(&wnt, 'a');
     tab(&wnt);

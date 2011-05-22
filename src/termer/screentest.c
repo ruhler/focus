@@ -175,6 +175,11 @@ void test(bool* result)
     insert_line(&scr);
     SCREEN_Cell want_6 = {' ', SCREEN_COLOR_WHITE, SCREEN_COLOR_BLACK, {false, false}};
     update(result, tcelleq("insert_line clears full line", want_6, cellat(&scr, mkpos(5,0))));
+
+    scr = screen(24, 4);
+    cursor_address(&scr, mkpos(20, 1));
+    tab(&scr);
+    update(result, tposeq("tab at eol", mkpos(0, 2), cursor(&scr)));
 }
 
 int main()

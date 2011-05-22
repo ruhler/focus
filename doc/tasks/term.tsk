@@ -1051,6 +1051,36 @@ Bugs:
 
     Fixed. And guess what. This my first bug entirely fixed from within the
     terminal emulator itself!
- - No key repeat. It's kind of annoying.
+ + Memory leak: tail recursion not optimized away
+    Fixed by switching inputter and outputter to use while loops.
+    Watching top shows no memory increase over time now.
+ + We segfault at the end.
+    Could be related to this: we do tail recursion, and grow the stack
+    unbounded. I think we do this in a couple places. Let me fix it.
+
+    Nope. We still have the seg fault.
+    Gdb suggests the problem is from getting a NUL character. Err, maybe from
+    trying to display a null character?
+
+    No. Gdb suggests the problem is trying to set cell 11, 58. Somehow the
+    cursor gets wacked out. It's like maybe I swapped a row and column
+    somewhere. Or maybe some application is mean... I guess I could record the
+    output from the client. In fact, I already have some idea, because the
+    problem occurs when I run dmesg.
+
+    The trouble is, I can't handle bad input. Any application could craft some
+    control sequences which totally break me. That's not an acceptable long
+    term solution. The question is: is it the application which is messing up,
+    or is it me?
+
+    Let me put a whole bunch of assertions in, to verify I'm not asked to do
+    something bad.
     
+    Found it. Problem was with tabs at the end of the line, or something else
+    like that. It seems to be fixed now.
+
+ - No key repeat. It's kind of annoying.
+ - Trouble with screen: It's like reverse mode gets stuck on or something.
+ - doesn't end cleanly: I always see like: read error, or some other such
+   assertion.
 
