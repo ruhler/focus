@@ -178,6 +178,13 @@ void test(bool* result)
     set_background(&wnt, SCREEN_COLOR_BLACK);
     put_char(&wnt, 'b');
     update(result, tscreq("default background color", &wnt, &got));
+
+    wnt = screen(6, 4);
+    got = screen(6, 4);
+    runstring(&got, "\xE2\x80\x98m");
+    put_char(&wnt, 0x2018);
+    put_char(&wnt, 'm');
+    update(result, tscreq("unicode", &wnt, &got));
 }
 
 int main()

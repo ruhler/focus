@@ -1149,11 +1149,7 @@ Sat May 21 21:17:31 EDT 2011
 Didn't take long to find some issues.
  + arrow keys don't work. Like, readline history.
     I'm inputting the wrong strings: \eA, \eB instead of \e[A \e[B
- - control-g in vim seems to have some issues.
- - I'm having issues with readline. Maybe bell related?
-    I disabled the bell. Let's see if that fixes things.
- - For useability, I need a version of sdltermer which doesn't read bench.
- - unicode: character 0x2018 (a fancy quote) comes out as a box.
+ + unicode: character 0x2018 (a fancy quote) comes out as a box.
     This showed up when calling gcc and there was an error:
         a.c|8| error: ‘stderr’ unde
     This will require a bit of a change. Characters in the screen will have to
@@ -1161,10 +1157,24 @@ Didn't take long to find some issues.
     characters, and then I need outputter to recognize unicode and convert to
     wide characters. It won't be too bad. I should use the same format of
     character as freetype, don't you think?
+
+    Okay, here's how it works. unicode is a 31 bit character set. utf-8 is an
+    encoding of unicode. All I need to do is convert the utf-8 encoding into a
+    32 bit word and pass that to freetype. So my characters should have a
+    different type: maybe int. Or unsigned int. I wonder if there already
+    exists a special type for them, such as wchar. Oh, looks like: wchar_t
+    maybe? Yes, let me use that. So this change should be easy to make now.
+
+    Works now!
+
  - doesn't support ctrl-alt-Fx switching between sdltermer and X.
     It just freezes up.
     I switched to ignoring unhandled input keys instead of asserting. I think
     that will fix this.
+ - control-g in vim seems to have some issues.
+ - I'm having issues with readline. Maybe bell related?
+    I disabled the bell. Let's see if that fixes things.
+ - For useability, I need a version of sdltermer which doesn't read bench.
 
     
 I would say (2) and (3) are done now. Which basically says the next step is

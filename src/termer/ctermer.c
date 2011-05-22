@@ -189,7 +189,7 @@ double fromfixed(signed long x)
     return d;
 }
 
-void ctermer_DrawCell(int col, int row, char c, int style, int fgcolor, int bgcolor)
+void ctermer_DrawCell(int col, int row, wchar_t c, int style, int fgcolor, int bgcolor)
 {
     if (gstate.mincol == -1 || gstate.mincol > col) {
         gstate.mincol = col;

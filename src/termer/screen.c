@@ -365,8 +365,9 @@ void parm_rindex(SCREEN_Screen* scr, int n)
     }
 }
 
-void put_char(SCREEN_Screen* scr, char c)
+void put_char(SCREEN_Screen* scr, wchar_t c)
 {
+    // TODO: how to handle characters with wcwidth not equal to 1?
     SCREEN_Cell ncell = blank(scr);
     ncell.character = c;
     setcell(scr, scr->cursor.column, scr->cursor.line, ncell);

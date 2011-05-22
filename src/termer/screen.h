@@ -2,6 +2,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <wchar.h>
+
 #include "bool.h"
 
 typedef int SCREEN_Color;
@@ -31,7 +33,7 @@ typedef struct {
 bool eq_attributes(const SCREEN_Attributes* a, const SCREEN_Attributes* b);
 
 typedef struct {
-    char character;
+    wchar_t character;
     SCREEN_Attributes cattrs;
 } SCREEN_Cell;
 
@@ -101,7 +103,7 @@ void scroll_forward(SCREEN_Screen* scr);
 void parm_index(SCREEN_Screen* scr, int n);
 void scroll_reverse(SCREEN_Screen* scr);
 void parm_rindex(SCREEN_Screen* scr, int n);
-void put_char(SCREEN_Screen* scr, char c);
+void put_char(SCREEN_Screen* scr, wchar_t c);
 
 SCREEN_Cell cellat(SCREEN_Screen* scr, SCREEN_Position pos);
 SCREEN_Position cursor(SCREEN_Screen* scr);

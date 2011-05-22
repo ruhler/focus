@@ -73,7 +73,7 @@ void mode(SCREEN_Screen* scr, int x)
 void outputter(SCREEN_Screen* scr, int terminator, GetCharFunction getf)
 {
     while (1) {
-        char c = getf();
+        unsigned char c = getf();
         if (c == terminator) {
             return;
         }
@@ -164,7 +164,48 @@ void outputter(SCREEN_Screen* scr, int terminator, GetCharFunction getf)
                 }
             } break;
 
-            default: put_char(scr, c); break;
+            default:
+            {
+                wchar_t wc;
+                if ((c & 0x80) == 0x00) {
+                    wc = c;
+                } else if ((c & 0xE0) == 0xC0) {
+                    char c1 = 0x1F & c;
+                    char c2 = 0x3F & getf();
+                    wc = (c1 << 6) | c2;
+                } else if ((c & 0xF0) == 0xE0) {
+                    char c1 = 0x0F & c;
+                    char c2 = 0x3F & getf();
+                    char c3 = 0x3F & getf();
+                    wc = (c1 << 12) | (c2 << 6) | c3;
+                } else if ((c & 0xF8) == 0xF0) {
+                    char c1 = 0x07 & c;
+                    char c2 = 0x3F & getf();
+                    char c3 = 0x3F & getf();
+                    char c4 = 0x3F & getf();
+                    wc = (c1 << 18) | (c2 << 12) | (c3 << 6) | c4;
+                } else if ((c & 0xFC) == 0xF8) {
+                    char c1 = 0x03 & c;
+                    char c2 = 0x3F & getf();
+                    char c3 = 0x3F & getf();
+                    char c4 = 0x3F & getf();
+                    char c5 = 0x3F & getf();
+                    wc = (c1 << 24) | (c2 << 18) | (c3 << 12) | (c4 << 6) | c5;
+                } else if ((c & 0xFE) == 0xFC) {
+                    char c1 = 0x01 & c;
+                    char c2 = 0x3F & getf();
+                    char c3 = 0x3F & getf();
+                    char c4 = 0x3F & getf();
+                    char c5 = 0x3F & getf();
+                    char c6 = 0x3F & getf();
+                    wc = (c1 << 30) | (c2 << 24) | (c3 << 18) | (c4 << 12) | (c5 < 6) | c6;
+                } else {
+                    fprintf(stderr, "bad utf-8 sequence: c=0x%02x\n", c);
+                    wc = '\0';
+                }
+
+                put_char(scr, wc);
+            } break;
         }
     }
 }
