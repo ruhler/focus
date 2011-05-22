@@ -77,7 +77,7 @@ Here are the details to take care of:
     done.
 + enable keyrepeat in sdlcsr
     done.
-- Get font size from fontconfig (so it comes from font name)
++ Get font size from fontconfig (so it comes from font name)
     size in the fontconfig gives a point size.
     pixelsize gives a pixelsize. Let me play with fontconfiger to see what it
     tells me for both of those. pixelsize should be just fine. Both doubles.
@@ -85,8 +85,10 @@ Here are the details to take care of:
     They are both the sameish, except pixelsize is a little bigger.
     I'm thinking using pixelsize and the same set pixels sizes function I have
     now makes sense. That way I don't have to deal with dpi things.
-
-- Get font name from TERMERFONT environment variable.
++ Get font name from TERMERFONT environment variable.
+    Done.
+- How do we choose lines, columns, height, width, font size in termer?
+    Because if you specify them all, they might not all line up...
 - Write CNSL_GetGeometry function to get width and height
     Reads from CNSLWIDTH and CNSLHEIGHT environment variables.
     So sdlcsr should set those variable when it starts up.

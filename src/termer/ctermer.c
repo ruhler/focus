@@ -65,8 +65,10 @@ int forkterminalclient()
 
 int ctermer_Init()
 {
-    const char* font = "Monospace:Bold";
-    const int size = 26;
+    const char* font = getenv("TERMERFONT");
+    if (!font) {
+        font = "Monospace";
+    }
 
     if (forkterminalclient() != 0) {
         fprintf(stderr, "error forking terminal client\n");
@@ -86,7 +88,11 @@ int ctermer_Init()
     FcPattern* match = FcFontMatch(NULL, pattern, NULL);
 
     FcValue file;
+    FcValue psize;
     FcPatternGet(match, "file", 0, &file);
+    FcPatternGet(match, "pixelsize", 0, &psize);
+
+    int size = (int)ceil(psize.u.d);
 
     if (FT_New_Face(gstate.library, file.u.s, 0, &gstate.face) != 0) {
         fprintf(stderr, "error loading font\n");
