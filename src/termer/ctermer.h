@@ -9,6 +9,9 @@
 int ctermer_Init();
 void ctermer_DeInit();
 
+// Make it so anyone blocked in ctermer_EventGet will get a QuitEvent.
+void ctermer_Quit();
+
 // Get the next event.
 // Stores the event in a static place accessible via the EventType and
 // EventValue functions.

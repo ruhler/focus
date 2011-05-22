@@ -58,9 +58,12 @@ CNSL_Event getevent()
 }
     
 
-void* runinputter(void* ud)
+void* runoutputter(void* ud)
 {
-    inputter(getevent, ctermer_ToTermClient);
+    fromclientptr = ctermer_FromTermClient();
+    oldcursor = mkpos(0, 0);
+    outputter(&scr, '\0', getf);
+    ctermer_Quit();
 }
     
 
@@ -70,12 +73,9 @@ int main()
 
     scr = screen(80, 24);
 
-    pthread_t inputterthread;
-    pthread_create(&inputterthread, NULL, &runinputter, NULL);
-
-    fromclientptr = ctermer_FromTermClient();
-    oldcursor = mkpos(0, 0);
-    outputter(&scr, '\0', getf);
+    pthread_t othread;
+    pthread_create(&othread, NULL, &runoutputter, NULL);
+    inputter(getevent, ctermer_ToTermClient);
     ctermer_DeInit();
     return 0;
 }

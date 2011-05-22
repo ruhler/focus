@@ -115,7 +115,6 @@ int ctermer_Init()
         fprintf(stderr, "sdl init: %s\n", SDL_GetError());
         return;
     }
-    atexit(SDL_Quit);
 
     gstate.display = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE);
     if (gstate.display == NULL) {
@@ -139,6 +138,13 @@ void ctermer_DeInit()
     SDL_Quit();
 }
 
+void ctermer_Quit()
+{
+    SDL_Event event;
+    event.type = SDL_QUIT;
+    SDL_PushEvent(&event);
+}
+
 void ctermer_EventGet()
 {
     do {
@@ -151,6 +157,7 @@ int ctermer_EventType()
     switch (gstate.event.type) {
         case SDL_KEYDOWN: return 0;
         case SDL_KEYUP: return 1;
+        case SDL_QUIT: return 2;
     }
     return -1;
 }
@@ -171,7 +178,8 @@ char* ctermer_FromTermClient()
 {
     int red = read(gstate.tcfd, fromtermclientbuf, BUFSIZ);
     if (red < 0) {
-        perror("read");
+        // TODO: this tends to happen when we sdltermer finishes. Why?
+        //perror("ctermer_FromTermClient: read");
         red = 0;
     }
 

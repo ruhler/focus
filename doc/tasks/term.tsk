@@ -1083,6 +1083,51 @@ Bugs:
  + Trouble with screen: It's like reverse mode gets stuck on or something.
     set default background was set to white instead of black. Fixed now.
 
- - doesn't end cleanly: I always see like: read error, or some other such
+ + doesn't end cleanly: I always see like: read error, or some other such
    assertion.
+    gdb reports the problem in the call to GetEvent, deep down in X.
+
+    What's supposed to happen?
+    Well, hmm... So outputter gets a terminator character, at which point it
+    knows to stop. We could also have inputter get a Quit event.
+
+    I have a hypothesis. The issue is we have one thread stalled waiting on an
+    event, and another thread which calls SDL_Quit. I bet that's bad.
+
+    Let me propose a different way of working things.
+    Let's say when the outputter thread terminates, that pushes an SDL_Quit
+    event. Then it's the inputters job to wait for the Quit event?
+
+    Um... But that doesn't fit my abstraction.
+
+    I think the "right" thing to do is as follows: the inputter is the main
+    thread. when it gets a Quit event, the program ends.
+
+    The outputter is the child thread. When it gets the terminator character,
+    it sends a Quit event. So I should maybe have a ctermer_Quit(). For
+    sdlctermer it will push a quit event. The idea should be if ctermer_Quit()
+    is called, anyone waiting on an input event will get a Quit event.
+
+    That's easy to do with sdlctermer. I don't know how to do it with ctermer.
+
+    The deal is, inputter we be stuck waiting on an event. Either we give him
+    the event, or he doesn't get any event.
+
+    The other question is if there is some pthread way to kill off inputter.
+    But that's not the right solution...
+
+    So I'll fudge it. I'll get sdltermer to work right, and have ctermer
+    assert or something and deal with it later. Cool! Sounds good.
+
+    I made the changes. sdltermer ends cleanly now according to gdb, but I do
+    get this read error in ctermer_FromTermClient. Why is that?
+
+    so inputter is waiting for an event.
+    now outputter is getting from the client, and the client no longer exists,
+    so that maybe gives a read error. That's when we realize we should be
+    done. But why is that a read error and not end of file?
+
+    I'm not sure. I'll just ignore it for now and claim this is fixed.
+
+  - typing q after top gives an assertion error.
 
