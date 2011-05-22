@@ -100,12 +100,17 @@ Here are the details to take care of:
 + Write CNSL_GetGeometry function to get width and height
     Reads from CNSLWIDTH and CNSLHEIGHT environment variables.
     So sdlcsr should set those variable when it starts up.
++ Make termer use login shell (or whatever is approriate (what does xterm do?
+  screen?)) by default rather than bench. And I think I can get rid of bench
+  now.
+
+    screen says is uses $SHELL, or /bin/sh if that's not available.
+    it looks like we are talking non-login shells here. So let me do this: run
+    $SHELL, or /bin/sh, no arguments.
 
 - Parse cntrl-' escape sequences in sgreen.
 - Have sgreen start by launching termer.
-- Make termer use login shell (or whatever is approriate (what does xterm do?
-  screen?)) by default rather than bench. And I think I can get rid of bench
-  now.
+
 - Work out issues with /tmp/green file. Maybe use an environment variable like
   screen does: SGREEN
 

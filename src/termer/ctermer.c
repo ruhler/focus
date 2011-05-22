@@ -55,8 +55,12 @@ int forkterminalclient()
     }
 
     if (pid == 0) {
-        // does not return (I hope).
-        execl("/bin/sh", "/bin/sh", "src/termer/bench.sh", NULL);
+        const char* shell = getenv("SHELL");
+        if (!shell) {
+            shell = "bin/sh";
+        }
+        
+        execl(shell, shell, NULL);
         perror("execl");
         exit(1);
     }

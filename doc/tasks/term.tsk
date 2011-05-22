@@ -1180,12 +1180,14 @@ Didn't take long to find some issues.
     vt100 guide says ESC M is reverse index. So maybe just do an ri.
 
     Fixed.
+ + For useability, I need a version of sdltermer which doesn't read bench.
+    Done. I don't need bench anymore anyway, because it's fast enough.
 
  - control-g in vim seems to have some issues.
     maybe was the reverse_index command that I fixed.
  - I'm having issues with readline. Maybe bell related?
     I disabled the bell. Let's see if that fixes things.
- - For useability, I need a version of sdltermer which doesn't read bench.
+ - We still don't shut down very cleanly.
 
     
 I would say (2) and (3) are done now. Which basically says the next step is
