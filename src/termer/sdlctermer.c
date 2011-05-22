@@ -123,6 +123,9 @@ int ctermer_Init()
         SDL_Quit();
     }
 
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL/2);
+    SDL_ShowCursor(SDL_DISABLE);
+
     gstate.mincol = -1;
     gstate.maxcol = -1;
     gstate.minrow = -1;
