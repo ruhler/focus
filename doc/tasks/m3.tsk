@@ -40,3 +40,32 @@ What are the problems?
     Why? What's taking up so much cpu? Why don't things sleep?
     Or is it doing that much work that it needs to take up lots of cpu?
 
+Sun May 22 12:09:41 EDT 2011
+
+Guess what! Performance problems have gone away. For, I think, all my consoler
+applications. That means all that remains for milestone 3 is to fix up sgreen,
+as described above.
+
+I vote for ctrl-' for the control character. And initially support:
+
+ctrl-' 0-9  - switch to window 0 through 9
+ctrl-' c    - create a new window with an instance of termer running.
+
+And when we first start, start with termer running.
+Termer should be running a login shell? Or the shell from $SHELL, or looked up
+by user, or something like that.
+
+Termer should maybe figure out the desired font (and font size) from an
+environment variable: TERMERFONT. I can add that to my bashrc. Do this until I
+figure out a better way? The better way being: read it from a .termerrc file.
+And maybe CONSOLER_WIDTH and CONSOLER_HEIGHT can be used as environment
+variables for conveying that information to consoler clients, as a sort of
+hack for now. I can set that in my bashrc file (or have sdlcsr set it
+automatically).
+
+Oh boy. This is exciting. Just a number of easy little details to take care
+of, and I'll have niftily working system.
+
+I'm so going to do this today. But now I think would be a good time for a
+short break.
+

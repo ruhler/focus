@@ -14,8 +14,8 @@
 #include "consoler.h"
 #include "ctermer.h"
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 1280
+#define HEIGHT 800
 
 typedef struct {
     // The most recently gotten event.
@@ -66,7 +66,7 @@ int forkterminalclient()
 int ctermer_Init()
 {
     const char* font = "Monospace:Bold";
-    const int size = 12;
+    const int size = 26;
 
     if (forkterminalclient() != 0) {
         fprintf(stderr, "error forking terminal client\n");
@@ -218,8 +218,8 @@ void ctermer_DrawCell(int col, int row, wchar_t c, int style, int fgcolor, int b
 
     // blank the cell first
     int bgc = (redof(bgcolor, style) << 16) | (greenof(bgcolor, style) << 8) | blueof(bgcolor, style);
-    for (x = 0; x < gstate.cell_width; x++) {
-        for (y = 0; y < gstate.cell_height; y++) {
+    for (y = 0; y < gstate.cell_height; y++) {
+        for (x = 0; x < gstate.cell_width; x++) {
             CNSL_SetPixel(gstate.display, xdst + x, ydst + y, bgc);
         }
     }
