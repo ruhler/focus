@@ -10,8 +10,8 @@ I should test some things. Perhaps using flicker.
 
 A. FillRect -> sdl surface
 B. fill -> sdl surface
-C. fill -> memory mapped sdl surface
-D. fill -> memory mapped cnsldisplay -> sdl surface
+C. fill -> memory mapped sdl surface    (screen pixels memory mapped?)
+D. fill -> memory mapped cnsldisplay -> sdl surface (back pixels memory mapped)
 E. fill -> cnsldisplay -> pipe -> sdl surface
 F. fill -> cnsldisplay -> pipe -> cnsldisplay -> sdl surface
 G. fill -> sdl surface -> sdl surface
@@ -21,4 +21,25 @@ I might want to make a special directory (under rsrch?) for these tests.
 
 The API should hopefully allow for really efficient green like functionality.
 That is the clients may be multiple hops away from the server.
+
+Sun May 22 08:16:02 EDT 2011
+
+Note: I can create an sdl surface from an array of pixels using
+SDL_CreateRGBSurfaceFrom. That could come in handy. It's probably more
+efficient to create a surface and blit from that surface to another than it is
+to manually set the pixels in a surface. Just because they know how to do
+blit, and maybe they can do it extra fast.
+
+Now, how do I do this memory mapped thing?
+
+The idea is I have a server and a client. The server makes a memory
+mapped...let's say array of pixels. It then launches the client. The client
+will... It should draw to the pixel array, then send a note telling the server
+to consume the array, then wait for the server to respond.
+
+In other words, we need a pipe between them anyway, to note when the server
+should update the display, and when the server is done updating the display.
+
+Could we use signals for that instead? Would that be more or less efficient? I
+should do the pipe first.
 

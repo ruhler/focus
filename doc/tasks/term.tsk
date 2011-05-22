@@ -1152,6 +1152,19 @@ Didn't take long to find some issues.
  - control-g in vim seems to have some issues.
  - I'm having issues with readline. Maybe bell related?
     I disabled the bell. Let's see if that fixes things.
+ - For useability, I need a version of sdltermer which doesn't read bench.
+ - unicode: character 0x2018 (a fancy quote) comes out as a box.
+    This showed up when calling gcc and there was an error:
+        a.c|8| error: ‘stderr’ unde
+    This will require a bit of a change. Characters in the screen will have to
+    switch to wide characters or something, and I need a way to put wide
+    characters, and then I need outputter to recognize unicode and convert to
+    wide characters. It won't be too bad. I should use the same format of
+    character as freetype, don't you think?
+ - doesn't support ctrl-alt-Fx switching between sdltermer and X.
+    It just freezes up.
+    I switched to ignoring unhandled input keys instead of asserting. I think
+    that will fix this.
 
     
 I would say (2) and (3) are done now. Which basically says the next step is

@@ -137,7 +137,9 @@ void press(InputterState* is, PutCharFunction iput, CNSL_Keysym key, bool shift,
         case CNSLK_HOME: many(iput, "\e[H"); return;
         case CNSLK_END: many(iput, "\e[4~"); return;
         case CNSLK_DELETE: iput(0x7F); return;
-        default: assert(false && "unhandled input keysym");
+        default:
+            fprintf(stderr, "ignoring unhandled input key: %i\n", key);
+            return;
     }
 }
 
