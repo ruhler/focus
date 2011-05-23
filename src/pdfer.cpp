@@ -87,9 +87,9 @@ void Pdfer::zoom(double zf)
 
 void Pdfer::fitwidth()
 {
-    m_zoom = 1.0;
-    zoom(pagewidth()/m_width);
+    m_zoom = pagewidth()/m_width;
     m_x = 0;
+    redraw();
 }
 
 void Pdfer::fitpage()

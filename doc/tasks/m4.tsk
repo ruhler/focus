@@ -14,6 +14,7 @@ Things like:
  - termer doesn't handle everything elinks (not under screen) spits at it
  - pdfer should have a goto command
  - pdfer should have a way to show the number of pages in the document
+ - pdfer should have a way to show the number of the current page
  - termer implement underline, italics
  - termer support of dynamic font resizing?
  - tk server
@@ -27,4 +28,30 @@ Things like:
  - turn consoler into a library
  - write man pages for everything
  - profile termer and make it more efficient (save battery life)
+ + pdfer has a bug: fit width doesn't work right.
+    Or maybe it was a problem with loading the right library?
+    No, it's the following width thing:
+ - pdfer fitwidth doesn't keep part of page at the top in the same place.
+    So in some cases, it moves the page totally out of view, which is
+    annoying. I suggest what we want is to zoom around the top of the page. So
+    whatever pixels are at the top of the page before fitting to the width
+    should remain at the top of the page after fitting to the width.
+
+    How can I test this? Use a solid color pdf. We know the background color.
+    Position the page so that row 2 is background color, row 4 is page color.
+    Then fit width, verify row 2 is background color, row 4 is page color?
+    Hmm... Not sure how to test this.
+
+    I fixed the problem without testing. GAR! What a waste! Why didn't I write
+    a test case for this?
+
+    Maybe a test case could be: fit all (so top of page is at the top), fit
+    width (top of page should still be at the top), scroll down 10%, now the
+    top of the page should have changed. Verify it changed color.
+
+ - what if sgreen can't find 'termer' in path?
+ - cgreen should pass along current working directory to sgreen?
+ - sgreen should maybe blank a clients display when it quits so we don't see
+   it when we start a new client with the same id.
+ - pdfer needs a search capability
 

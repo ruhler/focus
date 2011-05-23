@@ -5,6 +5,7 @@ env['CPPPATH'] = [
     '..',
     '/usr/include/pixman-1',
     '/usr/include/freetype2',
+    '/usr/include/fontconfig',
     '/usr/include/libpng12',
     '/home/ruhler/local/include/poppler/cpp',
     ]
