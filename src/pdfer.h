@@ -36,6 +36,12 @@ public:
     // does nothing if you are at the first page.
     void previous();
 
+    // goto the first page.
+    void first();
+
+    // goto the last page.
+    void last();
+
     // scroll the page forward by yp% and left by xp%
     // xp and yp can be negative to scroll backward or right respectively.
     // For example, to scroll forward by 10% of the view height, you would
