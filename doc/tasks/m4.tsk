@@ -27,4 +27,5 @@ Things like:
  - turn consoler into a library
  - write man pages for everything
  - profile termer and make it more efficient (save battery life)
+ - use buffered io for passing events? May help noticable performance issue?
 
