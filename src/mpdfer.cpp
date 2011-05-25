@@ -43,8 +43,12 @@ int main(int argc, char* argv[])
             switch (sym) {
                 case CNSLK_q: done = true; break;
                 case CNSLK_SPACE:
+                case CNSLK_PAGEDOWN:
                 case CNSLK_n: pdfer->next(); break;
+                case CNSLK_PAGEUP:
                 case CNSLK_p: pdfer->previous(); break;
+                case CNSLK_0: pdfer->first(); break;
+                case CNSLK_4: pdfer->last(); break;
                 case CNSLK_j: pdfer->scroll(0, -0.1); break;
                 case CNSLK_k: pdfer->scroll(0, 0.1); break;
                 case CNSLK_h: pdfer->scroll(0.1, 0); break;

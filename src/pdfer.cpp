@@ -71,6 +71,16 @@ void Pdfer::previous()
     goto_(m_page - 1);
 }
 
+void Pdfer::first()
+{
+    goto_(1);
+}
+
+void Pdfer::last()
+{
+    goto_(m_doc->pages());
+}
+
 void Pdfer::scroll(double xp, double yp)
 {
     m_x -= xp * m_width;
