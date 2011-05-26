@@ -1,11 +1,14 @@
 
 #include <assert.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <pthread.h>
+
 
 #include "consoler.h"
 
@@ -82,7 +85,67 @@ void* handle_output(void* vwid) {
     return NULL;
 }
 
-void new_client(char* const argv[])
+void new_client(const char* pipeprefix)
+{
+    int id = -1;
+    int i;
+    for (i = 0; i < MAX_WINDOWS; i++) {
+        if (g_clients[i].client == NULL) {
+            id = i;
+            break;
+        }
+    }
+
+
+    if (id == -1) {
+        fprintf(stderr, "exceeded max clients\n");
+        return;
+    }
+    fprintf(stderr, "sgreen: new client (id = %i)\n", id);
+
+    g_clients[id].client = malloc(sizeof(CNSL_Client_));
+    if (!g_clients[id].client) {
+        fprintf(stderr, "unable to allocate communication with client\n");
+        return;
+    }
+
+    char pipetoclient[BUFSIZ];
+    strncpy(pipetoclient, pipeprefix, BUFSIZ);
+    strncat(pipetoclient, ".toclient", BUFSIZ);
+
+    char pipefrclient[BUFSIZ];
+    strncpy(pipefrclient, pipeprefix, BUFSIZ);
+    strncat(pipefrclient, ".frclient", BUFSIZ);
+
+    g_clients[id].client->fdout = open(pipetoclient, O_WRONLY);
+    if (g_clients[id].client->fdout < 0) {
+        perror("open toclient");
+        return;
+    }
+    unlink(pipetoclient);
+
+    g_clients[id].client->fdin = open(pipefrclient, O_RDONLY);
+    if (g_clients[id].client->fdin < 0) {
+        perror("open frclient");
+        return;
+    }
+    unlink(pipefrclient);
+
+    int width = 640;
+    int height = 480;
+    CNSL_GetGeometry(&width, &height);
+    g_clients[id].display = CNSL_AllocDisplay(width, height);
+    switch_to_window(id);
+
+    // Spawn the thread to handle output from this client.
+    pthread_t thread;
+    int* vid = (int*)malloc(sizeof(int));
+    assert(vid && "malloc failed");
+    *vid = id;
+    pthread_create(&thread, NULL, &handle_output, (void*)vid);
+}
+
+void fork_new_client(char* const argv[])
 {
     int id = -1;
     int i;
@@ -119,7 +182,7 @@ void new_client(char* const argv[])
 void new_shellclient()
 {
     char* argv[] = {"termer", "termer", NULL};
-    new_client(argv);
+    fork_new_client(argv);
 }
 
 void* serve_clients(void* arg)
@@ -158,34 +221,14 @@ void* serve_clients(void* arg)
             return NULL;
         }
 
-        FILE* pf = fdopen(pfd, "r");
-        if (!pf) {
-            perror("fdopen");
-            done = 1;
-            return NULL;
+        char prefix[BUFSIZ];
+        int red = read(pfd, prefix, BUFSIZ-1);
+        if (red < 0) {
+            perror("socket read");
         }
-
-        unsigned int numargs;
-        fread(&numargs, sizeof(unsigned int), 1, pf);
-        char** argv = (char**)malloc(sizeof(char*)*(numargs+1));
-        assert(argv && "malloc failed");
-
-        int i;
-        for (i = 0; i < numargs; i++) {
-            unsigned int len;
-            char buf[BUFSIZ+1];
-
-            fread(&len, sizeof(unsigned int), 1, pf);
-            argv[i] = malloc(sizeof(char)*(len+1));
-            assert(argv[i] && "malloc failed");
-
-            fread(argv[i], sizeof(char), len, pf);
-            argv[i][len] = '\0';
-        }
-        argv[i] = NULL;
-        fclose(pf);
-
-        new_client(argv);
+        prefix[red] = '\0';
+        new_client(prefix);
+        close(pfd);
     }
 
     return NULL;
