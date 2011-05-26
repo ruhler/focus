@@ -94,3 +94,17 @@ pointer, just make it a struct. That will ease memory stuff. Or something.
 
 So let me save my latest work, then throw it away and make things better.
 
+Thu May 26 15:28:41 EDT 2011
+
+Well, things are much simpler now, and it works. Except, there's a problem if
+the client dies, things get hung up, which is definitely not good. But this
+isn't new...
+
+The other issue is, maybe we really do want cgreen to fork, just so it ends...
+Let me try that instead. That's probably not hard to add.
+
+Thu May 26 15:34:37 EDT 2011
+
+It works! And hey, the fork thing seems to have fixed the crashing problem I
+had. Or at least worked around it. I think we are good now.
+

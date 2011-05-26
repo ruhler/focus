@@ -41,7 +41,8 @@ void switch_to_window(int windowid)
 // Input is pointer to integer specifying which output to handle.
 // That pointer will be freed by this function, so make sure it's been
 // malloced to begin with.
-void* handle_output(void* vwid) {
+void* handle_output(void* vwid)
+{
     int id = *(int*)vwid;
     free(vwid);
 
@@ -85,7 +86,7 @@ void* handle_output(void* vwid) {
     return NULL;
 }
 
-void new_client(const char* pipeprefix)
+void new_client(CNSL_Client client)
 {
     int id = -1;
     int i;
@@ -96,78 +97,16 @@ void new_client(const char* pipeprefix)
         }
     }
 
-
     if (id == -1) {
         fprintf(stderr, "exceeded max clients\n");
         return;
     }
-    fprintf(stderr, "sgreen: new client (id = %i)\n", id);
 
-    g_clients[id].client = malloc(sizeof(CNSL_Client_));
-    if (!g_clients[id].client) {
-        fprintf(stderr, "unable to allocate communication with client\n");
-        return;
-    }
-
-    char pipetoclient[BUFSIZ];
-    strncpy(pipetoclient, pipeprefix, BUFSIZ);
-    strncat(pipetoclient, ".toclient", BUFSIZ);
-
-    char pipefrclient[BUFSIZ];
-    strncpy(pipefrclient, pipeprefix, BUFSIZ);
-    strncat(pipefrclient, ".frclient", BUFSIZ);
-
-    g_clients[id].client->fdout = open(pipetoclient, O_WRONLY);
-    if (g_clients[id].client->fdout < 0) {
-        perror("open toclient");
-        return;
-    }
-    unlink(pipetoclient);
-
-    g_clients[id].client->fdin = open(pipefrclient, O_RDONLY);
-    if (g_clients[id].client->fdin < 0) {
-        perror("open frclient");
-        return;
-    }
-    unlink(pipefrclient);
+    g_clients[id].client = client;
 
     int width = 640;
     int height = 480;
     CNSL_GetGeometry(&width, &height);
-    g_clients[id].display = CNSL_AllocDisplay(width, height);
-    switch_to_window(id);
-
-    // Spawn the thread to handle output from this client.
-    pthread_t thread;
-    int* vid = (int*)malloc(sizeof(int));
-    assert(vid && "malloc failed");
-    *vid = id;
-    pthread_create(&thread, NULL, &handle_output, (void*)vid);
-}
-
-void fork_new_client(char* const argv[])
-{
-    int id = -1;
-    int i;
-    for (i = 0; i < MAX_WINDOWS; i++) {
-        if (g_clients[i].client == NULL) {
-            id = i;
-            break;
-        }
-    }
-
-
-    if (id == -1) {
-        fprintf(stderr, "exceeded max clients\n");
-        return;
-    }
-    fprintf(stderr, "sgreen: new client (id = %i)\n", id);
-
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
-
-    g_clients[id].client = CNSL_LaunchClient(argv[0], argv);
     g_clients[id].display = CNSL_AllocDisplay(width, height);
     switch_to_window(id);
 
@@ -182,7 +121,8 @@ void fork_new_client(char* const argv[])
 void new_shellclient()
 {
     char* argv[] = {"termer", "termer", NULL};
-    fork_new_client(argv);
+    CNSL_Client client = CNSL_LaunchClient(argv[0], argv);
+    new_client(client);
 }
 
 void* serve_clients(void* arg)
@@ -221,14 +161,10 @@ void* serve_clients(void* arg)
             return NULL;
         }
 
-        char prefix[BUFSIZ];
-        int red = read(pfd, prefix, BUFSIZ-1);
-        if (red < 0) {
-            perror("socket read");
-        }
-        prefix[red] = '\0';
-        new_client(prefix);
-        close(pfd);
+        CNSL_Client client = malloc(sizeof(CNSL_Client_));
+        client->fdout = pfd;
+        client->fdin = pfd;
+        new_client(client);
     }
 
     return NULL;
