@@ -29,6 +29,10 @@ Things like:
  - write man pages for everything
  - profile termer and make it more efficient (save battery life)
  - use buffered io for passing events? May help noticable performance issue?
+    The issue being: it takes a long time before keyrepeat kicks in, then in
+    kicks in hard. But then, maybe this is more a problem with the chosen key
+    repeat parameters. Or maybe this is more a problem with scrolling the
+    display.
  + pdfer has a bug: fit width doesn't work right.
     Or maybe it was a problem with loading the right library?
     No, it's the following width thing:
@@ -52,7 +56,34 @@ Things like:
 
  - what if sgreen can't find 'termer' in path?
  - cgreen should pass along current working directory to sgreen?
+    And the whole environment, which is a pain.
+    I think what this means is I should figure out how to have cgreen do the
+    exec call instead of sgreen. It's either that, or pass along the entire
+    environment, which is annoying.
+
+    Perhaps cgreen can create a named pipe or two, exec the client
+    application, and send a note to sgreen which is just the name of the pipe.
+    Then sgreen can connect to the pipe and unlink (so the file goes away).
+
+    Oh and hey! This will help with stdout. Now stdout will go to stdout of
+    cgreen, not sgreen, which is what we really want.
+    
+    This would definately be worth fixing, because this is the biggest pain
+    currently with using green.
+
+    So how will it really work? cgreen makes a named pipe. cgreen sends to
+    sgreen the name of the pipe. cgreen makes the named pipe the stdconsole,
+    then execs the client.
+
+    Another option would be for cgreen to fork the client and just exit. This
+    way cgreen would finish. That, I think, makes more sense from the user's
+    perspective. cgreen launches an application, not becomes one. It's just a
+    little annoying I can't resuse the LaunchClient function from the consoler
+    library.
+
  - sgreen should maybe blank a clients display when it quits so we don't see
    it when we start a new client with the same id.
  - pdfer needs a search capability
+ - some unicode characters don't work
+    Like for drawing boxes and such (try alsamixer for example).
 
