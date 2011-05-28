@@ -12,7 +12,11 @@ Things like:
  - sgreen should add a way to kill windows
  - sgreen maybe should have a split feature
  - termer doesn't handle everything elinks (not under screen) spits at it
- - pdfer should have a goto command
+ + pdfer should have a goto command
+    How about this: have digits accumulate into a number.
+                    Then g will goto whatever number you specify.
+    It's very simple, and should work, right? Let me try it.
+    It works!
  - pdfer should have a way to show the number of pages in the document
  - pdfer should have a way to show the number of the current page
  - termer implement underline, italics

@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 
     int width = 640;
     int height = 480;
+    int acc = 0;
 
     CNSL_Init();
     CNSL_GetGeometry(&width, &height);
@@ -47,8 +48,19 @@ int main(int argc, char* argv[])
                 case CNSLK_n: pdfer->next(); break;
                 case CNSLK_PAGEUP:
                 case CNSLK_p: pdfer->previous(); break;
-                case CNSLK_0: pdfer->first(); break;
-                case CNSLK_4: pdfer->last(); break;
+
+                case CNSLK_END: pdfer->last(); break;
+                case CNSLK_HOME: pdfer->first(); break;
+
+                // Digits add to an accumulator
+                case CNSLK_0: case CNSLK_1: case CNSLK_2:
+                case CNSLK_3: case CNSLK_4: case CNSLK_5:
+                case CNSLK_6: case CNSLK_7: case CNSLK_8:
+                case CNSLK_9: acc = acc * 10 + (sym - CNSLK_0); break;
+
+                // c clears the accumulator
+                case CNSLK_c: acc = 0; break;
+                case CNSLK_g: pdfer->goto_(acc); acc = 0; break;
                 case CNSLK_j: pdfer->scroll(0, -0.1); break;
                 case CNSLK_k: pdfer->scroll(0, 0.1); break;
                 case CNSLK_h: pdfer->scroll(0.1, 0); break;
