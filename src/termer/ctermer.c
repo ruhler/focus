@@ -227,7 +227,12 @@ void ctermer_DrawCell(int col, int row, wchar_t c, int style, int fgcolor, int b
         gstate.maxrow = row;
     }
 
-    FT_Load_Char(gstate.face, c, FT_LOAD_RENDER);
+    FT_UInt index = FT_Get_Char_Index(gstate.face, c);
+    if (index == 0) {
+        fprintf(stderr, "undefined character code: 0x%X", c);
+    }
+
+    FT_Load_Glyph(gstate.face, index, FT_LOAD_RENDER);
 
     int xdst = col * gstate.cell_width;
     int ydst = row * gstate.cell_height;
