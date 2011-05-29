@@ -1,0 +1,33 @@
+.TH CGREEN 1 2011-05-28 "" "Focus Manual"
+.SH NAME
+cgreen \- green client launcher
+.SH SYNOPSIS
+.B cgreen
+.I client
+[
+.I arg
+\&...
+]
+.SH DESCRIPTION
+.B cgreen
+launches 
+.I client
+with the given arguments and connects it to the 
+.BR sgreen (1)
+server listening on the unix socket specified by the environment variable
+$CNSLSVR or, by default, the file
+.IR /tmp/green .
+.SH OPTIONS
+None
+.SH ENVIRONMENT
+.TP
+.B CNSLSVR
+The file name of the unix socket the server to connect to is listening for
+connections on.
+.SH FILES
+.TP
+.I /tmp/green
+Default unix socket to use for connecting to the server.
+.SH BUGS
+Report bugs to
+.BR \| < ruhler@csail.mit.edu >.
