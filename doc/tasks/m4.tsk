@@ -70,4 +70,5 @@ Things like:
     Like for drawing boxes and such (try alsamixer for example).
  - is LaunchClient a memory leak? Or just in sgreen where I never free it?
  - sgreen/cgreen should be reentrant. That is, allow sgreen within sgreen.
+ - I can't launch pdfer from within elinks. The screen freezes up.
 
