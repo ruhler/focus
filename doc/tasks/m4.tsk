@@ -24,6 +24,14 @@ Things like:
     I might note, the font I use has an italics version. So maybe we could do
     italics by choosing an appropriate font. Underline should be easy: just
     draw the line manually.
+    
+    An easy way to test this use running `man man`. Because there is lots of
+    italics there, and it looks much better if the italics doesn't look the
+    same as bold.
+
+    I wonder if implementing underline will cause screen to generate italics
+    is underline?
+    
  - termer support of dynamic font resizing?
  - tk server
  - gtk server?
@@ -66,9 +74,11 @@ Things like:
  - cgreen should pass along current working directory to sgreen?
     (green_cwdbug.tsk)
     
-
  - sgreen should maybe blank a clients display when it quits so we don't see
    it when we start a new client with the same id.
+    Yes. Definately. Because some clients don't use the full screen, and if we
+    don't blank from before, we see parts of the old client, which can be very
+    confusing.
  - pdfer needs a search capability
  - some unicode characters don't work
     Like for drawing boxes and such (try alsamixer for example).
@@ -94,9 +104,28 @@ Things like:
     
 
  - is LaunchClient a memory leak? Or just in sgreen where I never free it?
+    It looks okay, but I'm thinking, why do we need to malloc for the Client?
+    Isn't client simple enough to be passed around as copies?
+
+    The challenge then is, how do we differentiate in LaunchClient between a
+    good and bad client? Well, the answer would be return the client as an out
+    arg and have an error code to return.
+
+    Same thing maybe for display.
+
  - sgreen/cgreen should be reentrant. That is, allow sgreen within sgreen.
+    cgreen can already support it via this CNSLSVR environment variable. What
+    i suggest is sgreen when it starts should choose as the socket name
+    /tmp/green-<pid>. Or maybe we should use /var for that? Then set CNSLSVR
+    to the right value.
  - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
    strand all the clients running at like full cpu).
  - filler should use the whole screen (and remember to update the man page)
  - ditto with boxer: it should use the whole screen.
+ - It might be nice to have a library for drawing a status bar
+    Could be used by: pdfer and sgreen initially
+    I'm thinking, when you initialize it it goes and finds a font using
+    fontconfig, perhaps using an environment variable (CNSLFONT?) to choose
+    the font. Then you have a function which takes a string (or vararg like
+    printf?), and a part of a display, and draws the status bar there.
 
