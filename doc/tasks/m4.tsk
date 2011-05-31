@@ -124,6 +124,8 @@ Things like:
     to the right value.
  - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
    strand all the clients running at like full cpu).
+    No, actually it's pressing a mouse button. Which, I guess, it was tapping
+    the touch pad does.
  - filler should use the whole screen (and remember to update the man page)
  - ditto with boxer: it should use the whole screen.
  - It might be nice to have a library for drawing a status bar
@@ -133,4 +135,8 @@ Things like:
     the font. Then you have a function which takes a string (or vararg like
     printf?), and a part of a display, and draws the status bar there.
  - I can't launch pdfer from within elinks. The screen freezes up.
+ - termer cursor does funny things in screen
+    Like, it reverses the reverse so it looks normal when copying things to
+    the screen buffer, so it looks like I'm copying one less character than I
+    really am, or something like that.
 
