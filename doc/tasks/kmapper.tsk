@@ -1,0 +1,28 @@
+
+Tue May 31 11:32:26 EDT 2011
+
+Task: Common library for handling key maps.
+
+Here's what I envision: A common key mapping library used by the
+applications, with a tcl configuration thing, so users can remap keys as
+they like.
+
+Here are the steps: 
+1. Library for single character key mappings (not overidable)
+2. Add remappability to it: add tcl and source a runtime script
+3. Add support for control and shift modifiers if I haven't already done
+so.
+-- At this point I should have pretty much all I need. If not --
+4. Add support for prefix strings (as opposed to single characters)
+
+Tue May 31 11:32:47 EDT 2011
+
+First issue: I was going to start by registering characters for the key
+mapper, but then how do I do things like page down, home, end, and arrow keys?
+So, it would seem what I really want is... key syms?
+
+Yes...
+
+And then I'll want some string way of specifying those keysyms eventually.
+
+
