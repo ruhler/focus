@@ -75,7 +75,7 @@ Things like:
     top of the page should have changed. Verify it changed color.
 
  - what if sgreen can't find 'termer' in path?
- - cgreen should pass along current working directory to sgreen?
+ + cgreen should pass along current working directory to sgreen?
     (green_cwdbug.tsk)
     
  - sgreen should maybe blank a clients display when it quits so we don't see
@@ -132,5 +132,16 @@ Things like:
     fontconfig, perhaps using an environment variable (CNSLFONT?) to choose
     the font. Then you have a function which takes a string (or vararg like
     printf?), and a part of a display, and draws the status bar there.
+
+    I've thought about this a little. Here's what we really want: a library
+    for drawing characters on the screen. You initialize it with a font, and
+    call a function with a string, pass it a buffer and location, and it will
+    draw it. It handles fontconfig stuff freetype and such.
+
+    Now status bar is as simple as draw a font to the bottom of the screen.
+
  - I can't launch pdfer from within elinks. The screen freezes up.
+ - When sdlcsr is running and we shutdown the computer, /tmp/green gets left
+   stranded.
+ - How about a library for key mappings?  (kmapper.tsk)
 
