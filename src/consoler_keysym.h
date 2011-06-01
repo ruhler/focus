@@ -142,5 +142,8 @@ typedef int CNSL_Keysym;
 #define CNSLK_EURO 321
 #define CNSLK_UNDO 322
 
+// This should always be the last keysym (it's a fake).
+#define CNSLK_LAST 323
+
 #endif//CNSL_KEYSYM_H
 
