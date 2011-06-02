@@ -25,4 +25,63 @@ Yes...
 
 And then I'll want some string way of specifying those keysyms eventually.
 
+Tue May 31 19:58:38 EDT 2011
+
+I've done much thought on this. Here's what I'm going to do.
+
+Prefix codes are over general.
+
+First step should be: single keysym, no modifiers yet.
+So you can register an action for a keysym. That should cover all the existing
+things we do in all my apps.
+
+After I implement that, I'll add support for modifiers. That should allow for
+things like $ and ^ and such.
+
+Then, everything should be in decent shape. If I find more apps are
+reimplementing the same sorts of features that should go in here, I can add
+it, otherwise this will be done.
+
+How to implement the keysym thing? Just have a big lookup table. We can change
+it to a hash table in the future if desired, but don't worry about that now.
+The lookup table will be 323 elements, to work with all the keysyms we have.
+Each element will be a pointer to an action. Null means do nothing. Simple.
+
+When we add modifiers, I think we'll want to just expand each entry to be a
+set of pointers, or maybe a list of pointers, one for each modifier
+combination.
+
+Good. Let me do some work, see if I can get this going nicely.
+
+Tue May 31 20:32:35 EDT 2011
+
+First version seems to work great. I switched filler over to it, now to switch
+the rest.
+
+Remember the purpose of this: once everyone is using the same keymapper
+library, I should be able to implement remapping of keys and have everyone
+benefit. I should be able to implement keymodifiers and have everyone benefit.
+
+Of course, for that to work I would have needed to get the interface right
+from the start, which I haven't really done.
+
+The interface lacks: 
+ - a way to identify the program: "pdfer", "filler", etc... to use when
+   specifying key remappings.
+ - a way to specify modifiers when registering actions.
+ - a way to associate actions with names
+
+It seems what you really want the application to do is give a list of name,
+action pairs. Then deciding what key mapping to use is totally separate, and
+is specified by giving a list of keysym, name pairs. The the application may
+wish to provide a default, builtin key mapping, and it may be more convinient
+to specify a default mapping when giving the names.
+
+I have a complaint while I'm at it. The userdata is just one field, but if we
+want, say, to have an action be: assign this value x to this variable y, then
+we have to make the userdata a pair, and that requires memory allocation or
+something, so how can we do that nicely? I feel like this is a language
+problem.
+
+My concern is, is this keymapper thing really an improvement?
 

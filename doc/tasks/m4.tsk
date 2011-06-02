@@ -67,6 +67,8 @@ Things like:
     and which window has input focus. When I receive output from a client,
     update each window which is showing that client.
 
+ - sgreen leaves /tmp/green stranded when we shutdown.
+
  - some unicode characters don't work
     Like for drawing boxes and such (try alsamixer for example).
     But it's very strange, because if I start a new termer, it works fine, but
@@ -146,7 +148,6 @@ Things like:
  - termer support of dynamic font resizing?
  - tk server
  - gtk server?
-
 
 
 

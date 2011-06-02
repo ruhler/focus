@@ -54,7 +54,7 @@ typedef struct {
 
 // Test whether an event is a keypress, and if it is, read the key code.
 // Returns nonzero if the event is a keypress event.
-int CNSL_IsKeypress(const CNSL_Event* e, int* code);
+int CNSL_IsKeypress(const CNSL_Event* e, CNSL_Keysym* code);
 
 // Test whether an event is a keyrelease, and if it is, read the key code.
 // Returns nonzero if the event is a keypress event.

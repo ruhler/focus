@@ -21,7 +21,9 @@ sdlcsr_prof = env.Program('sdlcsr_prof', [sdlcsr_prof_o, consoler_prof_o],
         LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
 env.Default(sdlcsr_prof);
 
-filler = env.Program('filler', ['filler.c', consoler_o])
+kmapper_o = env.Object('kmapper.o', ['kmapper'])
+
+filler = env.Program('filler', ['filler.c', consoler_o, kmapper_o])
 env.Default(filler)
 
 tfiller = env.Program('tfiller', ['tfiller.c', consoler_o])
