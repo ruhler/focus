@@ -1,0 +1,27 @@
+
+Wed Jun  1 11:35:38 EDT 2011
+
+Task: Need a way to get info about current file, page number in pdfer
+
+That is, I would like a way, while viewing a pdf file, to see
+- the name of the file I'm viewing
+- the current page I'm viewing
+- the total number of pages in the file.
+
+
+We'll want to use the statusbar thing (statusbar.tsk). After that's up, this
+should be easy though.
+
+Pick a key, when that key is pressed, draw the status bar in the lower left.
+
+The text of the status bar can have the following format:
+
+foo.pdf     5 of 16
+
+So: ("%s\t%i of %i", name, page, pages).
+
+The status bar will automatically be overwritten the next time the page is
+redrawn, which is basically any command you press. This is not the same as
+gylf's status bar, which is outside of the page. This is a status bar drawn on
+top of the page (kind of like screen's).
+

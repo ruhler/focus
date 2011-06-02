@@ -1,0 +1,45 @@
+
+Wed Jun  1 11:49:12 EDT 2011
+
+Task: sgreen should blank display when clients are done.
+
+The issue is, when we reuse client ids, the first thing that pops up is the
+last thing we saw from the previous client with that id. That's a little
+annoying.
+
+It's even more annoying if you have an application, such as termer, which
+doesn't redraw to the screen until something has changed, which means it will
+be drawn on top of the previous display. This is really bad, and sometimes
+rather confusing.
+
+The fix is easy: when you close a client, blank the display for it.
+
+But, before I make the fix, I really should write a test case. That's not so
+easy, unfortunately.
+
+Remind myself how I test filler. Then use that same strategy to implement the
+following test case:
+
+1. Start sgreen
+2. Launch filler, make the background yellow (say)
+3. Quit filler
+4. Launch termer
+    Verify the center of the screen is not yellow.
+
+Let me try this by hand, to make sure it will actually work...
+Yup, manually the test works fine (catches the bug). So I just need to
+automate it.
+
+And it would seem I've encountered another bug: switching back to new client
+after an old one dies is not clean. The display isn't refreshed right or
+something.
+
+So we should be able to do the following test:
+
+1. Start sgreen
+2. Launch filler, make the background yellow (say)
+3. Quit filler
+4. Verify there is no yellow on the screen.
+
+So for this task I should do implement both tests, then fix both.
+

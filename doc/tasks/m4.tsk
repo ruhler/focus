@@ -8,55 +8,15 @@ start using focus wherever I can. Make the default. Fix all the little odds
 and ends that come up.
 
 Things like:
- - sgreen has no way to view the active windows
- - sgreen should add a way to kill windows
- - sgreen maybe should have a split feature
-    For this to work, I'll probably want a resize event.
-    Other than that, I don't think it will be too hard. I just need to add
-    state which is: how the screen is split, which client is in each window,
-    and which window has input focus. When I receive output from a client,
-    update each window which is showing that client.
- - termer doesn't handle everything elinks (not under screen) spits at it
  + pdfer should have a goto command
     How about this: have digits accumulate into a number.
                     Then g will goto whatever number you specify.
     It's very simple, and should work, right? Let me try it.
     It works!
- - pdfer should have a way to show the number of pages in the document
- - pdfer should have a way to show the number of the current page
- - termer implement underline, italics
-    I might note, the font I use has an italics version. So maybe we could do
-    italics by choosing an appropriate font. Underline should be easy: just
-    draw the line manually.
-    
-    An easy way to test this use running `man man`. Because there is lots of
-    italics there, and it looks much better if the italics doesn't look the
-    same as bold.
-
-    I wonder if implementing underline will cause screen to generate italics
-    is underline?
-    
- - termer support of dynamic font resizing?
- - tk server
- - gtk server?
- - release source code
- - rewrite sgreen to be better
- - implement a remote client server
- - make a nice installer
- - figure out how to make a clean termination of clients
- - termer support for mode sequences with more than 2 parameters
- - turn consoler into a library
- - write man pages for everything
- - profile termer and make it more efficient (save battery life)
- - use buffered io for passing events? May help noticable performance issue?
-    The issue being: it takes a long time before keyrepeat kicks in, then in
-    kicks in hard. But then, maybe this is more a problem with the chosen key
-    repeat parameters. Or maybe this is more a problem with scrolling the
-    display.
  + pdfer has a bug: fit width doesn't work right.
     Or maybe it was a problem with loading the right library?
-    No, it's the following width thing:
- - pdfer fitwidth doesn't keep part of page at the top in the same place.
+    No, it was that the y position changed at zoom.
+ + pdfer fitwidth doesn't keep part of page at the top in the same place.
     So in some cases, it moves the page totally out of view, which is
     annoying. I suggest what we want is to zoom around the top of the page. So
     whatever pixels are at the top of the page before fitting to the width
@@ -73,17 +33,40 @@ Things like:
     Maybe a test case could be: fit all (so top of page is at the top), fit
     width (top of page should still be at the top), scroll down 10%, now the
     top of the page should have changed. Verify it changed color.
-
- - what if sgreen can't find 'termer' in path?
  + cgreen should pass along current working directory to sgreen?
     (green_cwdbug.tsk)
     
- - sgreen should maybe blank a clients display when it quits so we don't see
-   it when we start a new client with the same id.
-    Yes. Definately. Because some clients don't use the full screen, and if we
-    don't blank from before, we see parts of the old client, which can be very
-    confusing.
+ - It might be nice to have a library for drawing a status bar (statusbar.tsk)
+ - pdfer should have a way to show the number of pages in the document (pdferinfo.tsk)
+ - pdfer should have a way to show the number of the current page (pdferinfo.tsk)
+ - I can't launch pdfer from within elinks. The screen freezes up (pdferfromelinks.tsk)
+ - sgreen should blank a clients display when it quits so we don't see it when
+   we start a new client with the same id. (sgreenblank.tsk)
+
  - pdfer needs a search capability
+
+ - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
+   strand all the clients running at like full cpu).
+ - When sdlcsr is running and we shutdown the computer, /tmp/green gets left
+   stranded.
+ - figure out how to make a clean termination of clients
+ - turn consoler into a library
+ - consoler man page(s)
+ - pdfer man page
+ - pnger man page
+ - termer man page
+ - sgreen man page
+ 
+ - filler should use the whole screen (and remember to update the man page)
+ - ditto with boxer: it should use the whole screen.
+
+ - sgreen maybe should have a split feature
+    For this to work, I'll probably want a resize event.
+    Other than that, I don't think it will be too hard. I just need to add
+    state which is: how the screen is split, which client is in each window,
+    and which window has input focus. When I receive output from a client,
+    update each window which is showing that client.
+
  - some unicode characters don't work
     Like for drawing boxes and such (try alsamixer for example).
     But it's very strange, because if I start a new termer, it works fine, but
@@ -105,7 +88,33 @@ Things like:
     character 2500 and see what it returns. If it works usefully, then do as
     proposed in (1). Have a bunch of faces loaded, and try them all before
     giving up? Or something like that.
+
+ - termer implement underline, italics
+    I might note, the font I use has an italics version. So maybe we could do
+    italics by choosing an appropriate font. Underline should be easy: just
+    draw the line manually.
     
+    An easy way to test this use running `man man`. Because there is lots of
+    italics there, and it looks much better if the italics doesn't look the
+    same as bold.
+
+    I wonder if implementing underline will cause screen to generate italics
+    is underline?
+    
+ - what if sgreen can't find 'termer' in path?
+ - sgreen has no way to view the active windows
+    Either we show a status bar like thing, or we have a special command that
+    can be called from the terminal to list what's going on for us. Or both.
+
+    I think something like screen's status bar would be nicer. That way, for
+    example, I don't have to open a new termer window if I don't have any to
+    see what all windows are where. If I don't want a status bar, this depends
+    on the status bar task, so I should do that one first.
+ - termer doesn't handle everything elinks (not under screen) spits at it
+ - termer support for mode sequences with more than 2 parameters
+ - sgreen should add a way to kill windows
+
+ - How about a library for key mappings?  (kmapper.tsk)
 
  - is LaunchClient a memory leak? Or just in sgreen where I never free it?
     It looks okay, but I'm thinking, why do we need to malloc for the Client?
@@ -122,26 +131,56 @@ Things like:
     i suggest is sgreen when it starts should choose as the socket name
     /tmp/green-<pid>. Or maybe we should use /var for that? Then set CNSLSVR
     to the right value.
- - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
-   strand all the clients running at like full cpu).
- - filler should use the whole screen (and remember to update the man page)
- - ditto with boxer: it should use the whole screen.
- - It might be nice to have a library for drawing a status bar
-    Could be used by: pdfer and sgreen initially
-    I'm thinking, when you initialize it it goes and finds a font using
-    fontconfig, perhaps using an environment variable (CNSLFONT?) to choose
-    the font. Then you have a function which takes a string (or vararg like
-    printf?), and a part of a display, and draws the status bar there.
+    
+ - use buffered io for passing events? May help noticable performance issue?
+    The issue being: it takes a long time before keyrepeat kicks in, then in
+    kicks in hard. But then, maybe this is more a problem with the chosen key
+    repeat parameters. Or maybe this is more a problem with scrolling the
+    display.
+ - profile termer and make it more efficient (save battery life)
+    It's really not clear this is of any value unless I profile the power
+    efficiency of my whole computer.
+ - make a nice installer
+ - rewrite sgreen to be better
+ - implement a remote client server
+ - termer support of dynamic font resizing?
+ - tk server
+ - gtk server?
 
-    I've thought about this a little. Here's what we really want: a library
-    for drawing characters on the screen. You initialize it with a font, and
-    call a function with a string, pass it a buffer and location, and it will
-    draw it. It handles fontconfig stuff freetype and such.
 
-    Now status bar is as simple as draw a font to the bottom of the screen.
 
- - I can't launch pdfer from within elinks. The screen freezes up.
- - When sdlcsr is running and we shutdown the computer, /tmp/green gets left
-   stranded.
- - How about a library for key mappings?  (kmapper.tsk)
+
+
+Wed Jun  1 11:00:53 EDT 2011
+
+I've decided on a milestone 4. Milestone 4: prepare focus for release. This
+doesn't mean I actually have to release it, but it should be in releasable
+form (I shouldn't be embarrassed if others could easily download and try it).
+
+Now, here's how this will work. I have the above list of issues. I will sort
+that last in some priority order, and I will go through the list and solve
+each issue. More issues may arise, that's okay, they will be added to the
+list.
+
+I can change the priority of items in the list, but try to do the top priority
+item without switching it back and forth with some other item, because then I
+may get nowhere. That is, before decrementing the top priority item's
+priority, I should put serious effort in advancing that item's progress.
+
+I expect I'll also need a way to boot issues to later milestones. So that's
+okay, but once it's booted, it should probably stay at the later milestone.
+Again, the goal is to avoid thrashing back and forth doing nothing (like I
+have been for the last week).
+
+Each of these items should really get it's own tsk. That way we can track when
+new thoughts were added and what not to them. I can log here the status of the
+overall milestone.
+
+Okay? Are we agreed? Good.
+
+I'll go sort the issues now.
+
+All sorted. Good. I'm glad. Now it should be, hopefully, pretty clear what
+I want to do next.
+
 

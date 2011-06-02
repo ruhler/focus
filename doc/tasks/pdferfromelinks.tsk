@@ -1,0 +1,20 @@
+
+Wed Jun  1 11:44:47 EDT 2011
+
+Task: I can't call pdfer from elinks.
+
+The display crashes or something.
+
+When I type: "cgreen pdfer %" into the elinks when I want to view a pdfer,
+then things just crash. This is terribly annoying. I would love to be able to
+put cgreen pdfer in my termcap so it just pops up...
+
+Let me see if I can give more detail about the problem. Let me reproduce it,
+and experiment some ways, and see what happens.
+
+Wed Jun  1 11:47:48 EDT 2011
+
+Well, it works fine if I use a local pdf file. I wonder if it has to do with
+the filenames elinks picks when it downloads files temporarily? To experiment
+with that I'll need an internet connection, which I don't have right now.
+

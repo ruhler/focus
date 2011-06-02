@@ -1,0 +1,57 @@
+
+Wed Jun  1 11:22:38 EDT 2011
+
+Task: It might be nice to have a library for drawing a status bar
+
+Could be used by: pdfer and sgreen initially
+I'm thinking, when you initialize it it goes and finds a font using
+fontconfig, perhaps using an environment variable (CNSLFONT?) to choose
+the font. Then you have a function which takes a string (or vararg like
+printf?), and a part of a display, and draws the status bar there.
+
+I've thought about this a little. Here's what we really want: a library
+for drawing characters on the screen. You initialize it with a font, and
+call a function with a string, pass it a buffer and location, and it will
+draw it. It handles fontconfig stuff freetype and such.
+
+Now status bar is as simple as draw a string at the bottom of the screen.
+
+What api do I want?
+
+FNTR_Fonter FNTR_Create(const char* fontname);
+void FNTR_Free(FNTR_Fonter fonter);
+
+Question now is, do you want to draw from the bottom? From the top? From the
+center? Where are the characters drawn relative to the specified position?
+
+I could imagine either way. If I want to print something at the top of the
+screen I'll do one thing, if I want to print something at the bottom of the
+screen I'll do another. What we want to avoid is requiring the client to know
+about font metrics and such, right? Then we could have something like:
+
+FNTR_DrawString(FNTR_Fonter, CNSL_Display display, int x, int y, const char* str, FNTR_Soruce source);
+
+Where source (maybe a bad name) says what x and y are relative to. maybe it
+can be:
+    UPPER_LEFT
+    LOWER_LEFT
+    UPPER_RIGHT
+    LOWER_RIGHT
+    UPPER_CENTER
+    MIDDLE_RIGHT
+    etc...
+    
+Or am I overgeneralizing again?
+For the first version, let's just assume LOWER_LEFT, and if that's not good
+enough, make it more general then.
+
+FNTR_DrawString(FNTR_Fonter, CNSL_Display display, int x, int y, const char* str);
+
+And it would be nice to have a formatted version.
+FNTR_DrawStringF(FNTR_Fonter, CNSL_Display display, int x, int y, const char* fmt, ...);
+
+Initialization takes a font config font name. It can be "" of course. Maybe it
+can be NULL to use CNSLFONT environment variable or something.
+
+Cool. I think I'm ready to implement the first version of this.
+
