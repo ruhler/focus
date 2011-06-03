@@ -18,3 +18,18 @@ Well, it works fine if I use a local pdf file. I wonder if it has to do with
 the filenames elinks picks when it downloads files temporarily? To experiment
 with that I'll need an internet connection, which I don't have right now.
 
+Thu Jun  2 22:49:27 EDT 2011
+
+Definately busted when working with an internet connection. The screen gets
+totally destroyed it seems. But somehow key inputs still work (I can tell from
+reattaching screen from a different place).
+
+You know what I think is happening? Based on error messages. I bet because
+cgreen terminates right away, elinks thinks it can delete the temporary file,
+so the file becomes deleted before we have a change to read it.
+
+So the issue here is that cgreen terminates too soon. I wonder if we should
+have a cgreen flag which says: wait for child to finish before exiting? I bet
+that would fix the problem. That's the case where cgreen does exec itself
+instead of forking.
+
