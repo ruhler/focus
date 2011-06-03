@@ -58,6 +58,12 @@ public:
     // Fit the entire page into the view
     void fitpage();
 
+    // Current page number
+    int page();
+
+    // Total number of pages.
+    int pages();
+
 private:
     Pdfer(poppler::document* doc, int width, int height);
 

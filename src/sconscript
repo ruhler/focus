@@ -46,7 +46,7 @@ env.Default(sgreen);
 cgreen = env.Program('cgreen', ['cgreen.c']);
 env.Default(cgreen);
 
-pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp', consoler_o], LIBS=['poppler', 'poppler-cpp'])
+pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp', fonter_o, consoler_o], LIBS=['poppler', 'poppler-cpp'])
 env.Default(pdfer)
 
 freetyper = env.Program('freetyper', ['freetyper.c', consoler_o], LIBS=['freetype'])

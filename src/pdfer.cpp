@@ -138,3 +138,13 @@ double Pdfer::pageheight()
     return m_doc->create_page(m_page-1)->page_rect().height();
 }
 
+int Pdfer::page()
+{
+    return m_page;
+}
+
+int Pdfer::pages()
+{
+    return m_doc->pages();
+}
+

@@ -55,3 +55,13 @@ can be NULL to use CNSLFONT environment variable or something.
 
 Cool. I think I'm ready to implement the first version of this.
 
+Thu Jun  2 22:38:08 EDT 2011
+
+I implemented it. It seems to work. I don't know how to test it automatically
+though, which is awful.
+
+I left out the formatted draw. Let people format their own strings. If that
+becomes a hassel I can add it in later.
+
+I also left out the default font thing.
+

@@ -25,3 +25,10 @@ redrawn, which is basically any command you press. This is not the same as
 gylf's status bar, which is outside of the page. This is a status bar drawn on
 top of the page (kind of like screen's).
 
+Thu Jun  2 22:39:15 EDT 2011
+
+I added this to mpdfer, using the new fonter library. It pops up a dark blue
+bar with white text, which looks okay. It's a little odd that the text doesn't
+go all the way to the right, but it certainly conveys the information I was
+wishing for. We'll see if it's really awful to use.
+

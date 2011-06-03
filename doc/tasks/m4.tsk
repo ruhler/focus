@@ -35,10 +35,10 @@ Things like:
     top of the page should have changed. Verify it changed color.
  + cgreen should pass along current working directory to sgreen?
     (green_cwdbug.tsk)
-    
- - It might be nice to have a library for drawing a status bar (statusbar.tsk)
- - pdfer should have a way to show the number of pages in the document (pdferinfo.tsk)
- - pdfer should have a way to show the number of the current page (pdferinfo.tsk)
+ + It might be nice to have a library for drawing a status bar (statusbar.tsk)
+ + pdfer should have a way to show the number of pages in the document (pdferinfo.tsk)
+ + pdfer should have a way to show the number of the current page (pdferinfo.tsk)
+
  - I can't launch pdfer from within elinks. The screen freezes up (pdferfromelinks.tsk)
  - sgreen should blank a clients display when it quits so we don't see it when
    we start a new client with the same id. (sgreenblank.tsk)

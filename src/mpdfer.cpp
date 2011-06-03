@@ -3,8 +3,13 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include "pdfer.h"
+
+extern "C" {
+#include "fonter.h"
+}
 
 int main(int argc, char* argv[])
 {
@@ -22,6 +27,8 @@ int main(int argc, char* argv[])
     CNSL_Init();
     CNSL_GetGeometry(&width, &height);
 
+    FNTR_Fonter fonter = FNTR_Create("Monospace-24:Bold");
+
     Pdfer* pdfer = Pdfer::load(pdffilename, width, height);
     if (!pdfer) {
         std::cerr << "Error loading pdf " << pdffilename << std::endl;
@@ -35,7 +42,8 @@ int main(int argc, char* argv[])
 
     CNSL_Event event;
     bool done = false;
-    
+    bool showstatus = false;
+
     while (!done) {
         CNSL_RecvEvent(stdcon, &event);
         int sym;
@@ -69,9 +77,21 @@ int main(int argc, char* argv[])
                 case CNSLK_o: pdfer->zoom(1.25); break;
                 case CNSLK_w: pdfer->fitwidth(); break;
                 case CNSLK_a: pdfer->fitpage(); break;
+
+                case CNSLK_v: showstatus = true; break;
             }
 
             pdfer->show(display);
+
+            if (showstatus) {
+                // Draw the status bar.
+                CNSL_Color fg = CNSL_MakeColor(0xFF, 0xFF, 0xFF);
+                CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
+                std::ostringstream oss;
+                oss << pdffilename << "    " << pdfer->page() << " of " << pdfer->pages() << " ";
+                FNTR_DrawString(fonter, display, fg, bg, 0, height, oss.str().c_str());
+                showstatus = false;
+            }
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
         }
 
