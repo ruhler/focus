@@ -17,6 +17,12 @@ int main(int argc, char* argv[])
 
     FcInit();
     FcPattern* pattern = FcNameParse(name);
+
+    FcCharSet* charset = FcCharSetCreate();
+    FcCharSetAddChar(charset, 0x40);
+    FcPatternAddCharSet(pattern, "charset", charset);
+
+
     FcConfigSubstitute(NULL, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
     FcPattern* match = FcFontMatch(NULL, pattern, NULL);

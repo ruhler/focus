@@ -39,11 +39,11 @@ Things like:
  + pdfer should have a way to show the number of pages in the document (pdferinfo.tsk)
  + pdfer should have a way to show the number of the current page (pdferinfo.tsk)
  + I can't launch pdfer from within elinks. The screen freezes up (pdferfromelinks.tsk)
-
  + filler should use the whole screen (and remember to update the man page)
  + ditto with boxer: it should use the whole screen.
  + sgreen should blank a client's display when it quits so we don't see it when
    we start a new client with the same id. (sgreenblank.tsk)
+
  - pdfer needs a search capability
  - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
    strand all the clients running at like full cpu).
@@ -63,30 +63,9 @@ Things like:
     state which is: how the screen is split, which client is in each window,
     and which window has input focus. When I receive output from a client,
     update each window which is showing that client.
- - sgreen leaves /tmp/green stranded when we shutdown.
  - sometimes sgreen fails to start: getting a stream of unhandled input 0.
     The stream of 0s is termer reading from sdlcsr after sdlcsr died.
- - some unicode characters don't work
-    Like for drawing boxes and such (try alsamixer for example).
-    But it's very strange, because if I start a new termer, it works fine, but
-    the original one launched from sgreen doesn't? What's with that?
-
-    Oh, it's that, in screen it doesn't work, not in screen it does.
-    When it doesn't work, we have characters such as: ─(2500) and ┘(2518).
-    Now I have something I can work with. Question is, where do I get these
-    from? What font has them, and how should I know to load the font?
-
-    I notice the following:
-    1. fontconfig has a way to match based on charset, so I suppose, in
-    theory, if I find a character not in my font, I can match another font
-    that has it.
-    2. The non-bold versions of my Dejavu font do define those box drawing
-    characters.
-
-    So here's what I think I should do. Update fontconfiger to search for
-    character 2500 and see what it returns. If it works usefully, then do as
-    proposed in (1). Have a bunch of faces loaded, and try them all before
-    giving up? Or something like that.
+ - some unicode characters don't work (unicode.tsk)
  - termer implement underline, italics
     I might note, the font I use has an italics version. So maybe we could do
     italics by choosing an appropriate font. Underline should be easy: just
@@ -175,4 +154,13 @@ I'll go sort the issues now.
 All sorted. Good. I'm glad. Now it should be, hopefully, pretty clear what
 I want to do next.
 
+Sat Jun  4 14:53:10 EDT 2011
+
+I'm sensing that I'm leading up to a big refactoring of focus, but I still
+have lots of thoughts to work out before I get there. Something about what the
+underlying model should be, maybe using haskell as a static elaborated front
+end or something like that.
+
+So until I work out all my thoughts, I'll focus on adding functionality and
+fixing the things that bother me most. I'll try to keep you up to date.
 
