@@ -1,8 +1,9 @@
-.TH CGREEN 1 2011-05-28 "" "Focus Manual"
+.TH CGREEN 1 2011-06-03 "" "Focus Manual"
 .SH NAME
 cgreen \- green client launcher
 .SH SYNOPSIS
 .B cgreen
+.RB [\| \-e \|]
 .I client
 [
 .I arg
@@ -18,7 +19,16 @@ server listening on the unix socket specified by the environment variable
 $CNSLSVR or, by default, the file
 .IR /tmp/green .
 .SH OPTIONS
-None
+.TP
+.B \-e
+Normally
+.B cgreen
+will fork the client in another process and exit right a way.
+This flag causes
+.B cgreen
+to wait for the client to finish before exiting. This
+is useful, for example, when trying to view pdf files from elinks so elinks
+does not remove the pdf files permaturely.
 .SH ENVIRONMENT
 .TP
 .B CNSLSVR

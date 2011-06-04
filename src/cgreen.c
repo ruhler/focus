@@ -9,9 +9,16 @@
 #include <unistd.h>
 
 
-
 int main(int argc, char* argv[])
 {
+    int dofork = 1;
+
+    if (argc > 1 && strcmp(argv[1], "-e") == 0) {
+        dofork = 0;
+        argc--;
+        argv++;
+    }
+
     unsigned int pargc = argc-1;
     char** pargv = argv+1;
 
@@ -46,17 +53,19 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    pid_t pid = fork();
-    if (pid < 0) {
-        perror("fork");
-        return 1;
+    if (dofork) {
+        pid_t pid = fork();
+        if (pid < 0) {
+            perror("fork");
+            return 1;
+        } else if (pid > 0) {
+            return 0;
+        }
     }
 
-    if (pid == 0) {
-        if (execvp(pargv[0], pargv) < 0) {
-            perror("execvp");
-            return 1;
-        }
+    if (execvp(pargv[0], pargv) < 0) {
+        perror("execvp");
+        return 1;
     }
     return 0;
 }

@@ -33,3 +33,22 @@ have a cgreen flag which says: wait for child to finish before exiting? I bet
 that would fix the problem. That's the case where cgreen does exec itself
 instead of forking.
 
+Fri Jun  3 23:12:02 EDT 2011
+
+There are two issues here. One is, it would be nice for cgreen to have a mode
+where it waits for the client to finish before finishing. I propose add a -e
+flag which causes cgreen to exec directly instead of forking first.
+
+The other problem is sgreen crashes or something when a client terminates
+unexpectedly early. That is, when you run pdfer with a bogus pdf file so it
+fails. Fixing the first will not make the second go away.
+
+I'll fix the first here, then maybe I can open another task for the second.
+
+Fri Jun  3 23:27:29 EDT 2011
+
+First one is fixed. I can now launch a pdf from elinks without it crashing. I
+just have to use the -e flag.
+
+We did stumble upon some other issues though...
+
