@@ -17,9 +17,6 @@
 // n: Nothing   0 0 0
 // q: Quit
 
-#define WIDTH 640
-#define HEIGHT 480
-
 #define BLACK 0
 #define RED 1
 #define GREEN 2
@@ -53,8 +50,11 @@ int main()
     colors[PURPLE] = CNSL_MakeColor(255, 0, 255);
     colors[WHITE] = CNSL_MakeColor(255, 255, 255);
 
+    int width = 640;
+    int height = 480;
+    CNSL_GetGeometry(&width, &height);
 
-    CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+    CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_Event event;
     int sym;
     int done = 0;
@@ -74,12 +74,12 @@ int main()
     while (!done) {
         int x, y;
         fprintf(stderr, "filler: filling with color %x\n", colors[color]);
-        for (x = 0; x < WIDTH; x++) {
-            for (y = 0; y < HEIGHT; y++) {
+        for (x = 0; x < width; x++) {
+            for (y = 0; y < height; y++) {
                 CNSL_SetPixel(display, x, y, colors[color]);
             }
         }
-        CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, WIDTH, HEIGHT);
+        CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
         if (CNSL_RecvEvent(stdcon, &event) == 0) {
             done = 1;

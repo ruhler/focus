@@ -40,8 +40,8 @@ Things like:
  + pdfer should have a way to show the number of the current page (pdferinfo.tsk)
  + I can't launch pdfer from within elinks. The screen freezes up (pdferfromelinks.tsk)
 
- - filler should use the whole screen (and remember to update the man page)
- - ditto with boxer: it should use the whole screen.
+ + filler should use the whole screen (and remember to update the man page)
+ + ditto with boxer: it should use the whole screen.
  - sgreen should blank a client's display when it quits so we don't see it when
    we start a new client with the same id. (sgreenblank.tsk)
  - pdfer needs a search capability

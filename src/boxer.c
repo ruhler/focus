@@ -3,10 +3,6 @@
 
 #include "consoler.h"
 
-// Application with a box you can move around the screen.
-#define WIDTH 640
-#define HEIGHT 480
-
 void fill(CNSL_Display dpy,
         unsigned int x, unsigned int y,
         unsigned int w, unsigned int h,
@@ -24,7 +20,11 @@ void fill(CNSL_Display dpy,
 int main()
 {
     CNSL_Init();
-    CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);
+
+    int width = 640;
+    int height = 480;
+    CNSL_GetGeometry(&width, &height);
+    CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     CNSL_Event event;
     int done = 0;
@@ -45,7 +45,8 @@ int main()
             }
 
             fill(display, x, y, 10, 10, 0x00FFFFFF);
-            CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, 640, 480);
+
+            CNSL_SendDisplay(stdcon, display, x-10, y-10, x-10, y-10, 30, 30);
         }
     }
 
