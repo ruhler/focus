@@ -1,0 +1,56 @@
+
+Sat Jun  4 12:41:46 EDT 2011
+
+Task: Thoughts on composability
+
+I'm thinking if I spend a bit of time thinking hard about how to write my
+applications and libraries in a composable manner, there could be great
+benefits.
+
+I'm concerned focus is starting to look more and more like X, which is bad. I
+wonder why. My hypothesis is its components aren't very composable.
+
+Here are two examples of concerns that have come up.
+
+1. kmapper vs. resource manager.
+The kmapper wants a way to configure remappings. I was going to use a tcl
+script link thing. The resource manager, which might let you specify what
+fonts and colors to use and such, would also like a way to configure
+remappings. Can the two coexist? Do you have to know about both of them to use
+one of them?
+
+This is, I think, the heart of the composability question.
+
+You have components. To composable you want two features:
+1. Ability to use together in a coherent way.
+2. Ability to use alone without having to know about others.
+
+The way X works is to have everything work together. The X protocol seems to
+know all about resources, fonts, windows, window management, widgets, all that
+stuff. The problem with X is, in order to use any one of those, it seems like
+you have to be cognizant of all the others.
+
+Here's another example I just stumbled across. I'm trying to test sgreen, and
+it's hard. Why? Well, sgreen is composed of a bunch of components: window
+management, a server, launching a default shell. But these are all written in
+such a way that to use any one of them, you need them all. So if I just want
+to test window management, I have to launch a default shell, which makes
+testing way more complicated.
+
+But sgreen could have been written in a more modular way. Like pdfer. It could
+have been written as a bunch of libraries, and the main program is really just
+a small wrapper around the libraries. Then it would maybe have been much
+easier to test.
+
+This library thing also leads fairly naturally to binding keys to functions.
+The functions are those library functions. And that naturally would make
+scripting the application easy.
+
+I'm thinking it might be valuable to look at each application much more
+closely and decide on a library interface which makes sense. See how that
+makes testing easier.
+
+And when I look at all of these components, we would like to show that you can
+use each one on its own without having to know about any of the others, and
+that you can use them with each other in a nice way.
+

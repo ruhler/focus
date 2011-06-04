@@ -42,7 +42,7 @@ Things like:
 
  + filler should use the whole screen (and remember to update the man page)
  + ditto with boxer: it should use the whole screen.
- - sgreen should blank a client's display when it quits so we don't see it when
+ + sgreen should blank a client's display when it quits so we don't see it when
    we start a new client with the same id. (sgreenblank.tsk)
  - pdfer needs a search capability
  - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
@@ -65,6 +65,7 @@ Things like:
     update each window which is showing that client.
  - sgreen leaves /tmp/green stranded when we shutdown.
  - sometimes sgreen fails to start: getting a stream of unhandled input 0.
+    The stream of 0s is termer reading from sdlcsr after sdlcsr died.
  - some unicode characters don't work
     Like for drawing boxes and such (try alsamixer for example).
     But it's very strange, because if I start a new termer, it works fine, but

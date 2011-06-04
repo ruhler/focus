@@ -108,6 +108,15 @@ void new_client(CNSL_Client client)
     int height = 480;
     CNSL_GetGeometry(&width, &height);
     g_clients[id].display = CNSL_AllocDisplay(width, height);
+
+    // clear the display
+    int x, y;
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            CNSL_SetPixel(g_clients[id].display, x, y, CNSL_MakeColor(0, 0, 0));
+        }
+    }
+
     switch_to_window(id);
 
     // Spawn the thread to handle output from this client.

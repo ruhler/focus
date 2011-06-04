@@ -43,3 +43,29 @@ So we should be able to do the following test:
 
 So for this task I should do implement both tests, then fix both.
 
+Sat Jun  4 12:37:30 EDT 2011
+
+Problem with writing the tests.
+
+sgreen launches termer, but termer won't be in the path, so it will not find
+it. The cost of writing the test is way higher than the fix. This is bad bad
+bad bad bad.
+
+Why are things so bad? Perhaps it's because my applications are written as if
+they were applications instead of written as if they were libraries with a
+main wrapper.
+
+For example, sgreen could be implemented as having functions to call to create
+a new window, switch windows, etc...
+
+That way I could test the parts of sgreen I want to test without having to set
+up the whole environment and main. This goes back to my thoughts on
+composability (composability.tsk). Hmm...
+
+Sat Jun  4 12:57:17 EDT 2011
+
+I fixed the first bug, tested manually.
+
+The second bug doesn't look like it should exist, and isn't faithfully
+reproducing.
+
