@@ -8,7 +8,7 @@ int main()
 {
     CNSL_Init();
 
-    const char* fontname = "Bitstream Vera-30:Bold";
+    const char* fontname = "Monospace-30:Bold";
     const char* string = "Hello there!";
 
     int width = 640;

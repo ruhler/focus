@@ -1,0 +1,65 @@
+
+Sun Jun  5 12:41:20 EDT 2011
+
+Task: After switching to fonter, glyphs don't take up full cells
+
+So, for example, if I reverse highlight a blank line, I see little black bars
+between each cell which were missed.
+
+Who is at fault here?
+
+This issue, it seems, is fonter's glyph width is smaller than fonter's max
+width for a monospace font, which surprises me.
+
+Now we can work around this by filling in the extra in termer, but let me see
+if I can't understand why they are different.
+
+Here's what I'll do: I'll print out glyph width and max width from the
+internal numbers and see how they are the same or different.
+
+Here are some example numbers:
+
+size i: 32
+size d: 31.250000
+units per EM: 2048
+max advance width: 1233
+glyph width: 0x4c0   = 19 pixels
+
+The max width = 18.8140869140625 pixels using raw calculations
+The max width = 19.265625 - rounds up to 20 the way we calculate it.
+
+So we have some precision problems. What's the right solution? Calculate width
+precisely: ceil(31.25 * 1233. / 2048).
+
+That should solve all my problems.
+
+Cool. So I can write a test. Load this same font, verify both a glyph and max
+width are... at least the same.
+
+Sun Jun  5 13:13:14 EDT 2011
+
+Um... that didn't fix termer. Why not?
+
+Oh. Because fonter has different font sizes, which mess things up.
+
+size i: 25.0
+units per EM: 2048
+max advance width: 1233
+glyph width: 0x3c0, or 15 pixels.
+But my calculation gives: 15.05126953125 as the max.
+
+Okay, so what we really want is... figure out how freetype calculates these
+things? Or are there other ways to figure out max advance that gives us back
+pixels instead of a double?
+
+Aha! I think I found it:
+
+face->size->metrics->max_advance is in 26.6 pixels.
+And so is ...->height. I should use those rather than do my own scaling.
+Good. Wonderful.
+
+That solved it. Lovely.
+
+Now there's this question of whether we should be rounding up or down or what
+for the 26.6 pixels thing. I'm rounding down for now, just arbitrarily.
+

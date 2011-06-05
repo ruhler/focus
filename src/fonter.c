@@ -3,9 +3,9 @@
 
 #include "fonter.h"
 
-int iceil(double x)
+int from26_6(int x)
 {
-    return (int)ceil(x);
+    return x >> 6;
 }
 
 FNTR_Fonter FNTR_Create(const char* fontname)
@@ -45,10 +45,9 @@ FNTR_Fonter FNTR_Create(const char* fontname)
         return NULL;
     }
 
-    double scale = (double)size / fonter->face->units_per_EM;
-    fonter->width = iceil(scale * fonter->face->max_advance_width);
-    fonter->height = iceil(scale * fonter->face->height);
-    fonter->ascender = iceil(scale * fonter->face->ascender);
+    fonter->width = from26_6(fonter->face->size->metrics.max_advance);
+    fonter->height = from26_6(fonter->face->size->metrics.height);
+    fonter->ascender = from26_6(fonter->face->size->metrics.ascender);
 
     return fonter;
 }
@@ -77,7 +76,7 @@ void FNTR_LoadGlyph(FNTR_Fonter fonter, wchar_t c)
 
 int FNTR_GlyphWidth(FNTR_Fonter fonter)
 {
-    return fonter->face->glyph->metrics.horiAdvance >> 6;
+    return from26_6(fonter->face->glyph->metrics.horiAdvance);
 }
 
 int FNTR_GlyphHeight(FNTR_Fonter fonter)

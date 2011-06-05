@@ -8,7 +8,7 @@
 
 int main(int argc, char* argv[])
 {
-    const char* name = "Monospace:Bold";
+    const char* name = "Monospace-24:Bold";
     if (argc > 1) {
         name = argv[1];
     }

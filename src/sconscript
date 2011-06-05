@@ -34,6 +34,10 @@ tfonter = env.Program('tfonter', ['tfonter.c', fonter_o, consoler_o],
         LIBS = ['m', 'fontconfig', 'freetype'])
 Default(tfonter);
 
+tfonter2 = env.Program('tfonter2', ['tfonter2.c', fonter_o, consoler_o],
+        LIBS = ['m', 'fontconfig', 'freetype'])
+Default(env.Command('tfonter2.output', [tfonter2, filler], "$SOURCES > $TARGET"));
+
 boxer = env.Program('boxer', ['boxer.c', consoler_o])
 env.Default(boxer)
 
