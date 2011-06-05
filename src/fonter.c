@@ -5,7 +5,11 @@
 
 int from26_6(int x)
 {
-    return x >> 6;
+    int w = x >> 6;
+    if (x & 0x3F) {
+        w++;
+    }
+    return w;
 }
 
 FNTR_Fonter FNTR_Create(const char* fontname)
