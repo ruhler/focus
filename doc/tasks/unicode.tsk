@@ -98,3 +98,22 @@ What it should really do is round up.
 Um, that didn't fix it. Maybe I should open up a separate task for this. Yes.
 I think that's a good idea.
 
+Sun Jun  5 13:45:01 EDT 2011
+
+Okay, now that we have fonter up and going nicely (except the bottoms of my
+characters seem to be getting cut off...), I can do the unicode thing.
+
+Here's how it will work. We'll have a linked list of faces, instead of just
+one. I'll load the initial one just like we do now.
+
+Now when we go to load a glpyh, we search though all loaded faces until we can
+find one with the glpyh. If we find none, load a new face which has the
+character. I'll want the notion of a current face, separate from my list of
+faces. I'll not worry about max width and height or things like that.
+
+Okay? Clear? Sort of? Let me try, see what happens.
+
+Sun Jun  5 14:03:46 EDT 2011
+
+Well! It's pretty messy, I'll admit. But it seems to work, which is nice.
+

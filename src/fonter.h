@@ -9,12 +9,16 @@
 
 #include "consoler.h"
 
+#define MAX_FACES 4
+
 typedef struct {
     FT_Library library;
     FT_Face face;
     int width;
     int height;
     int ascender;
+    const char* name;
+    FT_Face faces[MAX_FACES];
 } FNTR_Fonter_;
 
 typedef FNTR_Fonter_* FNTR_Fonter;

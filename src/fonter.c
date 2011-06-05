@@ -53,12 +53,20 @@ FNTR_Fonter FNTR_Create(const char* fontname)
     fonter->height = from26_6(fonter->face->size->metrics.height);
     fonter->ascender = from26_6(fonter->face->size->metrics.ascender);
 
+    fonter->name = strdup(fontname);
+
+    int i;
+    for (i = 1; i < MAX_FACES; i++) {
+        fonter->faces[i] = NULL;
+    }
+    fonter->faces[0] = fonter->face;
     return fonter;
 }
 
 void FNTR_Free(FNTR_Fonter fonter)
 {
     // TODO: what do we have to do to clean up the freetype stuff?
+    free(fonter->name);
     free(fonter);
 }
 
@@ -74,7 +82,44 @@ int FNTR_MaxHeight(FNTR_Fonter fonter)
 
 void FNTR_LoadGlyph(FNTR_Fonter fonter, wchar_t c)
 {
-    FT_UInt index = FT_Get_Char_Index(fonter->face, c);
+    FT_UInt index = 0;
+    fonter->face = fonter->faces[0];
+
+    int i;
+    for (i = 0; i < MAX_FACES && fonter->faces[i]; i++) {
+        index = FT_Get_Char_Index(fonter->faces[i], c);
+        if (index != 0) {
+            fonter->face = fonter->faces[i];
+            break;
+        }
+    }
+
+    if (i < MAX_FACES && fonter->faces[i] == NULL) {
+        // We don't have a face with this character. Try to find one.
+        FcPattern* pattern = FcNameParse(fonter->name);
+        FcCharSet* charset = FcCharSetCreate();
+        FcCharSetAddChar(charset, c);
+        FcPatternAddCharSet(pattern, "charset", charset);
+        FcConfigSubstitute(NULL, pattern, FcMatchPattern);
+        FcDefaultSubstitute(pattern);
+        FcPattern* match = FcFontMatch(NULL, pattern, NULL);
+
+        FcValue file;
+        FcValue psize;
+        FcPatternGet(match, "file", 0, &file);
+        FcPatternGet(match, "pixelsize", 0, &psize);
+
+        int size = (int)ceil(psize.u.d);
+
+        FT_New_Face(fonter->library, file.u.s, 0, &fonter->faces[i]);
+        FcPatternDestroy(pattern);
+        FcPatternDestroy(match);
+
+        FT_Set_Pixel_Sizes(fonter->faces[i], size, size);
+        index = FT_Get_Char_Index(fonter->faces[i], c);
+        fonter->face = fonter->faces[i];
+    }
+
     FT_Load_Glyph(fonter->face, index, FT_LOAD_RENDER);
 }
 
