@@ -8,7 +8,6 @@ int iceil(double x)
     return (int)ceil(x);
 }
 
-
 FNTR_Fonter FNTR_Create(const char* fontname)
 {
     FNTR_Fonter fonter = (FNTR_Fonter)malloc(sizeof(FNTR_Fonter_));
@@ -47,6 +46,7 @@ FNTR_Fonter FNTR_Create(const char* fontname)
     }
 
     double scale = (double)size / fonter->face->units_per_EM;
+    fonter->width = iceil(scale * fonter->face->max_advance_width);
     fonter->height = iceil(scale * fonter->face->height);
     fonter->ascender = iceil(scale * fonter->face->ascender);
 
@@ -59,8 +59,47 @@ void FNTR_Free(FNTR_Fonter fonter)
     free(fonter);
 }
 
+int FNTR_MaxWidth(FNTR_Fonter fonter)
+{
+    return fonter->width;
+}
 
-void FNTR_DrawString(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNSL_Color bg, int x, int y, const char* str)
+int FNTR_MaxHeight(FNTR_Fonter fonter)
+{
+    return fonter->height;
+}
+
+void FNTR_LoadGlyph(FNTR_Fonter fonter, wchar_t c)
+{
+    FT_UInt index = FT_Get_Char_Index(fonter->face, c);
+    FT_Load_Glyph(fonter->face, index, FT_LOAD_RENDER);
+}
+
+int FNTR_GlyphWidth(FNTR_Fonter fonter)
+{
+    return fonter->face->glyph->metrics.horiAdvance >> 6;
+}
+
+int FNTR_GlyphHeight(FNTR_Fonter fonter)
+{
+    return fonter->height;
+}
+
+int FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y)
+{
+    int left = fonter->face->glyph->bitmap_left;
+    int width = fonter->face->glyph->bitmap.width;
+    int top = fonter->ascender - fonter->face->glyph->bitmap_top;
+    int height = fonter->face->glyph->bitmap.rows;
+    if (x < left || x >= left + width || y < top || y >= top + height) {
+        return 0;
+    }
+
+    int index = (y - top) * width + (x - left);
+    return fonter->face->glyph->bitmap.buffer[index];
+}
+
+void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNSL_Color bg, int dx, int dy)
 {
     int fgr = CNSL_GetRed(fg);
     int fgg = CNSL_GetGreen(fg);
@@ -69,44 +108,27 @@ void FNTR_DrawString(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CN
     int bgg = CNSL_GetGreen(bg);
     int bgb = CNSL_GetBlue(bg);
 
+    int gx, gy;
+    for (gy = 0; gy < FNTR_GlyphHeight(fonter); gy++) {
+        for (gx = 0; gx < FNTR_GlyphWidth(fonter); gx++) {
+            int level = FNTR_GlyphLevel(fonter, gx, gy);
+
+            unsigned int red = 0xFF & ((fgr * level + bgr * (256-level))/256);
+            unsigned int green = 0xFF & ((fgg * level + bgg * (256-level))/256);
+            unsigned int blue = 0xFF & ((fgb * level + bgb * (256-level))/256);
+
+            CNSL_Color c = CNSL_MakeColor(red, green, blue);
+            CNSL_SetPixel(display, dx + gx, dy + gy, c);
+        }
+    }
+}
+
+void FNTR_DrawString(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNSL_Color bg, int x, int y, const char* str)
+{
     for ( ; *str; str++) {
-        char c = *str;
-        FT_UInt index = FT_Get_Char_Index(fonter->face, c);
-        FT_Load_Glyph(fonter->face, index, FT_LOAD_RENDER);
-
-        int bw = fonter->face->glyph->bitmap.width;
-        int bh = fonter->face->glyph->bitmap.rows;
-        int bl = fonter->face->glyph->bitmap_left;
-        int bt = fonter->face->glyph->bitmap_top;
-
-        int cw = fonter->face->glyph->metrics.horiAdvance >> 6;
-        int ch = fonter->height;
-        int ca = fonter->ascender;
-
-        // blank the cell.
-        int dx, dy;
-        for (dy = 0; dy < ch; dy++) {
-            for (dx = 0; dx < cw; dx++) {
-                CNSL_SetPixel(display, x + dx, y - ch + dy, bg);
-            }
-        }
-
-        // now draw the character.
-        for (dy = 0; dy < bh; dy++) {
-           for (dx = 0; dx < bw; dx++) {
-               int index = dy*bw + dx;
-               int level = fonter->face->glyph->bitmap.buffer[index];
-
-               unsigned int red = 0xFF & ((fgr * level + bgr * (256-level))/256);
-               unsigned int green = 0xFF & ((fgg * level + bgg * (256-level))/256);
-               unsigned int blue = 0xFF & ((fgb * level + bgb * (256-level))/256);
-
-               CNSL_Color c = CNSL_MakeColor(red, green, blue);
-               CNSL_SetPixel(display, x + dx + bl, dy + ca - bt + (y-ch), c);
-           }
-        }
-
-        x += cw;
+        FNTR_LoadGlyph(fonter, *str);
+        FNTR_DrawGlyph(fonter, display, fg, bg, x, y);
+        x += FNTR_GlyphWidth(fonter);
     }
 }
 

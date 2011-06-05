@@ -12,6 +12,7 @@
 #include FT_FREETYPE_H
 
 #include "consoler.h"
+#include "fonter.h"
 #include "ctermer.h"
 
 typedef struct {
@@ -19,8 +20,7 @@ typedef struct {
     CNSL_Event event;
     CNSL_Display display;
 
-    FT_Library library;
-    FT_Face face;
+    FNTR_Fonter fonter;
 
     // Window size
     int width;
@@ -29,7 +29,6 @@ typedef struct {
     // Character metrics.
     int cell_width;
     int cell_height;
-    int char_ascender;
          
     // bounds of cells which have changed and need redisplay
     // -1 means they have not been set yet.
@@ -75,46 +74,9 @@ int ctermer_Init(int* cols, int* lines)
         font = "Monospace";
     }
 
-    if (FT_Init_FreeType(&gstate.library) != 0) {
-        fprintf(stderr, "error initializing freetype\n");
-        return 1;
-    }
-
-    // Find a font file using fontconfig
-    FcInit();
-    FcPattern* pattern = FcNameParse(font);
-    FcConfigSubstitute(NULL, pattern, FcMatchPattern);
-    FcDefaultSubstitute(pattern);
-    FcPattern* match = FcFontMatch(NULL, pattern, NULL);
-
-    FcValue file;
-    FcValue psize;
-    FcPatternGet(match, "file", 0, &file);
-    FcPatternGet(match, "pixelsize", 0, &psize);
-
-    int size = (int)ceil(psize.u.d);
-
-    if (FT_New_Face(gstate.library, file.u.s, 0, &gstate.face) != 0) {
-        fprintf(stderr, "error loading font\n");
-        return 1;
-    }
-
-    FcPatternDestroy(pattern);
-    FcPatternDestroy(match);
-
-    if (FT_Set_Pixel_Sizes(gstate.face, size, size) != 0) {
-        fprintf(stderr, "error setting font size\n");
-        return 1;
-    }
-
-    double em = (double)gstate.face->units_per_EM;
-    double w = (double)gstate.face->max_advance_width;
-    double h = (double)gstate.face->height;
-    double a = (double)gstate.face->ascender;
-    double p = (double)size;
-    gstate.cell_width = (int)ceil(w*p/em);
-    gstate.cell_height = (int)ceil(h*p/em);
-    gstate.char_ascender = (int)ceil(a*p/em);
+    gstate.fonter = FNTR_Create(font);
+    gstate.cell_width = FNTR_MaxWidth(gstate.fonter);
+    gstate.cell_height = FNTR_MaxHeight(gstate.fonter);
 
     gstate.width = 640;
     gstate.height = 480;
@@ -227,47 +189,13 @@ void ctermer_DrawCell(int col, int row, wchar_t c, int style, int fgcolor, int b
         gstate.maxrow = row;
     }
 
-    FT_UInt index = FT_Get_Char_Index(gstate.face, c);
-    if (index == 0) {
-        fprintf(stderr, "undefined character code: 0x%X", c);
-    }
+    CNSL_Color fg = CNSL_MakeColor(redof(fgcolor, style), greenof(fgcolor, style), blueof(fgcolor, style));
+    CNSL_Color bg = CNSL_MakeColor(redof(bgcolor, style), greenof(bgcolor, style), blueof(bgcolor, style));
+    int x = col * gstate.cell_width;
+    int y = row * gstate.cell_height;
 
-    FT_Load_Glyph(gstate.face, index, FT_LOAD_RENDER);
-
-    int xdst = col * gstate.cell_width;
-    int ydst = row * gstate.cell_height;
-
-    int w = gstate.face->glyph->bitmap.width;
-    int h = gstate.face->glyph->bitmap.rows;
-    int l = gstate.face->glyph->bitmap_left;
-    int t = gstate.face->glyph->bitmap_top;
-
-    int x, y;
-
-    // blank the cell first
-    int bgc = (redof(bgcolor, style) << 16) | (greenof(bgcolor, style) << 8) | blueof(bgcolor, style);
-    for (y = 0; y < gstate.cell_height; y++) {
-        for (x = 0; x < gstate.cell_width; x++) {
-            CNSL_SetPixel(gstate.display, xdst + x, ydst + y, bgc);
-        }
-    }
-
-    // Now draw the character.
-    for (x = 0; x < w; x++) {
-        for (y = 0; y < h; y++) {
-            int index = y * w + x;
-            int level = gstate.face->glyph->bitmap.buffer[index];
-
-            unsigned int red = 0xFF & ((redof(fgcolor, style) * level + redof(bgcolor, style) * (256-level))/256);
-            unsigned int green = 0xFF & ((greenof(fgcolor, style) * level + greenof(bgcolor, style) * (256-level))/256);
-            unsigned int blue = 0xFF & ((blueof(fgcolor, style) * level + blueof(bgcolor, style) * (256-level))/256);
-            CNSL_Color c = CNSL_MakeColor(red, green, blue);
-
-            int px = xdst + l + x;
-            int py = ydst + gstate.char_ascender-t+y;
-            CNSL_SetPixel(gstate.display, px, py, c);
-        }
-    }
+    FNTR_LoadGlyph(gstate.fonter, c);
+    FNTR_DrawGlyph(gstate.fonter, gstate.display, fg, bg, x, y);
 }
 
 void ctermer_ShowDisplay()
@@ -303,5 +231,4 @@ void ctermer_ShowDisplay()
     gstate.minrow = -1;
     gstate.maxrow = -1;
 }
-
 

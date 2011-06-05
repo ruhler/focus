@@ -1,0 +1,69 @@
+
+Sat Jun  4 18:41:05 EDT 2011
+
+Tasks: thoughts on an imperative language
+
+This really doesn't belong here, but I don't know where else to put it.
+
+The idea is c is yucky for an imperative language, but as I've seen, there are
+times when a language like haskell is just not appropriate. So what I would
+like is a nice language like haskell that maybe allows you to sacrifice some
+niceness for more appropriateness in certain situations.
+
+I'm thinking to model this on bluespec. That is, we have a static elaboration
+phase, which gives us the ability to support no cost modularity. And it lets
+us use haskell as the pre elaboration language. That will be nice.
+
+I want to support hardware, so we have to make things a little more general
+than bluespec's rules and state. But I do like this model of guarded atomic
+actions and shared state. So here's what I propose:
+
+For the underlying model, we have:
+
+- shared state
+- guarded atomic actions
+
+What's different from bluespec is, well, a number of things, but some of the
+important things are:
+
+Guarded atomic actions take as input the shared state, and produce as output a
+new state and a set of new transactions. So the model is:
+
+you have a pool of transactions and shared state. Pick any (ready)
+transaction from the pool, take it out of the pool, apply to the shared state
+to get a new shared state, and enter into the pool all the new transactions it
+created.
+
+This is like a general version of bluespec. In bluespec you can think of each
+transaction as returning itself as the single next transaction.
+
+That's all well and good, but that isn't complete yet, because this is
+basically what STM haskell does, and we said haskell has some problems. So I
+have to go a little further.
+
+Here is my current thinking. To specify a transaction you give a function and
+a bunch of arguments. All arguments and values will be treated as values,
+semantics are when you make a function call arguments are copied.
+
+We should have automatic memory management to improve performance. So instead
+of always copying, you can share values and have a garbage collector to figure
+out when things don't need to be shared. Static analysis should be able to
+figure out when you can pass a reference instead of make a new copy and mutate
+it, but that's all behind the scenes. Maybe we can provide functions which let
+you provide the memory manager with more useful information, analogous to what
+you can do with pseq in haskell. And I kind of like this idea that you can
+choose different garbage collection strategies, maybe at run or compile time.
+Then one of your choices can be: no collection, and hopefully you can annotate
+your code to make it more efficient.
+
+I suppose the key point here is memory management should be a performance
+concern, not a correctness concern.
+
+Those are the core thoughts I've had so far. Still lots of thinking and things
+to work out left before we can even consider proposing a first milestone.
+Questions like: how do you denote transaction boundaries or whatever. There
+are different choices you could make, which make it much nicer or less nicer
+to describe the transactions. I wonder if that's a question you could put off
+to later. Use abstractions in haskell to make things pretty? Interesting
+idea...
+

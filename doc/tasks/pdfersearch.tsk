@@ -1,0 +1,18 @@
+
+Sat Jun  4 18:59:20 EDT 2011
+
+Task: pdfer needs a search capability.
+
+I had it working in glyf, so it shouldn't be so bad.
+
+We need a way to specify what to search for. It should be a string, case
+insensitive for now is fine I think.
+
+Way to input the string:
+/ ... <ENTER>, where ... is the string. It's a little messy or annoying to
+implement, but not really hard at all.
+
+Then what I did was, find the bounding boxes of the strings from poppler (I'll
+have to check the c interface), and draw those bounding boxes via cairo before
+rendering the pdf.
+

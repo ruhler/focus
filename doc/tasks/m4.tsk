@@ -44,7 +44,8 @@ Things like:
  + sgreen should blank a client's display when it quits so we don't see it when
    we start a new client with the same id. (sgreenblank.tsk)
 
- - pdfer needs a search capability
+ - pdfer needs a search capability (pdfersearch.tsk)
+ - pdfer has same rotation bug glyf used to have
  - on losaltos, touching the touchpad appears to crash sdlcsr (and then we
    strand all the clients running at like full cpu).
  - When sdlcsr is running and we shutdown the computer, /tmp/green gets left

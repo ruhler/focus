@@ -1,0 +1,100 @@
+
+Sat Jun  4 14:55:33 EDT 2011
+
+Task: Some unicode characters don't work in termer
+
+Like for drawing boxes and such (try alsamixer for example).
+But it's very strange, because if I start a new termer, it works fine, but
+the original one launched from sgreen doesn't? What's with that?
+
+Oh, it's that, in screen it doesn't work, not in screen it does.
+When it doesn't work, we have characters such as: ─(2500) and ┘(2518).
+Now I have something I can work with. Question is, where do I get these
+from? What font has them, and how should I know to load the font?
+
+I notice the following:
+1. fontconfig has a way to match based on charset, so I suppose, in
+theory, if I find a character not in my font, I can match another font
+that has it.
+2. The non-bold versions of my Dejavu font do define those box drawing
+characters.
+
+So here's what I think I should do. Update fontconfiger to search for
+character 2500 and see what it returns. If it works usefully, then do as
+proposed in (1). Have a bunch of faces loaded, and try them all before
+giving up? Or something like that.
+
+Sat Jun  4 15:08:59 EDT 2011
+
+I added the charset thing to the fontconfiger pattern, and it does return the
+non-bold version of the font I want.
+
+So it looks to me like I should do the following.
+
+Termer should keep a list of fonts. Actually, it would be nice if I could
+abstract this away in some library. Have a list of fonts. If a character isn't
+found in the font, look for and load other fonts that have that character.
+
+I wonder if font config already does something like that?
+
+Any, make this into a library, because I'll want to reuse it and have a nicer
+interface. The interface I'm thinking is:
+
+I initialize it with a font name.
+
+Then to use it, I give it a unicode character, and it will give me back...
+what? A glyph slot? A glyph slot and face? A face with glyph slot drawn? Or
+maybe I give it a display and it can draw the character to the display? But
+then I need to give it color too... I'm not sure what I want here.
+
+Anyway, maybe in addition to unicode character we could specify style things
+too, like italics or something. That's just a thought for the future.
+
+Sun Jun  5 11:40:04 EDT 2011
+
+I think I've got it figured out. Here's the plan. I'll augment Fonter (used
+for status bar) to handle this stuff, and expand it so I can reuse Fonter in
+termer too.
+
+The high level interface I want is:
+ You initialize a fonter object with a font name.
+ You can ask things about width and height (in pixels) of the loaded font
+ You can load a glyph. If the glyph doesn't exist in the charmap, fonter will
+    try to find another font file that has that glyph
+ You can ask for width and height (in pixels) of the load glyph.
+ You can ask for the level of the (x,y) coordinate of the loaded glyph.
+
+ And we can supply some convinience functions:
+ You can draw the loaded glyph to a CNSL_Display with given foreground and
+    background color.
+ You can draw the given string of characters to a CNSL_Display with given
+     foreground and background color.
+
+
+Let me double check this gives me all the information I'm currently using for
+termer and fonter.
+
+Yes! That should do just swell.
+
+I propose the following. First step: Switch over to the interface above, don't
+yet do the alternate font loading. Next step, do alternate font loading for
+charmaps. The interface shouldn't have to change at all.
+
+Good. And I should write up a man page while I'm at it.
+
+Cool. Here I go.
+
+Sun Jun  5 12:28:50 EDT 2011
+
+It works! And the code is much cleaner. I like this change.
+
+Just one problem. In termer we get tiny little lines between the cells. Is
+this because max_advance_width is different from advance? If so, how do I know
+which to use?
+
+Oh, I bet it's because advance ignores the lower bits instead of rounding up.
+What it should really do is round up.
+
+Um, that didn't fix it. Maybe I should open up a separate task for this. Yes.
+I think that's a good idea.
+
