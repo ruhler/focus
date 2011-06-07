@@ -1,0 +1,39 @@
+
+Mon Jun  6 22:29:22 EDT 2011
+
+Task: on losaltos, touching the touchpad appears to crash sdlcsr.
+
+First step: see if I can reproduce this bug manually.
+
+Yup. It reproduces easy. Just press the mouse button on losaltos.
+
+Next step: see if I can capture this bug in an automatic test case.
+
+Err... I guess it could help to understand what the cause of the bug is, then
+test it.
+
+Let's see, it will be an input event. So let's track where that input event
+goes.
+
+I recieve input events. I forward the event to the client if it isn't a
+keypress or a key release. Let me dive into consoler?
+
+Naw. Why waste my time. I'll just run in a debugger (in X) and see where it
+crashes.
+
+Oh, that's interesting. It says sgreen exited normally. How odd.
+
+Mon Jun  6 22:39:05 EDT 2011
+
+Well, this is a little embarassing perhaps. It turns out I had put in this
+mouse button kills sdlcsr as a feature, to try and improve the hangs that I
+used to encounter.
+
+Hum. Well. What am I to do? I could fix it. Should I test it?
+
+I got rid of that behavior, so mouse button shouldn't do anything now. Note
+though, F12 can still be used. I have not tested this.
+
+Perhaps the real bug is sdlcsr never notified the client when it closed that
+they it should quit. I put a note about this in m4.tsk.
+

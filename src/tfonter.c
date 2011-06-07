@@ -8,8 +8,8 @@ int main()
 {
     CNSL_Init();
 
-    const char* fontname = "Monospace-30:Bold";
-    const char* string = "Hello there!";
+    const char* fontname = "Monospace-25:Bold";
+    const char* string = "Hello there! goodbye!";
 
     int width = 640;
     int height = 480;
