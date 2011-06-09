@@ -53,6 +53,7 @@ Things like:
  - cgreen pdfer foobar crashes sdlcsr or something.
  - figure out how to make a clean termination of clients
  - turn consoler into a library
+ - would be nice for pdfer to have a way to cancel the goto number.
  - consoler man page(s)
  - pdfer man page
  - pnger man page
@@ -164,4 +165,51 @@ end or something like that.
 
 So until I work out all my thoughts, I'll focus on adding functionality and
 fixing the things that bother me most. I'll try to keep you up to date.
+
+
+Tue Jun  7 20:56:43 EDT 2011
+
+I have now a different line of thoughts.
+
+At the rate it's going, milestone 4 will never be done. There will always be
+bugs. There will always be more features to add.
+
+That's all fine. The trouble is, I don't feel like I'm improving the quality
+of the code. Rather, each feature adds another ugly hack which makes the code
+yuckier. That's a bad thing, I think.
+
+I'm thinking, what if I started doing release cycles. They might look
+something like this:
+
+1. Identify all new features, bug targets for the release. The first release
+would be: no new features (no split, no search, no key remapping).
+
+2. Document, in detail, how everything (libraries and applications) is to be
+used and works. This would be including man pages, tutorials, whatever.
+
+3. Design clean implementations of each library, app, given the target feature
+set.
+
+4. Test and implement everything.
+5. Release the code.
+
+And all that time, we would be accumulating new feature requests and bugs, so
+we should have plenty of material together to repeat the loop.
+
+Why is this better than what I have now? The hope is, by spending a lot of
+time designing things well for a fixed feature set, the code will stay clean.
+All my releases will be high quality. It forces me to do all the
+documentation.
+
+If I want, I can have two branches. One for experimental stuff. This lets me
+figure out what all I need to implement all my features. Another for the clean
+release code, where I rewrite the experimental stuff in a clean way.
+
+What do you think? Should I give it a shot?
+
+The other thing I thought about is version numbers. We can have three numbers.
+The first would be for interface breaking changes. The second would be for new
+features. The third would be for bug fixes.
+
+I'll stew and get back to you.
 

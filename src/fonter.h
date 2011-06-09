@@ -17,7 +17,7 @@ typedef struct {
     int width;
     int height;
     int ascender;
-    const char* name;
+    char* name;
     FT_Face faces[MAX_FACES];
 } FNTR_Fonter_;
 
