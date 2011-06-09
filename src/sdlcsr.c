@@ -79,7 +79,6 @@ int main(int argc, char* argv[])
         CNSL_Event cclev;
         switch (event.type) {
             case SDL_QUIT: done = 1; break;
-            case SDL_MOUSEBUTTONDOWN: done = 1; break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_F12) {
                     done = 1;

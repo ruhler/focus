@@ -1,0 +1,16 @@
+
+Mon Jun  6 23:27:08 EDT 2011
+
+Task: sgreen has no way to view the active windows.
+
+That is, I want a status bar just like what screen has.
+
+So I hacked something up which sort of works. The problem is, once you draw
+the status bar, you overwrite whatever was there, and the (possibly out of
+date) status bar sticks around on that window. That's not what you want. You
+want the status bar to be temporary, which means you want to restore whatever
+was underneath it on the next input or next screen update.
+
+For now I'll leave in the hacked up code, but I'll have to think about what
+the right way to do this is.
+

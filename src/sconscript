@@ -44,7 +44,8 @@ env.Default(boxer)
 pnger = env.Program('pnger', ['pnger.c', consoler_o], LIBS = ['png'])
 env.Default(pnger)
 
-sgreen = env.Program('sgreen', ['sgreen.c', consoler_o], LIBS = ['pthread']);
+sgreen = env.Program('sgreen', ['sgreen.c', consoler_o, fonter_o],
+        LIBS = ['pthread', 'fontconfig', 'freetype']);
 env.Default(sgreen);
 
 cgreen = env.Program('cgreen', ['cgreen.c']);

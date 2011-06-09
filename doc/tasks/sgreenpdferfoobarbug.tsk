@@ -1,0 +1,43 @@
+
+Mon Jun  6 22:44:35 EDT 2011
+
+Task: When in sgreen, if I launch pdfer to open a file that doesn't exist, the
+whole display gets messed up.
+
+let me see if I can reproduce this first.
+
+Yes. I can totally reproduce it.
+
+Symptoms:
+
+pdfer reports the error, and quits.
+the display gets messed up: random pixels are set.
+the display stops being updated.
+
+But sdlcsr and sgreen continue to run.
+
+Do we continue to get input? Let me see if I can exit.
+
+Yes. We continue to handle input, we just never update the display again.
+
+Allow me to propose a hypothesis:
+ There is a race condition where the client exits before we are ready, so we
+ think the client is still valid, so we keep the client as the current client,
+ when really we should have switched back to another client.
+
+ Except, that doesn't make total sense, because then I should be able to
+ switch to another client using the escape sequence, right? Or start a new
+ client, right?
+
+Uh oh. Now I can't seem to reproduce this like I could a minute ago. That's
+very bad. It seems pretty clear then that this is a race condition. Let me
+review the code and see if anything pops out at me.
+
+I see nothing in the code that looks like bad stuff could happen if the client
+dies right away.
+
+Let me try sdlcsr without sgreen, see if I can reproduce this there.
+Nope. But that doesn't really tell me anything.
+
+Bugger. Multithreaded programming at its worst.
+
