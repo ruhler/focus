@@ -1,0 +1,52 @@
+
+Wed Jun  8 21:52:51 EDT 2011
+
+Task: Define features for nice configure like installer
+
+I'm going to release this project, so people need a way to build and install
+it. We know all the components we want for 1.0.0. In particular, we know what
+all dependencies we have.
+
+I want a configure like installer which will only install those applications
+for which you have dependencies satisfied. It should do it's best job to
+figure out how to satisfy those dependencies (meaning use pkg-config). It
+should also have a way to specify explicitly where things are. I'm thinking a
+scons/local file would be fine for that.
+
+But the scons/local file should not have things like #/build/src and
+build/src.
+
+What interface would I like? I think make and install should be separate. How
+about configure and make? Should those be separate?
+
+I feel like what we want is: 
+  configure - you set things like pkgconfig path, install dir, etc...
+            - it reports what can or can't be made
+  make - build whatever can be made
+  install - install to configured location.
+
+Can I do that somehow? I bet I can. It would look something like this:
+
+configure knows about what things depend on what things. In fact, it might be
+nice if configure was part of scons. The job of configure should be to
+generate maybe a sconscript with specific locations of things. It can also say
+what can or can't be built knowing that information.
+
+Let's see. What all things do I need to configure for:
+
+SDL: for sdlcsr
+util: for sdlcsr, termer
+m: for fonter, termer
+fontconfig: for fonter, sgreen, termer
+freetype: for fonter, sgreen, termer
+png: for pnger
+pthread: for sgreen, termer
+poppler: for pdfer
+
+So, for example, if you don't have libpng, no problem, we just won't compile
+or install pnger. Maybe have a scons configuration target which prints out the
+current configuration along with what will and will not be built.
+
+I may also want to enable/disable certain tests depending on what is built.
+Tests should be part of the build.
+

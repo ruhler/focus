@@ -1,0 +1,29 @@
+
+Thu Jun  9 00:00:49 EDT 2011
+
+Task: Define filler application
+
+It's just like we have in the man page.
+
+Starts CNSL_GetGeometry size, default to 640x480.
+Starts solid black.
+
+Keys to fill the whole screen with the given color are:
+r     red
+g     green
+b     blue
+c     cyan
+y     yellow
+p     purple
+w     white
+n     black
+
+And to quit:
+q     quit
+
+I should remove the kmapper stuff for the 1.0.0 release. It doesn't add
+anything.
+
+I should write a dtcl version of the man page. That should suffice as full
+documentation.
+

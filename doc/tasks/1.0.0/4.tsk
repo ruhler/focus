@@ -1,0 +1,90 @@
+
+Wed Jun  8 23:15:06 EDT 2011
+
+Task: In what language should I write my documentation?
+
+I would like to have a nice language to write documentation in. Let me explore
+what the options are.
+
+First, my goals:
+ - I would like to be able to produce:
+    man pages, html, pdf files
+
+ - I would like to be able to put documentation in one place, even if it's not
+   all in one place in the generated documentation.
+
+   For example, you might find the prototype of a function in a man page and
+   then again in a tutorial. Ideally you could specify that prototype in one
+   place so if it changes you only have to change it once. That one place
+   being the C code might be nice...
+
+I guess those are the two big points. The other one, which might be just me
+trying to find an excuse to use my own language is:
+ - ability to do abstraction.
+    That is, functions, scriptability.
+
+What are some options I should explore?
+
+- man (nroff, groff, troff, or something like that)
+   Does not capture semantic information. You can't do abstraction. This fails
+   for pretty much every reason except it's trivial to get man pages from it.
+
+- texinfo
+   Produces: dvi, html, info, pdf, xml, plain text, etc..
+   Format document as node: chapters, sections
+   Includes references
+   Does not produce man pages
+    
+- latex
+- infodoc?
+- doxygen
+- plain text
+
+- my own (tcl based markup)
+   We could specify any structure by adding commands. It's totally flexible,
+   meets abstraction requirement, can be made to produce all different sorts
+   of outputs, can reuse the same structure in different places.
+
+   The down side of this is it isn't a conventional format. I'll have to write
+   all the generators, and other people who want to contribute to the
+   documentation will have to learn my language.
+
+Documents I've enjoyed reading are:
+ - man pages
+ - gdb, gcc, gnu manuals in general (uses texinfo)
+ - libsdl and ncurses and such less so
+
+You know, I don't know why I don't just use my own markup. I can describe
+exactly what I want to, I can generate texinfo or man, share whatever I can. I
+have the full power of tcl behind me. So let me do that, no?
+
+I think it's either texinfo and man or my own tcl based. Man pages should be
+describable at a higher level.
+
+That's it. I'm decided. Right now (though I suppose I might change my mind
+later), tcl is the way to go.
+
+Describe the content I want to describe. I'll worry about translating to
+different document formats later.
+
+I need to pick a file extension. Um... tcl, dcl. dtcl. Okay. How about dtcl.
+Good. I can make up my supported structures as I go.
+
+I think the best model will be to think of myself building up a document tree.
+Don't think of it as a markup.
+
+Thu Jun  9 00:11:53 EDT 2011
+
+Remember to keep in mind the 3 kinds of documentation:
+ - reference 
+ - subject based
+ - tutorial
+
+You know... all of those could be covered with texinfo. It's just generating
+man pages which causes problems...
+
+Does that mean I should not do man pages? Naw. With my system it should be
+easy to make man pages.
+
+Cool. I'm excited about this.
+

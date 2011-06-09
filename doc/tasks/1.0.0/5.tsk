@@ -1,0 +1,29 @@
+
+Wed Jun  8 23:53:38 EDT 2011
+
+Task: Define Boxer application
+
+Another hopefully easy task.
+
+Size is from CNSL_GetGeometry, default to 640x480.
+Background is solid black.
+Current box position is white.
+Past box position is red.
+Box starts at (100, 100)
+Box size is 10x10
+
+Commands are:
+ h - move box left 10 pixels
+ j - move box down 10 pixels
+ k - move box up 10 pixels
+ l - move box right 10 pixels
+ q - quit boxer
+
+If you move the box off the screen, it should wrap around to the opposite side
+of the screen. Let's say it stays in the same grid, so the partial space on
+right and bottom we'll consider not part of the boxer space.
+
+I think that's it! The full spec.
+
+I should produce documents for this. A single man page ought to be plenty.
+

@@ -1,0 +1,66 @@
+
+Wed Jun  8 22:15:31 EDT 2011
+
+Task: Define fonter for release 1.0.0
+
+I think this is easy (which is why I'm starting with this one). Because
+fonter's in pretty good shape interface wise. I think one change I'll make
+from what we have now is remove GlyphHeight, because I don't think it's useful
+for anything.
+
+Functions:
+ Create, Free
+ MaxWidth, Height, LoadGlyph, GlyphWidth, GlyphLevel,
+ DrawGlyph, DrawString
+
+With the same parameters as we have now.
+Cool. Next step for fonter then is to document in detail the interface.
+Again, this should be a fairly easy place to start.
+
+I'll want the following documentation:
+    man page for...
+
+What do you think? Should everything go on the same man page?
+Maybe just related functions.
+
+Brainstorm man page organization:
+  Create, Free
+  MaxWidth
+  Height
+  LoadGlyph
+  GlyphWidth
+  GlyphLevel
+  DrawGlyph, DrawString
+
+It makes sense to put create and free together.
+It makes sense to put the drawing commands together, because they have so many
+parameters in common. The others... seem simple, but maybe it's okay to have
+different man pages for each. I can go into detail that way if I want. Or the
+man pages can stay short.
+
+What else do I need besides man pages? Do man pages completely explain how the
+library should be used? I would like a tutorial like thing. It can be short
+and sweet. It might contain a lot of the same info that's in the man pages,
+but that's okay. Hopefully I can find a good way to keep this information
+consistent. What the tutorial will give that isn't in the man pages is a
+description of what fonter is for overall, and...
+
+But could I not have that be in a man page? Like what git does? git-tutorial? 
+Have a fonter-tutorial man page? I like that idea. Then we have a common
+outlet for information.
+
+One thing I don't like, however, is the syntax for man pages. It definately is
+at way too low a level. Is there not some higher level language I can use? It
+would be great if we could produce man pages, maybe info, maybe html, maybe
+pdf, all from the same source. I should look into that.
+
+Okay, so as soon as I figure out how I want to document fonter, I can write
+the documentation for it. And as soon as I have written the documentation for
+it, I can refactor the implementation. Maybe clean up test cases. Maybe add
+some test cases. Probably add some test cases. Perhaps I can have my own
+special font whose characters I know well or something to test it.
+
+Wed Jun  8 23:14:30 EDT 2011
+
+I'm opening a task to discuss this documentation issue: 4.tsk.
+

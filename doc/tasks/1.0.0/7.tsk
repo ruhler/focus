@@ -1,0 +1,27 @@
+
+Thu Jun  9 00:05:09 EDT 2011
+
+Task: Define sdlcsr app for release 1.0.0
+
+It's pretty simple right? Implement a consoler server which uses SDL as the
+back end.
+
+Some details to include:
+- implements key repeat.
+- goes full screen.
+- hides cursor.
+- does CNSL_SetGeometry for client.
+- serves a single client, exits when the client exits.
+
+Should it have a kill function? Currently SDLK_F12 is kill for example.
+Do I ever use that function? I used to. I'm not sure it ever really did what I
+wanted, which was give a way to save my machine if sdl crashed.
+
+No. I don't use that function anymore. I never remember it. Why take away a
+valid key from the client app?
+
+So don't have this SDLK_F12 special function. You want it to quit, send it an
+sdlquit event or have the client quit.
+
+Good. A single man page like document should suffice for this.
+

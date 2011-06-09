@@ -1,0 +1,44 @@
+
+Wed Jun  8 21:35:24 EDT 2011
+
+Task: Release 1.0.0
+
+I'm going to attempt to start a release cycle like thing described in m4.tsk.
+This task should define what will go into release 1.0.0.
+
+The components are:
+  consoler library
+  fonter library (3.tsk)
+  boxer cnsl application (5.tsk)
+  filler cnsl application (6.tsk)
+  green cnsl application (sgreen, cgreen)
+    include status bar
+    do not include split capability
+  pdfer cnsl application
+    include more key bindings like: page down/page up
+    do not include search capability
+  pnger cnsl application
+  termer cnsl application
+  sdlcsr application (7.tsk)
+
+Other things include:
+  nice configure like installer (2.tsk)
+
+I'm not including things like fontconfiger, freetyper. Those are more of
+researchy like tools. I'm including kmapper, which should be pushed out to
+1.1.0. I'm not including flicker, which is really useless right now, unless I
+want to do performance stuff, but I don't for this release, so skip it. Code
+that isn't part of the above list should be removed. I can always get it back
+with git later if needed (and I remember what it was).
+
+I will not make major changes to the interfaces. The goal of this release is
+to do as little as I can to make a nice release. So, do improve the code a
+bit, but if I have to make subtantial changes to improve the code, put that
+off to another release.
+
+Let me spawn off some tasks for detailing what features will and will not be
+included in each of these components.
+
+I get the feeling I have lots of thinking and documenting to do before I start
+writing code again. Oh well. Hopefully I'll produce something I'm proud of.
+

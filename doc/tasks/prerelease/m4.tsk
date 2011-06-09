@@ -218,3 +218,62 @@ features. The third would be for bug fixes.
 
 I'll stew and get back to you.
 
+Wed Jun  8 21:06:26 EDT 2011
+
+The question came up if I should switch to using trac again. Because,
+presumibly, if I release my code on source forge, trac would be the natural
+thing to use.
+
+The reason I abandonded trac in the first place was there is too much overhead
+in writing things down. The problem I feel like I'm having now is my tasks are
+unorganized. The naming scheme is odd. I don't know what are bugs, what are
+features, what are done, etc...
+
+So, I'm suggesting if I do this release cycle thing, I can perhaps augment my
+task structure.
+
+Tasks should be identified by number. Increasing numbers suggest age of task.
+They should also be placed in a directory structure. I propose as follows:
+
+1.0.0 - tasks to be completed for release 1.0.0
+1.0.1 - tasks to be completed for release 1.0.1
+etc...
+
+And in each one we can have folders: bugs, features, or whatever else comes
+up.
+
+Now we have git to keep track of when tasks move from one place to another.
+High priority tasks will be the one for the next release. We know which tasks
+are done, because it's tasks in whatever release has been made. It's almost as
+simple as tasks before, I just need to figure out what next task number to
+use, and I can write a simple script for that
+(such as: find . -name "*.tsk" | sort -n | tail -n 1).  
+
+Git tracks changes and owners, and comments for why things changed. Sounds
+great to me.
+
+One thing I want to look into is how to sort numerically so that 10 comes
+after 9.
+
+Oh, `ls -v` is the trick. Cool.
+
+Wed Jun  8 21:19:29 EDT 2011
+
+So, what do you think? Should I start the release cycle?
+
+The only tricky part I see is figuring out how to bring the existing tasks
+into the new system. Should I give then numbers? Or just leave them as named,
+or what?
+
+How about this. I'll put them in a directory called prerelease, named as they
+are. I'll start numbering at 1. So, the first task should be the release 1.0.0
+task. Oh boy! I'm excited. This is going to be cool. 
+
+There's going to be a problem with allocating unique task numbers in a
+distributed fashion. It will happen between pacific and losaltos. It will get
+worse if ever someone else joins up. Bugger.
+
+Well, if we run into that problem I guess deal with it then. If someone else
+ever joins the project... I'll come up with something. Maybe each developer
+can get his own task number set to choose from or something.
+
