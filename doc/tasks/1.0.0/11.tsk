@@ -1,0 +1,47 @@
+
+Thu Jun  9 22:24:02 EDT 2011
+
+Task: Define pdfer features for release 1.0.0
+
+Single pdf file viewer, pdf file comes from command line.
+Don't worry about rotation bug yet, so basically have implemented as is now.
+No search implemented.
+Status works like it does now.
+Takes up full GetGeometry size.
+No key remapping.
+But do add support for ctrl, shift keys.
+
+The following key bindings should be had (which tells you the features):
+
+q - quit
+space, pagedown, n: next
+pageup, p: previous
+end: last
+home: first
+0-9: enter number for goto
+c: clear goto number 
+j: down 10%     ^j: down 1%
+h: left 10%     ^h: left 1%
+l: right 10%    ^l: right 1%
+k: up 10%       ^k: up 1%
+f: down 90%
+b: up 90%
+d: down 50%
+u: up 50%
+i: zoom 2/3
+o: zoom 3/2
+I: zoom 1/2
+O: zoom 2/1
+^I: zoom 9/10
+^O: zoom 10/9
+w: fit width
+a: fit page
+v: show status
+t: top of current page
+e: end of current page
+
+I'll never remember all these bindings. Oh well. At least they will be there.
+
+Next step: documentation. It should be pretty easy. Not too many concepts.
+Mostly just the key bindings.
+

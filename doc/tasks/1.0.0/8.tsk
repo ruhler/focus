@@ -1,0 +1,59 @@
+
+Thu Jun  9 22:00:40 EDT 2011
+
+Task: Define consoler features for release 1.0.0
+
+I'm thinking we want the features to support all the apps I have. Maybe I can
+clean them up slightly, but no major changes from the current api for this
+release.
+
+consoler is about input: events, and output: displays.
+Let's see...
+
+Events:
+  KEYPRESS
+  KEYRELEASE
+  QUIT
+
+Need to define Keysym. And then we have the event accessor methods?
+Or should I just use type == KEYPRESS kind of thing? If i do that, then I have
+to change things later, so I'm thinking keep the abstraction? Or is Event a
+clear thing? Let's keep them:
+    IsKeypress
+    IsKeyrelease
+    IsQuit
+
+Any need for MakeKeypress, MakeKeyrelease, MakeQuit? Sure. sdlcsr could make
+use of them.
+
+Then we'll want Recv and Send
+
+Displays:
+   Color - type, desctructor, constructor
+   Display - type, allocator, etc...
+
+You know? I think it's pretty good as it is now. Let me say I'm targeting a
+release, so no need to make any changes. But I do need to document things very
+clearly, and if some silly stuff comes up, well, I can record it for future
+note or some such.
+
+Good. So next step here is documentation.
+
+I suppose we could ask how I should organize the documentation. I think start
+with more of a subject based description, don't worry about man pages to
+start.
+
+Fri Jun 10 00:02:21 EDT 2011
+
+In the process of writing the documentation I've made some changes. See the
+documentation for what the final feature set will be for this release. If I
+can remember them all on the top of my head it's something like:
+
+- make CNSL_Client and CNSL_Server structs, not pointers.
+- remove CNSL_Init and CNSL_Quit functions entirely.
+- CNSL_RecvEvent returns an event directly, doesn't error.
+- added some constructor and destructor functions.
+- slight renaming of some things.
+
+Hopefully the changes aren't going to break anything major.
+

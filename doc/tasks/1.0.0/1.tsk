@@ -7,18 +7,18 @@ I'm going to attempt to start a release cycle like thing described in m4.tsk.
 This task should define what will go into release 1.0.0.
 
 The components are:
-  consoler library
+  consoler library (8.tsk)
   fonter library (3.tsk)
   boxer cnsl application (5.tsk)
   filler cnsl application (6.tsk)
-  green cnsl application (sgreen, cgreen)
+  green cnsl application (sgreen, cgreen) (10.tsk)
     include status bar
     do not include split capability
-  pdfer cnsl application
+  pdfer cnsl application (11.tsk)
     include more key bindings like: page down/page up
     do not include search capability
-  pnger cnsl application
-  termer cnsl application
+  pnger cnsl application (9.tsk)
+  termer cnsl application (12.tsk)
   sdlcsr application (7.tsk)
 
 Other things include:
@@ -41,4 +41,37 @@ included in each of these components.
 
 I get the feeling I have lots of thinking and documenting to do before I start
 writing code again. Oh well. Hopefully I'll produce something I'm proud of.
+
+Thu Jun  9 22:38:47 EDT 2011
+
+I think I'm now clear on all the functionality I want for the release. I'm
+scaling back. Primary goal is to get the release out, not add more features.
+Though in a couple places I am adding things, but those should be not too hard
+and well worth it.
+
+Next step is documentation. I'm thinking don't worry about man pages yet.
+Start with a more subject based description of things in my dtcl format.
+
+Directory structure. I should figure that out. Put each component in its own
+directory. That directory should include all files relevant for that
+component: source code, test code, and documentation. Let me do it like that
+rather than have src, test and doc top level directories. The doc directory
+will refer to development documentation, not source for user documentation.
+
+Good! I suppose the order that makes sense to go in build wise would be
+consoler first, but that's really the hardest thing to describe...
+
+Okay. Let's do it. I propose the following order for implementing the
+components: well, just the same order as above.
+
+Cool. Nifty. Time to get started.
+
+Um, I'm thinking for the first pass I'll write the documentation in plain text
+files. But to be clear, for release 1.0.0, I should produce man pages and nice
+texinfo documents for everything. That's very important.
+
+Fri Jun 10 00:01:42 EDT 2011
+
+I have to go to bed now, but I'm making great progress. I think the consoler
+api is getting cleaned up nicely now too. Cool. This is exciting.
 

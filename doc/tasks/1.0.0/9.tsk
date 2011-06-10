@@ -1,0 +1,11 @@
+
+Thu Jun  9 22:10:37 EDT 2011
+
+Task: Define pnger features for release 1.0.0
+
+I use this rather rarely... Anyway, I think it can stay as simple as it will
+for now. Which is, you give it a filename on the command line, it displays
+that as a png, and you can quit with the q key. Nothing else to it.
+
+I can document this all with a single man page.
+

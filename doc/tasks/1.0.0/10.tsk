@@ -1,0 +1,37 @@
+
+Thu Jun  9 22:13:08 EDT 2011
+
+Task: define green features for 1.0.0 release
+
+
+Okay, let's see. This is a little tricky.
+
+Trying to minimize changes...
+
+sgreen starts a server.
+cgreen starts a client.
+
+Key bindings:
+  ctrl-' 0-9        go to window 0-9.
+  ctrl-' c          start a new shell.
+  ctrl-' w          show status: which windows are open, and the current one.
+
+CNSLSHELL should be read to figure out shell, defaulting to termer.
+GREENSVR  should be set to the socket used, which should be constructed based
+          on user id and the pid of sgreen. This should be read by cgreen.
+          sgreen should close the existing file if any before starting.
+
+sgreen will take up the full CNSL_GetGeometry screen.
+sgreen has no split.
+status bar stays visible until next input (ignore output for this release)
+
+cgreen has single -e option to exec instead of fork, which it does by default.
+
+I think that's it. Everything else like now. sgreen exits when last window
+closes. Closing a window brings you to lowest number window (not most recent
+like screen).
+
+So, on to documentation. I think we'll probably want a book like thing rather
+than just a man page, because it's complicated enough. We can produce man
+pages too if you want...
+

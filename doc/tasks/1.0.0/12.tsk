@@ -1,0 +1,24 @@
+
+Thu Jun  9 22:34:45 EDT 2011
+
+Task: Define termer features for 1.0.0 release
+
+Let's see...
+
+All the terminfo commands supported now.
+Unicode support (but I guess that belongs to fonter, doesn't it)
+
+Use $SHELL for shell on start, default to /bin/sh
+Use $TERMERFONT for font.
+Use GetGeometry for size. Pack as many lines and cols given the font as you
+can.
+
+Fix the quit thing so it doesn't assert when you end. Figure out some way to
+make it end cleanly. The implementation of that can be less than ideal if you
+want.
+
+I think that's fair.
+
+In my documentation I should include the detailed control character
+descriptions. That is, a nice description of the terminfo file.
+
