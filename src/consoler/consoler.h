@@ -70,8 +70,6 @@ void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         unsigned int* dstx, unsigned int* dsty,
         unsigned int* width, unsigned int* height);
 
-bool CNSL_PollDisplay(CNSL_Client client);
-
 void CNSL_GetGeometry(int* width, int* height);
 void CNSL_SetGeometry(int width, int height);
 

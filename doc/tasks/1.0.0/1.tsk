@@ -14,12 +14,12 @@ The components are:
   green cnsl application (sgreen, cgreen) (10.tsk)
     include status bar
     do not include split capability
-  pdfer cnsl application (11.tsk)
+  + pdfer cnsl application (11.tsk)
     include more key bindings like: page down/page up
     do not include search capability
-  pnger cnsl application (9.tsk)
+  + pnger cnsl application (9.tsk)
   termer cnsl application (12.tsk)
-  sdlcsr application (7.tsk)
+  + sdlcsr application (7.tsk)
 
 Other things include:
   nice configure like installer (2.tsk)

@@ -345,9 +345,6 @@ connections.
 
         The parameters dstx, dsty, width, and height are set to the updated
         region of the display. They may be NULL.
-
-    bool CNSL_PollDisplay(CNSL_Client client);
-        Return true if a call to RecvDisplay will not block, false otherwise.
         
 = Specifying Screen Dimensions =
 By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set to

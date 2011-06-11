@@ -1,5 +1,4 @@
 
-#include <poll.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -258,15 +257,6 @@ void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         *height_out = height;
     }
 }
-
-bool CNSL_PollDisplay(CNSL_Client client)
-{
-    struct pollfd fd;
-    fd.fd = client.fdin;
-    fd.events = POLLIN;
-    return poll(&fd, 1, 0);
-}
-
 
 void CNSL_GetGeometry(int* width, int* height)
 {
