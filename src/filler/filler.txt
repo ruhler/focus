@@ -1,0 +1,25 @@
+
+= filler =
+
+Filler is a consoler application which fills the screen with a different solid
+color depending on what key you press.
+
+Filler initially fills the screen with black. You can then press any of the
+following keys to fill the screen with the corresponding color.
+
+r     red
+g     green
+b     blue
+c     cyan
+y     yellow
+p     purple
+w     white
+n     black     ('n' is for nothing)
+
+To quit the application:
+q     quit
+
+
+Filler uses CNSLWIDTH and CNSLHEIGHT to determine the dimensions of the
+screen, defaulting to 640x480.
+

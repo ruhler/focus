@@ -1,0 +1,13 @@
+
+#vim: ft=python
+
+Import('env')
+
+filler = env.Program('filler', 'filler.c', LIBS=['consoler'])
+Default(filler)
+
+fillertest = env.Program('fillertest', 'fillertest.c', LIBS=['consoler'])
+Default(env.Command('fillertest.out', [fillertest, filler], "$SOURCES > $TARGET"));
+
+env.Install("$PREFIX/bin", filler)
+

@@ -6,14 +6,6 @@ Import('env')
 sdlcsr = env.Program('sdlcsr', ['sdlcsr.c'], LIBS = ['consoler', 'SDL', 'util']);
 env.Default(sdlcsr);
 
-kmapper_o = env.Object('kmapper.o', ['kmapper'])
-
-filler = env.Program('filler', ['filler.c', kmapper_o], LIBS=['consoler'])
-env.Default(filler)
-
-tfiller = env.Program('tfiller', ['tfiller.c'], LIBS=['consoler'])
-Default(env.Command('tfiller.output', [tfiller, filler], "$SOURCES > $TARGET"));
-
 boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
 env.Default(boxer)
 
@@ -31,14 +23,8 @@ pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp'],
         LIBS=['poppler', 'poppler-cpp', 'fonter', 'consoler'])
 env.Default(pdfer)
 
-freetyper = env.Program('freetyper', ['freetyper.c'], LIBS=['freetype', 'consoler'])
-env.Default(freetyper)
-
-fontconfiger = env.Program('fontconfiger', ['fontconfiger.c'], LIBS=['fontconfig'])
-env.Default(fontconfiger)
-
 flicker = env.Program('flicker', ['flicker.c'], LIBS=['consoler'])
 env.Default(flicker)
 
-env.Install("$PREFIX/bin", [sdlcsr, filler, boxer, pnger, sgreen, cgreen, pdfer])
+env.Install("$PREFIX/bin", [sdlcsr, boxer, pnger, sgreen, cgreen, pdfer])
 

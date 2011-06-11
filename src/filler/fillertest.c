@@ -28,7 +28,14 @@ int main(int argc, char* argv[])
     printf("%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
 
+    event = CNSL_MakeKeypress(CNSLK_r);
+    CNSL_SendEvent(filler, event);
+    updatedisplay(filler, display);
+    printf("%x\n", CNSL_GetPixel(display, 20, 30));
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 0, 0));
+
     event = CNSL_MakeKeypress(CNSLK_q);
+    CNSL_SendEvent(filler, event);
 
     CNSL_CloseClient(filler);
     return 0;
