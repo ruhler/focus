@@ -4,30 +4,27 @@
 Import('env')
 env['CFLAGS'] = ['-ggdb']
 
-bool_o = env.Object('bool.o', 'bool.c')
-
 # inputtertest
 inputter_o = env.Object('inputter.o', 'inputter.c')
-inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o,
-    bool_o], LIBS=['consoler'])
+inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o], LIBS=['consoler'])
 env.Default(env.Command('inputtertest.out', inputtertest, "$SOURCE > $TARGET"))
 
 # screentest
 screen_o = env.Object('screen.o', 'screen.c')
-screentest = env.Program('screentest', ['screentest.c', screen_o, bool_o])
+screentest = env.Program('screentest', ['screentest.c', screen_o])
 env.Default(env.Command('screentest.out', screentest, "$SOURCE > $TARGET"))
 
 # outputtertest
 outputter_o = env.Object('outputter.o', 'outputter.c')
 outputtertest = env.Program('outputtertest',
-        ['outputtertest.c', outputter_o, screen_o, bool_o])
+        ['outputtertest.c', outputter_o, screen_o])
 env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET"))
 
 # termer
 termer_o = env.Object('termer.o', 'termer.c')
 
 termer = env.Program('termer',
-    [termer_o, 'ctermer.c', inputter_o, outputter_o, screen_o, bool_o],
+    [termer_o, 'ctermer.c', inputter_o, outputter_o, screen_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
 env.Default(termer)
 

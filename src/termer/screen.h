@@ -2,9 +2,9 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <stdbool.h>
 #include <wchar.h>
 
-#include "bool.h"
 
 typedef int SCREEN_Color;
 
