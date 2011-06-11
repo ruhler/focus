@@ -9,9 +9,6 @@ env.Default(sdlcsr);
 boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
 env.Default(boxer)
 
-pnger = env.Program('pnger', ['pnger.c'], LIBS = ['png', 'consoler'])
-env.Default(pnger)
-
 sgreen = env.Program('sgreen', ['sgreen.c'],
         LIBS = ['pthread', 'fontconfig', 'freetype', 'fonter', 'consoler']);
 env.Default(sgreen);
@@ -26,5 +23,5 @@ env.Default(pdfer)
 flicker = env.Program('flicker', ['flicker.c'], LIBS=['consoler'])
 env.Default(flicker)
 
-env.Install("$PREFIX/bin", [sdlcsr, boxer, pnger, sgreen, cgreen, pdfer])
+env.Install("$PREFIX/bin", [sdlcsr, boxer, sgreen, cgreen, pdfer])
 

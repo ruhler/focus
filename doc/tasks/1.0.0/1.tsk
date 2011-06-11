@@ -7,10 +7,10 @@ I'm going to attempt to start a release cycle like thing described in m4.tsk.
 This task should define what will go into release 1.0.0.
 
 The components are:
-  consoler library (8.tsk)
-  fonter library (3.tsk)
+  + consoler library (8.tsk)
+  + fonter library (3.tsk)
   boxer cnsl application (5.tsk)
-  filler cnsl application (6.tsk)
+  + filler cnsl application (6.tsk)
   green cnsl application (sgreen, cgreen) (10.tsk)
     include status bar
     do not include split capability

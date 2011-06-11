@@ -1,0 +1,13 @@
+#vim: ft=python
+
+Import('env')
+
+pnger = env.Program('pnger', 'pnger.c', LIBS=['png', 'consoler'])
+Default(pnger)
+
+pngertest = env.Program('pngertest', 'pngertest.c', LIBS=['png', 'consoler'])
+Default(env.Command('pngertest.out', [pngertest, pnger, 'green.png'],
+    "$SOURCES > $TARGET"))
+
+env.Install("$PREFIX/bin", pnger)
+

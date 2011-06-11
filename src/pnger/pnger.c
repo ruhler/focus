@@ -4,6 +4,16 @@
 
 #include "consoler.h"
 
+bool shouldquit(CNSL_Event event)
+{
+    if (CNSL_IsQuit(event)) {
+        return true;
+    }
+
+    CNSL_Keysym sym;
+    return (CNSL_IsKeypress(event, &sym) && sym == CNSLK_q);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc < 2) {
@@ -43,8 +53,7 @@ int main(int argc, char* argv[])
 
     png_read_png(png_ptr, info_ptr, transforms, NULL);
 
-    unsigned char** row_pointers;
-    row_pointers = png_get_rows(png_ptr, info_ptr);
+    uint8_t** row_pointers = png_get_rows(png_ptr, info_ptr);
 
     // Assuming now we are in RGB format.
     unsigned int width = png_get_image_width(png_ptr, info_ptr);
@@ -56,9 +65,9 @@ int main(int argc, char* argv[])
     for (y = 0; y < height; y++) {
         unsigned int x;
         for (x = 0; x < width; x++) {
-            unsigned int r = row_pointers[y][3*x];
-            unsigned int g = row_pointers[y][3*x+1];
-            unsigned int b = row_pointers[y][3*x+2];
+            uint8_t r = row_pointers[y][3*x];
+            uint8_t g = row_pointers[y][3*x+1];
+            uint8_t b = row_pointers[y][3*x+2];
             CNSL_Color color = CNSL_MakeColor(r, g, b);
             CNSL_SetPixel(display, x, y, color);
         }
@@ -67,8 +76,7 @@ int main(int argc, char* argv[])
 
     // Wait for q key press to finish.
     CNSL_Event event = CNSL_RecvEvent(stdcon);
-    int sym;
-    while (!(CNSL_IsKeypress(event, &sym) && sym == CNSLK_q)) {
+    while (!shouldquit(event)) {
         event = CNSL_RecvEvent(stdcon);
     }
 

@@ -11,6 +11,8 @@ void updatedisplay(CNSL_Client client, CNSL_Display display)
     } while (CNSL_PollDisplay(client));
 }
 
+// Call this with first command line argument the path to the filler
+// application to test.
 int main(int argc, char* argv[]) 
 {
     CNSL_Display display = CNSL_AllocDisplay(640, 480);
