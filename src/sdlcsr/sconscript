@@ -1,0 +1,10 @@
+
+#vim: ft=python
+
+Import('env')
+
+sdlcsr = env.Program('sdlcsr', 'sdlcsr.c', LIBS=['consoler', 'SDL'])
+Default(sdlcsr)
+
+env.Install("$PREFIX/bin", sdlcsr)
+

@@ -3,9 +3,6 @@
 
 Import('env')
 
-sdlcsr = env.Program('sdlcsr', ['sdlcsr.c'], LIBS = ['consoler', 'SDL', 'util']);
-env.Default(sdlcsr);
-
 boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
 env.Default(boxer)
 
@@ -20,5 +17,5 @@ pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp'],
         LIBS=['poppler', 'poppler-cpp', 'fonter', 'consoler'])
 env.Default(pdfer)
 
-env.Install("$PREFIX/bin", [sdlcsr, boxer, sgreen, cgreen, pdfer])
+env.Install("$PREFIX/bin", [boxer, sgreen, cgreen, pdfer])
 

@@ -15,6 +15,7 @@ SConscript('src/consoler/sconscript')
 SConscript('src/filler/sconscript')
 SConscript('src/fonter/sconscript')
 SConscript('src/pnger/sconscript')
+SConscript('src/sdlcsr/sconscript')
 
 SConscript('src/sconscript')
 SConscript('src/termer/sconscript')
