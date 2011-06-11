@@ -28,7 +28,7 @@ CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym)
     return event;
 }
 
-CNSL_Event CNSL_MakeQuit(CNSL_Keysym sym)
+CNSL_Event CNSL_MakeQuit()
 {
     CNSL_Event event;
     event.type = CNSLE_QUIT;
@@ -58,12 +58,10 @@ bool CNSL_IsQuit(CNSL_Event event)
 }
 
 
-
 uint8_t CNSL_GetRed8(CNSL_Color c)
 {
     return 0xFF & (c >> 16);
 }
-
 
 uint8_t CNSL_GetBlue8(CNSL_Color c)
 {
@@ -109,8 +107,8 @@ void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Co
     display.pixels[y*display.width + x] = color;
 }
 
-CNSL_Console stdcon = { STDIN_FILENO, STDOUT_FILENO };
 
+CNSL_Console stdcon = { STDIN_FILENO, STDOUT_FILENO };
 
 CNSL_Client CNSL_LaunchClient(const char* path, char* const args[])
 {
@@ -170,20 +168,19 @@ void CNSL_CloseClient(CNSL_Client client)
     close(client.fdout);
 }
 
-int CNSL_RecvEvent(CNSL_Console console, CNSL_Event* event)
+CNSL_Event CNSL_RecvEvent(CNSL_Console console)
 {
-    int red = read(console.fdin, event, sizeof(CNSL_Event));
-    return red;
+    CNSL_Event event = CNSL_MakeQuit();
+    read(console.fdin, &event, sizeof(CNSL_Event));
+    return event;
 }
 
-int CNSL_SendEvent(CNSL_Client client, const CNSL_Event* event)
+void CNSL_SendEvent(CNSL_Client client, CNSL_Event event)
 {
-    write(client.fdout, event, sizeof(CNSL_Event));
-    return 1;
+    write(client.fdout, &event, sizeof(CNSL_Event));
 }
 
-
-int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
+void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         unsigned int srcx, unsigned int srcy,
         unsigned int dstx, unsigned int dsty,
         unsigned int width, unsigned int height)
@@ -206,67 +203,70 @@ int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         CNSL_Color* line = display.pixels + (y * display.width) + srcx;
         write(console.fdout, line, width*sizeof(CNSL_Color));
     }
-    return 1;
 }
 
-
-int CNSL_RecvDisplay(CNSL_Client client,
-        unsigned int* dstx, unsigned int* dsty,
-        unsigned int* width, unsigned int* height,
-        CNSL_RDFunction f, void* ud)
+void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+        unsigned int* dstx_out, unsigned int* dsty_out,
+        unsigned int* width_out, unsigned int* height_out)
 {
     static CNSL_Color* junk = NULL;
     static junkwidth = 0;
 
     unsigned int header[4] = {0};
     if (read(client.fdin, header, 4 * sizeof(unsigned int)) < 4) {
-        return 0;
+        perror("read");
+        return;
     }
 
-    *dstx = header[0];
-    *dsty = header[1];
-    *width = header[2];
-    *height = header[3];
+    unsigned int dstx = header[0];
+    unsigned int dsty = header[1];
+    unsigned int width = header[2];
+    unsigned int height = header[3];
 
-    if (*width > junkwidth) {
+    if (width > junkwidth) {
         // We introduce a small memory leak here. I think it's okay.
-        junk = realloc(junk, (*width) * sizeof(CNSL_Color));
-        junkwidth = *width;
+        junk = realloc(junk, width * sizeof(CNSL_Color));
+        junkwidth = width;
     }
+
+    int wmax = display.width - dstx;
+    int wuse = wmax < width ? wmax : width;
+    int wleft = width - wuse;
 
     int y;
-    for (y = *dsty; y < *dsty + *height; y++) {
-        int wmax = 0;
-        CNSL_Color* buf = f(ud, *dstx, y, &wmax);
-
-        int wuse = wmax < *width ? wmax : *width;
-        int wleft = *width - wuse;
+    for (y = dsty; y < dsty + height && y < display.height; y++) {
+        CNSL_Color* buf = display.pixels + display.width * y + dstx;
 
         read(client.fdin, buf, wuse * sizeof(CNSL_Color));
         read(client.fdin, junk, wleft * sizeof(CNSL_Color));
     }
 
-    return 1;
-}
-
-CNSL_Color* CNSL_RDToDisplay(void* ud, int x, int y, int* w)
-{
-    CNSL_Display* dsp = (CNSL_Display*)ud;
-    if (y < dsp->height) {
-        *w = (dsp->width - x) < 0 ? 0 : (dsp->width - x);
-        return dsp->pixels + dsp->width * y + x;
+    for (; y < dsty + height; y++) {
+        read(client.fdin, junk, width * sizeof(CNSL_Color));
     }
-    *w = 0;
-    return NULL;
+
+    if (dstx_out) {
+        *dstx_out = dstx;
+    }
+    if (dsty_out) {
+        *dsty_out = dsty;
+    }
+    if (width_out) {
+        *width_out = width;
+    }
+    if (height_out) {
+        *height_out = height;
+    }
 }
 
-int CNSL_PollDisplay(CNSL_Client client)
+bool CNSL_PollDisplay(CNSL_Client client)
 {
     struct pollfd fd;
     fd.fd = client.fdin;
     fd.events = POLLIN;
     return poll(&fd, 1, 0);
 }
+
 
 void CNSL_GetGeometry(int* width, int* height)
 {

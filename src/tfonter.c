@@ -32,12 +32,8 @@ int main()
         int x, y;
         CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
-        if (CNSL_RecvEvent(stdcon, &event) == 0) {
-            done = 1;
-            break;
-        }
-
-        if (CNSL_IsKeypress(event, &sym) && sym == CNSLK_q) {
+        event = CNSL_RecvEvent(stdcon);
+        if (CNSL_IsQuit(event) || (CNSL_IsKeypress(event, &sym) && sym == CNSLK_q)) {
             done = 1;
             break;
         }

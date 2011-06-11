@@ -7,6 +7,9 @@ consoler = env.Library('consoler.c')
 env['CPPPATH'].append(Dir('.'))
 env['LIBPATH'].append(Dir('.'))
 
+consolertest = env.Program('consolertest', ['consolertest.c'], LIBS=['consoler'])
+Default(env.Command('consolertest.out', [consolertest], "$SOURCES > $TARGET"))
+
 env.Install("$PREFIX/include", ['consoler.h', 'consoler_keysym.h'])
 env.Install("$PREFIX/lib", consoler);
 

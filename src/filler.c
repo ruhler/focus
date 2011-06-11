@@ -79,11 +79,10 @@ int main()
         }
         CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
-        if (CNSL_RecvEvent(stdcon, &event) == 0) {
+        event = CNSL_RecvEvent(stdcon);
+        if (CNSL_IsQuit(event)) {
             done = 1;
-            break;
         }
-
         KMPR_NextEvent(kmapper, &event);
     }
 

@@ -8,29 +8,13 @@
 
 CNSL_Client client;
 SDL_Surface* screen;
-
-CNSL_Color* toscreen(void* ud, int x, int y, int* w)
-{
-    CNSL_Color* pixels = (CNSL_Color*)screen->pixels;
-    if (y < screen->h) {
-        *w = (screen->w - x) < 0 ? 0 : (screen->w - x);
-        return pixels + y*screen->w + x;
-    }
-    *w = 0;
-    return NULL;
-}
+CNSL_Display screendisplay;
 
 int handle_output(void* usrdata)
 {
-    CNSL_Display display = CNSL_AllocDisplay(screen->w, screen->h);
     while (1) {
-        int x, y, w, h;
-        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, toscreen, NULL) == 0) {
-            SDL_Event e;
-            e.type = SDL_QUIT;
-            SDL_PushEvent(&e);
-            return 0;
-        }
+        unsigned int x, y, w, h;
+        CNSL_RecvDisplay(client, screendisplay, &x, &y, &w, &h);
         SDL_UpdateRect(screen, x, y, w, h);
     }
 
@@ -59,6 +43,10 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    screendisplay.width = screen->w;
+    screendisplay.height = screen->h;
+    screendisplay.pixels = screen->pixels;
+
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL/2);
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -83,13 +71,13 @@ int main(int argc, char* argv[])
                     done = 1;
                 } else {
                     cclev = CNSL_MakeKeypress(event.key.keysym.sym);
-                    CNSL_SendEvent(client, &cclev);
+                    CNSL_SendEvent(client, cclev);
                 }
                 break;
 
             case SDL_KEYUP:
                 cclev = CNSL_MakeKeyrelease(event.key.keysym.sym);
-                CNSL_SendEvent(client, &cclev);
+                CNSL_SendEvent(client, cclev);
                 break;
         }
     }

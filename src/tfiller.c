@@ -6,9 +6,8 @@
 
 void updatedisplay(CNSL_Client client, CNSL_Display display)
 {
-    int x, w, y, h;
     do {
-        CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)&display);
+        CNSL_RecvDisplay(client, display, NULL, NULL, NULL, NULL);
     } while (CNSL_PollDisplay(client));
 }
 
@@ -24,7 +23,7 @@ int main(int argc, char* argv[])
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0));
 
     event = CNSL_MakeKeypress(CNSLK_w);
-    CNSL_SendEvent(filler, &event);
+    CNSL_SendEvent(filler, event);
     updatedisplay(filler, display);
     printf("%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));

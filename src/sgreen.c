@@ -56,10 +56,7 @@ void* handle_output(void* vwid)
 
     while (1) {
         int x, y, w, h;
-        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)&display) == 0) {
-            break;
-        }
-
+        CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
         if (id == g_curwin) {
             CNSL_SendDisplay(stdcon, display, x, y, x, y, w, h);
         }
@@ -187,7 +184,7 @@ void handle_input()
     int ctrlon = 0;
     int commandpending = 0;
     while (!done) {
-        CNSL_RecvEvent(stdcon, &event);
+        event = CNSL_RecvEvent(stdcon);
         int sym;
 
         if (CNSL_IsKeypress(event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
@@ -229,7 +226,7 @@ void handle_input()
         } else {
             // Forward the event to the current window
             if (g_clients[g_curwin].valid) {
-                CNSL_SendEvent(g_clients[g_curwin].client, &event);
+                CNSL_SendEvent(g_clients[g_curwin].client, event);
             }
         }
     }

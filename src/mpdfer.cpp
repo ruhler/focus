@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     bool showstatus = false;
 
     while (!done) {
-        CNSL_RecvEvent(stdcon, &event);
+        event = CNSL_RecvEvent(stdcon);
         int sym;
 
         if (CNSL_IsKeypress(event, &sym)) {

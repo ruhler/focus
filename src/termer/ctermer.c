@@ -117,7 +117,7 @@ void ctermer_Quit()
 
 void ctermer_EventGet()
 {
-    CNSL_RecvEvent(stdcon, &gstate.event);
+    gstate.event = CNSL_RecvEvent(stdcon);
 }
 
 int ctermer_EventType()

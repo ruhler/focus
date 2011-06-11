@@ -83,3 +83,20 @@ surprisingly easy and cleaned up the scons code a bunch I think.
 
 Now let me try to update the library to match the documentation.
 
+Fri Jun 10 23:46:59 EDT 2011
+
+Problem with my RecvDisplay simplification. We want some way of knowing what
+area of the screen was updated. This is important. So let me include that
+information.
+
+Sat Jun 11 00:02:24 EDT 2011
+
+Okay. Consoler documentation and source are now in sync and ready to go. All
+that's missing are some tests. What are some tests I can write?
+
+I can certainly test constructors and destructors. The rest is probably easier
+to test by testing the other applications I write.
+
+Well, for the sake of completeness, and making it easier to add tests in the
+future, let me write the constructor destructor test cases.
+

@@ -66,11 +66,10 @@ int main(int argc, char* argv[])
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
     // Wait for q key press to finish.
-    CNSL_Event event;
-    CNSL_RecvEvent(stdcon, &event);
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
     int sym;
     while (!(CNSL_IsKeypress(event, &sym) && sym == CNSLK_q)) {
-        CNSL_RecvEvent(stdcon, &event);
+        event = CNSL_RecvEvent(stdcon);
     }
 
     return 0;

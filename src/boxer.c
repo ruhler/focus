@@ -29,7 +29,7 @@ int main()
     int x = 100;
     int y = 100;
     while (!done) {
-        CNSL_RecvEvent(stdcon, &event);
+        event = CNSL_RecvEvent(stdcon);
         int sym; 
         if (CNSL_IsKeypress(event, &sym)) {
             fill(display, x, y, 10, 10, CNSL_MakeColor(255, 0, 0));

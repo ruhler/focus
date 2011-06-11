@@ -334,11 +334,17 @@ connections.
         destination coordinates (dstx, dsty) of a master display the server
         keeps track of for the client.
 
-    void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display d);
+    void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+            unsigned int* dstx, unsigned int* dsty
+            unsigned int* width, unsigned int* height);
+
         Receive a display from a client by copying it to the given display.
         The location of the update will be as specified by the client when it
         called SendDisplay. Pixels not in range of the display d will be
         ignored.
+
+        The parameters dstx, dsty, width, and height are set to the updated
+        region of the display. They may be NULL.
 
     bool CNSL_PollDisplay(CNSL_Client client);
         Return true if a call to RecvDisplay will not block, false otherwise.
