@@ -1,0 +1,12 @@
+
+# vim: ft=python
+
+Import('env')
+
+fonter = env.Library('fonter.c')
+env['CPPPATH'].append(Dir('.'))
+env['LIBPATH'].append(Dir('.'))
+
+env.Install("$PREFIX/include", 'fonter.h')
+env.Install("$PREFIX/lib", fonter);
+

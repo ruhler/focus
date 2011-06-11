@@ -14,13 +14,12 @@ env.Default(filler)
 tfiller = env.Program('tfiller', ['tfiller.c'], LIBS=['consoler'])
 Default(env.Command('tfiller.output', [tfiller, filler], "$SOURCES > $TARGET"));
 
-fonter_o = env.Object('fonter.o', ['fonter'])
-tfonter = env.Program('tfonter', ['tfonter.c', fonter_o],
-        LIBS = ['m', 'fontconfig', 'freetype', 'consoler'])
+tfonter = env.Program('tfonter', ['tfonter.c'],
+        LIBS = ['m', 'fontconfig', 'freetype', 'fonter', 'consoler'])
 Default(tfonter);
 
-tfonter2 = env.Program('tfonter2', ['tfonter2.c', fonter_o],
-        LIBS = ['m', 'fontconfig', 'freetype', 'consoler'])
+tfonter2 = env.Program('tfonter2', ['tfonter2.c'],
+        LIBS = ['m', 'fontconfig', 'freetype', 'fonter', 'consoler'])
 Default(env.Command('tfonter2.output', [tfonter2, filler], "$SOURCES > $TARGET"));
 
 boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
@@ -29,14 +28,15 @@ env.Default(boxer)
 pnger = env.Program('pnger', ['pnger.c'], LIBS = ['png', 'consoler'])
 env.Default(pnger)
 
-sgreen = env.Program('sgreen', ['sgreen.c', fonter_o],
-        LIBS = ['pthread', 'fontconfig', 'freetype', 'consoler']);
+sgreen = env.Program('sgreen', ['sgreen.c'],
+        LIBS = ['pthread', 'fontconfig', 'freetype', 'fonter', 'consoler']);
 env.Default(sgreen);
 
 cgreen = env.Program('cgreen', ['cgreen.c']);
 env.Default(cgreen);
 
-pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp', fonter_o], LIBS=['poppler', 'poppler-cpp', 'consoler'])
+pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp'],
+        LIBS=['poppler', 'poppler-cpp', 'fonter', 'consoler'])
 env.Default(pdfer)
 
 freetyper = env.Program('freetyper', ['freetyper.c'], LIBS=['freetype', 'consoler'])

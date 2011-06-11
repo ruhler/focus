@@ -88,3 +88,13 @@ easy to make man pages.
 
 Cool. I'm excited about this.
 
+Sat Jun 11 00:19:27 EDT 2011
+
+From documenting consoler library in plain text, I notice some things.
+
+- We definitely want a (non-binary) tree of sections kind of structure
+    Sections have names, content, and subsections.
+- All functions are described in a similar way
+    prototype
+    brief description of use.
+
