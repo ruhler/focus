@@ -41,24 +41,16 @@ void sinputter(InputterState* is, GetEventFunction iget, PutCharFunction iput)
 {
     while (1) {
         CNSL_Event event = iget();
+        CNSL_Keysym sym;
         bool shift = is->shifton;
         bool ctrl = is->ctrlon;
 
-        switch (event.type) {
-            case CNSLE_QUIT:
-                return;
-
-            case CNSLE_KEYPRESS:
-                press(is, iput, event.value, shift, ctrl);
-                break;
-
-            case CNSLE_KEYRELEASE:
-                release(is, event.value);
-                break;
-
-            default:
-                assert(false && "unexepected event type");
-                break;
+        if (CNSL_IsQuit(event)) {
+            return;
+        } else if (CNSL_IsKeypress(event, &sym)) {
+            press(is, iput, sym, shift, ctrl);
+        } else if (CNSL_IsKeyrelease(event, &sym)) {
+            release(is, sym);
         }
     }
 }

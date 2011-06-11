@@ -181,10 +181,10 @@ an abstract type which is cheap to copy.
 
 The following functions are provided to construct events.
 
-  CNSL_Event CNSL_MakeKeypress(CNSL_Keysym code);
+  CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym);
     Construct a keypress event with the given keysym.
 
-  CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym code);
+  CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym);
     Construct a keyrelease event with the given keysym.
 
   CNSL_Event CNSL_MakeQuit();

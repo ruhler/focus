@@ -39,7 +39,7 @@ void KMPR_RegisterAction(KMPR_KMapper kmapper, CNSL_Keysym key, KMPR_Action acti
 void KMPR_NextEvent(KMPR_KMapper kmapper, const CNSL_Event* event)
 {
     CNSL_Keysym sym;
-    if (CNSL_IsKeypress(event, &sym)) {
+    if (CNSL_IsKeypress(*event, &sym)) {
         assert(sym < CNSLK_LAST);
         kmapper[sym].action(kmapper[sym].userdata);
     }

@@ -7,6 +7,58 @@
 #include "consoler.h"
 
 
+// Event types
+#define CNSLE_KEYPRESS 0
+#define CNSLE_KEYRELEASE 1
+#define CNSLE_QUIT 2
+
+CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym)
+{
+    CNSL_Event event;
+    event.type = CNSLE_KEYPRESS;
+    event.value = sym;
+    return event;
+}
+
+CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym)
+{
+    CNSL_Event event;
+    event.type = CNSLE_KEYRELEASE;
+    event.value = sym;
+    return event;
+}
+
+CNSL_Event CNSL_MakeQuit(CNSL_Keysym sym)
+{
+    CNSL_Event event;
+    event.type = CNSLE_QUIT;
+    event.value = 0;
+    return event;
+}
+
+bool CNSL_IsKeypress(CNSL_Event event, CNSL_Keysym* sym)
+{
+    if (event.type == CNSLE_KEYPRESS) {
+        *sym = event.value;
+    }
+    return event.type == CNSLE_KEYPRESS;
+}
+
+bool CNSL_IsKeyrelease(CNSL_Event event, CNSL_Keysym* sym)
+{
+    if (event.type == CNSLE_KEYRELEASE) {
+        *sym = event.value;
+    }
+    return event.type == CNSLE_KEYRELEASE;
+}
+
+bool CNSL_IsQuit(CNSL_Event event)
+{
+    return event.type == CNSLE_QUIT;
+}
+
+
+
 int CNSL_GetRed(CNSL_Color c)
 {
     return 0xFF & (c >> 16);
@@ -61,22 +113,6 @@ CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y)
 void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Color color)
 {
     display->pixels[y*display->width + x] = color;
-}
-
-int CNSL_IsKeypress(const CNSL_Event* e, int* code)
-{
-    if (e->type == CNSLE_KEYPRESS) {
-        *code = e->value;
-    }
-    return e->type == CNSLE_KEYPRESS;
-}
-
-int CNSL_IsKeyrelease(const CNSL_Event* e, int* code)
-{
-    if (e->type == CNSLE_KEYRELEASE) {
-        *code = e->value;
-    }
-    return e->type == CNSLE_KEYRELEASE;
 }
 
 CNSL_Console stdcon = NULL;

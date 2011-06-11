@@ -25,14 +25,13 @@ int main(int argc, char* argv[])
     printf("%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0));
 
-    event.type = CNSLE_KEYPRESS;
-    event.value = CNSLK_w;
+    event = CNSL_MakeKeypress(CNSLK_w);
     CNSL_SendEvent(filler, &event);
     updatedisplay(filler, display);
     printf("%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
 
-    event.value = CNSLK_q;
+    event = CNSL_MakeKeypress(CNSLK_q);
 
     CNSL_CloseClient(filler);
     CNSL_Quit();

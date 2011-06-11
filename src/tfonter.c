@@ -39,7 +39,7 @@ int main()
             break;
         }
 
-        if (CNSL_IsKeypress(&event, &sym) && sym == CNSLK_q) {
+        if (CNSL_IsKeypress(event, &sym) && sym == CNSLK_q) {
             done = 1;
             break;
         }

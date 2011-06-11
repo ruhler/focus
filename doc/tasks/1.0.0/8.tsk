@@ -67,7 +67,7 @@ I just don't know if it will actually work.
 So here's what I'll do, now that I've finished the rough draft of the
 document, which is pretty decent. I need to do the following things:
 
-- Have consoler be a library, instead of just a .o file.
++ Have consoler be a library, instead of just a .o file.
 This is mostly scons work. I should move consoler to the consoler directory
 while I'm at it.
 
@@ -75,4 +75,11 @@ while I'm at it.
   the applications to support the new interface.
 
 I don't think it matters which order I do them in.
+
+Fri Jun 10 21:56:05 EDT 2011
+
+I moved consoler to its own directory and made it a library. It was
+surprisingly easy and cleaned up the scons code a bunch I think.
+
+Now let me try to update the library to match the documentation.
 

@@ -47,58 +47,58 @@ char* try(CNSL_Event* events)
 void test(bool* result)
 {
     CNSL_Event a[] = {
-        {CNSLE_KEYPRESS, CNSLK_a}, {CNSLE_KEYRELEASE, CNSLK_a},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_a), CNSL_MakeKeyrelease(CNSLK_a),
+        CNSL_MakeQuit()
     };
     update(result, streq("a", "a", try(a)));
 
     CNSL_Event abcd[] = {
-        {CNSLE_KEYPRESS, CNSLK_a}, {CNSLE_KEYRELEASE, CNSLK_a},
-        {CNSLE_KEYPRESS, CNSLK_b}, {CNSLE_KEYRELEASE, CNSLK_b},
-        {CNSLE_KEYPRESS, CNSLK_c}, {CNSLE_KEYRELEASE, CNSLK_c},
-        {CNSLE_KEYPRESS, CNSLK_d}, {CNSLE_KEYRELEASE, CNSLK_d},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_a), CNSL_MakeKeyrelease(CNSLK_a),
+        CNSL_MakeKeypress(CNSLK_b), CNSL_MakeKeyrelease(CNSLK_b),
+        CNSL_MakeKeypress(CNSLK_c), CNSL_MakeKeyrelease(CNSLK_c),
+        CNSL_MakeKeypress(CNSLK_d), CNSL_MakeKeyrelease(CNSLK_d),
+        CNSL_MakeQuit()
     };
     update(result, streq("abcd", "abcd", try(abcd)));
 
     CNSL_Event aBc[] = {
-        {CNSLE_KEYPRESS, CNSLK_a}, {CNSLE_KEYRELEASE, CNSLK_a},
-        {CNSLE_KEYPRESS, CNSLK_LSHIFT},
-        {CNSLE_KEYPRESS, CNSLK_b}, {CNSLE_KEYRELEASE, CNSLK_b},
-        {CNSLE_KEYRELEASE, CNSLK_LSHIFT},
-        {CNSLE_KEYPRESS, CNSLK_c}, {CNSLE_KEYRELEASE, CNSLK_c},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_a), CNSL_MakeKeyrelease(CNSLK_a),
+        CNSL_MakeKeypress(CNSLK_LSHIFT),
+        CNSL_MakeKeypress(CNSLK_b), CNSL_MakeKeyrelease(CNSLK_b),
+        CNSL_MakeKeyrelease(CNSLK_LSHIFT),
+        CNSL_MakeKeypress(CNSLK_c), CNSL_MakeKeyrelease(CNSLK_c),
+        CNSL_MakeQuit()
     };
     update(result, streq("aBc", "aBc", try(aBc)));
 
     CNSL_Event mm[] = {
-        {CNSLE_KEYPRESS, CNSLK_MINUS}, {CNSLE_KEYRELEASE, CNSLK_MINUS},
-        {CNSLE_KEYPRESS, CNSLK_MINUS}, {CNSLE_KEYRELEASE, CNSLK_MINUS},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_MINUS), CNSL_MakeKeyrelease(CNSLK_MINUS),
+        CNSL_MakeKeypress(CNSLK_MINUS), CNSL_MakeKeyrelease(CNSLK_MINUS),
+        CNSL_MakeQuit()
     };
     update(result, streq("--", "--", try(mm)));
     
     CNSL_Event semicolon[] = {
-        {CNSLE_KEYPRESS, CNSLK_SEMICOLON}, {CNSLE_KEYRELEASE, CNSLK_SEMICOLON},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_SEMICOLON), CNSL_MakeKeyrelease(CNSLK_SEMICOLON),
+        CNSL_MakeQuit()
     };
     update(result, streq("semicolon", ";", try(semicolon)));
 
     CNSL_Event t0123[] = {
-        {CNSLE_KEYPRESS, CNSLK_0}, {CNSLE_KEYRELEASE, CNSLK_0},
-        {CNSLE_KEYPRESS, CNSLK_1}, {CNSLE_KEYRELEASE, CNSLK_1},
-        {CNSLE_KEYPRESS, CNSLK_2}, {CNSLE_KEYRELEASE, CNSLK_2},
-        {CNSLE_KEYPRESS, CNSLK_3}, {CNSLE_KEYRELEASE, CNSLK_3},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_0), CNSL_MakeKeyrelease(CNSLK_0),
+        CNSL_MakeKeypress(CNSLK_1), CNSL_MakeKeyrelease(CNSLK_1),
+        CNSL_MakeKeypress(CNSLK_2), CNSL_MakeKeyrelease(CNSLK_2),
+        CNSL_MakeKeypress(CNSLK_3), CNSL_MakeKeyrelease(CNSLK_3),
+        CNSL_MakeQuit()
     };
     update(result, streq("0123", "0123", try(t0123)));
 
     CNSL_Event arrows[] = {
-        {CNSLE_KEYPRESS, CNSLK_UP}, {CNSLE_KEYRELEASE, CNSLK_UP},
-        {CNSLE_KEYPRESS, CNSLK_DOWN}, {CNSLE_KEYRELEASE, CNSLK_DOWN},
-        {CNSLE_KEYPRESS, CNSLK_LEFT}, {CNSLE_KEYRELEASE, CNSLK_LEFT},
-        {CNSLE_KEYPRESS, CNSLK_RIGHT}, {CNSLE_KEYRELEASE, CNSLK_RIGHT},
-        {CNSLE_QUIT, 0}
+        CNSL_MakeKeypress(CNSLK_UP), CNSL_MakeKeyrelease(CNSLK_UP),
+        CNSL_MakeKeypress(CNSLK_DOWN), CNSL_MakeKeyrelease(CNSLK_DOWN),
+        CNSL_MakeKeypress(CNSLK_LEFT), CNSL_MakeKeyrelease(CNSLK_LEFT),
+        CNSL_MakeKeypress(CNSLK_RIGHT), CNSL_MakeKeyrelease(CNSLK_RIGHT),
+        CNSL_MakeQuit()
     };
     update(result, streq("arrows", "\e[A\e[B\e[D\e[C", try(arrows)));
 

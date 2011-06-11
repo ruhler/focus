@@ -189,19 +189,19 @@ void handle_input()
         CNSL_RecvEvent(stdcon, &event);
         int sym;
 
-        if (CNSL_IsKeypress(&event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
+        if (CNSL_IsKeypress(event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
             ctrlon = 1;
         }
 
-        if (CNSL_IsKeyrelease(&event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
+        if (CNSL_IsKeyrelease(event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
             ctrlon = 0;
         }
 
         // (for now: number keys choose the window)
-        if (ctrlon && CNSL_IsKeypress(&event, &sym) && sym == CNSLK_QUOTE) {
+        if (ctrlon && CNSL_IsKeypress(event, &sym) && sym == CNSLK_QUOTE) {
             // This is a control sequence. Mark it.
             commandpending = 1;
-        } else if (commandpending && CNSL_IsKeypress(&event, &sym)) {
+        } else if (commandpending && CNSL_IsKeypress(event, &sym)) {
             if (sym >= CNSLK_0 && sym <= CNSLK_9) {
                 switch_to_window(sym - CNSLK_0);
             } else if (sym == CNSLK_c) {

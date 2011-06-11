@@ -2,7 +2,22 @@
 #ifndef CONSOLER_H
 #define CONSOLER_H
 
+#include <stdbool.h>
 #include "consoler_keysym.h"
+
+typedef struct {
+    int type;
+    int value;
+} CNSL_Event;
+
+CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym);
+CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym);
+CNSL_Event CNSL_MakeQuit();
+
+bool CNSL_IsKeypress(CNSL_Event event, CNSL_Keysym* sym);
+bool CNSL_IsKeyrelease(CNSL_Event event, CNSL_Keysym* sym);
+bool CNSL_IsQuit(CNSL_Event event);
+
 
 // A color. Represented as 0x00RRGGBB.
 // One byte for eac red, green, blue component.
@@ -41,24 +56,6 @@ CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y);
 // Set the color of the pixel at the given location in the display.
 void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Color color);
 
-
-// Event types
-#define CNSLE_KEYPRESS 0
-#define CNSLE_KEYRELEASE 1
-#define CNSLE_QUIT 2
-
-typedef struct {
-    int type;
-    int value;
-} CNSL_Event;
-
-// Test whether an event is a keypress, and if it is, read the key code.
-// Returns nonzero if the event is a keypress event.
-int CNSL_IsKeypress(const CNSL_Event* e, CNSL_Keysym* code);
-
-// Test whether an event is a keyrelease, and if it is, read the key code.
-// Returns nonzero if the event is a keypress event.
-int CNSL_IsKeyrelease(const CNSL_Event* e, int* code);
 
 
 typedef struct {

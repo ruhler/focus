@@ -83,15 +83,13 @@ int main(int argc, char* argv[])
                 if (event.key.keysym.sym == SDLK_F12) {
                     done = 1;
                 } else {
-                    cclev.type = CNSLE_KEYPRESS;
-                    cclev.value = event.key.keysym.sym;
+                    cclev = CNSL_MakeKeypress(event.key.keysym.sym);
                     CNSL_SendEvent(client, &cclev);
                 }
                 break;
 
             case SDL_KEYUP:
-                cclev.type = CNSLE_KEYRELEASE;
-                cclev.value = event.key.keysym.sym;
+                cclev = CNSL_MakeKeyrelease(event.key.keysym.sym);
                 CNSL_SendEvent(client, &cclev);
                 break;
         }

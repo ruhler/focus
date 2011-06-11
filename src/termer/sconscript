@@ -8,7 +8,8 @@ bool_o = env.Object('bool.o', 'bool.c')
 
 # inputtertest
 inputter_o = env.Object('inputter.o', 'inputter.c')
-inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o, bool_o])
+inputtertest = env.Program('inputtertest', ['inputtertest.c', inputter_o,
+    bool_o], LIBS=['consoler'])
 env.Default(env.Command('inputtertest.out', inputtertest, "$SOURCE > $TARGET"))
 
 # screentest

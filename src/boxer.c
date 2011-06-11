@@ -33,7 +33,7 @@ int main()
     while (!done) {
         CNSL_RecvEvent(stdcon, &event);
         int sym; 
-        if (CNSL_IsKeypress(&event, &sym)) {
+        if (CNSL_IsKeypress(event, &sym)) {
             fill(display, x, y, 10, 10, CNSL_MakeColor(255, 0, 0));
 
             switch (sym) {

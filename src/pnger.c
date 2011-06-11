@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     CNSL_Event event;
     CNSL_RecvEvent(stdcon, &event);
     int sym;
-    while (!(CNSL_IsKeypress(&event, &sym) && sym == CNSLK_q)) {
+    while (!(CNSL_IsKeypress(event, &sym) && sym == CNSLK_q)) {
         CNSL_RecvEvent(stdcon, &event);
     }
 
