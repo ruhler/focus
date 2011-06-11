@@ -47,7 +47,6 @@ int main(int argc, char* argv[])
     int pargc = argc - 1;
     char** pargv = argv+1;
 
-    CNSL_Init();
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "sdl init: %s\n", SDL_GetError());
         return 1;
@@ -96,7 +95,6 @@ int main(int argc, char* argv[])
     }
 
     SDL_Quit();
-    CNSL_Quit();
     return 0;
 }
 

@@ -15,6 +15,7 @@
 #define MAX_WINDOWS 10
 
 typedef struct {
+    bool valid;
     CNSL_Client client;
     CNSL_Display display;
 } ClientInfo;
@@ -31,7 +32,7 @@ int lsfd = 0;
 
 void switch_to_window(int windowid)
 {
-    if (g_clients[windowid].client) {
+    if (g_clients[windowid].valid) {
         g_curwin = windowid;
         CNSL_Display b = g_clients[windowid].display;
         CNSL_SendDisplay(stdcon, b, 0, 0, 0, 0, b.width, b.height);
@@ -47,7 +48,7 @@ void* handle_output(void* vwid)
     int id = *(int*)vwid;
     free(vwid);
 
-    assert(g_clients[id].client && "tried to handle output of NULL client");
+    assert(g_clients[id].valid && "tried to handle output of invalid client");
     fprintf(stderr, "handling output for client %i\n", id);
 
     CNSL_Client client = g_clients[id].client;
@@ -64,7 +65,7 @@ void* handle_output(void* vwid)
         }
     }
 
-    g_clients[id].client = NULL;
+    g_clients[id].valid = false;
 
     CNSL_CloseClient(client);
     CNSL_FreeDisplay(display);
@@ -72,7 +73,7 @@ void* handle_output(void* vwid)
     if (id == g_curwin) {
         int i;
         for (i = 0; i < MAX_WINDOWS; i++) {
-            if (g_clients[i].client) {
+            if (g_clients[i].valid) {
                 switch_to_window(i);
                 return;
             }
@@ -91,7 +92,7 @@ void new_client(CNSL_Client client)
     int id = -1;
     int i;
     for (i = 0; i < MAX_WINDOWS; i++) {
-        if (g_clients[i].client == NULL) {
+        if (!g_clients[i].valid) {
             id = i;
             break;
         }
@@ -102,6 +103,7 @@ void new_client(CNSL_Client client)
         return;
     }
 
+    g_clients[id].valid = true;
     g_clients[id].client = client;
 
     int width = 640;
@@ -170,9 +172,9 @@ void* serve_clients(void* arg)
             return NULL;
         }
 
-        CNSL_Client client = malloc(sizeof(CNSL_Client_));
-        client->fdout = pfd;
-        client->fdin = pfd;
+        CNSL_Client client;
+        client.fdout = pfd;
+        client.fdin = pfd;
         new_client(client);
     }
 
@@ -210,7 +212,7 @@ void handle_input()
                 char str[] = "0  1  2  3  4  5  6  7  8  9";
                 int i;
                 for (i = 0; i < MAX_WINDOWS; i++) {
-                    if (!g_clients[i].client) {
+                    if (!g_clients[i].valid) {
                         str[3*i] = '_';
                     }
                 }
@@ -226,7 +228,7 @@ void handle_input()
             commandpending = 0;
         } else {
             // Forward the event to the current window
-            if (g_clients[g_curwin].client) {
+            if (g_clients[g_curwin].valid) {
                 CNSL_SendEvent(g_clients[g_curwin].client, &event);
             }
         }
@@ -235,12 +237,11 @@ void handle_input()
 
 int main(int argc, char* argv[])
 {
-    CNSL_Init();
     g_fonter = FNTR_Create("Monospace-24:Bold");
 
     int i;
     for (i = 0; i < MAX_WINDOWS; i++) {
-        g_clients[i].client = NULL;
+        g_clients[i].valid = false;
     }
     g_curwin = 0;
 
@@ -252,7 +253,6 @@ int main(int argc, char* argv[])
     handle_input();
 
     unlink("/tmp/green");
-    CNSL_Quit();
     return 0;
 }
 

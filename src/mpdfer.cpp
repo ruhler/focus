@@ -24,7 +24,6 @@ int main(int argc, char* argv[])
     int height = 480;
     int acc = 0;
 
-    CNSL_Init();
     CNSL_GetGeometry(&width, &height);
 
     FNTR_Fonter fonter = FNTR_Create("Monospace-24:Bold");
@@ -99,7 +98,6 @@ int main(int argc, char* argv[])
 
     Pdfer::unload(pdfer);
 
-    CNSL_Quit();
     return 0;
 }
 

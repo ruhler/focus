@@ -6,8 +6,6 @@
 
 int main()
 {
-    CNSL_Init();
-
     const char* fontname = "Monospace-25:Bold";
     const char* string = "Hello there! goodbye!";
 
@@ -46,7 +44,6 @@ int main()
     }
 
     FNTR_Free(fonter);
-    CNSL_Quit();
     return 0;
 }
 

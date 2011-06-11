@@ -82,7 +82,6 @@ int ctermer_Init(int* cols, int* lines)
     gstate.height = 480;
     CNSL_GetGeometry(&gstate.width, &gstate.height);
 
-    CNSL_Init();
     gstate.display = CNSL_AllocDisplay(gstate.width, gstate.height);
     gstate.mincol = -1;
     gstate.maxcol = -1;
@@ -108,7 +107,6 @@ int ctermer_Init(int* cols, int* lines)
 
 void ctermer_DeInit()
 {
-    CNSL_Quit();
 }
 
 void ctermer_Quit()

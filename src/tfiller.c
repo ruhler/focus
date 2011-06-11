@@ -14,8 +14,6 @@ void updatedisplay(CNSL_Client client, CNSL_Display display)
 
 int main(int argc, char* argv[]) 
 {
-    CNSL_Init();
-
     CNSL_Display display = CNSL_AllocDisplay(640, 480);
     CNSL_Event event;
 
@@ -34,7 +32,6 @@ int main(int argc, char* argv[])
     event = CNSL_MakeKeypress(CNSLK_q);
 
     CNSL_CloseClient(filler);
-    CNSL_Quit();
     return 0;
 }
 

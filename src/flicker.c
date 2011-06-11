@@ -25,7 +25,6 @@ int main(int argc, char* argv[])
     fprintf(stderr, "frames: %i\n", frames);
 
     int x, y;
-    CNSL_Init();
 
     CNSL_Display black = CNSL_AllocDisplay(width, height);
     for (x = 0; x < width; x++) {
@@ -47,7 +46,6 @@ int main(int argc, char* argv[])
         CNSL_SendDisplay(stdcon, dsp, 0, 0, 0, 0, width, height);
     }
 
-    CNSL_Quit();
     return 0;
 }
 

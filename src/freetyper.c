@@ -20,7 +20,6 @@ int main(int argc, char* argv[])
     int size = 32;
     char character = 'A';
 
-    CNSL_Init();
     CNSL_Display display = CNSL_AllocDisplay(WIDTH, HEIGHT);
 
     FT_Library lib;
@@ -69,6 +68,6 @@ int main(int argc, char* argv[])
         }
     }
 
-    CNSL_Quit();
+    return 0;
 }
 

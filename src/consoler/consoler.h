@@ -46,21 +46,15 @@ void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Co
 typedef struct {
     int fdin;
     int fdout;
-} CNSL_Console_;
-
-typedef CNSL_Console_* CNSL_Console;
+} CNSL_Console;
 
 extern CNSL_Console stdcon;
 
 typedef struct {
     int fdin;
     int fdout;
-} CNSL_Client_;
+} CNSL_Client;
 
-typedef CNSL_Client_* CNSL_Client;
-
-// Launch a client program, returning a handle to the client.
-// Returns NULL on failure
 // Arguments are same as for exec.
 CNSL_Client CNSL_LaunchClient(const char* path, char* const args[]);
 void CNSL_CloseClient(CNSL_Client client);
@@ -106,13 +100,6 @@ CNSL_Color* CNSL_RDToDisplay(void* ud, int x, int y, int* w);
 // Returns nonzero if a call to RecvDisplay will not block.
 // Returns zero if a call to RecvDisplay will block.
 int CNSL_PollDisplay(CNSL_Client client);
-
-// Initialize the consoler library.
-// This must be called before using the library!
-int CNSL_Init();
-
-// Deinitialize the consoler library.
-int CNSL_Quit();
 
 // Read the geometry of the window (from CNSLWIDTH and CNSLHEIGHT environment
 // variables). Returns the results in width, height. If nothing is specified,

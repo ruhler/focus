@@ -109,83 +109,76 @@ void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Co
     display.pixels[y*display.width + x] = color;
 }
 
-CNSL_Console stdcon = NULL;
+CNSL_Console stdcon = { STDIN_FILENO, STDOUT_FILENO };
 
 
 CNSL_Client CNSL_LaunchClient(const char* path, char* const args[])
 {
+    CNSL_Client client = {-1, -1};
     int stoc[2];
     int ctos[2];
 
     if (pipe(stoc) < 0) {
         perror("pipe");
-        return NULL;
+        return client;
     }
 
     if (pipe(ctos) < 0) {
         perror("pipe");
-        return NULL;
+        return client;
     }
 
     pid_t pid = fork();
     if (pid < 0) {
         perror("fork");
-        return NULL;
+        return client;
     }
 
     if (pid == 0) {
         if (dup2(stoc[0], STDIN_FILENO) < 0) {
             perror("dup2");
-            return NULL;
+            return client;
         }
         close(stoc[0]);
         close(stoc[1]);
 
         if (dup2(ctos[1], STDOUT_FILENO) < 0) {
             perror("dup2");
-            return NULL;
+            return client;
         }
         close(ctos[0]);
         close(ctos[1]);
 
         if (execvp(path, args) < 0) {
             perror("execvp");
-            return NULL;
+            return client;
         }
 
-    } else {
-        close(stoc[0]);
-        close(ctos[1]);
-
-        CNSL_Client c = malloc(sizeof(CNSL_Client_));
-        if (!c) {
-            return NULL;
-        }
-
-        c->fdout = stoc[1];
-        c->fdin = ctos[0];
-        return c;
     }
 
-    return NULL;
+    close(stoc[0]);
+    close(ctos[1]);
+
+    client.fdout = stoc[1];
+    client.fdin = ctos[0];
+    return client;
 }
 
 void CNSL_CloseClient(CNSL_Client client)
 {
-    close(client->fdin);
-    close(client->fdout);
-    free(client);
+    close(client.fdin);
+    close(client.fdout);
 }
 
 int CNSL_RecvEvent(CNSL_Console console, CNSL_Event* event)
 {
-    int red = read(console->fdin, event, sizeof(CNSL_Event));
+    int red = read(console.fdin, event, sizeof(CNSL_Event));
     return red;
 }
 
 int CNSL_SendEvent(CNSL_Client client, const CNSL_Event* event)
 {
-    write(client->fdout, event, sizeof(CNSL_Event));
+    write(client.fdout, event, sizeof(CNSL_Event));
     return 1;
 }
 
@@ -206,12 +199,12 @@ int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
     // width*ui4: row (height)
 
     unsigned int header[] = {dstx, dsty, width, height};
-    write(console->fdout, header, 4*sizeof(unsigned int));
+    write(console.fdout, header, 4*sizeof(unsigned int));
 
     int y;
     for (y = srcy; y < height+srcy; y++) {
         CNSL_Color* line = display.pixels + (y * display.width) + srcx;
-        write(console->fdout, line, width*sizeof(CNSL_Color));
+        write(console.fdout, line, width*sizeof(CNSL_Color));
     }
     return 1;
 }
@@ -226,7 +219,7 @@ int CNSL_RecvDisplay(CNSL_Client client,
     static junkwidth = 0;
 
     unsigned int header[4] = {0};
-    if (read(client->fdin, header, 4 * sizeof(unsigned int)) < 4) {
+    if (read(client.fdin, header, 4 * sizeof(unsigned int)) < 4) {
         return 0;
     }
 
@@ -249,8 +242,8 @@ int CNSL_RecvDisplay(CNSL_Client client,
         int wuse = wmax < *width ? wmax : *width;
         int wleft = *width - wuse;
 
-        read(client->fdin, buf, wuse * sizeof(CNSL_Color));
-        read(client->fdin, junk, wleft * sizeof(CNSL_Color));
+        read(client.fdin, buf, wuse * sizeof(CNSL_Color));
+        read(client.fdin, junk, wleft * sizeof(CNSL_Color));
     }
 
     return 1;
@@ -270,27 +263,9 @@ CNSL_Color* CNSL_RDToDisplay(void* ud, int x, int y, int* w)
 int CNSL_PollDisplay(CNSL_Client client)
 {
     struct pollfd fd;
-    fd.fd = client->fdin;
+    fd.fd = client.fdin;
     fd.events = POLLIN;
     return poll(&fd, 1, 0);
-}
-
-int CNSL_Init()
-{
-    stdcon = (CNSL_Console)malloc(sizeof(CNSL_Console_));
-    if (!stdcon) {
-        return -1;
-    }
-    stdcon->fdin = STDIN_FILENO;
-    stdcon->fdout = STDOUT_FILENO;
-
-    return 1;
-}
-
-int CNSL_Quit()
-{
-    free(stdcon);
-    return 1;
 }
 
 void CNSL_GetGeometry(int* width, int* height)

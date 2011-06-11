@@ -50,7 +50,6 @@ int main(int argc, char* argv[])
     unsigned int width = png_get_image_width(png_ptr, info_ptr);
     unsigned int height = png_get_image_height(png_ptr, info_ptr);
 
-    CNSL_Init();
     CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     unsigned int y;
@@ -74,7 +73,6 @@ int main(int argc, char* argv[])
         CNSL_RecvEvent(stdcon, &event);
     }
 
-    CNSL_Quit();
     return 0;
 }
 

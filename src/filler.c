@@ -38,8 +38,6 @@ void quit(int* done) { *done = 1; }
 
 int main()
 {
-    CNSL_Init();
-
     CNSL_Color colors[8];
     colors[BLACK] = CNSL_MakeColor(0, 0, 0);
     colors[RED] = CNSL_MakeColor(255, 0, 0);
@@ -90,7 +88,6 @@ int main()
     }
 
     KMPR_Free(kmapper);
-    CNSL_Quit();
     return 0;
 }
 

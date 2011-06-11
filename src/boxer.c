@@ -19,8 +19,6 @@ void fill(CNSL_Display dpy,
 
 int main()
 {
-    CNSL_Init();
-
     int width = 640;
     int height = 480;
     CNSL_GetGeometry(&width, &height);
@@ -49,8 +47,6 @@ int main()
             CNSL_SendDisplay(stdcon, display, x-10, y-10, x-10, y-10, 30, 30);
         }
     }
-
-    CNSL_Quit();
     return 0;
 }
 
