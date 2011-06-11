@@ -76,7 +76,7 @@ int ctermer_Init(int* cols, int* lines)
 
     gstate.fonter = FNTR_Create(font);
     gstate.cell_width = FNTR_MaxWidth(gstate.fonter);
-    gstate.cell_height = FNTR_MaxHeight(gstate.fonter);
+    gstate.cell_height = FNTR_Height(gstate.fonter);
 
     gstate.width = 640;
     gstate.height = 480;

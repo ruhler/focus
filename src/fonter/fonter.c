@@ -3,6 +3,7 @@
 
 #include "fonter.h"
 
+// Round a fixed point number in 26.6 format to an integer.
 int from26_6(int x)
 {
     int w = x >> 6;
@@ -65,7 +66,7 @@ FNTR_Fonter FNTR_Create(const char* fontname)
 
 void FNTR_Free(FNTR_Fonter fonter)
 {
-    // TODO: what do we have to do to clean up the freetype stuff?
+    FT_Done_FreeType(fonter->library);
     free(fonter->name);
     free(fonter);
 }
@@ -75,7 +76,7 @@ int FNTR_MaxWidth(FNTR_Fonter fonter)
     return fonter->width;
 }
 
-int FNTR_MaxHeight(FNTR_Fonter fonter)
+int FNTR_Height(FNTR_Fonter fonter)
 {
     return fonter->height;
 }
@@ -128,12 +129,7 @@ int FNTR_GlyphWidth(FNTR_Fonter fonter)
     return from26_6(fonter->face->glyph->metrics.horiAdvance);
 }
 
-int FNTR_GlyphHeight(FNTR_Fonter fonter)
-{
-    return fonter->height;
-}
-
-int FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y)
+uint8_t FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y)
 {
     int left = fonter->face->glyph->bitmap_left;
     int width = fonter->face->glyph->bitmap.width;
@@ -147,7 +143,8 @@ int FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y)
     return fonter->face->glyph->bitmap.buffer[index];
 }
 
-void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNSL_Color bg, int dx, int dy)
+void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display,
+        CNSL_Color fg, CNSL_Color bg, int dx, int dy)
 {
     int fgr = CNSL_GetRed8(fg);
     int fgg = CNSL_GetGreen8(fg);
@@ -157,9 +154,9 @@ void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNS
     int bgb = CNSL_GetBlue8(bg);
 
     int gx, gy;
-    for (gy = 0; gy < FNTR_GlyphHeight(fonter); gy++) {
+    for (gy = 0; gy < FNTR_Height(fonter); gy++) {
         for (gx = 0; gx < FNTR_GlyphWidth(fonter); gx++) {
-            int level = FNTR_GlyphLevel(fonter, gx, gy);
+            uint8_t level = FNTR_GlyphLevel(fonter, gx, gy);
 
             unsigned int red = 0xFF & ((fgr * level + bgr * (256-level))/256);
             unsigned int green = 0xFF & ((fgg * level + bgg * (256-level))/256);
@@ -171,7 +168,8 @@ void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNS
     }
 }
 
-void FNTR_DrawString(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNSL_Color bg, int x, int y, const char* str)
+void FNTR_DrawString(FNTR_Fonter fonter, CNSL_Display display,
+        CNSL_Color fg, CNSL_Color bg, int x, int y, const char* str)
 {
     for ( ; *str; str++) {
         FNTR_LoadGlyph(fonter, *str);

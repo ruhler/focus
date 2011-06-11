@@ -16,8 +16,8 @@ int main()
     CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     CNSL_Event event;
-    int sym;
-    int done = 0;
+    CNSL_Keysym sym;
+    bool done = false;
 
     CNSL_Color fg = CNSL_MakeColor(0xff, 0xff, 0xff);
     CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0xff);
@@ -29,12 +29,11 @@ int main()
     FNTR_DrawString(fonter, display, fg, bg, x, y, string);
 
     while (!done) {
-        int x, y;
         CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
         event = CNSL_RecvEvent(stdcon);
         if (CNSL_IsQuit(event) || (CNSL_IsKeypress(event, &sym) && sym == CNSLK_q)) {
-            done = 1;
+            done = true;
             break;
         }
     }

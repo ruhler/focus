@@ -7,6 +7,14 @@ fonter = env.Library('fonter.c')
 env['CPPPATH'].append(Dir('.'))
 env['LIBPATH'].append(Dir('.'))
 
+fontertest = env.Program('fontertest', 'fontertest.c',
+        LIBS=['fontconfig', 'freetype', 'fonter', 'consoler'])
+Default(env.Command('fontertest.out', fontertest, "$SOURCES > $TARGET"))
+
+fonterexample = env.Program('fonterexample', 'fonterexample.c',
+        LIBS=['fontconfig', 'freetype', 'fonter', 'consoler'])
+Default(fonterexample)
+
 env.Install("$PREFIX/include", 'fonter.h')
 env.Install("$PREFIX/lib", fonter);
 

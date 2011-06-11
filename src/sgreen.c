@@ -217,9 +217,9 @@ void handle_input()
                 CNSL_Color fg = CNSL_MakeColor(0xFF, 0xFF, 0xFF);
                 CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
                 CNSL_Display d = g_clients[g_curwin].display;
-                int y = d.height - FNTR_MaxHeight(g_fonter);
+                int y = d.height - FNTR_Height(g_fonter);
                 FNTR_DrawString(g_fonter, d, fg, bg, 0, y, str);
-                CNSL_SendDisplay(stdcon, d, 0, y, 0, y, d.width, FNTR_MaxHeight(g_fonter));
+                CNSL_SendDisplay(stdcon, d, 0, y, 0, y, d.width, FNTR_Height(g_fonter));
             }
 
             commandpending = 0;

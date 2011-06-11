@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
                 CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
                 std::ostringstream oss;
                 oss << pdffilename << "    " << pdfer->page() << " of " << pdfer->pages() << " ";
-                FNTR_DrawString(fonter, display, fg, bg, 0, height - FNTR_MaxHeight(fonter), oss.str().c_str());
+                FNTR_DrawString(fonter, display, fg, bg, 0, height - FNTR_Height(fonter), oss.str().c_str());
                 showstatus = false;
             }
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);

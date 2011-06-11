@@ -14,14 +14,6 @@ env.Default(filler)
 tfiller = env.Program('tfiller', ['tfiller.c'], LIBS=['consoler'])
 Default(env.Command('tfiller.output', [tfiller, filler], "$SOURCES > $TARGET"));
 
-tfonter = env.Program('tfonter', ['tfonter.c'],
-        LIBS = ['m', 'fontconfig', 'freetype', 'fonter', 'consoler'])
-Default(tfonter);
-
-tfonter2 = env.Program('tfonter2', ['tfonter2.c'],
-        LIBS = ['m', 'fontconfig', 'freetype', 'fonter', 'consoler'])
-Default(env.Command('tfonter2.output', [tfonter2, filler], "$SOURCES > $TARGET"));
-
 boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
 env.Default(boxer)
 

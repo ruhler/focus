@@ -64,3 +64,11 @@ Wed Jun  8 23:14:30 EDT 2011
 
 I'm opening a task to discuss this documentation issue: 4.tsk.
 
+Sat Jun 11 11:17:04 EDT 2011
+
+The other thing I didn't mention was how to deal with glyphs missing from the
+initial font loaded. Let's just say fonter will load additional fonts if
+needed in an attempt to find the character you ask for. But I can leave the
+implemention limited in the number of fonts without telling the user. That's
+like, we have a known bug, but I can fix it later if desired.
+
