@@ -3,6 +3,8 @@
 #define CONSOLER_H
 
 #include <stdbool.h>
+#include <stdint.h>
+
 #include "consoler_keysym.h"
 
 typedef struct {
@@ -18,20 +20,14 @@ bool CNSL_IsKeypress(CNSL_Event event, CNSL_Keysym* sym);
 bool CNSL_IsKeyrelease(CNSL_Event event, CNSL_Keysym* sym);
 bool CNSL_IsQuit(CNSL_Event event);
 
+typedef uint32_t CNSL_Color;
 
-// A color. Represented as 0x00RRGGBB.
-// One byte for eac red, green, blue component.
-typedef unsigned int CNSL_Color;
+uint8_t CNSL_GetRed8(CNSL_Color c);
+uint8_t CNSL_GetBlue8(CNSL_Color c);
+uint8_t CNSL_GetGreen8(CNSL_Color c);
+uint32_t CNSL_GetRGB8(CNSL_Color c);
 
-// Return the components of the color.
-// Returned value is in interval [0, 255]
-int CNSL_GetRed(CNSL_Color c);
-int CNSL_GetBlue(CNSL_Color c);
-int CNSL_GetGreen(CNSL_Color c);
-
-// Create a color from the given components.
-// Component values should be in the interval [0, 255].
-CNSL_Color CNSL_MakeColor(int r, int g, int b);
+CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b);
 
 
 typedef struct {

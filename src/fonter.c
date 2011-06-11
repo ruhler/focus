@@ -149,12 +149,12 @@ int FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y)
 
 void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display, CNSL_Color fg, CNSL_Color bg, int dx, int dy)
 {
-    int fgr = CNSL_GetRed(fg);
-    int fgg = CNSL_GetGreen(fg);
-    int fgb = CNSL_GetBlue(fg);
-    int bgr = CNSL_GetRed(bg);
-    int bgg = CNSL_GetGreen(bg);
-    int bgb = CNSL_GetBlue(bg);
+    int fgr = CNSL_GetRed8(fg);
+    int fgg = CNSL_GetGreen8(fg);
+    int fgb = CNSL_GetBlue8(fg);
+    int bgr = CNSL_GetRed8(bg);
+    int bgg = CNSL_GetGreen8(bg);
+    int bgb = CNSL_GetBlue8(bg);
 
     int gx, gy;
     for (gy = 0; gy < FNTR_GlyphHeight(fonter); gy++) {

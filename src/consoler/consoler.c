@@ -59,23 +59,28 @@ bool CNSL_IsQuit(CNSL_Event event)
 
 
 
-int CNSL_GetRed(CNSL_Color c)
+uint8_t CNSL_GetRed8(CNSL_Color c)
 {
     return 0xFF & (c >> 16);
 }
 
 
-int CNSL_GetBlue(CNSL_Color c)
+uint8_t CNSL_GetBlue8(CNSL_Color c)
 {
     return 0xFF & c;
 }
 
-int CNSL_GetGreen(CNSL_Color c)
+uint8_t CNSL_GetGreen8(CNSL_Color c)
 {
     return 0xFF & (c >> 8);
 }
 
-CNSL_Color CNSL_MakeColor(int r, int g, int b)
+uint32_t CNSL_GetRGB8(CNSL_Color c)
+{
+    return c;
+}
+
+CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b)
 {
     return (r << 16) | (g << 8) | b;
 }

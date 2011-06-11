@@ -218,19 +218,19 @@ destructor functions are provided to work with colors. It is recommended you
 use them rather than directly accessing the bits of a color, because the
 underlying representation for CNSL_Color may change in future releases.
 
-    int CNSL_GetRed8(CNSL_Color c);
+    uint8_t CNSL_GetRed8(CNSL_Color c);
         Return the red component of the color c. The value returned is in the
         range 0 to 255 inclusive.
 
-    int CNSL_GetGreen8(CNSL_Color c);
+    uint8_t CNSL_GetGreen8(CNSL_Color c);
         Return the green component of the color c. The value returned is in
         the range 0 to 255 inclusive.
 
-    int CNSL_GetBlue8(CNSL_Color c);
+    uint8_t CNSL_GetBlue8(CNSL_Color c);
         Return the blue component of the color c. The value returned is in the
         range 0 to 255 inclusive.
 
-    unsigned int CNSL_GetRGB8(CNSL_Color c);
+    uint32_t CNSL_GetRGB8(CNSL_Color c);
         Get the component values of the color c all together in a single word.
         Bits 23:16 contain the red component, 15:8 contain the green
         component, and 7:0 contain the blue component of the color.
@@ -238,7 +238,7 @@ underlying representation for CNSL_Color may change in future releases.
         This function is currently the identify function, but will be useful
         if later on the underlying representation for CNSL_Color changes.
 
-    CNSL_Color CNSL_MakeRGB8(int r, int g, int b);
+    CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b);
         Construct a color with the given red, green, and blue components. Each
         component should be in the range 0 to 255 inclusive.
 
