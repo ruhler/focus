@@ -20,8 +20,5 @@ pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp'],
         LIBS=['poppler', 'poppler-cpp', 'fonter', 'consoler'])
 env.Default(pdfer)
 
-flicker = env.Program('flicker', ['flicker.c'], LIBS=['consoler'])
-env.Default(flicker)
-
 env.Install("$PREFIX/bin", [sdlcsr, boxer, sgreen, cgreen, pdfer])
 
