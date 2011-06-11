@@ -3,74 +3,50 @@
 
 Import('env')
 
-consoler_o = env.Object('consoler.o', 'consoler.c')
-
-consoler_prof_o = env.Object('consoler_prof.o', 'consoler.c',
-        CFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'],
-        LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
-
-sdlcsr = env.Program('sdlcsr', ['sdlcsr.c', consoler_o], LIBS = ['SDL', 'util']);
+sdlcsr = env.Program('sdlcsr', ['sdlcsr.c'], LIBS = ['consoler', 'SDL', 'util']);
 env.Default(sdlcsr);
-
-sdlcsr_prof_o = env.Object('sdlcsr_prof.o', ['sdlcsr.c'],
-        CFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'],
-        LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
-sdlcsr_prof = env.Program('sdlcsr_prof', [sdlcsr_prof_o, consoler_prof_o],
-        LIBS = ['SDL', 'util'],
-        CFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'],
-        LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
-env.Default(sdlcsr_prof);
 
 kmapper_o = env.Object('kmapper.o', ['kmapper'])
 
-filler = env.Program('filler', ['filler.c', consoler_o, kmapper_o])
+filler = env.Program('filler', ['filler.c', kmapper_o], LIBS=['consoler'])
 env.Default(filler)
 
-tfiller = env.Program('tfiller', ['tfiller.c', consoler_o])
+tfiller = env.Program('tfiller', ['tfiller.c'], LIBS=['consoler'])
 Default(env.Command('tfiller.output', [tfiller, filler], "$SOURCES > $TARGET"));
 
 fonter_o = env.Object('fonter.o', ['fonter'])
-tfonter = env.Program('tfonter', ['tfonter.c', fonter_o, consoler_o],
-        LIBS = ['m', 'fontconfig', 'freetype'])
+tfonter = env.Program('tfonter', ['tfonter.c', fonter_o],
+        LIBS = ['m', 'fontconfig', 'freetype', 'consoler'])
 Default(tfonter);
 
-tfonter2 = env.Program('tfonter2', ['tfonter2.c', fonter_o, consoler_o],
-        LIBS = ['m', 'fontconfig', 'freetype'])
+tfonter2 = env.Program('tfonter2', ['tfonter2.c', fonter_o],
+        LIBS = ['m', 'fontconfig', 'freetype', 'consoler'])
 Default(env.Command('tfonter2.output', [tfonter2, filler], "$SOURCES > $TARGET"));
 
-boxer = env.Program('boxer', ['boxer.c', consoler_o])
+boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
 env.Default(boxer)
 
-pnger = env.Program('pnger', ['pnger.c', consoler_o], LIBS = ['png'])
+pnger = env.Program('pnger', ['pnger.c'], LIBS = ['png', 'consoler'])
 env.Default(pnger)
 
-sgreen = env.Program('sgreen', ['sgreen.c', consoler_o, fonter_o],
-        LIBS = ['pthread', 'fontconfig', 'freetype']);
+sgreen = env.Program('sgreen', ['sgreen.c', fonter_o],
+        LIBS = ['pthread', 'fontconfig', 'freetype', 'consoler']);
 env.Default(sgreen);
 
 cgreen = env.Program('cgreen', ['cgreen.c']);
 env.Default(cgreen);
 
-pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp', fonter_o, consoler_o], LIBS=['poppler', 'poppler-cpp'])
+pdfer = env.Program('pdfer', ['mpdfer.cpp', 'pdfer.cpp', fonter_o], LIBS=['poppler', 'poppler-cpp', 'consoler'])
 env.Default(pdfer)
 
-freetyper = env.Program('freetyper', ['freetyper.c', consoler_o], LIBS=['freetype'])
+freetyper = env.Program('freetyper', ['freetyper.c'], LIBS=['freetype', 'consoler'])
 env.Default(freetyper)
 
 fontconfiger = env.Program('fontconfiger', ['fontconfiger.c'], LIBS=['fontconfig'])
 env.Default(fontconfiger)
 
-flicker = env.Program('flicker', ['flicker.c', consoler_o])
+flicker = env.Program('flicker', ['flicker.c'], LIBS=['consoler'])
 env.Default(flicker)
-
-flicker_prof_o = env.Object('flicker_prof.o', ['flicker.c'],
-        CFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'],
-        LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
-flicker_prof = env.Program('flicker_prof', [flicker_prof_o, consoler_o],
-        CFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'],
-        LINKFLAGS=['-pg', '-fprofile-arcs', '-ftest-coverage'])
-env.Default(flicker_prof)
-
 
 env.Install("$PREFIX/bin", [sdlcsr, filler, boxer, pnger, sgreen, cgreen, pdfer])
 

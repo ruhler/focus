@@ -11,6 +11,7 @@ env['CFLAGS'] = ['-ggdb']
 SConscript('scons/local')
 
 # The main program
+SConscript('src/consoler/sconscript')
 SConscript('src/sconscript')
 SConscript('src/termer/sconscript')
 

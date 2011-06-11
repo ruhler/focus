@@ -1,0 +1,12 @@
+
+# vim: ft=python
+
+Import('env')
+
+consoler = env.Library('consoler.c')
+env['CPPPATH'].append(Dir('.'))
+env['LIBPATH'].append(Dir('.'))
+
+env.Install("$PREFIX/include", ['consoler.h', 'consoler_keysym.h'])
+env.Install("$PREFIX/lib", consoler);
+
