@@ -39,8 +39,8 @@ void Pdfer::show(CNSL_Display display)
     unsigned int* pixels = (unsigned int*)m_image.data();
 
     // (c, r) are coordinates in the display
-    for (int r = 0; r < display->height; r++) {
-        for (int c = 0; c < display->width; c++) {
+    for (int r = 0; r < display.height; r++) {
+        for (int c = 0; c < display.width; c++) {
             if (y + r >= 0 && y + r < sh && x + c >= 0 && x + c < sw) {
                 unsigned int pixel = pixels[(y+r)*sw + (x+c)];
                 CNSL_SetPixel(display, c, r, pixel);

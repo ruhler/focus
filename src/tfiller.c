@@ -8,7 +8,7 @@ void updatedisplay(CNSL_Client client, CNSL_Display display)
 {
     int x, w, y, h;
     do {
-        CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)display);
+        CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)&display);
     } while (CNSL_PollDisplay(client));
 }
 

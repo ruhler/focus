@@ -34,7 +34,7 @@ void switch_to_window(int windowid)
     if (g_clients[windowid].client) {
         g_curwin = windowid;
         CNSL_Display b = g_clients[windowid].display;
-        CNSL_SendDisplay(stdcon, b, 0, 0, 0, 0, b->width, b->height);
+        CNSL_SendDisplay(stdcon, b, 0, 0, 0, 0, b.width, b.height);
     }
 }
 
@@ -55,7 +55,7 @@ void* handle_output(void* vwid)
 
     while (1) {
         int x, y, w, h;
-        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)display) == 0) {
+        if (CNSL_RecvDisplay(client, &x, &y, &w, &h, CNSL_RDToDisplay, (void*)&display) == 0) {
             break;
         }
 
@@ -65,7 +65,6 @@ void* handle_output(void* vwid)
     }
 
     g_clients[id].client = NULL;
-    g_clients[id].display = NULL;
 
     CNSL_CloseClient(client);
     CNSL_FreeDisplay(display);
@@ -219,9 +218,9 @@ void handle_input()
                 CNSL_Color fg = CNSL_MakeColor(0xFF, 0xFF, 0xFF);
                 CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
                 CNSL_Display d = g_clients[g_curwin].display;
-                int y = d->height - FNTR_MaxHeight(g_fonter);
+                int y = d.height - FNTR_MaxHeight(g_fonter);
                 FNTR_DrawString(g_fonter, d, fg, bg, 0, y, str);
-                CNSL_SendDisplay(stdcon, d, 0, y, 0, y, d->width, FNTR_MaxHeight(g_fonter));
+                CNSL_SendDisplay(stdcon, d, 0, y, 0, y, d.width, FNTR_MaxHeight(g_fonter));
             }
 
             commandpending = 0;
@@ -242,7 +241,6 @@ int main(int argc, char* argv[])
     int i;
     for (i = 0; i < MAX_WINDOWS; i++) {
         g_clients[i].client = NULL;
-        g_clients[i].display = NULL;
     }
     g_curwin = 0;
 

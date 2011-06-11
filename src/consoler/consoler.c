@@ -85,39 +85,28 @@ CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b)
     return (r << 16) | (g << 8) | b;
 }
 
-CNSL_Display CNSL_AllocDisplay(unsigned int width, unsigned int height) {
-    CNSL_Display display = malloc(sizeof(CNSL_Display_));
-    if (!display) {
-        return NULL;
-    }
 
-    display->width = width;
-    display->height = height;
-    display->pixels = malloc(sizeof(CNSL_Color) * width * height);
-    if (!display->pixels) {
-        free(display);
-        return NULL;
-    }
+CNSL_Display CNSL_AllocDisplay(unsigned int width, unsigned int height) {
+    CNSL_Display display;
+    display.width = width;
+    display.height = height;
+    display.pixels = malloc(sizeof(CNSL_Color) * width * height);
     return display;
 }
 
-
 void CNSL_FreeDisplay(CNSL_Display display)
 {
-    if (display) {
-        free(display->pixels);
-        free(display);
-    }
+    free(display.pixels);
 }
 
 CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y)
 {
-    return display->pixels[y*display->width + x];
+    return display.pixels[y*display.width + x];
 }
 
 void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Color color)
 {
-    display->pixels[y*display->width + x] = color;
+    display.pixels[y*display.width + x] = color;
 }
 
 CNSL_Console stdcon = NULL;
@@ -221,7 +210,7 @@ int CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
 
     int y;
     for (y = srcy; y < height+srcy; y++) {
-        CNSL_Color* line = display->pixels + (y * display->width) + srcx;
+        CNSL_Color* line = display.pixels + (y * display.width) + srcx;
         write(console->fdout, line, width*sizeof(CNSL_Color));
     }
     return 1;
@@ -269,7 +258,7 @@ int CNSL_RecvDisplay(CNSL_Client client,
 
 CNSL_Color* CNSL_RDToDisplay(void* ud, int x, int y, int* w)
 {
-    CNSL_Display dsp = (CNSL_Display)ud;
+    CNSL_Display* dsp = (CNSL_Display*)ud;
     if (y < dsp->height) {
         *w = (dsp->width - x) < 0 ? 0 : (dsp->width - x);
         return dsp->pixels + dsp->width * y + x;

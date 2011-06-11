@@ -34,24 +34,13 @@ typedef struct {
     unsigned int width;
     unsigned int height;
     CNSL_Color* pixels;
-} CNSL_Display_;
+} CNSL_Display;
 
-typedef CNSL_Display_* CNSL_Display;
-
-// Allocate a pixel buffer
-// Returns NULL if there was some problem allocating the buffer.
-// The buffer should be freed when you're done using it.
 CNSL_Display CNSL_AllocDisplay(unsigned int width, unsigned int height);
-
-// Free an allocated display.
 void CNSL_FreeDisplay(CNSL_Display display);
 
-// Get the color of the pixel at the given location in the display.
 CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y);
-
-// Set the color of the pixel at the given location in the display.
 void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Color color);
-
 
 
 typedef struct {

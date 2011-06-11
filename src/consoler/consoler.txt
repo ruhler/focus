@@ -263,6 +263,9 @@ The following functions are provided to work with displays.
         The display should be freed with a call to CNSL_FreeDisplay when it is
         no longer needed.
 
+        If there is in error allocating the display, the returned display's
+        pixels field will be NULL.
+
     void CNSL_FreeDisplay(CNSL_Display display);
         Free memory associated with the pixel data for the given display.
 
