@@ -2,14 +2,13 @@
 #ifndef PDFER_H
 #define PDFER_H
 
-extern "C" {
-    #include "consoler.h"
-}
-
-
 #include <poppler-document.h>
 #include <poppler-image.h>
 
+extern "C" {
+    #include "consoler.h"
+    #include "fonter.h"
+}
 
 class Pdfer
 {
@@ -23,7 +22,12 @@ public:
     // Draw the view to the given display.
     void show(CNSL_Display display);
 
-    // Actions on the view
+    // turn on the status bar
+    void status();
+
+    // turn off the status bar
+    void unstatus();
+    
     // goto the given page. The first page is page 1.
     // Does nothing if the page number is not valid.
     void goto_(int page);
@@ -48,6 +52,12 @@ public:
     // call: scroll(0, 0.1);
     void scroll(double xp, double yp);
 
+    // scroll to the top of the current page
+    void top();
+
+    // scroll to the bottom of the current page
+    void bottom();
+
     // Zoom out by the given factor.
     // for example, zoom(2.0) zooms out, zoom(0.5) zooms in.
     void zoom(double zf);
@@ -65,7 +75,7 @@ public:
     int pages();
 
 private:
-    Pdfer(poppler::document* doc, int width, int height);
+    Pdfer(const std::string& filename, poppler::document* doc, int width, int height);
 
     // Given the current page and zoom, redraw the page, updating m_image with
     // the result.
@@ -92,6 +102,13 @@ private:
     // left corner of the view (they may be negative).
     double m_x;
     double m_y;
+
+    // fonter object for drawing status bar
+    FNTR_Fonter m_fonter;
+
+    // true if the status bar is on, false otherwise.
+    bool m_status;
+    std::string m_filename;
 };
 
 #endif//PDFER_H

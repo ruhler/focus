@@ -1,14 +1,17 @@
 
-#include <cassert>
-#include <cstdlib>
 #include <iostream>
-#include <string>
-#include <sstream>
 
 #include "pdfer.h"
 
-extern "C" {
-#include "fonter.h"
+double zoomamt(bool shifton, bool ctrlon)
+{
+    if (ctrlon) {
+        return 9.0/10.0;
+    }
+    if (shifton) {
+        return 2.0/3.0;
+    }
+    return 4.0/5.0;
 }
 
 int main(int argc, char* argv[])
@@ -22,11 +25,7 @@ int main(int argc, char* argv[])
 
     int width = 640;
     int height = 480;
-    int acc = 0;
-
     CNSL_GetGeometry(&width, &height);
-
-    FNTR_Fonter fonter = FNTR_Create("Monospace-24:Bold");
 
     Pdfer* pdfer = Pdfer::load(pdffilename, width, height);
     if (!pdfer) {
@@ -35,24 +34,33 @@ int main(int argc, char* argv[])
     }
 
     CNSL_Display display = CNSL_AllocDisplay(width, height);
-
     pdfer->show(display);
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
     CNSL_Event event;
     bool done = false;
-    bool showstatus = false;
+    bool shifton = false;
+    bool ctrlon = false;
+    int acc = 0;
 
     while (!done) {
         event = CNSL_RecvEvent(stdcon);
-        int sym;
+        CNSL_Keysym sym;
 
         if (CNSL_IsKeypress(event, &sym)) {
+            pdfer->unstatus();
             switch (sym) {
+                case CNSLK_LSHIFT: shifton = true; break;
+                case CNSLK_RSHIFT: shifton = true; break;
+                case CNSLK_LCTRL: ctrlon = true; break;
+                case CNSLK_RCTRL: ctrlon = true; break;
+
                 case CNSLK_q: done = true; break;
+
                 case CNSLK_SPACE:
                 case CNSLK_PAGEDOWN:
                 case CNSLK_n: pdfer->next(); break;
+
                 case CNSLK_PAGEUP:
                 case CNSLK_p: pdfer->previous(); break;
 
@@ -68,36 +76,42 @@ int main(int argc, char* argv[])
                 // c clears the accumulator
                 case CNSLK_c: acc = 0; break;
                 case CNSLK_g: pdfer->goto_(acc); acc = 0; break;
-                case CNSLK_j: pdfer->scroll(0, -0.1); break;
-                case CNSLK_k: pdfer->scroll(0, 0.1); break;
-                case CNSLK_h: pdfer->scroll(0.1, 0); break;
-                case CNSLK_l: pdfer->scroll(-0.1, 0); break;
-                case CNSLK_i: pdfer->zoom(0.8); break;
-                case CNSLK_o: pdfer->zoom(1.25); break;
+
+                case CNSLK_h: pdfer->scroll(ctrlon ? .01 : 0.1, 0); break;
+                case CNSLK_j: pdfer->scroll(0, ctrlon ? -.01 : -0.1); break;
+                case CNSLK_k: pdfer->scroll(0, ctrlon ? .01 : 0.1); break;
+                case CNSLK_l: pdfer->scroll(ctrlon ? -.01 : -0.1, 0); break;
+
+                case CNSLK_d: pdfer->scroll(0, -.5);
+                case CNSLK_u: pdfer->scroll(0, .5);
+                case CNSLK_f: pdfer->scroll(0, -.9);
+                case CNSLK_b: pdfer->scroll(0, .9);
+                case CNSLK_t: pdfer->top();
+                case CNSLK_e: pdfer->bottom();
+
+                case CNSLK_i: pdfer->zoom(zoomamt(shifton, ctrlon)); break;
+                case CNSLK_o: pdfer->zoom(1.0/zoomamt(shifton, ctrlon)); break;
+
                 case CNSLK_w: pdfer->fitwidth(); break;
                 case CNSLK_a: pdfer->fitpage(); break;
 
-                case CNSLK_v: showstatus = true; break;
+                case CNSLK_v: pdfer->status(); break;
             }
 
             pdfer->show(display);
 
-            if (showstatus) {
-                // Draw the status bar.
-                CNSL_Color fg = CNSL_MakeColor(0xFF, 0xFF, 0xFF);
-                CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
-                std::ostringstream oss;
-                oss << pdffilename << "    " << pdfer->page() << " of " << pdfer->pages() << " ";
-                FNTR_DrawString(fonter, display, fg, bg, 0, height - FNTR_Height(fonter), oss.str().c_str());
-                showstatus = false;
-            }
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
+        } else if (CNSL_IsKeyrelease(event, &sym)) {
+            switch (sym) {
+                case CNSLK_LSHIFT: shifton = false; break;
+                case CNSLK_RSHIFT: shifton = false; break;
+                case CNSLK_LCTRL: ctrlon = false; break;
+                case CNSLK_RCTRL: ctrlon = false; break;
+            }
         }
-
     }
 
     Pdfer::unload(pdfer);
-
     return 0;
 }
 

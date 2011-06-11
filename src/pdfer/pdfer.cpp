@@ -1,5 +1,5 @@
 
-#include <stdio.h>
+#include <sstream>
 
 #include "pdfer.h"
 
@@ -7,9 +7,11 @@
 #include <poppler-page-renderer.h>
 #include <poppler-rectangle.h>
 
-Pdfer::Pdfer(poppler::document* doc, int width, int height)
+Pdfer::Pdfer(const std::string& filename, poppler::document* doc, int width, int height)
     : m_width(width), m_height(height), m_doc(doc),
-      m_page(1), m_zoom(1.0), m_x(0.0), m_y(0.0)
+      m_page(1), m_zoom(1.0), m_x(0.0), m_y(0.0),
+      m_fonter(FNTR_Create("Monospace-24:Bold")), m_status(false),
+      m_filename(filename)
 {
     redraw();
 }
@@ -21,7 +23,7 @@ Pdfer* Pdfer::load(const std::string& filename, int width, int height)
         return NULL;
     }
 
-    return new Pdfer(doc, width, height);
+    return new Pdfer(filename, doc, width, height);
 }
 
 void Pdfer::unload(Pdfer* pdfer)
@@ -50,6 +52,25 @@ void Pdfer::show(CNSL_Display display)
             }
         }
     }
+
+    if (m_status) {
+        // Draw the status bar.
+        CNSL_Color fg = CNSL_MakeColor(0xFF, 0xFF, 0xFF);
+        CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
+        std::ostringstream oss;
+        oss << m_filename << "    " << page() << " of " << pages() << " ";
+        FNTR_DrawString(m_fonter, display, fg, bg, 0, m_height - FNTR_Height(m_fonter), oss.str().c_str());
+    }
+}
+
+void Pdfer::status()
+{
+    m_status = true;
+}
+
+void Pdfer::unstatus()
+{
+    m_status = false;
 }
 
 void Pdfer::goto_(int page)
@@ -57,8 +78,10 @@ void Pdfer::goto_(int page)
     if (page >= 1 && page <= m_doc->pages()) {
         m_page = page;
         redraw();
+        top();
+    } else {
+        status();
     }
-    m_y = 0;
 }
 
 void Pdfer::next()
@@ -85,6 +108,16 @@ void Pdfer::scroll(double xp, double yp)
 {
     m_x -= xp * m_width;
     m_y -= yp * m_width;
+}
+
+void Pdfer::top()
+{
+    m_y = 0;
+}
+
+void Pdfer::bottom()
+{
+    m_y = m_height - pageheight()/m_zoom;
 }
 
 void Pdfer::zoom(double zf)
@@ -115,6 +148,16 @@ void Pdfer::fitpage()
     zoom(std::max(wz, hz));
 }
 
+int Pdfer::page()
+{
+    return m_page;
+}
+
+int Pdfer::pages()
+{
+    return m_doc->pages();
+}
+
 void Pdfer::redraw()
 {
     // For poppler first page is 0, so we have to adjust.
@@ -136,15 +179,5 @@ double Pdfer::pagewidth()
 double Pdfer::pageheight()
 {
     return m_doc->create_page(m_page-1)->page_rect().height();
-}
-
-int Pdfer::page()
-{
-    return m_page;
-}
-
-int Pdfer::pages()
-{
-    return m_doc->pages();
 }
 
