@@ -57,3 +57,22 @@ can remember them all on the top of my head it's something like:
 
 Hopefully the changes aren't going to break anything major.
 
+Fri Jun 10 21:36:27 EDT 2011
+
+Okay, I made even more changes. But I think their good. I think it's cleaner
+and makes more sense.
+
+I just don't know if it will actually work.
+
+So here's what I'll do, now that I've finished the rough draft of the
+document, which is pretty decent. I need to do the following things:
+
+- Have consoler be a library, instead of just a .o file.
+This is mostly scons work. I should move consoler to the consoler directory
+while I'm at it.
+
+- Change implementation of consoler to match the documentation, and fix all
+  the applications to support the new interface.
+
+I don't think it matters which order I do them in.
+

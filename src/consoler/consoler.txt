@@ -19,15 +19,15 @@ link with -lconsoler. All the consoler library functions are prefixed with
 CNSL.
 
 = Events =
-Currently there are three different kinds of events supported by the consoler
+Currently there are three different types of events supported by the consoler
 API. Those are key press events, key release events, and a quit event. The key
 press and key release events contain information about the symbol of which key
 was pressed or released.
 
 The intended interpretation of events is
-    keypress sym - A keyboard key was pressed which has the given symbol on it.
-    keyrelease sym - A keyboard key was release which has the given symbol on it. 
-    quit - It is requested the application quit
+    keypress sym - A keyboard key was pressed which has the symbol sym on it.
+    keyrelease sym - A keyboard key was release which has the symbol sym on it. 
+    quit - A request for the client application to quit
     
 
 == Keysyms ==
@@ -179,7 +179,7 @@ array indexed by keysyms for example.
 The type CNSL_Event is used to hold consoler events. It should be considered
 an abstract type which is cheap to copy.
 
-The following construction functions are provided to construct events.
+The following functions are provided to construct events.
 
   CNSL_Event CNSL_MakeKeypress(CNSL_Keysym code);
     Construct a keypress event with the given keysym.
@@ -190,7 +190,7 @@ The following construction functions are provided to construct events.
   CNSL_Event CNSL_MakeQuit();
     Construct a quit event.
 
-The following destructor functions are provided to deconstruct events.
+The following functions are provided to deconstruct events.
 
   bool CNSL_IsKeypress(CNSL_event event, CNSL_Keysym* sym);
     Return true if the event is a keypress event, and output the keysym
@@ -212,7 +212,7 @@ send to a consoler server, which may show the display to the user. A display
 is a rectangular array of pixels, where each pixel is some color.
 
 == Colors ==
-The type CNSL_Color represents a color. It's format is 8 bits each for the
+The type CNSL_Color represents a color. Its format is 8 bits each for the
 red, green, and blue components of the color. The following constructor and
 destructor functions are provided to work with colors. It is recommended you
 use them rather than directly accessing the bits of a color, because the
@@ -313,7 +313,8 @@ connections.
         Close a connection to a client.
 
     CNSL_Event CNSL_RecvEvent(CNSL_Console console);
-        Get the next event from the console server.
+        Get the next event from the console server. This function blocks until
+        the next event is available.
         Returns a quit event if server connection has closed.
 
     void CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
@@ -329,4 +330,31 @@ connections.
         coordinates (srcx, srcy). The pixels will be written to the
         destination coordinates (dstx, dsty) of a master display the server
         keeps track of for the client.
+
+    void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display d);
+        Receive a display from a client by copying it to the given display.
+        The location of the update will be as specified by the client when it
+        called SendDisplay. Pixels not in range of the display d will be
+        ignored.
+
+    bool CNSL_PollDisplay(CNSL_Client client);
+        Return true if a call to RecvDisplay will not block, false otherwise.
+        
+= Specifying Screen Dimensions =
+By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set to
+the dimensions of the screen available to the client to use. The consoler
+library provides a couple of functions for facilitating the use of the
+CNSLWIDTH and CNSLHEIGHT environment variables.
+
+    void CNSL_SetGeometry(int width, int height);
+        Set the environment variables CNSLWIDTH and CNSLHEIGHT to the given
+        width and height. This can be called by a server before the server
+        launches a client to propagate the screen dimensions to the client.
+
+    void CNSL_GetGeometry(int* width, int* height);
+        Read the environment variables CNSLWIDTH and CNSLHEIGHT into width and
+        height. If those environment variables are not set, width and height
+        are unchanged. This can be used by the client to discover the screen
+        dimensions when it first starts.
+
 
