@@ -1,0 +1,16 @@
+
+Sun Jun 12 00:00:04 EDT 2011
+
+Task: Computer crashes and needs reboot when exiting termer
+
+Looks like my first attempt at an sgreen test case has caught this problem.
+See 17.tsk. The issue appears to be sgreen goes into an infinite loop trying
+to handle output from a dead client.
+
+Now that the test case 17.tsk passes, let me check to make sure the termer
+behavior is fixed. If so, I'll call it done.
+
+Nope. Or, sort of. Creating a new termer and exiting works fine (which wasn't
+the case before), but exiting the last termer causes the same crash and reboot
+required.
+

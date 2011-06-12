@@ -11,3 +11,35 @@ I should write a test case for this. Or rather, I should write a simple test
 case for sgreen with filler that uses this mechanism, and when that fails, I
 can then fix the issue.
 
+Sat Jun 11 23:35:13 EDT 2011
+
+Here's the test to run: make CNSLSHELL be filler. Run launch sgreen, run
+through the filler tests. Simple.
+
+We could also elaborate on this test by creating a new window with
+ctrl-' c, and then have two filler windows open and verify you can switch
+between them. That sounds like a great test case to me.
+
+Sat Jun 11 23:51:21 EDT 2011
+
+I wrote just the first version: make filler the shell and verify it acts like
+filler.
+
+Here's the issue I've run into. The filler application closes, or something,
+and someone tries to recieve the display, but the filler application has
+closed. We continue to try recieving the display, and go into a loop where
+read fails.
+
+In the previous version I returned something from CNSL_RecvDisplay... I feel
+like I should maybe do that again. That is, CNSL_RecvDisplay can return a
+boolean: true means everything went well. False means it didn't recieve
+anything (end of file or other error).
+
+An alternative would be to have a way to check if a client has reached end of
+file, but I think returning something should work fine too.
+
+Sun Jun 12 00:03:13 EDT 2011
+
+I made the fix. The test case passes. Clearly sgreen is reading CNSLSHELL like
+it should be now. This task is done.
+

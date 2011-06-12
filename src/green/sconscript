@@ -3,12 +3,16 @@
 
 Import('env')
 
-sgreen = env.Program('sgreen', ['sgreen.c'],
+sgreen = env.Program('sgreen', 'sgreen.c',
         LIBS = ['pthread', 'fontconfig', 'freetype', 'fonter', 'consoler']);
 env.Default(sgreen);
 
-cgreen = env.Program('cgreen', ['cgreen.c']);
+cgreen = env.Program('cgreen', 'cgreen.c');
 env.Default(cgreen);
+
+sgreentest = env.Program('sgreentest', 'sgreentest.c', LIBS=['consoler'])
+Default(env.Command('sgreentest.out', [sgreentest, sgreen, env["filler"]],
+    "$SOURCES > $TARGET"))
 
 env.Install("$PREFIX/bin", [sgreen, cgreen])
 

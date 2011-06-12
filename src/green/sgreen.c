@@ -56,12 +56,13 @@ void* handle_output(void* vwid)
     CNSL_Client client = g_clients[id].client;
     CNSL_Display display = g_clients[id].display;
 
-    while (1) {
-        int x, y, w, h;
-        CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
+    int x, y, w, h;
+    bool recved = CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
+    while (recved) {
         if (id == g_curwin) {
             CNSL_SendDisplay(stdcon, display, x, y, x, y, w, h);
         }
+        recved = CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
     }
 
     g_clients[id].valid = false;
@@ -129,8 +130,13 @@ void new_client(CNSL_Client client)
 
 void new_shellclient()
 {
-    char* argv[] = {"termer", "termer", NULL};
-    CNSL_Client client = CNSL_LaunchClient(argv[0], argv);
+    char* shellclient = getenv("CNSLSHELL");
+    if (!shellclient) {
+        shellclient = "termer";
+    }
+
+    char* argv[] = {shellclient, NULL};
+    CNSL_Client client = CNSL_LaunchClient(shellclient, argv);
     new_client(client);
 }
 

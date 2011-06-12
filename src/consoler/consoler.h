@@ -66,7 +66,7 @@ void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         unsigned int dstx, unsigned int dsty,
         unsigned int width, unsigned int height);
 
-void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         unsigned int* dstx, unsigned int* dsty,
         unsigned int* width, unsigned int* height);
 

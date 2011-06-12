@@ -204,7 +204,7 @@ void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
     }
 }
 
-void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         unsigned int* dstx_out, unsigned int* dsty_out,
         unsigned int* width_out, unsigned int* height_out)
 {
@@ -213,8 +213,8 @@ void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
 
     unsigned int header[4] = {0};
     if (read(client.fdin, header, 4 * sizeof(unsigned int)) < 4) {
-        perror("read");
-        return;
+        perror("CNSL_RecvDisplay read");
+        return false;
     }
 
     unsigned int dstx = header[0];
@@ -256,6 +256,8 @@ void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
     if (height_out) {
         *height_out = height;
     }
+
+    return true;
 }
 
 void CNSL_GetGeometry(int* width, int* height)

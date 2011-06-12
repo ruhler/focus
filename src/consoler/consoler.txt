@@ -334,7 +334,7 @@ connections.
         destination coordinates (dstx, dsty) of a master display the server
         keeps track of for the client.
 
-    void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+    bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
             unsigned int* dstx, unsigned int* dsty
             unsigned int* width, unsigned int* height);
 
@@ -345,6 +345,9 @@ connections.
 
         The parameters dstx, dsty, width, and height are set to the updated
         region of the display. They may be NULL.
+
+        Returns true if a display was recieved, false on end of file or other
+        error.
         
 = Specifying Screen Dimensions =
 By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set to
