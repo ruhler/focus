@@ -8,7 +8,6 @@ List of pending issues.
 - man and texinfo docs (4.tsk)
 - choice and application of license(14.tsk)
 - release of 1.0.0 (1.tsk)
-- green socket name has number where username should be (13.tsk)
 
 1.0.1
 - fonter clips bottoms of g and y in termer (15.tsk)

@@ -147,7 +147,7 @@ int start_server()
 
     struct sockaddr_un inaddr;
     inaddr.sun_family = AF_UNIX;
-    snprintf(inaddr.sun_path, UNIX_PATH_MAX, "/tmp/green-%u.%i", getenv("USER"), getpid());
+    snprintf(inaddr.sun_path, UNIX_PATH_MAX, "/tmp/green-%s.%i", getenv("USER"), getpid());
     setenv("GREENSVR", inaddr.sun_path, 1);
 
     if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {

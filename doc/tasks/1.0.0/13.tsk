@@ -10,3 +10,11 @@ I'm expecting: /tmp/green-richard.2949.
 I should first write a test case for this.
 Then I should fix it (should be a trivial fix).
 
+Sun Jun 12 00:14:57 EDT 2011
+
+Do I really need a test case for this? How would I test it? It doesn't really
+matter from a functionality standpoint. We still meet the spec. Let me skip
+the test case, because this isn't a bug.
+
+Good. Done.
+
