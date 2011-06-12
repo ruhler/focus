@@ -13,6 +13,7 @@
 #include "fonter.h"
 
 #define MAX_WINDOWS 10
+#define UNIX_PATH_MAX    108
 
 typedef struct {
     bool valid;
@@ -21,15 +22,17 @@ typedef struct {
 } ClientInfo;
 
 // Displays for each window.
-// The display is NULL if the window is not in use.
 ClientInfo g_clients[MAX_WINDOWS];
+
+// fonter object for drawing the status bar.
 FNTR_Fonter g_fonter;
 
 // The currently active window.
 int g_curwin;
-int done = 0;
-int lsfd = 0;
+bool done = false;
 
+// switch to the given window.
+// Does nothing if that window is not valid.
 void switch_to_window(int windowid)
 {
     if (g_clients[windowid].valid) {
@@ -49,7 +52,6 @@ void* handle_output(void* vwid)
     free(vwid);
 
     assert(g_clients[id].valid && "tried to handle output of invalid client");
-    fprintf(stderr, "handling output for client %i\n", id);
 
     CNSL_Client client = g_clients[id].client;
     CNSL_Display display = g_clients[id].display;
@@ -77,8 +79,7 @@ void* handle_output(void* vwid)
         }
 
         // we are out of clients. Time to stop.
-        fprintf(stderr, "sgreen: all clients finished\n");
-        done = 1;
+        done = true;
     }
 
     return NULL;
@@ -133,39 +134,44 @@ void new_shellclient()
     new_client(client);
 }
 
-void* serve_clients(void* arg)
+int start_server()
 {
-    // Start listening on /tmp/green for client connections.
-    lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    int lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (lsfd < 0) {
         perror("socket");
-        done = 1;
-        return NULL;
+        done = true;
+        return -1;
     }
 
     struct sockaddr_un inaddr;
     inaddr.sun_family = AF_UNIX;
-    strcpy(inaddr.sun_path, "/tmp/green");
+    snprintf(inaddr.sun_path, UNIX_PATH_MAX, "/tmp/green-%u.%i", getenv("USER"), getpid());
+    setenv("GREENSVR", inaddr.sun_path, 1);
 
     if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {
         perror("bind");
-        done = 1;
-        return NULL;
+        done = true;
+        return -1;
     }
 
     if (listen(lsfd, 3) < 0) {
         perror("listen");
-        done = 1;
-        return NULL;
+        done = true;
+        return -1;
     }
+    return lsfd;
+} 
 
+void* serve_clients(int* lsfdp)
+{
+    int lsfd = *lsfdp;
     while (1) {
         struct sockaddr_un paddr;
         socklen_t paddr_size;
         int pfd = accept(lsfd, (struct sockaddr*) &paddr, &paddr_size);
         if (pfd < 0) {
             perror("accept");
-            done = 1;
+            done = true;
             return NULL;
         }
 
@@ -181,24 +187,24 @@ void* serve_clients(void* arg)
 void handle_input()
 {
     CNSL_Event event;
-    int ctrlon = 0;
-    int commandpending = 0;
+    bool ctrlon = false;
+    bool commandpending = false;
     while (!done) {
         event = CNSL_RecvEvent(stdcon);
         int sym;
 
         if (CNSL_IsKeypress(event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
-            ctrlon = 1;
+            ctrlon = true;
         }
 
         if (CNSL_IsKeyrelease(event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
-            ctrlon = 0;
+            ctrlon = false;
         }
 
         // (for now: number keys choose the window)
         if (ctrlon && CNSL_IsKeypress(event, &sym) && sym == CNSLK_QUOTE) {
             // This is a control sequence. Mark it.
-            commandpending = 1;
+            commandpending = true;
         } else if (commandpending && CNSL_IsKeypress(event, &sym)) {
             if (sym >= CNSLK_0 && sym <= CNSLK_9) {
                 switch_to_window(sym - CNSLK_0);
@@ -222,7 +228,7 @@ void handle_input()
                 CNSL_SendDisplay(stdcon, d, 0, y, 0, y, d.width, FNTR_Height(g_fonter));
             }
 
-            commandpending = 0;
+            commandpending = false;
         } else {
             // Forward the event to the current window
             if (g_clients[g_curwin].valid) {
@@ -243,13 +249,18 @@ int main(int argc, char* argv[])
     g_curwin = 0;
 
 
+    int lsfd = start_server();
+    if (lsfd < 0) {
+        return 1;
+    }
+
     pthread_t scthread;
-    pthread_create(&scthread, NULL, &serve_clients, NULL);
+    pthread_create(&scthread, NULL, (void* (*)(void*))&serve_clients, &lsfd);
 
     new_shellclient();
     handle_input();
 
-    unlink("/tmp/green");
+    unlink(getenv("GREENSVR"));
     return 0;
 }
 

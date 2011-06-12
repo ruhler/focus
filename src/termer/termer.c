@@ -1,5 +1,6 @@
 
 #include <pthread.h>
+#include <stdlib.h>
 
 #include "ctermer.h"
 #include "inputter.h"
