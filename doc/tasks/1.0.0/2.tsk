@@ -300,4 +300,15 @@ all libraries are in standard include places or some such.
 
 Okay. That's a lot of little things. Let me do one thing at a time.
 
+Sun Jun 12 19:05:46 EDT 2011
+
+Well it's done. The first version. I suspect I'll want to improve this for
+later releases, but I think it has everything I want.
+ user can specify packages explicitly
+ not all components are required to be built
+ we can use pkgconfig
+ we verify requirements work before running a program.
+
+Good. Now the only thing left here is to document how this whole process
+works. Let me make a new task for that so I can call this one done.
 

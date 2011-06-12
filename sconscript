@@ -1,19 +1,20 @@
 
-env = Environment(CPPPATH=[], LIBPATH=[], LIBS=[])
+env = Environment(
+        tools=['ar', 'gcc', 'g++', 'link', 'textfile'],
+        CPPPATH=[],
+        LIBPATH=[],
+        LIBS=[]
+        )
+
 Export('env')
 
 env['CFLAGS'] = ['-ggdb']
 
-env['COMPONENTS'] = [
-        'boxer', 'consoler', 'filler', 'fonter', 
-        'green', 'pdfer', 'pnger', 'sdlcsr', 'termer'
-        ]
-
 # configuration
-SConscript('config/config')
+tobuild = SConscript('config/config')
 
 # Build each of the components
-for comp in env['COMPONENTS']:
+for comp in tobuild:
     SConscript('src/%s/sconscript' % comp)
 
 env.Alias('install', '$PREFIX')

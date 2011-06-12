@@ -2,11 +2,11 @@
 List of pending issues.
 
 1.0.0
-- nice configure like installer (2.tsk)
 - man and texinfo docs (4.tsk)
 - choice and application of license(14.tsk)
 - release of 1.0.0 (1.tsk)
 - cgreentest should not put socket in top level directory (20.tsk)
+- document how to configure, build, install
 
 1.0.1
 - fonter clips bottoms of g and y in termer (15.tsk)
