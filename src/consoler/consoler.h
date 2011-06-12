@@ -59,7 +59,7 @@ CNSL_Client CNSL_LaunchClient(const char* path, char* const args[]);
 void CNSL_CloseClient(CNSL_Client client);
 
 CNSL_Event CNSL_RecvEvent(CNSL_Console console);
-void CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
+bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
 
 void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         unsigned int srcx, unsigned int srcy,

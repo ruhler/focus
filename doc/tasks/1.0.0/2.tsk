@@ -150,3 +150,58 @@ human (and I can certainly see times when you would want to do that), or it
 could be done automatically. But the automatic part can be a separate tool,
 right? Err. No, let me stew more.
 
+Sun Jun 12 10:53:21 EDT 2011
+
+Here's what's stewed up.
+
+The purpose of testing for satisfied requirements is to be able to distinguish
+between the case of: something can't build because you don't have the
+requirements and something can't build because it's broken.
+
+This is why it is valuable to run little tests rather than rely on the output
+of the makefile to figure out if something will build or not.
+
+Additionally, this way you can disable components you don't meet the
+requirements for without causing the build to fail.
+
+I'm going to scale back my ambitions just a little bit on this installer
+thing, for the purposes of getting it out to the release. And who knows, maybe
+it will be good enough.
+
+So here's the usage scenario:
+
+You provide a configuration file called scons/local. This is a sconscript,
+just like I have now. It should specify the following:
+ - CPPPATH  for explicit additions to default CPPPATH
+ - LIBPATH  for explicit additions to default LIBPATH
+ We should be able to infer LD_LIBRARY_PATH from LIBPATH
+ - PREFIX for where you want it installed
+ - PKG_CONFIG_PATH for the package config path you want to use if any
+
+And maybe in the future we can have a way to explicitly list which components
+you would like to attempt to build or not.
+
+Then you run make (aka scons). It will do configure like stuff, making small
+tests for each requirement to determine which requirements are met, it will
+add to CPPPATH and LIBPATH based on package config stuff. It will generate a
+summary (perhaps in build/config/summary) of the final CPPPATH and LIBPATH
+being used, the prefix being used, for each requirement whether it was met or
+not, and for each component whether it will be built or not, and if not, a
+list of the requirements not satisfied.
+
+And then it will continue on to make just those components that the
+configuration stage said had dependencies met.
+
+This should be the target. There is no ./configure script, but if you want
+one, I propose it's the same as scons configure, which runs the configuration
+stage of the build, and outputs the summary file to the screen.
+
+That's the usage.
+
+Next is implementation. I think the easiest way to turn on or off components
+would be to just list them in a list by name. Then in sconscript we could say:
+for each element in this list, SConscript the appropriate folder. It's trivial
+that way. Simple.
+
+Do you understand the plan? It's fully described? Yes. I think so.
+

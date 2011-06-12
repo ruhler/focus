@@ -22,8 +22,8 @@ env['LIBPATH'] = [
 
 env['ENV']['LD_LIBRARY_PATH'] = ":".join([
     "/pkg/sdl-1.2.14/install/lib",
-    ":/pkg/fontconfig-2.8.0/install/lib",
-    ":/pkg/freetype-2.4.3/install/lib",
-    ":/pkg/libpng-1.4.5/install/lib",
-    ':/pkg/poppler-0.16.5/install/lib'
+    "/pkg/fontconfig-2.8.0/install/lib",
+    "/pkg/freetype-2.4.3/install/lib",
+    "/pkg/libpng-1.4.5/install/lib",
+    '/pkg/poppler-0.16.5/install/lib'
     ])

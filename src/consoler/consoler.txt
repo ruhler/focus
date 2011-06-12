@@ -320,8 +320,9 @@ connections.
         the next event is available.
         Returns a quit event if server connection has closed.
 
-    void CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
+    bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
         Send an event to a client.
+        Returns true if the event was sent successfully, false otherwise.
 
     void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
             unsigned int srcx, unsigned int srcy,

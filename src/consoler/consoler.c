@@ -1,4 +1,5 @@
 
+#include <poll.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -174,9 +175,20 @@ CNSL_Event CNSL_RecvEvent(CNSL_Console console)
     return event;
 }
 
-void CNSL_SendEvent(CNSL_Client client, CNSL_Event event)
+bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event)
 {
-    write(client.fdout, &event, sizeof(CNSL_Event));
+    struct pollfd fd;
+    fd.fd = client.fdout;
+    fd.events = POLLOUT;
+    if (poll(&fd, 1, -1) == 1) {
+        if (fd.revents & (POLLERR | POLLHUP | POLLNVAL)) {
+            return false;
+        } else if (fd.revents & POLLOUT) {
+            int wrote = write(client.fdout, &event, sizeof(CNSL_Event));
+            return wrote > 0;
+        }
+    }
+    return false;
 }
 
 void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
@@ -213,7 +225,6 @@ bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
 
     unsigned int header[4] = {0};
     if (read(client.fdin, header, 4 * sizeof(unsigned int)) < 4) {
-        perror("CNSL_RecvDisplay read");
         return false;
     }
 

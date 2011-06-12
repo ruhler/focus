@@ -14,3 +14,76 @@ Nope. Or, sort of. Creating a new termer and exiting works fine (which wasn't
 the case before), but exiting the last termer causes the same crash and reboot
 required.
 
+Sun Jun 12 11:05:12 EDT 2011
+
+Oh, duh. The problem is with sdlcsr, just like we had for sgreen. It will just
+do an infinite loop when the client ends. Trivial fix.
+
+What's not trivial is a test case for it, because I don't know how to test
+sdlcsr automatically.
+
+Sun Jun 12 11:08:29 EDT 2011
+
+Nope! Not so trivial. The fix didn't work. I forgot to push a quit event.
+
+Sun Jun 12 11:13:02 EDT 2011
+
+And even that didn't fix it. Ugh. Time to go to X for debugging.
+
+Sun Jun 12 11:21:15 EDT 2011
+
+Well bummer. X didn't help. It still crashes.
+
+Specifically, it crashes with filler, so I know it's an sdlcsr problem, not a
+termer problem or sgreen problem.
+
+Sun Jun 12 11:28:15 EDT 2011
+
+What's happening is filler quits, sdlcsr tries to send a quit command to
+filler, but because filler has already quit, the write fails, we end up
+getting a SIGPIPE, which is unhandled, and apparently crashes the program.
+What I want is to send the quit to filler, but if filler is already dead, no
+problem, then continue.
+
+Let me look up the relevant documentation.
+
+Relevant documentation says: if you write to a pipe with no readers, you get a
+SIGPIPE, which terminates your process unless you handle it or ignore it. This
+sucks. How can I do this in the right way? We want to deal with this stuff all
+inside of consoler, but consoler shouldn't be ignoring signals that the
+applications might not want to ignore.
+
+The only other thing I can think of is, maybe I can use poll to catch the
+signal? That is, call poll in SendEvent?
+
+This same problem will happen in sgreen by the way. Sending input to dead
+clients. In fact, that could explain some of the bugginess I've encountered in
+the past. So it would be really nice if we could handle this in consoler.
+
+Here's what I'll do. I'll try using poll in SendEvent, see if it can catch the
+sigpipe specific to the file.
+
+Sun Jun 12 11:50:26 EDT 2011
+
+Hey, you know what? I should be able to catch this in a test case. Just try
+writing lots of quits in a row, right? Let me add it to fillertest, see if I
+catch it.
+
+Well, we trigger the sigpipe, but somehow the test case still passes, which is
+bad.
+
+Oh my. This is really bad. Because we got the sigpipe even earlier. I'll need
+to add a handler for sigpipe in the filler test which reports an error.
+
+Sun Jun 12 12:13:06 EDT 2011
+
+Okay, poll can do it. I just have to check for POLLERR or POLLHUP. And my test
+case catches it, which is nice. What's not nice is the 1 second of sleep I
+introduce to force the schedule...
+
+Sun Jun 12 12:18:18 EDT 2011
+
+So now I should be able to run sdlcsr, and it should work.
+
+Yup! It works. This is fixed now. Cool.
+

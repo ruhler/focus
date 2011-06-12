@@ -2,7 +2,6 @@
 List of pending issues.
 
 1.0.0
-- computer crashes and needs reboot when exiting termer (19.tsk)
 - nice configure like installer (2.tsk)
 - man and texinfo docs (4.tsk)
 - choice and application of license(14.tsk)
@@ -17,4 +16,5 @@ List of pending issues.
 unassigned
 - add italics to termer
 - add status bar to sgreen
+- write pkgconfig files for consoler and fonter?
 

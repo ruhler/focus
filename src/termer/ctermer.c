@@ -135,7 +135,6 @@ char* ctermer_FromTermClient()
 {
     int red = read(gstate.tcfd, fromtermclientbuf, BUFSIZ);
     if (red < 0) {
-        perror("read");
         red = 0;
     }
     fromtermclientbuf[red] = '\0';
