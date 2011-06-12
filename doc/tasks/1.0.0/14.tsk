@@ -1,0 +1,13 @@
+
+Sat Jun 11 21:33:55 EDT 2011
+
+Task: Choose and figure out how to apply a license
+
+For example GPLv3, say?
+
+I suspect that's the one I'll go with. That's the license I've decided on for
+past projects.
+
+How to apply? Well, usually you need a file called COPYING with the license,
+and then you need a header on all the source files.
+

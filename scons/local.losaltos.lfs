@@ -4,8 +4,6 @@
 Import('env')
 
 env['CPPPATH'] = [
-    '#/build/src',
-    'build/src',
     '/pkg/sdl-1.2.14/install/include',
     '/pkg/libpng-1.4.5/install/include',
     '/pkg/poppler-0.16.5/install/include/poppler/cpp',

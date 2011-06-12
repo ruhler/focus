@@ -11,7 +11,7 @@ The components are:
   + fonter library (3.tsk)
   + boxer cnsl application (5.tsk)
   + filler cnsl application (6.tsk)
-  green cnsl application (sgreen, cgreen) (10.tsk)
+  + green cnsl application (sgreen, cgreen) (10.tsk)
     include status bar
     do not include split capability
   + pdfer cnsl application (11.tsk)
@@ -25,7 +25,7 @@ Other things include:
   nice configure like installer (2.tsk)
 
 I'm not including things like fontconfiger, freetyper. Those are more of
-researchy like tools. I'm including kmapper, which should be pushed out to
+researchy like tools. I'm not including kmapper, which should be pushed out to
 1.1.0. I'm not including flicker, which is really useless right now, unless I
 want to do performance stuff, but I don't for this release, so skip it. Code
 that isn't part of the above list should be removed. I can always get it back
@@ -33,7 +33,7 @@ with git later if needed (and I remember what it was).
 
 I will not make major changes to the interfaces. The goal of this release is
 to do as little as I can to make a nice release. So, do improve the code a
-bit, but if I have to make subtantial changes to improve the code, put that
+bit, but if I have to make substantial changes to improve the code, put that
 off to another release.
 
 Let me spawn off some tasks for detailing what features will and will not be
@@ -78,4 +78,36 @@ api is getting cleaned up nicely now too. Cool. This is exciting.
 Sat Jun 11 00:16:37 EDT 2011
 
 I got the consoler library fixed up real nice. What's next? How about fonter?
+
+Sat Jun 11 21:14:33 EDT 2011
+
+I've gone through all the applications, moved them to their own directories,
+reviewed some code, cleaned up some stuff, written a first stab at
+documentation in plain text format.
+
+I have not done much testing of the changes I wrote. Those things should be
+captured by automated test cases. Meaning, I think if I run the code as it is
+I'll run into a number of bugs pretty quickly. I should capture these in test
+cases and fix them.
+
+Given the state of things, what is left before I can release 1.0.0?
+
+- fix enough bugs to make it usable.
+I can't fix all the bugs. Then I would never release. Just fix those bugs
+which keep it from being useable. Record all the rest, those can be part of
+the target for 1.0.1.
+
+- a nice installer configurator thing.
+- man pages for everything.
+- texinfo docs for everything.
+- choice and application of license
+
+So I think here's the deal. I'll install the code as it is now for release
+1.0.0. I'll work under it to do the installer, man pages, texinfo, and license
+things. If I can do all that, then enough of the bugs have been worked out for
+the first release. The installer and documentation stuff is not going to be
+trivial to get going. They will involve a bunch of thought and design. Be
+patient.
+
+I should also start collecting bug and feature requests for the next release.
 

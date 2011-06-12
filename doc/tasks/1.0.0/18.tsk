@@ -1,0 +1,12 @@
+
+Sat Jun 11 22:11:02 EDT 2011
+
+Task: green status bar stays up forever, wrongly
+
+I should either take out the status bar entirely for release 1.0.0, which I'm
+very tempted to do, or fix it so the status bar goes away on the next input.
+
+You know, status bar isn't very useful. I'm punting this to next feature
+release. That is, I'm punting the implementation of a status bar. I still have
+to remove the current implementation from 1.0.0.
+

@@ -1,0 +1,11 @@
+
+Sat Jun 11 21:49:35 EDT 2011
+
+Task: cgreen doesn't read GREENSVR like it should.
+
+This is kind of high priority, because I have no way of launching new
+non-terminal applications in green now.
+
+First write a test case to fix it.
+Then fix it.
+

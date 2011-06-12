@@ -1,0 +1,12 @@
+
+Sat Jun 11 21:29:29 EDT 2011
+
+Task: green socket name has number where username should be:
+
+GREENSVR=/tmp/green-411451648.2949
+
+I'm expecting: /tmp/green-richard.2949.
+
+I should first write a test case for this.
+Then I should fix it (should be a trivial fix).
+

@@ -1,0 +1,13 @@
+
+Sat Jun 11 22:09:06 EDT 2011
+
+Task: sgreen doesn't read $CNSLSHELL like it should
+
+This will make it more difficult to test sgreen. For example, I might want
+filler to be the shell application so I don't have to bother with termer for
+testing.
+
+I should write a test case for this. Or rather, I should write a simple test
+case for sgreen with filler that uses this mechanism, and when that fails, I
+can then fix the issue.
+
