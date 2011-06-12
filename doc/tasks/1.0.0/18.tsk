@@ -10,3 +10,8 @@ You know, status bar isn't very useful. I'm punting this to next feature
 release. That is, I'm punting the implementation of a status bar. I still have
 to remove the current implementation from 1.0.0.
 
+Sun Jun 12 00:12:39 EDT 2011
+
+Status bar code has been removed. I'll open a new task for the feature
+request. This task is done.
+

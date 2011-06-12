@@ -23,7 +23,6 @@ green gives each client a full window. Only one client is viewed at a time.
 The special sequence ctrl-' is used to send commands to green. The following
 commands are supported
 
- ctrl-' 0-9     go to window 0-9
+ ctrl-' 0-9     go to window corresponding to the digit pressed
  ctrl-' c       start a new shell based on the CNSLSHELL environment variable
- ctrl-' w       show which windows are open and the currently viewed window
 

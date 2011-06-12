@@ -10,7 +10,6 @@
 #include <pthread.h>
 
 #include "consoler.h"
-#include "fonter.h"
 
 #define MAX_WINDOWS 10
 #define UNIX_PATH_MAX    108
@@ -23,9 +22,6 @@ typedef struct {
 
 // Displays for each window.
 ClientInfo g_clients[MAX_WINDOWS];
-
-// fonter object for drawing the status bar.
-FNTR_Fonter g_fonter;
 
 // The currently active window.
 int g_curwin;
@@ -216,22 +212,6 @@ void handle_input()
                 switch_to_window(sym - CNSLK_0);
             } else if (sym == CNSLK_c) {
                 new_shellclient();
-            } else if (sym == CNSLK_w) {
-                // Print out which windows are active.
-                char str[] = "0  1  2  3  4  5  6  7  8  9";
-                int i;
-                for (i = 0; i < MAX_WINDOWS; i++) {
-                    if (!g_clients[i].valid) {
-                        str[3*i] = '_';
-                    }
-                }
-                str[3*g_curwin + 1] = '*';
-                CNSL_Color fg = CNSL_MakeColor(0xFF, 0xFF, 0xFF);
-                CNSL_Color bg = CNSL_MakeColor(0x00, 0x00, 0x80);
-                CNSL_Display d = g_clients[g_curwin].display;
-                int y = d.height - FNTR_Height(g_fonter);
-                FNTR_DrawString(g_fonter, d, fg, bg, 0, y, str);
-                CNSL_SendDisplay(stdcon, d, 0, y, 0, y, d.width, FNTR_Height(g_fonter));
             }
 
             commandpending = false;
@@ -246,8 +226,6 @@ void handle_input()
 
 int main(int argc, char* argv[])
 {
-    g_fonter = FNTR_Create("Monospace-24:Bold");
-
     int i;
     for (i = 0; i < MAX_WINDOWS; i++) {
         g_clients[i].valid = false;
