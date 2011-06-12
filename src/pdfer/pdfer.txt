@@ -42,3 +42,9 @@ a: fit the page to the entire window
 v: show information about the pdf file viewed and current page.
    This pops up a status bar which will go away at the next input.
 
+= using cairo with poppler =
+poppler's cpp interface, which pdfer uses, makes use of the splash backend
+instead of the cairo backend. The cairo back end is higher quality however.
+Included with the source of pdfer is a patch, poppler_cpp_cairo.patch,  which
+can be applied to poppler 0.16.5 or later to use the cairo back end.
+
