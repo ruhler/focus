@@ -136,7 +136,7 @@ void new_shellclient()
     new_client(client);
 }
 
-int start_server()
+int start_server(const char* socketname)
 {
     int lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (lsfd < 0) {
@@ -147,7 +147,11 @@ int start_server()
 
     struct sockaddr_un inaddr;
     inaddr.sun_family = AF_UNIX;
-    snprintf(inaddr.sun_path, UNIX_PATH_MAX, "/tmp/green-%s.%i", getenv("USER"), getpid());
+    if (socketname) {
+        snprintf(inaddr.sun_path, UNIX_PATH_MAX, "%s", socketname);
+    } else {
+        snprintf(inaddr.sun_path, UNIX_PATH_MAX, "/tmp/green-%s.%i", getenv("USER"), getpid());
+    }
     setenv("GREENSVR", inaddr.sun_path, 1);
 
     if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {
@@ -226,6 +230,11 @@ void handle_input()
 
 int main(int argc, char* argv[])
 {
+    char* socketname = NULL;
+    if (argc > 2 && strcmp(argv[1], "-s") == 0) {
+        socketname = argv[2];
+    }
+
     int i;
     for (i = 0; i < MAX_WINDOWS; i++) {
         g_clients[i].valid = false;
@@ -233,7 +242,7 @@ int main(int argc, char* argv[])
     g_curwin = 0;
 
 
-    int lsfd = start_server();
+    int lsfd = start_server(socketname);
     if (lsfd < 0) {
         return 1;
     }

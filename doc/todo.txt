@@ -2,7 +2,6 @@
 List of pending issues.
 
 1.0.0
-- cgreen doesn't read $GREENSVR like it should (16.tsk)
 - computer crashes and needs reboot when exiting termer (19.tsk)
 - nice configure like installer (2.tsk)
 - man and texinfo docs (4.tsk)

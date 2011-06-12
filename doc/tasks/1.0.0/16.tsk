@@ -24,3 +24,9 @@ the GREENSVR environment variable.
 I think it's not surprising. The more general you make things, the easier it
 is to test them.
 
+Sun Jun 12 00:48:05 EDT 2011
+
+Implemented test case, caught bug, added -s flag to sgreen, fixed bug. This
+task is done.
+
+
