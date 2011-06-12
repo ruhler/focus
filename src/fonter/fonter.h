@@ -2,7 +2,7 @@
 #ifndef FONTER_H
 #define FONTER_H
 
-#include <fontconfig.h>
+#include <fontconfig/fontconfig.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

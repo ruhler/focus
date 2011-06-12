@@ -3,7 +3,7 @@ all:
 	scons
 
 install:
-	scons --prefix=$(HOME)/local install
+	scons install
 
 clean:
 	scons --clean

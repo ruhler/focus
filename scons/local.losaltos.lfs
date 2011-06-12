@@ -3,27 +3,24 @@
 
 Import('env')
 
+env['PREFIX'] = "/home/richard/local"
+
 env['CPPPATH'] = [
     '/pkg/sdl-1.2.14/install/include',
-    '/pkg/libpng-1.4.5/install/include',
     '/pkg/poppler-0.16.5/install/include/poppler/cpp',
+    '/pkg/libpng-1.4.5/install/include',
     '/pkg/freetype-2.4.3/install/include',
     '/pkg/freetype-2.4.3/install/include/freetype2',
-    '/pkg/fontconfig-2.8.0/install/include/fontconfig'
+    '/pkg/fontconfig-2.8.0/install/include'
     ]
 
 env['LIBPATH'] = [
     '/pkg/sdl-1.2.14/install/lib',
-    '/pkg/libpng-1.4.5/install/lib',
+    "/pkg/libpng-1.4.5/install/lib",
     '/pkg/poppler-0.16.5/install/lib',
     '/pkg/freetype-2.4.3/install/lib',
     '/pkg/fontconfig-2.8.0/install/lib'
     ]
 
-env['ENV']['LD_LIBRARY_PATH'] = ":".join([
-    "/pkg/sdl-1.2.14/install/lib",
-    "/pkg/fontconfig-2.8.0/install/lib",
-    "/pkg/freetype-2.4.3/install/lib",
-    "/pkg/libpng-1.4.5/install/lib",
-    '/pkg/poppler-0.16.5/install/lib'
-    ])
+env['ENV']['LD_LIBRARY_PATH'] = ":".join(env['LIBPATH'])
+

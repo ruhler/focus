@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <fontconfig.h>
+#include <fontconfig/fontconfig.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

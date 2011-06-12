@@ -205,3 +205,71 @@ that way. Simple.
 
 Do you understand the plan? It's fully described? Yes. I think so.
 
+Sun Jun 12 12:30:21 EDT 2011
+
+First steps:
+1. Review the configuration stuff scons offers.
+2. Try out configuration stuff on libpng: just print out whether or not we
+have libpng.
+3. Try out configuration stuff on all the other requirements.
+
+The first goal is just to determine if the requirements are had or not. I'll
+save acting on those steps for later.
+
+Now, ideally each component could specify it's own requirements locally, but
+maybe that's too advanced to worry about right now. Or not so hard to add
+later that I should worry about it now (just have a requirements sconscript
+like file that I source in the component directory, right?).
+
+Sun Jun 12 12:46:02 EDT 2011
+
+I look at scons configure stuff, and at pkg-config. Here's what I suggest we
+do.
+
+Build a list of the requirements using pkg-config package names.
+So, for me that would be:
+ sdl, libpng, poppler-cpp, freetype2, fontconfig
+
+Then, for each element in the list, run pkg-config (separately). If it exists,
+merge in the --cflags --libs into the scons environment. This will append to
+LIBS, LIBPATH, and CPPPATH. I should also maybe include the libraries I think
+are necessary, in case pkg-config is not being used.
+
+Now I've wrong pkg-config, and appended all the possible values of LIBS,
+LIBPATH, CPPPATH, etc... Uniquify those lists so we don't have duplicate
+values. That's the first phase.
+
+The next phase is to see which of the packages actually work as expected. Use
+a scons Configure context here to figure that out. Do a libwithheader check, I
+think, with each one, and report which ones are met or not.
+
+That should be enough for the first step. Let me get started, see how things
+go.
+
+Sun Jun 12 13:46:36 EDT 2011
+
+I now have a list of what requirements are met or not. The last thing we need
+is to enable or disable a component based on that. To do that, I need to know
+which components requirement which requirements.
+
+I think what I should do is have a file, requirements in each component
+directory which is a sconscript file which creates a dictionary? Of
+
+requirement -> (library, header, language)
+
+The sconscript will initialize a list of components (which you can override in
+your scons/local if you really want) which config will check the dependencies
+from. This is the kind of sconscript where we want to return things. Or is it
+just data? Then we could read a file? That sounds good to me.
+
+requirements: just a bunch of lines:
+requirement library header language
+
+config will update the components list (after printing a nice summary of
+what can and can't be built based on requirements), and that's it?
+
+Sounds terribly complicated...
+
+I think I should take a little time to think before doing this. I just have
+that feeling. I'm very close though!
+
