@@ -3,9 +3,6 @@
 
 Import('env')
 
-boxer = env.Program('boxer', ['boxer.c'], LIBS=['consoler'])
-env.Default(boxer)
-
 sgreen = env.Program('sgreen', ['sgreen.c'],
         LIBS = ['pthread', 'fontconfig', 'freetype', 'fonter', 'consoler']);
 env.Default(sgreen);
@@ -13,5 +10,5 @@ env.Default(sgreen);
 cgreen = env.Program('cgreen', ['cgreen.c']);
 env.Default(cgreen);
 
-env.Install("$PREFIX/bin", [boxer, sgreen, cgreen])
+env.Install("$PREFIX/bin", [sgreen, cgreen])
 

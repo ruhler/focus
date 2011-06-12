@@ -10,7 +10,7 @@ env['CFLAGS'] = ['-ggdb']
 # Local host based stuff
 SConscript('scons/local')
 
-# The main program
+SConscript('src/boxer/sconscript')
 SConscript('src/consoler/sconscript')
 SConscript('src/filler/sconscript')
 SConscript('src/fonter/sconscript')
