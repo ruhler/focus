@@ -109,12 +109,6 @@ void ctermer_DeInit()
 {
 }
 
-void ctermer_Quit()
-{
-    // TODO: I'm not sure how to signal to ctermer_EventGet.
-    assert(0 && "todo: ctermer_Quit");
-}
-
 void ctermer_EventGet()
 {
     gstate.event = CNSL_RecvEvent(stdcon);

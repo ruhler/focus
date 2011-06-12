@@ -63,7 +63,7 @@ void* runoutputter(void* ud)
     fromclientptr = ctermer_FromTermClient();
     oldcursor = mkpos(0, 0);
     outputter(&scr, '\0', getf);
-    ctermer_Quit();
+    exit(0);
 }
     
 
