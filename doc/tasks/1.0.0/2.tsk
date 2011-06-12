@@ -273,3 +273,31 @@ Sounds terribly complicated...
 I think I should take a little time to think before doing this. I just have
 that feeling. I'm very close though!
 
+Sun Jun 12 17:30:42 EDT 2011
+
+Okay, I think I've got it all figured out. As usual (and good) I'm scaling
+back my ambitions.
+
+What we need is some way to specify which requirements each component has.
+The grand vision is to have some distributed way of specifying this. How to do
+that nicely is not clear.
+
+So, for release 1.0.0, we brute force it in a simple way. Write down all the
+requirement info in scons/config. Easy. It should work. If I run into problems
+with it, I can fix those later.
+
+A couple other notes, I think scons/ should be renamed config/, because it no
+longer has scons tools or anything, and is all related to configuration.
+
+And for the configure script, if I haven't already said it, it will generate a
+scons/local file if none exists, based on command line parameters --prefix,
+PKG_CONFIG_PATH, LDFLAGS, etc, and then it will run `scons configure` to do
+all the configure tests and print the summary.
+
+And finally for my thoughts here, if scons/local doesn't exit, don't have that
+be an error. Just use the default values for things, which could work fine if
+all libraries are in standard include places or some such.
+
+Okay. That's a lot of little things. Let me do one thing at a time.
+
+

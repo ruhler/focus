@@ -1,0 +1,39 @@
+# vim: ft=python
+
+Import('env')
+
+# Read the user specified configuration 
+SConscript('local')
+
+# Figure out which requirements are met.
+
+# The requirements dictionary holds information about all the possible
+# required external packages.
+# key: pkg-config name for package
+# value: (lib, header, lang)
+#    arguments to pass to CheckLibWithHeader function.
+requirements = {
+        "sdl": ('SDL', 'SDL/SDL.h', 'c'),
+        "libpng": ('libpng', 'png.h', 'c'),
+        "poppler-cpp": ('poppler-cpp', 'poppler-document.h', 'c++'),
+        "freetype2": ('freetype', 'ft2build.h', 'c'),
+        "fontconfig": ('fontconfig', 'fontconfig/fontconfig.h', 'c')
+        }
+
+satisfied = []
+
+# Use pkg-config to extend LIBS, LIBPATH, and CPPPATH lists
+print "Using pkg-config to find info about required packages..."
+for req in requirements.keys():
+    try:
+        env.ParseConfig("pkg-config --silence-errors --cflags --libs %s" % req)
+    except OSError:
+        pass
+
+# Run tests to see which requirements are actually met
+conf = Configure(env, conf_dir='.', log_file='config.log')
+for req in requirements.keys():
+    (lib, header, lang) = requirements[req]
+    if conf.CheckLibWithHeader(lib, header, lang):
+        satisfied.append(req)
+

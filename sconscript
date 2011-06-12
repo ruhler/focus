@@ -9,9 +9,8 @@ env['COMPONENTS'] = [
         'green', 'pdfer', 'pnger', 'sdlcsr', 'termer'
         ]
 
-# Local host based stuff and configuration
-SConscript('scons/local')
-SConscript('scons/config')
+# configuration
+SConscript('config/config')
 
 # Build each of the components
 for comp in env['COMPONENTS']:
