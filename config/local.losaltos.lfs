@@ -23,4 +23,8 @@ env['LIBPATH'] = [
     ]
 
 env['ENV']['LD_LIBRARY_PATH'] = ":".join(env['LIBPATH'])
+env['ENV']['PATH'] = ':'.join([
+    env['ENV']['PATH'],
+    '/pkg/tcl-8.5.9/install/bin'
+    ])
 

@@ -98,3 +98,80 @@ From documenting consoler library in plain text, I notice some things.
     prototype
     brief description of use.
 
+Sun Jun 12 23:10:05 EDT 2011
+
+This is really the last major thing holding up release 1.0.0, so it's time to
+make more progress.
+
+Let me summarize the issue. I have documentation writen. It may not be great,
+but it's got all the information, and can be improved in future releases. More
+better documentation is always useful. This is just the start.
+
+The big thing now is getting that documentation into two different formats.
+1. man pages for library functions and programs.
+2. texinfo document - which is basically the format I have now, but a more
+standard format. I would love to be able to generate html and pdf of my
+documents.
+
+I need to start simple. Let's start with (1), because I have much more
+experience (even if it isn't much) there than with texinfo, and I have some
+examples already written up, so I can see what I need to do to get from what I
+have to what I want.
+
+Yes, I think this is a good place to start.
+
+Information we need for the filler man page:
+ - name: filler
+ - section: 1
+ - date
+ - manual: "Focus Manual"
+ - brief description
+ - synopsis
+ - description
+    This is what we can reuse from what I've written. The other stuff isn't
+    hard to duplicate, and can maybe be shared too...
+    - paragraph 1 (desecription)
+    - paragraph 2 (intro to keybindings)
+    - table of key bindings
+    - paragraph 3 (how to quit)
+ - options (none)
+ - environment
+    cnslwidth - description
+    cnslheight - description
+ - bugs: email address.
+
+We might need some more typesetting info, like references to "filler" should
+be bold. That sort of thing will probably be clear. How about this, don't
+require I be perfect the first time around. We can improve things later.
+
+Now, compare that with my description:
+ - name
+ - description paragraph 1 (description)
+ - description paragrpah 2 (intro to keybindings)
+ - keybindings table
+ - description paragraph 3 how to quit
+ - environment variables.
+
+Hmm... Same content, but different presentation. I'm worried using the same
+source might not have things translate so perfectly... Well, it's worth a try.
+
+But, gosh. This application is so simple, it seems way more work than its
+worth to share a common source, doesn't it? Erg.
+
+Okay, here's what I'll do. Let me thing of it as I'm using tcl to describe the
+man page, and tcl to describe the texinfo file, and some text can be shared
+between the two. Let's not fix a documentation language or anything like that
+just yet. Does that make things easier? Let's see.
+
+Sun Jun 12 23:55:10 EDT 2011
+
+I wrote the man page easily enough. And I bet there is code their I can share
+with other components to make things easier. I'll start the sharing when I go
+to write the man page for the next component.
+   
+The real question now is, can I write a sensible texinfo document too? Using
+the same tcl generation stuff?
+
+I guess the first step would be to figure out how to write a texinfo document
+on its own. So let me write the filler texinfo document the "right" way.
+

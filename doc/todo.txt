@@ -4,8 +4,9 @@ List of pending issues.
 1.0.0
 - man and texinfo docs (4.tsk)
 - choice and application of license(14.tsk)
-- release of 1.0.0 (1.tsk)
 - document how to configure, build, install
+- write pkgconfig files for consoler and fonter
+- release of 1.0.0 (1.tsk)
 
 1.0.1
 - fonter clips bottoms of g and y in termer (15.tsk)
@@ -14,7 +15,7 @@ List of pending issues.
 - add kill command to sgreen?
 
 unassigned
+- config should check for tclsh (needed to generate documentation) 
 - add italics to termer
 - add status bar to sgreen
-- write pkgconfig files for consoler and fonter?
 
