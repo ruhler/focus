@@ -2,7 +2,7 @@
 List of pending issues.
 
 1.0.0
-- man and texinfo docs (4.tsk)
+- user documentation (4.tsk)
 - choice and application of license(14.tsk)
 - document how to configure, build, install
 - write pkgconfig files for consoler and fonter
