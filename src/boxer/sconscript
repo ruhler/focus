@@ -1,0 +1,13 @@
+
+#vim: ft=python
+
+Import('env')
+
+boxer = env.Program('boxer', 'boxer.c', LIBS=['consoler'])
+Default(boxer)
+
+boxertest = env.Program('boxertest', 'boxertest.c', LIBS=['consoler'])
+Default(env.Command('boxertest.out', [boxertest, boxer], "$SOURCES > $TARGET"))
+
+env.Install("$PREFIX/bin", boxer)
+

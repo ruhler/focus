@@ -363,7 +363,7 @@ The structure consists of two fields, similar to the CNSL_Console.
 The following functions are provided for working with client and server
 connections.
 
-    CNSL_Client CNSL_LaunchClient(const char* path, char* const args[]);
+    CNSL_Client CNSL_LaunchClient(const char* path, char* const args[])
         Launch a consoler client specified by the given path and pass it the
         given arguments. This forks a new processes to exec the client, sets
         up a communication channel with the client using pipes, and returns a
@@ -380,8 +380,9 @@ connections.
         the next event is available.
         Returns a quit event if server connection has closed.
 
-    void CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
+    bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
         Send an event to a client.
+        Returns true if the event was sent successfully, false otherwise.
 
     void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
             unsigned int srcx, unsigned int srcy,
@@ -394,7 +395,7 @@ connections.
         destination coordinates (dstx, dsty) of a master display the server
         keeps track of for the client.
 
-    void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+    bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
             unsigned int* dstx, unsigned int* dsty
             unsigned int* width, unsigned int* height);
 
@@ -406,8 +407,8 @@ connections.
         The parameters dstx, dsty, width, and height are set to the updated
         region of the display. They may be NULL.
 
-    bool CNSL_PollDisplay(CNSL_Client client);
-        Return true if a call to RecvDisplay will not block, false otherwise.
+        Returns true if a display was recieved, false on end of file or other
+        error.
         
 = Specifying Screen Dimensions =
 By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set to

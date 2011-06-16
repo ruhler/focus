@@ -175,9 +175,20 @@ CNSL_Event CNSL_RecvEvent(CNSL_Console console)
     return event;
 }
 
-void CNSL_SendEvent(CNSL_Client client, CNSL_Event event)
+bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event)
 {
-    write(client.fdout, &event, sizeof(CNSL_Event));
+    struct pollfd fd;
+    fd.fd = client.fdout;
+    fd.events = POLLOUT;
+    if (poll(&fd, 1, -1) == 1) {
+        if (fd.revents & (POLLERR | POLLHUP | POLLNVAL)) {
+            return false;
+        } else if (fd.revents & POLLOUT) {
+            int wrote = write(client.fdout, &event, sizeof(CNSL_Event));
+            return wrote > 0;
+        }
+    }
+    return false;
 }
 
 void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
@@ -205,7 +216,7 @@ void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
     }
 }
 
-void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         unsigned int* dstx_out, unsigned int* dsty_out,
         unsigned int* width_out, unsigned int* height_out)
 {
@@ -214,8 +225,7 @@ void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
 
     unsigned int header[4] = {0};
     if (read(client.fdin, header, 4 * sizeof(unsigned int)) < 4) {
-        perror("read");
-        return;
+        return false;
     }
 
     unsigned int dstx = header[0];
@@ -257,16 +267,9 @@ void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
     if (height_out) {
         *height_out = height;
     }
-}
 
-bool CNSL_PollDisplay(CNSL_Client client)
-{
-    struct pollfd fd;
-    fd.fd = client.fdin;
-    fd.events = POLLIN;
-    return poll(&fd, 1, 0);
+    return true;
 }
-
 
 void CNSL_GetGeometry(int* width, int* height)
 {

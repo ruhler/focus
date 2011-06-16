@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <fontconfig.h>
+#include <fontconfig/fontconfig.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -109,12 +109,6 @@ void ctermer_DeInit()
 {
 }
 
-void ctermer_Quit()
-{
-    // TODO: I'm not sure how to signal to ctermer_EventGet.
-    assert(0 && "todo: ctermer_Quit");
-}
-
 void ctermer_EventGet()
 {
     gstate.event = CNSL_RecvEvent(stdcon);
@@ -141,7 +135,6 @@ char* ctermer_FromTermClient()
 {
     int red = read(gstate.tcfd, fromtermclientbuf, BUFSIZ);
     if (red < 0) {
-        perror("read");
         red = 0;
     }
     fromtermclientbuf[red] = '\0';

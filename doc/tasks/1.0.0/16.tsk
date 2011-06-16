@@ -1,0 +1,32 @@
+
+Sat Jun 11 21:49:35 EDT 2011
+
+Task: cgreen doesn't read GREENSVR like it should.
+
+This is kind of high priority, because I have no way of launching new
+non-terminal applications in green now.
+
+First write a test case to fix it.
+Then fix it.
+
+Sat Jun 11 23:32:32 EDT 2011
+
+The hard part here is figuring out the GREENSVR to send to cgreen in the test.
+I could launch a termer in sgreen and have that call cgreen, but that seems
+excessive. Better if I could figure out the socket name and pass that to
+cgreen.
+
+I think the answer is to add an optional argument to sgreen which is the
+socket to use. Then launch sgreen, passing an explicit socket, launch cgreen
+with GREENSVR set to that same socket, then we can verify cgreen is reading
+the GREENSVR environment variable.
+
+I think it's not surprising. The more general you make things, the easier it
+is to test them.
+
+Sun Jun 12 00:48:05 EDT 2011
+
+Implemented test case, caught bug, added -s flag to sgreen, fixed bug. This
+task is done.
+
+

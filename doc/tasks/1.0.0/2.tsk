@@ -50,3 +50,265 @@ current configuration along with what will and will not be built.
 I may also want to enable/disable certain tests depending on what is built.
 Tests should be part of the build.
 
+Sat Jun 11 21:37:27 EDT 2011
+
+I'm thinking I can come up with some dependency names. Thins like: PNG,
+POPPLER, SDL, etc... Then I can write a function which takes a requirements
+list, and a function to produce a specific part of a project. For example:
+
+require([PNG, CONSOLER], buildpng), where buildpng just does what's in the
+pnger/sconscript now. If PNG and CONSOLER are satisfied, it will call
+buildpng. If one of them isn't, it will print a message saying pnger isn't
+going to be built because PNG requirement isn't satisified. Or something like
+that.
+
+In fact, it might be a good idea to start by just having one of the components
+be conditionally compiled, and png seems like a good option to me.
+
+Let me go over again the process.
+
+You run configure (scons configure):
+ inputs: these can be passed via command line.
+    optional scons file with some local settings
+    optional pkgconfigpath
+ outputs:
+    to screen summary of what requirements were and were not satisfied, and
+    what components will and will not be built because of it.
+
+    to file: detailed list of LIBS and CPPPATH needed for each requirement.
+    The format of the output file ought to be compatible with the input file,
+    so I can just use the old file tweaked if I want?
+    And perhaps this can include as comments the output to the screen.
+
+ the configure stages is where pkgconfig is run to find things, and test
+ programs maybe are run too to test things (though is that really necessary?,
+ won't they know when build fails that things are messed up?)
+
+ Let's say the output file generated is called... configuration?
+
+You run make (scons):
+ it reads configuration (prints an error if there is no configuration file),
+ then only builds those things for which the requirements were met. It may or
+ may not print if a component is not being built because requirements were not
+ met.
+
+You run make install (scons install)
+ All the built things are installed onto your system based on the
+ configuration.
+
+One might ask what the goal here is.
+ - user should be able to specify explicitly what packages to use to satisfy
+   requirements.
+ - we should not require all components be built.
+ - we should be able to infer what packages to use to satisfy
+   requirements.
+ - if we determine the requirements are satisfied for a component, that should
+   guarantee (to a reasonable extent) that building that component will
+   succeed.
+
+Fine, but the big question is this:
+ if we determine the requirements are satisfied for a component, should that
+ guarantee (to a reasonable extent) that building that component will succeed?
+
+ or is it better to just let the user write whatever configuration, and
+ they'll know a build of a component will not succeed when it doesn't succeed?
+
+I must say, I think I like the first option. Let me add that to the list of
+goals. Then what I'm trying to do becomes pretty clear.
+
+Good. I like this. The question is, what are the next steps? I suppose the
+next step is to figure out what the configuration file looks like.
+
+Let me start easy. Let's say the goal is just to make lists for CPPPATH,
+LIBPATH and LD_LIBRARY_PATH. Each program we build will use all those. We
+already know what LIBS are, those can stay as they are.
+
+So the generated configuration file should look very much like my scons/local
+does now. In addition, however, it should define what requirements are
+satisfied (or should it define what components the requirements are satisfied
+for?). Having the information for both would be nice. So how do we reference
+requirements? Strings? Enums?
+
+They are:
+ SDL, LIBPNG, POPPLER, FREETYPE, FONTCONFIG
+
+Let me define symbols, which can be strings, in a sconscript somewhere. Then
+each component will have a list of symbols it requires. I can form a list of
+satisfied requirements. Maybe put it in env['SATISFIED'], and have the
+opposite in env['UNSATISFIED'], and include one or the other of those in this
+configuration file.
+
+I don't know. I feel like I'm getting closer, but I need to stew on this more.
+
+I wonder if it would be better to have a completely separate script which
+knows about configuration stuff? Maybe it generates the top level scons
+script? And you can run it to figure out what components will or will not be
+built, or you can specify that by hand?
+
+That is, configuring which components to build or not could be done by the
+human (and I can certainly see times when you would want to do that), or it
+could be done automatically. But the automatic part can be a separate tool,
+right? Err. No, let me stew more.
+
+Sun Jun 12 10:53:21 EDT 2011
+
+Here's what's stewed up.
+
+The purpose of testing for satisfied requirements is to be able to distinguish
+between the case of: something can't build because you don't have the
+requirements and something can't build because it's broken.
+
+This is why it is valuable to run little tests rather than rely on the output
+of the makefile to figure out if something will build or not.
+
+Additionally, this way you can disable components you don't meet the
+requirements for without causing the build to fail.
+
+I'm going to scale back my ambitions just a little bit on this installer
+thing, for the purposes of getting it out to the release. And who knows, maybe
+it will be good enough.
+
+So here's the usage scenario:
+
+You provide a configuration file called scons/local. This is a sconscript,
+just like I have now. It should specify the following:
+ - CPPPATH  for explicit additions to default CPPPATH
+ - LIBPATH  for explicit additions to default LIBPATH
+ We should be able to infer LD_LIBRARY_PATH from LIBPATH
+ - PREFIX for where you want it installed
+ - PKG_CONFIG_PATH for the package config path you want to use if any
+
+And maybe in the future we can have a way to explicitly list which components
+you would like to attempt to build or not.
+
+Then you run make (aka scons). It will do configure like stuff, making small
+tests for each requirement to determine which requirements are met, it will
+add to CPPPATH and LIBPATH based on package config stuff. It will generate a
+summary (perhaps in build/config/summary) of the final CPPPATH and LIBPATH
+being used, the prefix being used, for each requirement whether it was met or
+not, and for each component whether it will be built or not, and if not, a
+list of the requirements not satisfied.
+
+And then it will continue on to make just those components that the
+configuration stage said had dependencies met.
+
+This should be the target. There is no ./configure script, but if you want
+one, I propose it's the same as scons configure, which runs the configuration
+stage of the build, and outputs the summary file to the screen.
+
+That's the usage.
+
+Next is implementation. I think the easiest way to turn on or off components
+would be to just list them in a list by name. Then in sconscript we could say:
+for each element in this list, SConscript the appropriate folder. It's trivial
+that way. Simple.
+
+Do you understand the plan? It's fully described? Yes. I think so.
+
+Sun Jun 12 12:30:21 EDT 2011
+
+First steps:
+1. Review the configuration stuff scons offers.
+2. Try out configuration stuff on libpng: just print out whether or not we
+have libpng.
+3. Try out configuration stuff on all the other requirements.
+
+The first goal is just to determine if the requirements are had or not. I'll
+save acting on those steps for later.
+
+Now, ideally each component could specify it's own requirements locally, but
+maybe that's too advanced to worry about right now. Or not so hard to add
+later that I should worry about it now (just have a requirements sconscript
+like file that I source in the component directory, right?).
+
+Sun Jun 12 12:46:02 EDT 2011
+
+I look at scons configure stuff, and at pkg-config. Here's what I suggest we
+do.
+
+Build a list of the requirements using pkg-config package names.
+So, for me that would be:
+ sdl, libpng, poppler-cpp, freetype2, fontconfig
+
+Then, for each element in the list, run pkg-config (separately). If it exists,
+merge in the --cflags --libs into the scons environment. This will append to
+LIBS, LIBPATH, and CPPPATH. I should also maybe include the libraries I think
+are necessary, in case pkg-config is not being used.
+
+Now I've wrong pkg-config, and appended all the possible values of LIBS,
+LIBPATH, CPPPATH, etc... Uniquify those lists so we don't have duplicate
+values. That's the first phase.
+
+The next phase is to see which of the packages actually work as expected. Use
+a scons Configure context here to figure that out. Do a libwithheader check, I
+think, with each one, and report which ones are met or not.
+
+That should be enough for the first step. Let me get started, see how things
+go.
+
+Sun Jun 12 13:46:36 EDT 2011
+
+I now have a list of what requirements are met or not. The last thing we need
+is to enable or disable a component based on that. To do that, I need to know
+which components requirement which requirements.
+
+I think what I should do is have a file, requirements in each component
+directory which is a sconscript file which creates a dictionary? Of
+
+requirement -> (library, header, language)
+
+The sconscript will initialize a list of components (which you can override in
+your scons/local if you really want) which config will check the dependencies
+from. This is the kind of sconscript where we want to return things. Or is it
+just data? Then we could read a file? That sounds good to me.
+
+requirements: just a bunch of lines:
+requirement library header language
+
+config will update the components list (after printing a nice summary of
+what can and can't be built based on requirements), and that's it?
+
+Sounds terribly complicated...
+
+I think I should take a little time to think before doing this. I just have
+that feeling. I'm very close though!
+
+Sun Jun 12 17:30:42 EDT 2011
+
+Okay, I think I've got it all figured out. As usual (and good) I'm scaling
+back my ambitions.
+
+What we need is some way to specify which requirements each component has.
+The grand vision is to have some distributed way of specifying this. How to do
+that nicely is not clear.
+
+So, for release 1.0.0, we brute force it in a simple way. Write down all the
+requirement info in scons/config. Easy. It should work. If I run into problems
+with it, I can fix those later.
+
+A couple other notes, I think scons/ should be renamed config/, because it no
+longer has scons tools or anything, and is all related to configuration.
+
+And for the configure script, if I haven't already said it, it will generate a
+scons/local file if none exists, based on command line parameters --prefix,
+PKG_CONFIG_PATH, LDFLAGS, etc, and then it will run `scons configure` to do
+all the configure tests and print the summary.
+
+And finally for my thoughts here, if scons/local doesn't exit, don't have that
+be an error. Just use the default values for things, which could work fine if
+all libraries are in standard include places or some such.
+
+Okay. That's a lot of little things. Let me do one thing at a time.
+
+Sun Jun 12 19:05:46 EDT 2011
+
+Well it's done. The first version. I suspect I'll want to improve this for
+later releases, but I think it has everything I want.
+ user can specify packages explicitly
+ not all components are required to be built
+ we can use pkgconfig
+ we verify requirements work before running a program.
+
+Good. Now the only thing left here is to document how this whole process
+works. Let me make a new task for that so I can call this one done.
+

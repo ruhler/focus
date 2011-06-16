@@ -14,12 +14,16 @@ typedef struct {
 
 int handle_output(ClientAndScreen* info)
 {
-    while (1) {
-        unsigned int x, y, w, h;
-        CNSL_RecvDisplay(info->client, info->display, &x, &y, &w, &h);
+    unsigned int x, y, w, h;
+    bool recved = CNSL_RecvDisplay(info->client, info->display, &x, &y, &w, &h);
+    while (recved) {
         SDL_UpdateRect(info->screen, x, y, w, h);
+        recved = CNSL_RecvDisplay(info->client, info->display, &x, &y, &w, &h);
     }
 
+    SDL_Event event;
+    event.type = SDL_QUIT;
+    SDL_PushEvent(&event);
     return 0;
 }
 

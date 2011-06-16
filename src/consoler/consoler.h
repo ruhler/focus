@@ -59,18 +59,16 @@ CNSL_Client CNSL_LaunchClient(const char* path, char* const args[]);
 void CNSL_CloseClient(CNSL_Client client);
 
 CNSL_Event CNSL_RecvEvent(CNSL_Console console);
-void CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
+bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
 
 void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         unsigned int srcx, unsigned int srcy,
         unsigned int dstx, unsigned int dsty,
         unsigned int width, unsigned int height);
 
-void CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         unsigned int* dstx, unsigned int* dsty,
         unsigned int* width, unsigned int* height);
-
-bool CNSL_PollDisplay(CNSL_Client client);
 
 void CNSL_GetGeometry(int* width, int* height);
 void CNSL_SetGeometry(int width, int height);

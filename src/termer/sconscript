@@ -2,7 +2,6 @@
 # vim: ft=python
 
 Import('env')
-env['CFLAGS'] = ['-ggdb']
 
 # inputtertest
 inputter_o = env.Object('inputter.o', 'inputter.c')
@@ -28,5 +27,5 @@ termer = env.Program('termer',
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
 env.Default(termer)
 
-env.Install("$PREFIX/bin", [termer])
+env.Install("$PREFIX/bin", termer)
 

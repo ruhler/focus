@@ -104,3 +104,8 @@ Sat Jun 11 00:16:17 EDT 2011
 
 Cool! I think this is all done now.
 
+Sat Jun 11 19:48:52 EDT 2011
+
+Actually, I'm going to get rid of this PollDisplay function, because it really
+isn't useful for anything.
+

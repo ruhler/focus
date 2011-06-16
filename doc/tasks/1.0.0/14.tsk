@@ -1,0 +1,128 @@
+
+Sat Jun 11 21:33:55 EDT 2011
+
+Task: Choose and figure out how to apply a license
+
+For example GPLv3, say?
+
+I suspect that's the one I'll go with. That's the license I've decided on for
+past projects.
+
+How to apply? Well, usually you need a file called COPYING with the license,
+and then you need a header on all the source files.
+
+One idea that seems to be coming up:
+  - you shouldn't artificially limit the usefulness of software. That's bad
+    for society. If it costs nothing to release code, copy code, make
+    modifications, etc... this would make sense. I'm not convinced that's the
+    case yet. The fundamental idea here seems to be not artificially limiting
+    the benifits of software to society.
+
+Can we imagine a scenario where I develop software, and I want control over
+who can use it?
+ - maybe I only want people who pay for it to be able to use it
+ - maybe I don't want it to be used for smuggling drugs or waging wars
+ - maybe my reputation depends on you successfully using my system, and if you
+   decide to change parts of it and it breaks, that could hurt me.
+Those seem like two reasonable reasons for wanting to control who can use my
+software. The free software foundation suggests those aren't good reasons.
+That must mean they suggest the cost to society of the restriction is higher
+(or potentially could lead to being higher) than not having those
+restrictions.
+
+I'm still not convinced on that point.
+
+But here's another point:
+ - it's very easy to copy. It would be bad if it was very easy to accidentally
+   copy something that was illegal to copy and have to go the jail because of
+   it. And I suppose if you are afraid of the government, it would be bad if
+   they could claim you copied something illegal and go to jail, and you have
+   no decent way to refute the claim.
+
+   This is a valid point. And apparently there is evidence of this sort of
+   thing happening:
+
+So I should read the constitution again to see what it has to say about
+freedom.
+
+Ah, another point:
+- what if government censored books? Like Fahrenheit 451. If they use this to
+  keep people uneducated. That's certainly "evil" right? And how is censoring
+  software different from censoring books?
+
+- Attempts to block sharing of information can lead to harsh measures.
+  If I have information, I should be free to share it with other people,
+  right? Well, yes, but not necessarily if it's information I've been
+  entrusted with. Do companies, like my back company, or my doctors office,
+  have the right to give away my information to whoever they want? I certainly
+  hope not!
+
+  But I do think if I come up with information on my own, discover something
+  or some such, and I want to share it, I should be able to. That is, if my
+  information is not "trusted" information, I should be able to share it
+  freely.
+
+There's this point Stallman keeps making about how software is a public good,
+not a private good. One more person having access to the software doesn't
+diminish the value of the software to the other people who already have that
+software. I agree with this, but I think it's not really the main point. I
+think the bigger issue is perhaps information. Information is power. It can be
+dangerous. Letting someone else have your information could be very costly to
+you, especially if you don't trust them.
+
+Ah. I think I'm approaching the important points. Compare a sandwich with
+information. I would trust someone else with a sandwich. What can they do?
+Worst case they destroy it or give it away or whatever. That doesn't cost my.
+I would not necessarily trust someone else with my personal information. What
+can they do? They can sell it to people, post it online, make it available so
+that others now know things about me I don't want. Things that could make it
+harder for me to live. Things that restrict my freedom.
+
+So clearly there is a range here, and the question is, where does software
+fall within this range? Is it dead wood like the sandwich? Or can it come back
+to haunt me like the personal information?
+
+Oh, here's an interesting point.
+  Say I create something, and then you create something, separately. My
+  creating the thing should not limit you from sharing the thing you created
+  how you want. This seems right to me. Now if you think of software in that
+  sort of way...
+
+  That is, perhaps people should be allowed to control the information they
+  have in their software. If someone else can create that information outside,
+  then they should be allowed to, because your information isn't so secret
+  that it would stay secret even if you hadn't written your software. Or
+  something like that.
+
+So I have two big objections to what Stallman says about free software.
+1. If software is like personal information, clearly there are times when you
+don't want it to be free.
+2. There needs to be a way to make significant amounts of profit writing
+software, otherwise no innovation will occur, which is bad for society.
+
+Here's a point:
+ - free software allows competition for support. You don't have the owner
+   having a monopoly over how the software can get fixed. That sounds good to
+   me.
+
+
+Reading the stuff on the free software foundation's website wasn't as good as
+I remember or expected. I was a little let down. Stallman's talk to google,
+however, is very good.
+
+    http://www.gnu.org/philosophy/google-engineering-talk.html   
+
+I need to continue to explore this information issue. Is there information in
+software we shouldn't give away. I need to continue to explore this money
+issue. I think I have a plan for that: let me release focus as free software,
+but charge some money for it. See if I can make anything. Like maybe $3 or
+something, and the documentation can go online for free to entice people. That
+would be cool. I wonder of source forge has anything set up for that.
+
+I should charge not enough money to get other people mad at me for making
+money off it though. But it could be a valuable learning experience. Yes. I
+like this plan.
+
+And I like free software. And I want to continue to use it, and encourage
+others.
+

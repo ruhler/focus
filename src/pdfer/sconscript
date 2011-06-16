@@ -1,0 +1,16 @@
+
+#vim: ft=python
+
+Import('env')
+
+pdfer = env.Program('pdfer', ['pdfermain.cpp', 'pdfer.cpp'],
+        LIBS=['poppler', 'poppler-cpp', 'fonter', 'consoler'])
+Default(pdfer)
+
+pdfertest = env.Program('pdfertest', 'pdfertest.c',
+        LIBS=['poppler', 'poppler-cpp', 'fonter', 'consoler'])
+Default(env.Command('pdfertest.out', [pdfertest, pdfer, 'colors.pdf'],
+    "$SOURCES > $TARGET"))
+
+env.Install("$PREFIX/bin", pdfer)
+

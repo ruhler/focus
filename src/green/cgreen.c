@@ -8,6 +8,8 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#define UNIX_PATH_MAX 108
+
 
 int main(int argc, char* argv[])
 {
@@ -22,9 +24,10 @@ int main(int argc, char* argv[])
     unsigned int pargc = argc-1;
     char** pargv = argv+1;
 
-    const char* server = getenv("CNSLSVR");
+    const char* server = getenv("GREENSVR");
     if (server == NULL) {
-        server = "/tmp/green";
+        fprintf(stderr, "GREENSVR is not set.\n");
+        return 1;
     }
 
     // Connect to the server.
@@ -36,7 +39,9 @@ int main(int argc, char* argv[])
 
     struct sockaddr_un saddr;
     saddr.sun_family = AF_UNIX;
-    strcpy(saddr.sun_path, server);
+    strncpy(saddr.sun_path, server, UNIX_PATH_MAX);
+    saddr.sun_path[UNIX_PATH_MAX-1] = '\0';
+
 
     if (connect(sfd, (struct sockaddr*) &saddr, sizeof(struct sockaddr_un)) < 0) {
         perror("connect");

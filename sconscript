@@ -1,24 +1,21 @@
 
-AddOption('--prefix', dest='prefix', type='string', nargs=1, action='store',
-        metavar='DIR', default='/usr/local', help='installation prefix')
+env = Environment(
+        tools=['ar', 'gcc', 'g++', 'link', 'textfile'],
+        CPPPATH=[],
+        LIBPATH=[],
+        LIBS=[]
+        )
 
-env = Environment(PREFIX = GetOption('prefix'))
 Export('env')
 
 env['CFLAGS'] = ['-ggdb']
 
-# Local host based stuff
-SConscript('scons/local')
+# configuration
+tobuild = SConscript('config/config')
 
-# The main program
-SConscript('src/consoler/sconscript')
-SConscript('src/filler/sconscript')
-SConscript('src/fonter/sconscript')
-SConscript('src/pnger/sconscript')
-SConscript('src/sdlcsr/sconscript')
-
-SConscript('src/sconscript')
-SConscript('src/termer/sconscript')
+# Build each of the components
+for comp in tobuild:
+    SConscript('src/%s/sconscript' % comp)
 
 env.Alias('install', '$PREFIX')
 

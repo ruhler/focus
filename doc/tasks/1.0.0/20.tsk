@@ -1,0 +1,11 @@
+
+Sun Jun 12 17:29:29 EDT 2011
+
+Task: cgreentest should not put socket in top level directory
+
+Instead I can generate a socket in /tmp, say called /tmp/cgreentest.pid.
+
+Sun Jun 12 19:42:44 EDT 2011
+
+Fixed.
+

@@ -1,0 +1,21 @@
+
+# vim: ft=python
+
+Import('env')
+
+sgreen = env.Program('sgreen', 'sgreen.c', LIBS = ['pthread', 'consoler']);
+env.Default(sgreen);
+
+cgreen = env.Program('cgreen', 'cgreen.c');
+env.Default(cgreen);
+
+sgreentest = env.Program('sgreentest', 'sgreentest.c', LIBS=['consoler'])
+Default(env.Command('sgreentest.out', [sgreentest, sgreen, env["filler"]],
+    "$SOURCES > $TARGET"))
+
+cgreentest = env.Program('cgreentest', 'cgreentest.c', LIBS=['consoler'])
+Default(env.Command('cgreentest.out', [cgreentest, sgreen, cgreen, env["filler"]],
+    "$SOURCES > $TARGET"))
+
+env.Install("$PREFIX/bin", [sgreen, cgreen])
+

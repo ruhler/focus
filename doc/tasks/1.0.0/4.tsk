@@ -98,3 +98,305 @@ From documenting consoler library in plain text, I notice some things.
     prototype
     brief description of use.
 
+Sun Jun 12 23:10:05 EDT 2011
+
+This is really the last major thing holding up release 1.0.0, so it's time to
+make more progress.
+
+Let me summarize the issue. I have documentation writen. It may not be great,
+but it's got all the information, and can be improved in future releases. More
+better documentation is always useful. This is just the start.
+
+The big thing now is getting that documentation into two different formats.
+1. man pages for library functions and programs.
+2. texinfo document - which is basically the format I have now, but a more
+standard format. I would love to be able to generate html and pdf of my
+documents.
+
+I need to start simple. Let's start with (1), because I have much more
+experience (even if it isn't much) there than with texinfo, and I have some
+examples already written up, so I can see what I need to do to get from what I
+have to what I want.
+
+Yes, I think this is a good place to start.
+
+Information we need for the filler man page:
+ - name: filler
+ - section: 1
+ - date
+ - manual: "Focus Manual"
+ - brief description
+ - synopsis
+ - description
+    This is what we can reuse from what I've written. The other stuff isn't
+    hard to duplicate, and can maybe be shared too...
+    - paragraph 1 (desecription)
+    - paragraph 2 (intro to keybindings)
+    - table of key bindings
+    - paragraph 3 (how to quit)
+ - options (none)
+ - environment
+    cnslwidth - description
+    cnslheight - description
+ - bugs: email address.
+
+We might need some more typesetting info, like references to "filler" should
+be bold. That sort of thing will probably be clear. How about this, don't
+require I be perfect the first time around. We can improve things later.
+
+Now, compare that with my description:
+ - name
+ - description paragraph 1 (description)
+ - description paragrpah 2 (intro to keybindings)
+ - keybindings table
+ - description paragraph 3 how to quit
+ - environment variables.
+
+Hmm... Same content, but different presentation. I'm worried using the same
+source might not have things translate so perfectly... Well, it's worth a try.
+
+But, gosh. This application is so simple, it seems way more work than its
+worth to share a common source, doesn't it? Erg.
+
+Okay, here's what I'll do. Let me thing of it as I'm using tcl to describe the
+man page, and tcl to describe the texinfo file, and some text can be shared
+between the two. Let's not fix a documentation language or anything like that
+just yet. Does that make things easier? Let's see.
+
+Sun Jun 12 23:55:10 EDT 2011
+
+I wrote the man page easily enough. And I bet there is code their I can share
+with other components to make things easier. I'll start the sharing when I go
+to write the man page for the next component.
+   
+The real question now is, can I write a sensible texinfo document too? Using
+the same tcl generation stuff?
+
+I guess the first step would be to figure out how to write a texinfo document
+on its own. So let me write the filler texinfo document the "right" way.
+
+Mon Jun 13 20:59:00 EDT 2011
+
+So I read through the texinfo manual, and I must say, I don't like it. It
+doesn't, I think, totally capture the content of what you are conveying. It
+has too much presentation. This notion that info and html and pdf can all be
+generated from the same source is exaggerated: you have to write @node and
+@chapter always at the same time?
+
+I have never liked info files (probably because of the key bindings).
+
+In other words, I think this is an area I can do better in than texinfo. I can
+make my own simple format, and should be able to generate text, html, and pdf
+(via pdflatex). I don't care if I don't generate info files.
+
+That is, I don't think I should generate documentation by trying to produce a
+texinfo and using that to then produce the final document. I think I should
+describe my documentation the way I want to describe it, and use that to
+produce the final document. If I describe it right, the translations should be
+trivial.
+
+Which brings me back to my very first question. In what language should I
+write my documentation?
+
+I'm concerned tcl might not be so good, because of how it handles newlines.
+The syntax for tcl is really geared towards short command lists rather than
+raw text data. Would a markup be better? Markups look nice, the problem with
+them is they don't feel nearly so programmable to me.
+
+Hmm... what you really want is...
+
+I'm thinking for raw data you don't want to indent or anything, so you'd like
+to specify it as lines from the file. So you want some way to identify lines
+of a file as raw data for a block, and be able to name that block, refer to it
+elsewhere, etc... That's not too bad I don't think. Have a special character
+to introduce these blocks. I suppose @ could work.
+
+@myblock
+Foo bar sludge...
+
+The other thing I think latex and texinfo have got wrong is doing chapter,
+section, subsection. These things shouldn't be absolute, they should be
+relative. So you'd like a way to structure blocks relative to their container.
+
+@next
+[block of text]
+
+@down
+[block of text]
+@next
+[block of text]
+@up
+
+... I'm not sure.
+It certainly would be nice to have the text in the input in the right order.
+Maybe you can name sections by their parent?
+
+@section filler 
+
+If text order in the input didn't matter, I would almost say do something
+like:
+
+@section a
+@section b
+@section c
+
+@section parent
+    @a
+    @b
+    @c
+
+Or something like that.
+
+Hmm... Anyway, let me follow a different trail of thought. What all things do
+we need to specify?
+
+text data - raw tex. paragraphs. whatever.
+tables
+lists
+
+section structure
+
+markup: things like: emphasis, or this word is special in that it refers to
+something else, or references to other things. Or, for example, things like:
+this 'q' is a literal q representing the character 'q', not just another word
+that happens to have one letter which is q.
+
+And, of course, I have to have a programming language which allows me to do
+abstraction (functions).
+
+The goal of the input should be to describe a tree of information, not to
+describe a presentation. Presenting the information should be a different step
+(maybe...). Maybe there should be two parts. The first part is building up the
+information tree, the second part is flattening that tree again.
+
+Let me play around with the consoler documentation, which I think is the most
+complex. See if I can't make it pretty somehow.
+
+Mon Jun 13 21:37:30 EDT 2011
+
+The problem is, you can't tell what the hierarchy is from a flat text file.
+
+Perhaps, then, the issue is trying to specify a document in a flat text file.
+What if I used a directory structure? Or what if I had a special document
+editor? We want to have a way to go to a specific node, and see just that node
+and its children, and not care about parents. Directories are certainly good
+for that...
+
+Hmm... should I be crazy? Try that out?
+
+Mon Jun 13 21:50:26 EDT 2011
+
+I think I see what you want for describing the hierarchy. You want a directory
+like structure, but where the directory specifies both content and children.
+You can do this using the filesystem if you have a file foo.txt and a
+directory foo, but it would be great if it was just one foo, which you could
+edit the content of and cd into to get at the child content.
+
+Let me continue to think about this and I'll get back to you.
+
+Mon Jun 13 22:29:42 EDT 2011
+
+I had this weird idea.
+
+Imagine the document tree as a tree. Let's say just talking about sections and
+subsections now. When working with this document tree, there are maybe a
+couple of things to consider.
+
+1. How much detail can you see.
+2. Where are you.
+
+So, how much detail you can see is like a measure of the depth. If you can
+only see 2 levels deep, maybe any subsections beyond that you just see the
+title, or don't see into at all.
+
+And then where you are. If you just want to look at the "filler" section of
+the focus manual, for example, you would like to be able to move to that
+section, and suddenly have all the other sections like boxer, green, pdfer,
+etc... to disappear.
+
+You could do a number of things now to manipulate what you see. You could move
+up or down the tree. Moving down would move towards whichever data you are
+currently focusing on. Or you could expand or contract your range of vision.
+
+So, for example, if I'm reading something like the texinfo manual, or a manual
+I just want to read all through, I would move to the root of the tree, and
+have full range of vision. It will show me everything on one page, I can read
+it like a book in order.
+
+If I'm just interested in a single section, such as the gdb remote serial
+protocol, I could move to that section, and read the whole thing.
+
+If I just want an idea of the structure of something, maybe because I want to
+interact with the structure, or I'm just looking for ideas or summaries rather
+than detail, I could limit my range of vision so I see just the titles of the
+subsections, rather than their whole content. This would be useful in editing
+the documentation. It's also kind of what happens in a table of contents,
+except somehow theres a distinction of being able to see through titles or not
+to titles of subsections.
+
+So we can specify things fully generally.
+
+1. You have a location.
+2. You have a depth of content
+3. You have a depth of titles.
+
+What you see is: only stuff at your location and below, nothing to the side or
+above. You see full detail for the depth of content, after which you see just
+titles for depth of titles, after which you see nothing.
+
+I'm not sure how this is useful in terms of deciding how to describe my
+documents, but it's an interesting thought. The other one I'm going to have to
+spend a bit more time pondering.
+
+I guess what you want, perhaps, is a special viewer to take advantage of this.
+It lets you control the view. You can navigate to places, you can limit what
+you see, or expand what you see. Then, if this viewer also happened to have
+editing capability, it could take advantage of all the same features, and
+maybe make things easier to edit.
+
+There's one big difference between viewing and editing, which is for viewing I
+might have just a projection of the information available at editing. Like,
+maybe I don't care when viewing that 
+ foo bar
+is different from 
+ pair(foo, bar)
+is different from
+ list [foo, bar]
+is different from
+ description foo: bar
+But for editing, we want to be precise about such things.
+
+I have a couple ideas for that. One is, we already know we want to target
+different presentations: text file or book where everything is flat, html
+where you can have links. How about make the editor just a different
+presentation which does make a distinction between all those different things.
+That does have a way to show all the information.
+
+The other is, I've said there are different details you want to be able to
+see, such as section content vs. section title. We could say the section title
+is a summary of the section content, so it's the same thing, just one contains
+a higher level of detail than the other. Well, just add another detail to
+content and maybe you get the explicit structure of the content. If these
+things were part of the editor...
+
+Wow. Wouldn't that be cool? If you go and edit some file which looks like junk
+because there is so much detail about this is a literal and that is
+description list and so on, and then you could take a step back and instantly
+see what it looks like without all the detailed markup? And then take another
+step back and just get titles so you can see the structure?
+
+Where am I getting at all this? What I seem to be suggesting is, rather than
+editing the source of a document, you edit the document itself. The difference
+between source and product is now just the difference in how you view the
+document.
+
+I don't know if that really makes sense to do. Like I may have already said,
+I've got lots of stewing on this to come up with something feasible.
+
+Mon Jun 13 23:51:11 EDT 2011
+
+I'm worried. I fear I could get stuck here. Am I trying to be too general?
+What exactly is it I want to produce? Is it important I produce what I want to
+produce in the best way right now? Or can I brute force things and clean them
+up later? Think about all these things.
+
