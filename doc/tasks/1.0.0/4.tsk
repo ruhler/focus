@@ -400,3 +400,127 @@ What exactly is it I want to produce? Is it important I produce what I want to
 produce in the best way right now? Or can I brute force things and clean them
 up later? Think about all these things.
 
+Wed Jun 15 23:30:19 EDT 2011
+
+I've come up with something, and initial use suggests I'll like it. The
+language is tcl, but with the following specific commands. For release 1.0.0
+I'll focus only on these. No need to make the documentation perfect. I'm
+committing to using this method for describing documentation for release
+1.0.0. If there are problems, those should be punted to later releases.
+
+section <title> <content>
+ Define a section. Title is a string which is the title. Content contains a
+ sequence of content items which include: paragraph, section, description,
+ function.
+
+paragraph <text>
+ Define a paragraph. Text is the text of the paragraph. Whitespace is reduced
+ to a single space and trimmed from front and back.
+
+description <content>
+    content is a list of strings alternating <name> <value> <name> <value>,
+    etc... Whitespace in the value is reduced to a single space and trimmed.
+
+function <return_type> <name> <arg list> <description>
+   return_type is the return type of the function.
+   name is the name of the function.
+   arg list is a list of strings alternating <type> <name> <type> <name>.
+   description is a sequence of content items (like for section content).
+   Though it probably shouldn't include a section.
+
+include <source>
+   source is a file with these commands to include literally right here.
+
+This is the core. Others I might want are:
+envdescription - just like description, but describing an environment
+variable. The distinction could be used for man pages. But no, let me not use
+this this release.
+
+synopsis - for describing a program and its flags and options. Not sure what
+it should take. Probably name, list of options, and description? Maybe
+name, and option description list?
+
+
+The goals from here are:
+1. Generate a text file document from the description.
+Basically means numbering sections and subsections, flattening everything
+else. Maybe identing and tabulating and such. But it should be pretty easy.
+
+2. Generate an html file document from the description.
+Like text, but just different way of expressing it.
+
+3. Add to html document a table of contents.
+4. Add to html a function index.
+
+The way I envision implementing this is for each of the above tasks: text,
+html, table of contents, function index, etc.. you have a different
+implementation of the section, paragraph, description procedures.
+
+For example, section will output the header, title, then eval its content.
+Pargraph will just output its content. description will output a formatted
+version of its content. You see? That should be pretty easy.
+
+Cool. I really like this idea.
+
+The one question that remains is dealing with man pages. I think the thing to
+do for man pages for release 1.0.0 is have a standard boilerplate for each
+man page, and just plug in the right section for the DESCRIPTION part of the
+man page. We can throw everything there for now. Except maybe we can extract
+the synopsis elsehow.
+
+One other thing I might want to mention: you can refer to items in the tree by
+hierarchy, where a section is identified with its name, and functions can be
+identified by name. Hopefully that's plenty enough now to refer to whatever
+you want to. In the future we might want to add: -id foo flags to each of the
+structure commands.
+
+Cool. I think I know the next step. Describe all my documents in this format.
+Then try to generate something nice. I'll do a little of the gruntwork
+tonight.
+
+Thu Jun 16 21:13:41 EDT 2011
+
+I've got the consoler document all formated now. I think rather than going on
+to the other documents, I should try writing some generators. Just to make
+sure it can work with the syntax I've provided.
+
+First step: generate a flat .txt file with numbered sections.
+
+Thu Jun 16 21:59:05 EDT 2011
+
+Cool! It's almost sort of working. Some minor issues to work out.
+
++ top level of document shouldn't have a section number.
+Because then every section is a subsection of section one.
+Instead consoler.docl, for example, should not be in an enclosing section?
+
+No. I just use a special case. The top level section is not numbered, but
+rather it's name is the title of the document.
+
++ descriptions don't format well
+They don't line up, and they don't strip the text inside the description. I'm
+not sure what it is I really want.
+
+I feel like the way man works is the values start all in the same
+column, either on the same line as the key if the key isn't too long,
+otherwise on the next line. Let me try that. And then they should line break
+on that same column. Maybe that's not so bad...
+
+I made it have the value be like a paragraph which is indented. It actually
+looks pretty good, except for defining the keysyms. Oh well. Good enough for
+me.
+
+
++ functions don't work
+I disabled them because it was giving an error I didn't understand.
+Fixed. I don't know why it started working now.
+
+- functions with lots of arguments use more than 80 columns.
+I'm not going to worry about this right now.
+
+
+Hey! It looks good. I like this.
+
+Not sure where the docl implementation thing should go. That's not really
+focus specific... Don't worry too much about it right now.
+

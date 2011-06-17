@@ -140,7 +140,7 @@ section {Consoler Library} {
         CNSLK_KP9 265
         CNSLK_KP_PERIOD 266
         CNSLK_KP_DIVIDE 267
-        CNSLK_KP_MULTIPLY = 268
+        CNSLK_KP_MULTIPLY 268
         CNSLK_KP_MINUS 269
         CNSLK_KP_PLUS 270
         CNSLK_KP_ENTER 271
@@ -255,176 +255,284 @@ section {Consoler Library} {
         }
       }
     }
+  }
 
+  section Display {
+    paragraph {
+      A consoler client receives input events and produces a graphical
+      display to send to a consoler server, which may show the display to
+      the user.  A display is a rectangular array of pixels, where each
+      pixel is some color.
+    }
+  
+    section Colors {
+      paragraph {
+        The type CNSL_Color represents a color. Its format is 8 bits each
+        for the red, green, and blue components of the color. The following
+        constructor and destructor functions are provided to work with
+        colors.  It is recommended you use them rather than directly
+        accessing the bits of a color, because the underlying representation
+        for CNSL_Color may change in future releases.
+      }
+  
+  
+      function uint8_t CNSL_GetRed8 {CNSL_Color c} {
+        paragraph {
+          Return the red component of the color c. The value returned is in
+          the range 0 to 255 inclusive.
+        }
+      }
+  
+      function uint8_t CNSL_GetGreen8 {CNSL_Color c} {
+        paragraph {
+          Return the green component of the color c. The value returned is
+          in the range 0 to 255 inclusive.
+        }
+      }
+  
+      function uint8_t CNSL_GetBlue8 {CNSL_Color c} {
+        paragraph {
+          Return the blue component of the color c. The value returned is in
+          the range 0 to 255 inclusive.
+        }
+      }
+  
+      function uint32_t CNSL_GetRGB8 {CNSL_Color c} {
+        paragraph {
+          Get the component values of the color c all together in a single
+          word.  Bits 23:16 contain the red component, 15:8 contain the
+          green component, and 7:0 contain the blue component of the color.
+        }
+  
+        paragraph {
+          This function is currently the identify function, but will be
+          useful if later on the underlying representation for CNSL_Color
+          changes.
+        }
+      }
+  
+      function CNSL_Color CNSL_MakeColor {uint8_t r uint8_t g uint8_t b} {
+        paragraph {
+          Construct a color with the given red, green, and blue components.
+          Each component should be in the range 0 to 255 inclusive.
+        }
+      }
+    }
+  
     section Display {
       paragraph {
-        A consoler client receives input events and produces a graphical
-        display to send to a consoler server, which may show the display to
-        the user.  A display is a rectangular array of pixels, where each
-        pixel is some color.
+        The type CNSL_Display describes a rectangular array of pixels.
+        CNSL_Display is a structure with the fields as follow.
       }
-
-      section Colors {
+  
+      description {
+        {unsigned int width} {the width of the display in pixels.}
+        {unsigned int height} {the height of the display in pixels.}
+        {CNSL_Color* pixels} {
+          pixel data for the display. The pixel at coordinate (x,y) has
+          color pixels[width*y + x].
+        }
+      }
+  
+      paragraph {
+        The coordinate (0,0) is the upper left corner of the display, with y
+        increasing down the display, and x increasing to the right.
+      }
+  
+      paragraph {
+        The following functions are provided to work with displays.
+      }
+  
+      function CNSL_Display CNSL_AllocDisplay {
+          {unsigned int} width {unsigned int} height} {
         paragraph {
-          The type CNSL_Color represents a color. Its format is 8 bits each
-          for the red, green, and blue components of the color. The following
-          constructor and destructor functions are provided to work with
-          colors.  It is recommended you use them rather than directly
-          accessing the bits of a color, because the underlying representation
-          for CNSL_Color may change in future releases.
+          Allocate a display of the given dimensions. More specifically,
+          this allocates memory for the pixel data of the display.
         }
+  
+        paragraph {
+          The display should be freed with a call to CNSL_FreeDisplay when
+          it is no longer needed.
+        }
+  
+        paragraph {
+          If there is in error allocating the display, the returned
+          display's pixels field will be NULL.
+        }
+      }
+          
+      function void CNSL_FreeDisplay {CNSL_Display display} {
+        paragraph {
+          Free memory associated with the pixel data for the given display.
+        }
+      }
+  
+      function CNSL_Color CNSL_GetPixel {
+          CNSL_Display display {unsigned int} x {unsigned int} y} {
+        paragraph {
+          Get the color of the pixel at the given location in the display.
+        }
+  
+        paragraph {
+          It is undefined what happens if x and y are outside the dimensions
+          of the display.
+        }
+      }
+  
+      function void CNSL_SetPixel {
+          CNSL_Display display
+          {unsigned int} x
+          {unsigned int} y
+          CNSL_Color color} {
+        paragraph {
+          Set the color of the pixel at the given location in the display.
+        }
+  
+        paragraph {
+          It is undefined what happens if x and y are outside the dimensions
+          of the display.
+        }
+      }
+    }
+  }
+  
+  section {Communication Protocol} {
+    paragraph {
+      The consoler server and client communicate using the unix file
+      abstraction.  For example, unix pipes and sockets are common means of
+      connecting the server and client together. The consoler library provides
+      functions for sending and receiving events and displays over this
+      communication link.
+    }
     
-
-        function uint8_t CNSL_GetRed8 {CNSL_Color c} {
-          paragraph {
-            Return the red component of the color c. The value returned is in
-            the range 0 to 255 inclusive.
-          }
-        }
-
-    uint8_t CNSL_GetGreen8(CNSL_Color c);
-        Return the green component of the color c. The value returned is in
-        the range 0 to 255 inclusive.
-
-    uint8_t CNSL_GetBlue8(CNSL_Color c);
-        Return the blue component of the color c. The value returned is in the
-        range 0 to 255 inclusive.
-
-    uint32_t CNSL_GetRGB8(CNSL_Color c);
-        Get the component values of the color c all together in a single word.
-        Bits 23:16 contain the red component, 15:8 contain the green
-        component, and 7:0 contain the blue component of the color.
-
-        This function is currently the identify function, but will be useful
-        if later on the underlying representation for CNSL_Color changes.
-
-    CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b);
-        Construct a color with the given red, green, and blue components. Each
-        component should be in the range 0 to 255 inclusive.
-
-== Displays ==
-The type CNSL_Display describes a rectangular array of pixels. CNSL_Display is
-a structure with the following fields:
-
-    unsigned int width - the width of the display in pixels.
-    unsigned int height - the height of the display in pixels.
-    CNSL_Color* pixels - pixel data for the display. The pixel at coordinate
-                         (x, y) has color pixels[width*y + x].
-
-The coordinate (0,0) is the upper left corner of the display, with y
-increasing down the display, and x increasing to the right.
-
-The following functions are provided to work with displays.
-
-    CNSL_Display CNSL_AllocDisplay(unsigned int width, unsigned int height);
-        Allocate a display of the given dimensions. More specifically, this
-        allocates memory for the pixel data of the display.
-
-        The display should be freed with a call to CNSL_FreeDisplay when it is
-        no longer needed.
-
-        If there is in error allocating the display, the returned display's
-        pixels field will be NULL.
-
-    void CNSL_FreeDisplay(CNSL_Display display);
-        Free memory associated with the pixel data for the given display.
-
-    CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y);
-        Get the color of the pixel at the given location in the display.
-
-        It is undefined what happens if x and y are outside the dimensions of
-        the display.
-
-    void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Color color);
-        Set the color of the pixel at the given location in the display.
-
-        It is undefined what happens if x and y are outside the dimensions of
-        the display.
-
-= Communication Protocol =
-The consoler server and client communicate using the unix file abstraction.
-For example, unix pipes and sockets are common means of connecting the server
-and client together. The consoler library provides functions for sending and
-receiving events and displays over this communication link.
-
-CNSL_Console is a structure used by a client to refer to a server. The
-structure consists of two fields.
-    fdin - file descriptor for reading from the server.
-    fdout - file descriptor for writing to the server.
-
-stdcon is the standard console server for clients to use. It uses the
-standard input and output streams to communicate with the server.
-
-The CNSL_Client structure is used by a consoler server to refer to a client.
-The structure consists of two fields, similar to the CNSL_Console.
-    fdin - file descriptor for reading from the client.
-    fdout - file descriptor for writing to the client.
-
-The following functions are provided for working with client and server
-connections.
-
-    CNSL_Client CNSL_LaunchClient(const char* path, char* const args[])
+    paragraph {
+      CNSL_Console is a structure used by a client to refer to a server. The
+      structure consists of two fields.
+    }
+  
+    description {
+      fdin  {file descriptor for reading from the server.}
+      fdout {file descriptor for writing to the server.}
+    }
+  
+    paragraph {
+      stdcon is the standard console server for clients to use. It uses the
+      standard input and output streams to communicate with the server.
+    }
+  
+    paragraph {
+      The CNSL_Client structure is used by a consoler server to refer to a
+      client. The structure consists of two fields, similar to the
+      CNSL_Console.
+    }
+  
+    description {
+      fdin  {file descriptor for reading from the client.}
+      fdout {file descriptor for writing to the client.}
+    }
+  
+    paragraph {
+      The following functions are provided for working with client and server
+      connections.
+    }
+  
+    function CNSL_Client CNSL_LaunchClient {
+        {const char*} path  {char* const} {args[]}} {
+      paragraph {
         Launch a consoler client specified by the given path and pass it the
         given arguments. This forks a new processes to exec the client, sets
         up a communication channel with the client using pipes, and returns a
         reference to the client.
-
+      }
+  
+      paragraph {
         If there is an error in launching the client, both fields of the
         returned client will be set to -1.
-
-    void CNSL_CloseClient(CNSL_Client client);
+      }
+    }
+  
+    function void CNSL_CloseClient {CNSL_Client client} {
+      paragraph {
         Close a connection to a client.
-
-    CNSL_Event CNSL_RecvEvent(CNSL_Console console);
+      }
+    }
+  
+    function CNSL_Event CNSL_RecvEvent {CNSL_Console console} {
+      paragraph {
         Get the next event from the console server. This function blocks until
-        the next event is available.
-        Returns a quit event if server connection has closed.
-
-    bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
+        the next event is available.  Returns a quit event if server
+        connection has closed.
+      }
+    }
+  
+    function bool CNSL_SendEvent {CNSL_Client client CNSL_Event event} {
+      paragraph {
         Send an event to a client.
         Returns true if the event was sent successfully, false otherwise.
-
-    void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
-            unsigned int srcx, unsigned int srcy,
-            unsigned int dstx, unsigned int dsty,
-            unsigned int width, unsigned int height);
-
-        Send a display to a server. Pixels are sent from the rectangular box
-        with given width and height and upper left corner at
+      }
+    }
+  
+    function void CNSL_SendDisplay {
+        CNSL_Console console CNSL_Display display
+        {unsigned int} srcx {unsigned int} srcy
+        {unsigned int} dstx {unsigned int} dsty
+        {unsigned int} width {unsigned int} height} {
+      paragraph {
+        Send a display to a server. Pixels are sent from the rectangular
+        box with given width and height and upper left corner at
         coordinates (srcx, srcy). The pixels will be written to the
-        destination coordinates (dstx, dsty) of a master display the server
-        keeps track of for the client.
-
-    bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
-            unsigned int* dstx, unsigned int* dsty
-            unsigned int* width, unsigned int* height);
-
+        destination coordinates (dstx, dsty) of a master display the
+        server keeps track of for the client.
+      }
+    }
+  
+    function bool CNSL_RecvDisplay {
+        CNSL_Client client CNSL_Display display
+        {unsigned int*} dstx {unsigned int*} dsty
+        {unsigned int*} width {unsigned int*} height} {
+      paragraph {
         Receive a display from a client by copying it to the given display.
         The location of the update will be as specified by the client when it
         called SendDisplay. Pixels not in range of the display d will be
         ignored.
-
+      }
+  
+      paragraph {
         The parameters dstx, dsty, width, and height are set to the updated
         region of the display. They may be NULL.
-
+      }
+  
+      paragraph {
         Returns true if a display was recieved, false on end of file or other
         error.
-        
-= Specifying Screen Dimensions =
-By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set to
-the dimensions of the screen available to the client to use. The consoler
-library provides a couple of functions for facilitating the use of the
-CNSLWIDTH and CNSLHEIGHT environment variables.
-
-    void CNSL_SetGeometry(int width, int height);
+      }
+    }
+  }
+  
+  section {Specifying Screen Dimensions} {
+    paragraph {
+      By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set
+      to the dimensions of the screen available to the client to use. The
+      consoler library provides a couple of functions for facilitating the use
+      of the CNSLWIDTH and CNSLHEIGHT environment variables.
+    }
+  
+    function void CNSL_SetGeometry {int width int height} {
+      paragraph {
         Set the environment variables CNSLWIDTH and CNSLHEIGHT to the given
         width and height. This can be called by a server before the server
         launches a client to propagate the screen dimensions to the client.
-
-    void CNSL_GetGeometry(int* width, int* height);
+      }
+    }
+  
+    function void CNSL_GetGeometry {{int*} width {int*} height} {
+      paragraph {
         Read the environment variables CNSLWIDTH and CNSLHEIGHT into width and
         height. If those environment variables are not set, width and height
         are unchanged. This can be used by the client to discover the screen
         dimensions when it first starts.
-
+      }
+    }
+  }
+}
 
