@@ -1,0 +1,36 @@
+
+section Focus {
+  paragraph {
+    focus is a project which aims to produce a computing environment which
+    allows you to focus on the work you are doing. focus consists of the
+    following components.
+  }
+
+  description {
+    consoler {library for interacting with the user via keys and display}
+    fonter {library for drawing fonts on consoler displays}
+    boxer {a box game}
+    filler {a sample program to fill a display with color}
+    green {a screen-like application multiplexer}
+    pdfer {a pdf viewer}
+    pnger {a png viewer}
+    sdlcsr {a consoler server implemented on libSDL}
+    termer {a terminal emulator}
+  }
+
+  paragraph {
+    Each of these components is described in more detail in the following
+    sections.
+  }
+
+  include consoler/consoler.docl
+  include fonter/fonter.docl
+  include boxer/boxer.docl
+  include filler/filler.docl
+  include green/green.docl
+  include pdfer/pdfer.docl
+  include pnger/pnger.docl
+  include sdlcsr/sdlcsr.docl
+  include termer/termer.docl
+}
+

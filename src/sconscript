@@ -1,0 +1,22 @@
+
+Import("env")
+
+
+focusdoc = env.Command('focus.userdoc', ['docl.tcl', 'focus.docl'],
+    "tclsh8.5 $SOURCES > $TARGET")
+
+env.Depends(focusdoc, [
+    "consoler/consoler.docl",
+    "consoler/consoler.docl",
+    "fonter/fonter.docl",
+    "boxer/boxer.docl",
+    "filler/filler.docl",
+    "green/green.docl",
+    "pdfer/pdfer.docl",
+    "pnger/pnger.docl",
+    "sdlcsr/sdlcsr.docl",
+    "termer/termer.docl"
+    ])
+
+Default(focusdoc)
+

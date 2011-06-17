@@ -1,0 +1,21 @@
+
+section sdlcsr {
+  paragraph {
+    sdlcsr is a consoler server which uses an SDL back end. It serves a single
+    client, getting input from the keyboard and drawing to a fullscreen SDL
+    surface, and exits when the client quits.
+  }
+
+  synopsis {sdlcsr client [client args ..]}
+
+  paragraph {
+    sdlcsr takes as command line arguments a client to launch followed by
+    arguments to pass to that client.
+  }
+
+  paragraph {
+    sdlcsr sets CNSLWIDTH and CNSLHEIGHT appropriately before launching the
+    client. The mouse cursor is hidden and key repeat is turned on.
+  }
+}
+

@@ -30,9 +30,11 @@ proc gentext {src} {
     global gentext_toplevel
     global gentext_section_prefix
     global gentext_section_number
+    global gentext_srcdir
     set gentext_toplevel yes
     set gentext_section_prefix ""
     set gentext_section_number 1
+    set gentext_srcdir [file dirname $src]
     
 
     proc section {name content} {
@@ -81,6 +83,21 @@ proc gentext {src} {
         }
         puts ");\n"
         eval "$description"
+    }
+
+    proc synopsis {text} {
+        puts "    $text"
+        puts ""
+    }
+
+    # includes relative to current source file.
+    proc include {src} {
+        global gentext_srcdir
+        set sd $gentext_srcdir
+        set srcname [file join $sd $src]
+        set gentext_srcdir [file dirname $srcname]
+        source $srcname
+        set gentext_srcdir $sd
     }
 
     source $src

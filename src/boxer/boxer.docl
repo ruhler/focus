@@ -1,0 +1,30 @@
+
+section Boxer {
+  paragraph {
+    Boxer is a consoler application where you move a small box around the
+    screen, leaving a trail of where the box has been. The follow keys are
+    supported:
+  }
+
+  description {
+    h {move the box to the left}
+    j {move the box down}
+    k {move the box up}
+    l {move the box to the right}
+    q {quit}
+  }
+
+  paragraph {
+    More specifically, the background is solid black, taking up the full
+    screen dimensions as specified by CNSLWIDTH and CNSLHEIGHT environment
+    variables, defaulting to 640x480. The current box position is white. Past
+    box positions are red. The box starts at position (100, 100), and is of
+    size 10x10 pixels.
+  }
+
+  paragraph {
+    If you move the box off the screen, it will wrap around to the other side
+    of the screen, staying on the same 10x10 grid.
+  }
+}
+

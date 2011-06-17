@@ -17,5 +17,8 @@ tobuild = SConscript('config/config')
 for comp in tobuild:
     SConscript('src/%s/sconscript' % comp)
 
+# Build the documentation
+SConscript('src/sconscript')
+
 env.Alias('install', '$PREFIX')
 

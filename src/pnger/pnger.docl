@@ -1,0 +1,12 @@
+
+section pnger {
+  synopsis {pnger <pngfile>}
+
+  paragraph {
+    pnger is a consoler application for viewing png files. It takes on the
+    command line a single argument which is the png file to view. It will
+    display that png file on the screen and wait for the key 'q' to be pressed
+    to quit. 
+  }
+}
+

@@ -1,0 +1,143 @@
+
+section fonter {
+  paragraph {
+    Fonter is a library which wraps fontconfig and freetype to make working
+    with fonts easier in consoler applications. A fonter object represents a
+    single font you can use to draw characters or strings of characters to
+    consoler displays.
+  }
+
+  paragraph {
+    To use the fonter library, include fonter.h and link with -lfreetype
+    -lfontconfig -lfonter
+  }
+
+  paragraph {
+    The type FNTR_Fonter is a reference to a fonter object. It should be
+    treated as an abstract data type.
+  }
+
+  function FNTR_Fonter FNTR_Create {{const char*} fontname} {
+    paragraph { 
+      Create a new fonter object which holds the font described by fontname.
+      fontname is a fontconfig font name, such as \"Monospace-24:Bold\". See
+      the fontconfig documentation for more details on font names.
+    }
+
+    paragraph {
+      Fonter objects should be freed with FNTR_Free when you no longer need
+      them. This function returns NULL if there was some problem creating the
+      fonter object.
+    }
+  }
+
+  function void FNTR_Free {FNTR_Fonter fonter} {
+    paragraph {
+      Free a fonter object which is no longer needed.
+    }
+  }
+
+  paragraph {
+    The following functions on fonter objects give you access to font global
+    metrics.
+  }
+
+  function int FNTR_MaxWidth {FNTR_Fonter fonter} {
+    paragraph {
+      Return the width in pixels of the maximum glyph width in the font.
+    }
+  }
+
+  function int FNTR_Height {FNTR_Fonter fonter} {
+    paragraph {
+      Return the height in pixels of glyphs in the font. It is assumed all
+      glyphs have the same height.
+    }
+  }
+
+  paragraph {
+    After you have created a fonter object, you can load a specific glyph for
+    drawing.
+  }
+
+  function void FNTR_LoadGlyph {FNTR_Fonter fonter  wchar_t c} {
+    paragraph {
+      Load the given character into the current glyph slot of the fonter object.
+    }
+
+    paragraph {
+      Fonter will attempt to load additional font files if needed to find a
+      glyph for the given character.
+    }
+  }
+
+  paragraph {
+    Once a glyph is loaded, you can ask for its width and access the greyscale
+    rendering of the glyph.
+  }
+
+  function int FNTR_GlyphWidth {FNTR_Fonter fonter} {
+    paragraph {
+      Return the width in pixels of the loaded glyph.  It's undefined what
+      happens if no glyph is loaded.
+    }
+  }
+
+  function uint8_t FNTR_GlyphLevel {FNTR_Fonter fonter  int x  int y} {
+    paragraph {
+      Return the grey level of the loaded glyph at the given location. The
+      level ranges from 0 to 255 inclusive.  Coordinate (0,0) is the upper
+      left hand corner of the glyph, with x increasing to the left and y
+      increasing down.
+    }
+   
+    paragraph {
+      It is okay if the coordinate (x,y) is outside the glyph rendering. In
+      that case the level returned will be 0.
+    }
+  }
+
+  paragraph {
+    The following convenience functions are provided to draw characters to
+    consoler displays.
+  }
+
+  function void FNTR_DrawGlyph {
+      FNTR_Fonter fonter
+      CNSL_Display display
+      CNSL_Color fg
+      CNSL_Color bg
+      int x
+      int y} {
+    paragraph {
+      Draw the currently loaded glyph to the given display with the upper left
+      hand corner of the glyph at (x, y) of the display. The color fg is used
+      for the foreground color, and bg used for the background color of the
+      glyph drawn.
+    }
+  }
+
+  function void FNTR_DrawString {
+      FNTR_Fonter fonter
+      CNSL_Display display
+      CNSL_Color fg
+      CNSL_Color bg
+      int x
+      int y
+      {const char*} str} {
+    paragraph {
+      Draw the given string to the display with the upper left hand corner of
+      the string drawn to position (x,y) of the display. This overwrites the
+      currently loaded glyph.
+    }
+  }
+
+  section fonterexample {
+    paragraph {
+      Included with the fonter source is an fonterexample.c, which is an
+      example application which uses fonter. The application draws a string to
+      the screen and waits for the keystroke q before exiting.
+    }
+  }
+}
+

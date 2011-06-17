@@ -10,9 +10,6 @@ env['LIBPATH'].append(Dir('.'))
 consolertest = env.Program('consolertest', 'consolertest.c', LIBS=['consoler'])
 Default(env.Command('consolertest.out', consolertest, "$SOURCES > $TARGET"))
 
-Default(env.Command('consoler.userdoc', ['docl.tcl', 'consoler.docl'],
-    "tclsh8.5 $SOURCES > $TARGET"))
-
 env.Install("$PREFIX/include", ['consoler.h', 'consoler_keysym.h'])
 env.Install("$PREFIX/lib", consoler);
 
