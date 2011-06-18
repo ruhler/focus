@@ -5,7 +5,6 @@ List of pending issues.
 - user documentation (4.tsk)
 - choice and application of license(14.tsk)
 - document how to configure, build, install
-- write pkgconfig files for consoler and fonter
 - add --help to the programs?
 - release of 1.0.0 (1.tsk)
 

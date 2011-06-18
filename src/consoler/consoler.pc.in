@@ -1,0 +1,14 @@
+prefix=@PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: Consoler
+Description: Graphical interaction library
+URL:
+Version: @VERSION@
+Requires:
+Conflicts:
+Libs: -L${libdir}
+Libs.private:
+Cflags: -I${includedir}
+

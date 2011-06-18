@@ -1,0 +1,31 @@
+
+Fri Jun 17 21:47:14 EDT 2011
+
+Task: Write pkg-config files for consoler and fonter
+
+The pkg-config man page gives the detailed syntax. Looks like it should be
+very easy. I can use the textfile builder in scons. Or would it be better to
+use sed or a preprocessor or something?
+
+It probably would be better to use a processor on an input pkg-config file.
+All the data is static except for PREFIX, which should be substituted. Oh, and
+also VERSION.
+
+Fri Jun 17 21:58:58 EDT 2011
+
+I wrote consoler.pc.in and filler.pc.in flags. All that remains is to figure
+out the nicest way to do the PREFIX and VERSION substitutions in scons, and
+perhaps test that they work.
+
+Fri Jun 17 23:13:16 EDT 2011
+
+scons has a builder called Substfile which ought to work swell if I can figure
+out how to use it.
+
+Looks like I give target, source, and a dictionary of substitutions as
+SUBST_DICT keyword. Simple! Cool.
+
+Fri Jun 17 23:20:31 EDT 2011
+
+Yup. It works. This task is done.
+

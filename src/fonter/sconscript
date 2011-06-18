@@ -15,6 +15,11 @@ fonterexample = env.Program('fonterexample', 'fonterexample.c',
         LIBS=['fontconfig', 'freetype', 'fonter', 'consoler'])
 Default(fonterexample)
 
+fonterpkgconfig = env.Substfile('fonter.pc', 'fonter.pc.in',
+        SUBST_DICT= {"@PREFIX@": env['PREFIX'], "@VERSION@": env['VERSION']})
+env.Default(fonterpkgconfig)
+
 env.Install("$PREFIX/include", 'fonter.h')
 env.Install("$PREFIX/lib", fonter);
+env.Install("$PREFIX/lib/pkgconfig", fonterpkgconfig);
 

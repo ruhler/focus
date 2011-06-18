@@ -626,3 +626,23 @@ maybe provide an emit function which wraps puts?
 
 Ug. I don't know.
 
+Fri Jun 17 23:04:56 EDT 2011
+
+Here's an idea. What if I had a general purpose docl traverser. Then you can
+use that by supplying callback functions: onparagraph, on function,
+ondescriptionbegin, on descriptionitem. Things like that?
+
+I'm thinking what I want to do is have a general frame work in which it makes
+sense to describe the following things:
+
+- generate text
+- generate html
+- generate function index
+- generate table of contents
+- generate man page for each function
+
+Stuff that can be common to these (the traversal) should be common. The
+differences ought to be described in a clear way.
+
+I'll continue thinking about this.
+

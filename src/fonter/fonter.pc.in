@@ -1,0 +1,14 @@
+prefix=@PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: Fonter
+Description: Font library for consoler applications
+URL:
+Version: @VERSION@
+Requires: fontconfig, freetype, consoler
+Conflicts:
+Libs: -L${libdir}
+Libs.private:
+Cflags: -I${includedir}
+
