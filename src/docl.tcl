@@ -1,5 +1,6 @@
 
-set src [lindex $argv 0]
+set mode [lindex $argv 0]
+set src [lindex $argv 1]
 
 # Format a block of text.
 # Replaces all whitespace with a single space.
@@ -21,15 +22,35 @@ proc formatblock {text indent} {
 
         set formatted "$formatted$word "
     }
-    return "$formatted\n"
+    return $formatted
 }
-    
+
+# function which does nothing
+proc nop {args} {
+}
+
+# Return the specialization function for the given function
+# If there is none, returns a function which does nothing.
+# Consults the mode variable to find the right function.
+proc specialize {func} {
+    global mode
+    if {[string equal "" [info procs ${func}_$mode]]} {
+        return nop
+    }
+    return ${func}_$mode
+}
 
 # docl command: section
 # section name content
 # Describes a new section in the document.
 #  name - the name of the section 
 #  content - a docl script containing the section content.
+# For specialization:
+#   ondocument_enter title - called on start of document with title.
+#   ondocument_exit - called when document finishes
+#   onsection_enter number title - called on start of a section.
+#       number - section number, such as: "3.1.4"
+#       title - section title
 proc section {name content} {
     global istop
     global section_prefix
@@ -39,12 +60,11 @@ proc section {name content} {
     set sn $section_number
 
     if {$tl} {
-        puts "$name"
+        [specialize ondocument_enter] $name
     } else {
-        puts "$sp$sn $name"
+        [specialize onsection_enter] "$sp$sn" $name
         set section_prefix "$sp$sn."
     }
-    puts ""
 
     set istop no
     set section_number 1
@@ -53,6 +73,10 @@ proc section {name content} {
     set istop $tl
     set section_prefix $sp
     set section_number [expr $sn + 1]
+
+    if {$istop} {
+        [specialize ondocument_exit]
+    }
 }
 
 # docl command: paragraph
@@ -60,8 +84,10 @@ proc section {name content} {
 # Describes a paragraph of text.
 #  text - the text of the paragraph.
 # All whitespace is reduced to a single space and trimmed at front and back.
+# For specialization:
+#   onparagraph is called with formated text as its argument.
 proc paragraph {text} {
-    puts [formatblock $text ""]
+    [specialize onparagraph] [formatblock $text ""]
 }
 
 # docl command: description
@@ -70,12 +96,16 @@ proc paragraph {text} {
 #  content - a list of elements alternating name value
 # All whitespace in the values is reduced to a single space and trimmed at
 # front and back.
+# For specialization:
+#   ondescription_enter - called when entering a description block.
+#   ondescription_item name vlaue - called for each description item
+#   ondescription_exit - called when exiting a description block.
 proc description {content} {
+    [specialize ondescription_enter]
     foreach {name value} $content {
-        puts "    $name"
-        puts [formatblock $value "        "]
+        [specialize ondescription_item] $name $value
     }
-    puts ""
+    [specialize ondescription_exit]
 }
 
 # docl command: function
@@ -87,6 +117,8 @@ proc description {content} {
 #         function.
 #  description - a docl script describing the function (which should not
 #                contain any section commands).
+# For specialization:
+#   (none)
 proc function {rtype name args description} {
     puts -nonewline "    $rtype $name\("
     set comma ""
@@ -102,6 +134,8 @@ proc function {rtype name args description} {
 # synopsis text
 # Describe a program synopsis (usage)
 #  text - the literal text of the synopsis
+# For specialization:
+#   (none)
 proc synopsis {text} {
     puts "    $text"
     puts ""
@@ -112,6 +146,8 @@ proc synopsis {text} {
 # Include content from the docl script in the file src relative to the current
 # docl script.
 #  src - name of source file to include
+# For specialization:
+#   (none)
 proc include {src} {
     global srcdir
     set sd $srcdir
@@ -119,6 +155,121 @@ proc include {src} {
     set srcdir [file dirname $srcname]
     source $srcname
     set srcdir $sd
+}
+
+# onparagraph_text
+# The text specialization of onparagraph.
+# Just outputs the pretty block of text.
+proc onparagraph_text {text} {
+    puts $text
+    puts ""
+}
+
+proc ondescription_item_text {name value} {
+    puts "    $name"
+    puts [formatblock $value "        "]
+    puts ""
+}
+
+proc ondocument_enter_text {title} {
+    puts $title
+    puts ""
+}
+
+proc onsection_enter_text {number title} {
+    puts "$number $title"
+    puts ""
+}
+
+
+# onparagraph_html
+# The html specialization of onparagraph.
+# Output the block between <p> </p> tags.
+proc onparagraph_html {text} {
+    puts "<p>"
+    puts $text
+    puts "</p>"
+    puts ""
+}
+
+proc ondescription_enter_html {} {
+    puts "<dl>"
+}
+
+proc ondescription_item_html {name value} {
+    puts "    <dt>$name</dt>"
+    puts "    <dd>"
+    puts [formatblock $value "        "]
+    puts "    </dd>"
+    puts ""
+}
+
+proc ondescription_exit_html {} {
+    puts "</dl>"
+    puts ""
+}
+
+proc ondocument_enter_html {title} {
+    puts "<html>"
+    puts "  <title>$title</title>"
+    puts "<body>"
+    puts "<h1>$title</h1>"
+    puts ""
+}
+
+proc ondocument_exit_html {} {
+    puts "</body>"
+    puts "</html>"
+    puts ""
+}
+
+proc onsection_enter_html {number title} {
+    set hl 2
+    for {set i 0} {$i < [string length $number]} {incr i} {
+        if {[string equal "." [string index $number $i]]} {
+            incr hl
+        }
+    }
+
+    puts "<h$hl>$number $title</h$hl>"
+    puts ""
+}
+
+proc onparagraph_tex {text} {
+    puts $text
+    puts ""
+}
+
+proc ondescription_enter_tex {} {
+    puts stdout "\\begin{description}"
+}
+
+proc ondescription_item_tex {name value} {
+    puts "\\item \[$name\]"
+    puts [formatblock $value "        "]
+}
+
+proc ondescription_exit_tex {} {
+    puts "\\end{description}"
+    puts ""
+}
+
+proc ondocument_enter_tex {title} {
+    puts "\\documentclass{article}"
+    puts "\\title{$title}"
+    puts "\\begin{document}"
+    puts "\\section{Introduction}"
+    puts ""
+}
+
+proc ondocument_exit_tex {} {
+    puts "\\end{document}"
+    puts ""
+}
+
+proc onsection_enter_tex {number title} {
+    puts "\\section{$title}"
+    puts ""
 }
 
 # global variables used in traversal

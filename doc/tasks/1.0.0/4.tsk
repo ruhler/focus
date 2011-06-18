@@ -665,3 +665,27 @@ I should definately document these hooks. Otherwise we could end up with an
 inheritance like mess. I'll do that in the source. I should also document the
 document commands somewhere. But that's not required for 1.0.0.
 
+Sat Jun 18 11:40:57 EDT 2011
+
+I'm not happy with the testing situation for docl generation...
+
+Sat Jun 18 12:17:39 EDT 2011
+
+Okay! Cool. Now I'm generating text and html and it's pretty nice code I
+think.
+
+The real test will be when I try to expand it to support:
+ - table of contents
+ - index of functions
+ - man pages
+
+And, um, how I'll add all that stuff in. Becuase for html I'll want to do
+multiple traversals, and not necessarally at obvious times in the document.
+
+Sat Jun 18 12:28:18 EDT 2011
+
+I hacked up a tex version too, though it has some problems:
+ - functions, synopsis not typeset specially
+ - needs to escape %, _, and do double quotes right
+ - should produce a pdf, not just a tex (I haven't installed pdftex yet)
+

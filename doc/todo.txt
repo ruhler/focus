@@ -15,6 +15,7 @@ List of pending issues.
 
 unassigned
 - config should check for tclsh (needed to generate documentation) 
+- config should check for pdflatex (needed to generate some documentation) 
 - add italics to termer
 - add status bar to sgreen
 - fix pdfer rotation bug

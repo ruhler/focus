@@ -2,10 +2,16 @@
 Import("env")
 
 
-focusdoc = env.Command('focus.userdoc', ['docl.tcl', 'focus.docl'],
-    "tclsh8.5 $SOURCES > $TARGET")
+focusdoc_text = env.Command('focus.txt', ['docl.tcl', 'focus.docl'],
+    "tclsh8.5 ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
 
-env.Depends(focusdoc, [
+focusdoc_html = env.Command('focus.html', ['docl.tcl', 'focus.docl'],
+    "tclsh8.5 ${SOURCES[0]} html ${SOURCES[1]} > $TARGET")
+
+focusdoc_tex = env.Command('focus.tex', ['docl.tcl', 'focus.docl'],
+    "tclsh8.5 ${SOURCES[0]} tex ${SOURCES[1]} > $TARGET")
+
+env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
     "consoler/consoler.docl",
     "consoler/consoler.docl",
     "fonter/fonter.docl",
@@ -18,5 +24,7 @@ env.Depends(focusdoc, [
     "termer/termer.docl"
     ])
 
-Default(focusdoc)
+Default(focusdoc_text)
+Default(focusdoc_html)
+Default(focusdoc_tex)
 
