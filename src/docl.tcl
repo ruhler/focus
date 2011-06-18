@@ -1,107 +1,132 @@
 
-set sourcefile [lindex $argv 0]
+set src [lindex $argv 0]
 
-# print a formated block of text.
+# Format a block of text.
 # Replaces all whitespace with a single space.
 # Trims space off front and back. 
 # Introduces newlines so as not to exceed 78 columns, and prefixes each line
 # with the given indent.
-# puts a trailing blank line after the block of text.
-proc textblock {text indent} {
+proc formatblock {text indent} {
     set trimmed [concat $text]
+    set formatted ""
 
     set cc [string length $indent]
     puts -nonewline "$indent"
     foreach {word} $trimmed { 
         incr cc [string length "$word "]
         if {$cc > 78} {
-            puts ""
+            set formatted "$formatted\n$indent"
             set cc [string length "$word "]
-            puts -nonewline "$indent"
         }
 
-        puts -nonewline "$word "
+        set formatted "$formatted$word "
     }
-    puts "\n"
+    return "$formatted\n"
 }
-
-# Generate on standard out a text document from the input .docl source.
-proc gentext {src} {
-    global gentext_toplevel
-    global gentext_section_prefix
-    global gentext_section_number
-    global gentext_srcdir
-    set gentext_toplevel yes
-    set gentext_section_prefix ""
-    set gentext_section_number 1
-    set gentext_srcdir [file dirname $src]
     
 
-    proc section {name content} {
-        global gentext_toplevel
-        global gentext_section_prefix
-        global gentext_section_number
-        set tl $gentext_toplevel
-        set sp $gentext_section_prefix
-        set sn $gentext_section_number
+# docl command: section
+# section name content
+# Describes a new section in the document.
+#  name - the name of the section 
+#  content - a docl script containing the section content.
+proc section {name content} {
+    global istop
+    global section_prefix
+    global section_number
+    set tl $istop
+    set sp $section_prefix
+    set sn $section_number
 
-        if {$tl} {
-            puts "$name"
-        } else {
-            puts "$sp$sn $name"
-            set gentext_section_prefix "$sp$sn."
-        }
-        puts ""
-
-        set gentext_toplevel no
-        set gentext_section_number 1
-        eval $content
-
-        set gentext_toplevel $tl
-        set gentext_section_prefix $sp
-        set gentext_section_number [expr $sn + 1]
+    if {$tl} {
+        puts "$name"
+    } else {
+        puts "$sp$sn $name"
+        set section_prefix "$sp$sn."
     }
+    puts ""
 
-    proc paragraph {content} {
-        textblock $content ""
-    }
+    set istop no
+    set section_number 1
+    eval $content
 
-    proc description {content} {
-        foreach {key value} $content {
-            puts "    $key"
-            textblock $value "        "
-        }
-        puts ""
-    }
-
-    proc function {rtype name args description} {
-        puts -nonewline "    $rtype $name\("
-        set comma ""
-        foreach {t n} $args {
-            puts -nonewline "$comma$t $n"
-            set comma ", "
-        }
-        puts ");\n"
-        eval "$description"
-    }
-
-    proc synopsis {text} {
-        puts "    $text"
-        puts ""
-    }
-
-    # includes relative to current source file.
-    proc include {src} {
-        global gentext_srcdir
-        set sd $gentext_srcdir
-        set srcname [file join $sd $src]
-        set gentext_srcdir [file dirname $srcname]
-        source $srcname
-        set gentext_srcdir $sd
-    }
-
-    source $src
+    set istop $tl
+    set section_prefix $sp
+    set section_number [expr $sn + 1]
 }
 
-gentext $sourcefile
+# docl command: paragraph
+# paragraph text
+# Describes a paragraph of text.
+#  text - the text of the paragraph.
+# All whitespace is reduced to a single space and trimmed at front and back.
+proc paragraph {text} {
+    puts [formatblock $text ""]
+}
+
+# docl command: description
+# description content
+# Describes a name value list.
+#  content - a list of elements alternating name value
+# All whitespace in the values is reduced to a single space and trimmed at
+# front and back.
+proc description {content} {
+    foreach {name value} $content {
+        puts "    $name"
+        puts [formatblock $value "        "]
+    }
+    puts ""
+}
+
+# docl command: function
+# function returntype name args description
+# Describes a function.
+#  returntype - the return type of the function
+#  name - the name of the function
+#  args - a list of elements alternating type name describing args to the
+#         function.
+#  description - a docl script describing the function (which should not
+#                contain any section commands).
+proc function {rtype name args description} {
+    puts -nonewline "    $rtype $name\("
+    set comma ""
+    foreach {t n} $args {
+        puts -nonewline "$comma$t $n"
+        set comma ", "
+    }
+    puts ");\n"
+    eval "$description"
+}
+
+# docl command: synopsis
+# synopsis text
+# Describe a program synopsis (usage)
+#  text - the literal text of the synopsis
+proc synopsis {text} {
+    puts "    $text"
+    puts ""
+}
+
+# docl command: include
+# include src
+# Include content from the docl script in the file src relative to the current
+# docl script.
+#  src - name of source file to include
+proc include {src} {
+    global srcdir
+    set sd $srcdir
+    set srcname [file join $sd $src]
+    set srcdir [file dirname $srcname]
+    source $srcname
+    set srcdir $sd
+}
+
+# global variables used in traversal
+set istop yes
+set section_prefix ""
+set section_number 1
+set srcdir [file dirname $src]
+
+# do the traversal
+source $src
 

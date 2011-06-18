@@ -646,3 +646,22 @@ differences ought to be described in a clear way.
 
 I'll continue thinking about this.
 
+Sat Jun 18 10:51:55 EDT 2011
+
+Here are some continued thoughts.
+
+Add hooks into the traversal routine, as suggested above. These hooks can be
+described (for this first version) by implementing a procedure named
+onfoo_$mode. The mode variable will be an input to the traversal routine. The
+traversal routine will call the onfoo_$mode procedure with appropriate
+arguments if that procedure is defined, otherwise it won't call anything.
+
+I think I can clean up the (first version) implementation by morphing the text
+thing into it. This is just a first version, so I can be a little sloppy with
+global variables and such. In the future I may want to move over to namespaces
+or more object oriented stuff. Not for release 1.0.0.
+
+I should definately document these hooks. Otherwise we could end up with an
+inheritance like mess. I'll do that in the source. I should also document the
+document commands somewhere. But that's not required for 1.0.0.
+
