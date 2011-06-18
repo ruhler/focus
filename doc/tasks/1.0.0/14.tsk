@@ -61,6 +61,15 @@ Usage points:
     Copyright (C) 2011 Richard Uhler
 
     See the file focus.docl for copying conditions.
+
+    Output something like:
+
+     <program>  Copyright (C) <year>  <name of author>
+     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+     This is free software, and you are welcome to redistribute it
+     under certain conditions; type `show c' for details.
+
+
  - for fdl, include scripts needed for rendering. if those are more generally
    usefule scripts, GPL them too.
 
@@ -85,4 +94,44 @@ Questions like:
  - should sconscripts be licensed?
  - how about pkgconfig inputs?
  - how about test inputs like colors.pdf, green.png?
+
+Sat Jun 18 14:00:31 EDT 2011
+
+I finished reading up on stuff. I think GPLv3 and later looks good to me.
+
+Let's see. How about for 1.0.0 I make a good first effort at applying
+everything right.
+
+I'm not sure what to do about the documentation though. Maybe docl.tcl is
+GPL, and all the foo.docl's are FDL. That sounds fine to me. But is my
+document even mature enough to do this for? Perhaps I should make it mature
+enough. That is, include a copyright section. I think that's fine.
+
+Okay. Here's what I'll do. All the .c and .h files get GPLv3. All the .docl
+files get FDL. Don't worry about anything else for now.
+
+For consoler applications... let me just dump the copyright notice on sdterr
+when it starts. It's too much of a hassle to have a command. Same for sdlcsr.
+cgreen isn't interactive, so it shouldn't need any of that.
+
+Err... maybe I should skip that for release 1.0.0? Yes. Worse case I give
+people a little more freedom (the freedom to redistribute without the
+interactive notice).
+
+It's interesting to think about how the tasks should be licensed. They are
+part of developer documentation. I think they absolutely ought to be
+distributed with the application, and it's bad to change existing text in a
+way that would be deceptive. But fixing typos and appending text is fine. So
+probably just let them modify it. For now I'll just leave the license notice
+out.
+
+Sat Jun 18 14:31:55 EDT 2011
+
+I applied the GPLv3 notice to the top of all my .h and .c files. I still need:
+ - FDL license on .docl files
+ - Specify my contact info somewhere. (Why not in the headers?)
+
+Um... I might not want to use my mit email for this. Probably want my own
+email address specifically. I'll figure that out when I go to actually do the
+release.
 

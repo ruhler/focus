@@ -1,0 +1,17 @@
+
+Sat Jun 18 12:32:01 EDT 2011
+
+Task: Document how to configure, build, and install focus
+
+Where should I document this though?
+
+The focus manual?
+In a README file?
+
+And I suppose the other question I have to ask here is, do I want to write a
+stupid configure script? Or can I punt that to a later release?
+
+Sat Jun 18 14:15:06 EDT 2011
+
+Skip configure script for now. That can come out later.
+

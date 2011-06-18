@@ -4,7 +4,7 @@ List of pending issues.
 1.0.0
 - user documentation (4.tsk)
 - choice and application of license (14.tsk)
-- document how to configure, build, install
+- document how to configure, build, install (24.tsk)
 - release of 1.0.0 (1.tsk)
 
 1.0.1
@@ -26,4 +26,5 @@ unassigned
 - key remapping library
 - may be memory leak in pdfer
 - colors get inverted on sparc (endian issues)?
+- get poppler patch into poppler release
 
