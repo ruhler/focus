@@ -34,8 +34,20 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+        printf("Usage: sdlcsr client [args ...]\n");
+        printf("Launch a consoler client under SDL\n");
+        printf("\n");
+        printf("Options\n");
+        printf("  --help       output this help message and exit\n");
+        printf("  --version    output version information and exit\n");
+        printf("\n");
+        return 0;
+    }
+
     if (argc < 2) {
-        fprintf(stderr, "sdlcsr client [client args ..]\n");
+        fprintf(stderr, "sdlcsr: missing client\n");
+        fprintf(stderr, "Try `sdlcsr --help' for more information.\n");
         return 1;
     }
 

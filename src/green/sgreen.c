@@ -235,6 +235,18 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+        printf("Usage: sgreen [-s socketname]\n");
+        printf("A green server\n");
+        printf("\n");
+        printf("Options\n");
+        printf("  --help            output this help message and exit\n");
+        printf("  --version         output version information and exit\n");
+        printf("  -s socketname     use socketname as the host socket\n");
+        printf("\n");
+        return 0;
+    }
+
     char* socketname = NULL;
     if (argc > 2 && strcmp(argv[1], "-s") == 0) {
         socketname = argv[2];

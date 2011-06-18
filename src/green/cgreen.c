@@ -18,6 +18,18 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+        printf("Usage: cgreen [-e] client [arg ...]\n");
+        printf("Launch a consoler client under green\n");
+        printf("\n");
+        printf("Options\n");
+        printf("  --help       output this help message and exit\n");
+        printf("  --version    output version information and exit\n");
+        printf("  -e           wait for the client to exit before exiting\n");
+        printf("\n");
+        return 0;
+    }
+
     int dofork = 1;
 
     if (argc > 1 && strcmp(argv[1], "-e") == 0) {

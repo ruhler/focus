@@ -75,6 +75,17 @@ int main(int argc, char* argv[])
         printf("termer %s\n", FOCUS_VERSION_STRING);
         return 0;
     }
+
+    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+        printf("Usage: termer\n");
+        printf("A consoler terminal emulator\n");
+        printf("\n");
+        printf("Options\n");
+        printf("  --help       output this help message and exit\n");
+        printf("  --version    output version information and exit\n");
+        printf("\n");
+        return 0;
+    }
     
     int cols, lines;
     ctermer_Init(&cols, &lines);

@@ -34,6 +34,17 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+        printf("Usage: boxer\n");
+        printf("A game with a box\n");
+        printf("\n");
+        printf("Options\n");
+        printf("  --help       output this help message and exit\n");
+        printf("  --version    output version information and exit\n");
+        printf("\n");
+        return 0;
+    }
+
     int width = 640;
     int height = 480;
     CNSL_GetGeometry(&width, &height);

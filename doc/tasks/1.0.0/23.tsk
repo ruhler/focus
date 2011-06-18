@@ -1,0 +1,22 @@
+
+Fri Jun 17 23:22:22 EDT 2011
+
+Task: I should maybe add --help flags to all the programs?
+
+For release 1.0.0. Is that needed?
+
+They all have at least --version. Some take more things, like pdfer, pnger,
+sdlcsr, cgreen.
+
+You know? I think help text is important. It can be as easy as --version. If
+--help is the first argument, print help and exit.
+
+Yes. Let me add this.
+
+Of course, adding --version and now --help without updating the synopsis of
+each program is maybe bad? I'll not worry about that for release 1.0.0.
+
+Fri Jun 17 23:41:52 EDT 2011
+
+Good. Done.
+

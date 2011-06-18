@@ -3,9 +3,8 @@ List of pending issues.
 
 1.0.0
 - user documentation (4.tsk)
-- choice and application of license(14.tsk)
+- choice and application of license (14.tsk)
 - document how to configure, build, install
-- add --help to the programs?
 - release of 1.0.0 (1.tsk)
 
 1.0.1
