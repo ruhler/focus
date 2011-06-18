@@ -12,6 +12,12 @@ section fonter {
     -lfontconfig -lfonter
   }
 
+  function {const char*} FNTR_Version {} {
+    paragraph {
+      Return a string describing the version of the fonter library.
+    }
+  }
+
   paragraph {
     The type FNTR_Fonter is a reference to a fonter object. It should be
     treated as an abstract data type.

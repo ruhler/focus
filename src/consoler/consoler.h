@@ -7,6 +7,8 @@
 
 #include "consoler_keysym.h"
 
+const char* CNSL_Version();
+
 typedef struct {
     int type;
     int value;

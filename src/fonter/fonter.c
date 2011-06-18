@@ -13,6 +13,11 @@ int from26_6(int x)
     return w;
 }
 
+const char* FNTR_Version()
+{
+    return FOCUS_VERSION_STRING;
+}
+
 FNTR_Fonter FNTR_Create(const char* fontname)
 {
     FNTR_Fonter fonter = (FNTR_Fonter)malloc(sizeof(FNTR_Fonter_));

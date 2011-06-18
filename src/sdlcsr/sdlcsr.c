@@ -29,6 +29,11 @@ int handle_output(ClientAndScreen* info)
 
 int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("sdlcsr %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+
     if (argc < 2) {
         fprintf(stderr, "sdlcsr client [client args ..]\n");
         return 1;

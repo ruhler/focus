@@ -6,6 +6,7 @@ List of pending issues.
 - choice and application of license(14.tsk)
 - document how to configure, build, install
 - write pkgconfig files for consoler and fonter
+- add --help to the programs?
 - release of 1.0.0 (1.tsk)
 
 1.0.1
@@ -21,4 +22,9 @@ unassigned
 - fix pdfer rotation bug
 - add rotate command to pdfer
 - scrolling in termer still feels uncomfortable
+- add search command to pdfer
+- add split to screen
+- key remapping library
+- may be memory leak in pdfer
+- colors get inverted on sparc (endian issues)?
 

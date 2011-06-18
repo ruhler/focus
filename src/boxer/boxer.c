@@ -27,8 +27,13 @@ void box(CNSL_Display dpy, unsigned int x, unsigned int y, CNSL_Color col)
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("boxer %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+
     int width = 640;
     int height = 480;
     CNSL_GetGeometry(&width, &height);

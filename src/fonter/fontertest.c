@@ -1,10 +1,13 @@
 
+#include <assert.h>
 #include <stdio.h>
 
 #include "fonter.h"
 
 int main()
 {
+    assert(FNTR_Version() != NULL);
+
     int ret = 0;
     const char* fontname = "Monospace-24:Bold";
     const char* string = "Hello there!";

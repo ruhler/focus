@@ -1,0 +1,44 @@
+
+Fri Jun 17 20:15:10 EDT 2011
+
+Task: programs need a --version flag
+
+Unfortunately I really have to do this for release 1.0.0. Don't freak out
+about it. Just hardcode a check for the flag as the first argument or
+something, add it to the documentation, and be done with it.
+
+I wonder if there's a standard way to indicate versions in libraries too. If
+so, I should do that for filler and fonter.
+
+Fri Jun 17 21:08:04 EDT 2011
+
+Maybe instead of --version I can do --help, and have the print the version and
+synopsis? Because I kind of need --help too, right? Err.. that's not standard
+though is it.
+
+Okay, skip that thought.
+
+How do I specify the version? Certainly I don't want to hardcode it. I should
+have a macro: FOCUS_VERSION_STRING. But where is that defined? Either by
+scons, or in some header file version.h. Does it matter any? Either it's in
+version.h, or its in a scons file. scons probably wants at it for if I
+automatically generate a release, so let me try putting it there.
+
+Fri Jun 17 21:24:58 EDT 2011
+
+I must say, it's a little odd having consoler applications have a --version
+flag, because normally they run as a graphical application. Would it be better
+to have a version key command which pops up the version? Naw. Version flag is
+fine.
+
+Fri Jun 17 21:29:25 EDT 2011
+
+Added --version flag to all the programs. It was pretty easy.
+
+Now let me just add functions CNSL_Version and FNTR_Version which return the
+version string.
+
+Fri Jun 17 21:38:45 EDT 2011
+
+I added those functions, so this task is done.
+

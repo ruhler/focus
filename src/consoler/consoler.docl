@@ -25,6 +25,12 @@ section {Consoler Library} {
     with CNSL.
   }
 
+  function {const char*} CNSL_Version {} {
+    paragraph {
+      Return a string describing the version of the library.
+    }
+  }
+
   section Events {
     paragraph {
       Currently there are three different types of events supported by the

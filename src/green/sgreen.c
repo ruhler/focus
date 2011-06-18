@@ -230,6 +230,11 @@ void handle_input()
 
 int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("sgreen %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+
     char* socketname = NULL;
     if (argc > 2 && strcmp(argv[1], "-s") == 0) {
         socketname = argv[2];

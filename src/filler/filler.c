@@ -3,8 +3,13 @@
 
 #include "consoler.h"
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("filler %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+
     int width = 640;
     int height = 480;
     CNSL_GetGeometry(&width, &height);

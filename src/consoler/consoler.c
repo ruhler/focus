@@ -6,6 +6,10 @@
 
 #include "consoler.h"
 
+const char* CNSL_Version()
+{
+    return FOCUS_VERSION_STRING;
+}
 
 // Event types
 #define CNSLE_KEYPRESS 0

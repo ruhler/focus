@@ -16,6 +16,11 @@ double zoomamt(bool shifton, bool ctrlon)
 
 int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("pdfer %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+
     if (argc < 2) {
         std::cerr << "no input file" << std::endl;
         return 1;

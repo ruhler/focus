@@ -13,6 +13,11 @@
 
 int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("cgreen %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+
     int dofork = 1;
 
     if (argc > 1 && strcmp(argv[1], "-e") == 0) {

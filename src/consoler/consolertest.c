@@ -6,6 +6,8 @@
 
 int main(int argc, char* argv[])
 {
+    assert(CNSL_Version() != NULL);
+
     CNSL_Keysym sym;
     CNSL_Event event;
    

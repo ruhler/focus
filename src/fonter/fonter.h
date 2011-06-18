@@ -23,6 +23,8 @@ typedef struct {
 
 typedef FNTR_Fonter_* FNTR_Fonter;
 
+const char* FNTR_Version();
+
 FNTR_Fonter FNTR_Create(const char* fontname);
 void FNTR_Free(FNTR_Fonter fonter);
 

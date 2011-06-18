@@ -1,6 +1,7 @@
 
 #include <pthread.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "ctermer.h"
 #include "inputter.h"
@@ -68,8 +69,13 @@ void* runoutputter(void* ud)
 }
     
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        printf("termer %s\n", FOCUS_VERSION_STRING);
+        return 0;
+    }
+    
     int cols, lines;
     ctermer_Init(&cols, &lines);
 

@@ -532,3 +532,97 @@ generate links.
 Hmm... but maybe I should do a little more grunt work now, save the fun for a
 little later. Okay. Time to format more of the documents properly.
 
+Thu Jun 16 23:30:39 EDT 2011
+
+I added a synopsis command which currently just copies its single argument as
+a text string verbatim, but I anticipate will become a much more precise way
+of specifying options in the future.
+
+I also added an include command for source files.
+
+This is really cool.
+
+Next step? I would say first is to try generating html code, including table
+of contents and function index. Then that certainly satisfies the subject
+documentation for 1.0.0.
+
+After that, all that's left for milestone 1.0.0 documentation is the question
+of man pages. Do I maybe not want to support man pages for 1.0.0?
+
+I think it's worth a shot to produce, maybe not very good, man pages for
+release 1.0.0. Let's have the base there, and most importantly the content,
+even if it isn't presented well. Then we can improve the content later.
+
+That is, yes we should do man pages.
+
+I can have a general man page template. We can include functions and synopses
+for everything, because I have that. Title and other stuff is fine. For
+description of functions I have that. For description of programs, I can
+choose the appropriate section (basically the top level for that program). I
+can leave out all the other sections of the man page.
+
+Yes. I think this is right. And it's maybe automatable. Or, at least not very
+hard. For each program I can specify a name, brief description, and point it
+ot the programs .docl. For the libraries I can generate a man page for each
+function, ignore the brief for now.
+
+Cool. So what we want for man pages is two things:
+ - given a name, brief, and docl file for a program, generates a man page for
+   the program.
+ - given a docl file for a library, generates a man page for each function in
+   the library.
+
+That sounds like a plan. If I can do that, whatever man pages come out, that
+will be acceptable as all the documentation I need for release 1.0.0 (with
+html too). If it's not hard, I might as well do pdf while I'm at it. That, in
+fact, may be easier than text was, because I don't have to keep track of
+sections or anything.
+
+Fri Jun 17 20:22:41 EDT 2011
+
+Before I can do html, I have to figure out what the generated file will look
+like. I think also it will be valuabe to reuse the same code as for the text
+file, passing as a parameter whether what we are generating, because won't it
+all be the same? I guess that's not clear.
+
+Here's what I'll do. I'll try to manually create the html (and pdf) documents
+from the generated text document. That should give me a good idea for how to
+generate things. It also might be good to consider redesigning things in more
+detail, because I've already been tempted to just hack things together, which
+is bad.
+ 
+Fri Jun 17 20:55:32 EDT 2011
+
+How can we have a general framework for producing documentation?
+
+I'm beginning to wonder if I should have a "document" command, which gives
+things like title, author, etc... and all content has to belong to some
+section? Or you could just define the top level section as being different. Is
+there a reason to prefer one of the other? The other allows content outside of
+sections, and I don't know if latex allows that.
+
+I think I can have an engine that's common to all the generation types. The
+way to produce a specific generation type is to supply some functions.
+
+What functions would we want them to supply?
+ - header, given the name
+ - paragraph, given a pretty formated paragraph of text.
+ - section header, given a section number, title, depth
+ - section footer (not used by any currently, so maybe don't use)
+ - description header
+ - description item
+ - description footer
+
+Cool. So I think the easiest way to do this is to generalize the text version
+by introducing these functions. I can have them named appropriately:
+    description_header_html
+    description_header_text
+    etc..
+
+Then call them in the code like: [description_header_$mode]
+
+And all these things should return strings. Don't puts right to the screen. Or
+maybe provide an emit function which wraps puts?
+
+Ug. I don't know.
+
