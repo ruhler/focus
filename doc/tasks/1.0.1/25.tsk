@@ -1,0 +1,75 @@
+
+Sat Jun 18 18:13:58 EDT 2011
+
+Task: Scrolling in termer still feels uncomfortable.
+
+Let me see if I can characterize it...
+
+It takes a little while to start up.
+Then it's jerky. It jumps. It starts with a stutter.
+And then it doesn't stop when you want it to.
+
+Contrast this with my linux framebuffer console, where yes it takes a little
+time to start up, but once it starts moving it's totally smooth and stops
+exactly when you want it to.
+
+First task is to figure out what the issue is.
+
+Brainstorm: 
+A. events aren't buffered, and going through system calls is costly.
+B. maybe the display doesn't support scrolling this fast?
+C. could be something to do with how we processes as much output as we
+   have before committing the display?
+
+
+Let's start by testing (A), if I can.
+
+How do we do this. Hum. We could use FILE* instead of int fd in the client and
+server structures. This seems like the obvious thing to do to me.
+
+We can do it both for events and displays. Note, this changes the interface a
+little bit.
+
+Sat Jun 18 18:25:49 EDT 2011
+
+Problem with buffering sends is how do we know when to commit them?
+I don't think there's any a problem with buffering recieves.
+
+Sat Jun 18 18:50:53 EDT 2011
+
+I think, to make this work, I would need to implement a FlushEvent function,
+which is a little annoying. But consoler couldn't know about when to flush the
+events any other way. I'm worried if you don't send the events all in a batch,
+you will not recieve the events all in a batch either.
+
+To test this idea, then, I think I would want to do the following:
+- change the event file descriptor on read and write ends to a FILE*.
+- add a CNSL_FlushEvent function.
+- call FlushEvent in sdlcsr before calling SDL_WaitEvent, if SDL_PollEvent
+  says there aren't any available events. This way we won't go to sleep
+  waiting for events, we'll actually might add more events.
+
+This should work to test in sdlcsr. sgreen will need it's own mechanism too if
+I want to test there.
+
+One thing to note: the problem exists for pdf files too, so it's not just
+termer. I wonder if it's worse in sgreen?
+
+It appears to still be problematic in just sdlcsr, but not so bad as in
+sgreen.
+
+To make sgreen work with the buffering, I would need a PollEvent function,
+which says if there are any events available. That way I could use the same
+strategy as SDL: continue receiving and forwarding events as long as they are
+available. When an event isn't available, flush the sends before blocking to
+wait.
+
+There might be some race conditions to worry about in sgreen. What if we
+switch main windows after having sent a bunch of a events but not yet flushed
+to the client? Does that mean they'll never get sent? I'll probably have to
+take care of that.
+
+I don't know if I like adding this complexity to the event interface, but it's
+certainly worth a try to see if it fixes the scrolling problem, just so I can
+know what the scrolling problem is from.
+

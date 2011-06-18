@@ -9,6 +9,7 @@ List of pending issues.
 
 1.0.1
 - fonter clips bottoms of g and y in termer (15.tsk)
+- scrolling in termer still feels uncomfortable (25.tsk)
 
 1.1.0
 - add kill command to sgreen?
@@ -20,11 +21,11 @@ unassigned
 - add status bar to sgreen
 - fix pdfer rotation bug
 - add rotate command to pdfer
-- scrolling in termer still feels uncomfortable
 - add search command to pdfer
 - add split to screen
 - key remapping library
 - may be memory leak in pdfer
 - colors get inverted on sparc (endian issues)?
 - get poppler patch into poppler release
+- shift-tab same as tab in termer?
 
