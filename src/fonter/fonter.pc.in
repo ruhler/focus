@@ -6,7 +6,7 @@ Name: Fonter
 Description: Font library for consoler applications
 URL:
 Version: @VERSION@
-Requires: fontconfig, freetype, consoler
+Requires: fontconfig, freetype2, consoler
 Conflicts:
 Libs: -L${libdir}
 Libs.private:

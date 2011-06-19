@@ -31,4 +31,5 @@ unassigned
 - add build dir option to config/local?
 - docl should be in its own package?
 - generated documentation should include copyright notice?
+- scons config caching sucks. (26.tsk)
 

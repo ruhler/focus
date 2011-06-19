@@ -10,6 +10,8 @@ focusdoc_html = env.Command('focus.html', ['docl.tcl', 'focus.docl'],
     "tclsh8.5 ${SOURCES[0]} html ${SOURCES[1]} > $TARGET")
 Default(focusdoc_html)
 
+env.Install("$PREFIX/share/doc/focus-$VERSION", [focusdoc_text, focusdoc_html])
+
 focusdoc_tex = env.Command('focus.tex', ['docl.tcl', 'focus.docl'],
     "tclsh8.5 ${SOURCES[0]} tex ${SOURCES[1]} > $TARGET")
 Default(focusdoc_tex)
