@@ -75,3 +75,20 @@ env.Command(consolermans, ["docl.tcl", "consoler/consoler.docl"],
 Default(consolermans)
 env.Install("$PREFIX/share/man/man3", consolermans)
 
+fontermans = [
+        'fonter/FNTR_Version.3',
+        'fonter/FNTR_Create.3',
+        'fonter/FNTR_Free.3',
+        'fonter/FNTR_MaxWidth.3',
+        'fonter/FNTR_Height.3',
+        'fonter/FNTR_LoadGlyph.3',
+        'fonter/FNTR_GlyphWidth.3',
+        'fonter/FNTR_GlyphLevel.3',
+        'fonter/FNTR_DrawGlyph.3',
+        'fonter/FNTR_DrawString.3'
+        ]
+env.Command(fontermans, ["docl.tcl", "fonter/fonter.docl"],
+        "tclsh8.5 ${SOURCES[0]} libman ${SOURCES[1]}")
+Default(fontermans)
+env.Install("$PREFIX/share/man/man3", fontermans)
+
