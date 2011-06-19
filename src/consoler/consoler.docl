@@ -217,7 +217,7 @@ section {Consoler Library} {
         The following functions are provided to construct events.
       }
 
-      function CNSL_Event CNSL_MakeKeyrelease {CNSL_Keysym sym} {
+      function CNSL_Event CNSL_MakeKeypress {CNSL_Keysym sym} {
         paragraph {
           Construct a keypress event with the given keysym.
         }

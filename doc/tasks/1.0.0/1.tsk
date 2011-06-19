@@ -111,3 +111,15 @@ patient.
 
 I should also start collecting bug and feature requests for the next release.
 
+Sun Jun 19 11:42:55 EDT 2011
+
+I got the documentation up to a passable level, finally. That was surprisingly
+difficult, and still has a long way to go.
+
+What's left now? Apply my documentation license. Describe how to build and
+install. I need to figure out an email address to use for contact info, and
+figure out how to make a release package.
+
+Then, if I actually want to release it, I need to figure out how and where to
+do that. Perhaps I need some key to sign the package with too.
+

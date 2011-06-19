@@ -118,16 +118,12 @@ proc description {content} {
 #  description - a docl script describing the function (which should not
 #                contain any section commands).
 # For specialization:
-#   (none)
+#   onfunction_enter rtype name args
+#   onfunction_exit
 proc function {rtype name args description} {
-    puts -nonewline "    $rtype $name\("
-    set comma ""
-    foreach {t n} $args {
-        puts -nonewline "$comma$t $n"
-        set comma ", "
-    }
-    puts ");\n"
+    [specialize onfunction_enter] $rtype $name $args
     eval "$description"
+    [specialize onfunction_exit]
 }
 
 # docl command: synopsis
@@ -181,6 +177,15 @@ proc onsection_enter_text {number title} {
     puts ""
 }
 
+proc onfunction_enter_text {rtype name args} {
+    puts -nonewline "    $rtype $name\("
+    set comma ""
+    foreach {t n} $args {
+        puts -nonewline "$comma$t $n"
+        set comma ", "
+    }
+    puts ");\n"
+}
 
 # onparagraph_html
 # The html specialization of onparagraph.
@@ -235,6 +240,16 @@ proc onsection_enter_html {number title} {
     puts ""
 }
 
+proc onfunction_enter_html {rtype name args} {
+    puts -nonewline "    $rtype $name\("
+    set comma ""
+    foreach {t n} $args {
+        puts -nonewline "$comma$t $n"
+        set comma ", "
+    }
+    puts ");\n"
+}
+
 proc onparagraph_tex {text} {
     puts $text
     puts ""
@@ -270,6 +285,18 @@ proc ondocument_exit_tex {} {
 proc onsection_enter_tex {number title} {
     puts "\\section{$title}"
     puts ""
+}
+
+proc onfunction_enter_tex {rtype name args} {
+    puts "\\begin{verbatim}"
+    puts -nonewline "    $rtype $name\("
+    set comma ""
+    foreach {t n} $args {
+        puts -nonewline "$comma$t $n"
+        set comma ", "
+    }
+    puts ");\n"
+    puts "\\end{verbatim}"
 }
 
 proc onparagraph_man {text} {
@@ -314,11 +341,70 @@ proc onsection_enter_man {number title} {
     }
 }
 
+proc emit {text} {
+    global outfile
+    if {![string equal "" $outfile]} {
+        puts -nonewline $outfile $text
+    }
+}
+
+proc emitl {text} {
+    emit "$text\n"
+}
+
+proc onparagraph_libman {text} {
+    emitl ".P"
+    emitl $text
+}
+
+proc ondescription_enter_libman {} {
+    emitl ".P"
+    emitl ".RS"
+    emitl ".PD 0"
+}
+
+proc ondescription_item_libman {name value} {
+    emitl ".TP"
+    emitl ".B $name"
+    emitl [formatblock $value ""] 
+}
+
+proc ondescription_exit_libman {} {
+    emitl ".RE"
+    emitl ".PD"
+}
+
+proc onfunction_enter_libman {rtype name args} {
+    global outfile
+    global srcdir
+    set outfile [open [file join $srcdir "$name.3"] "w"] 
+    
+    set date [clock format [clock seconds] -format "%Y-%m-%d"]
+    emitl ".TH $name 3 $date \"\" \"Focus Manual\""
+    emitl ".SH SYNOPSIS"
+    emit ".RB $rtype $name ("
+    set comma ""
+    foreach {t n} $args {
+        emit "$comma$t $n"
+        set comma ", "
+    }
+    emitl ");"
+
+    emitl ".SH DESCRIPTION"
+}
+
+proc onfunction_exit_libman {} {
+    global outfile
+    close $outfile
+    set outfile ""
+}
+
 # global variables used in traversal
 set istop yes
 set section_prefix ""
 set section_number 1
 set srcdir [file dirname $src]
+set outfile ""
 
 # do the traversal
 source $src

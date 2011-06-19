@@ -44,3 +44,34 @@ cgreenman = env.Command("cgreen.1", ["docl.tcl", "green/green.docl"],
 Default(cgreenman)
 env.Install("$PREFIX/share/man/man1", cgreenman)
 
+consolermans = [
+        'consoler/CNSL_Version.3',
+        'consoler/CNSL_MakeKeyrelease.3',
+        'consoler/CNSL_MakeKeyrelease.3',
+        'consoler/CNSL_MakeQuit.3',
+        'consoler/CNSL_IsKeypress.3',
+        'consoler/CNSL_IsKeyrelease.3',
+        'consoler/CNSL_IsQuit.3',
+        'consoler/CNSL_GetRed8.3',
+        'consoler/CNSL_GetGreen8.3',
+        'consoler/CNSL_GetBlue8.3',
+        'consoler/CNSL_GetRGB8.3',
+        'consoler/CNSL_MakeColor.3',
+        'consoler/CNSL_AllocDisplay.3',
+        'consoler/CNSL_FreeDisplay.3',
+        'consoler/CNSL_GetPixel.3',
+        'consoler/CNSL_SetPixel.3',
+        'consoler/CNSL_LaunchClient.3',
+        'consoler/CNSL_CloseClient.3',
+        'consoler/CNSL_RecvEvent.3',
+        'consoler/CNSL_SendEvent.3',
+        'consoler/CNSL_SendDisplay.3',
+        'consoler/CNSL_RecvDisplay.3',
+        'consoler/CNSL_SetGeometry.3',
+        'consoler/CNSL_GetGeometry.3'
+        ]
+env.Command(consolermans, ["docl.tcl", "consoler/consoler.docl"],
+        "tclsh8.5 ${SOURCES[0]} libman ${SOURCES[1]}")
+Default(consolermans)
+env.Install("$PREFIX/share/man/man3", consolermans)
+

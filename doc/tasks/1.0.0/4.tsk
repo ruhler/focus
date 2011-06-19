@@ -722,4 +722,27 @@ So, they turned out not so unreasonable, which means I'll keep them and say
 they are good enough for this release. I think they'll improve a bit in future
 releases if I make them to.
 
+Sun Jun 19 11:04:35 EDT 2011
+
+One thing remains now for documentation in 1.0.0, and that is the library man
+pages. I think I can hack this together pretty easy. I'll just add another
+doc format: libman, which generates a man page for each function, using the
+function description. It will be a little hacked up, but that should be okay
+for this release.
+
+Sun Jun 19 11:37:35 EDT 2011
+
+Okay, so the library man pages are a little ugly (mostly the prototype is not
+formatted right), but it's pretty cool that they are automatically generated!
+
+So I think I've done enough for this task for release 1.0.0.
+
+I'm not convinced using the same description for the guide and the man pages
+will work longterm. The issue is man pages want a lot more detail, and guide
+wants a lot less detail. To make it work I guess I have to describe the lot
+more detail, and also indicate how much of that to ignore for the guide.
+
+I may, perhaps, need to include alternate versions of the same information
+duplicated to handle this.
+
 
