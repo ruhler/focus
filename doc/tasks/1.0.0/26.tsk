@@ -1,0 +1,68 @@
+
+Sun Jun 19 12:34:22 EDT 2011
+
+Task: scons config caching sucks.
+
+At one point in the build I must have screwed up my configuration. The scons
+configure stuff noticed that, and stopped building anything that required
+anything, but then I must have fixed things, and configure stopped building
+everything!
+
+That sucks.
+
+Perhaps I should reconsider this configure thing? Maybe people should specify
+explicitly which packages they don't want installed? Or maybe the notice of
+which packages aren't built should be made much much more obvious? Or maybe we
+should reconfigure every time forced?
+
+Sun Jun 19 16:10:02 EDT 2011
+
+What if I dump the configure stuff? I really hate that it doesn't work. I
+really really really hate it. It's not okay for it to cache things and used
+out of date cached values.
+
+I remember running into the same problems last time I tried to use configure
+(with glyf). This is like having broken makefiles. It upsets me a lot.
+
+How about, instead, just have the user specify which components to build. They
+can run make, and if something fails, they'll know: oh, I don't have this
+package installed which is needed (will they know that though?) and then they
+can remove that component from the list, or (and this is important) install
+the dependency.
+
+What's bad is making things implicit. Implicitly not building, and not even
+notifying that we aren't building. No. The user should explictly specify
+everything he wants to build, and he'll be explicitly notified (probably by an
+error) if something can't be built.
+
+How about this. Let me document all the external packages, and the
+dependencies of each component. Dump the configuration stuff (which apparently
+doesn't work anyway). Then things will be much simpler, and explicit.
+
+Now, if I get rid of config, it seems strange having a special directory
+called config with nothing in it. Rather, the "local" file should maybe be
+moved to the top level and be called configuration? Or just config? Yes. Top
+level, called config. We can provide in doc/ a config.example.
+
+I think I like this. I think it makes things cleaner. What we are getting rid
+of is autatically detecting if we think all the requirements are correct, but
+if we don't get that perfectly right (and I know we don't currently. What
+about tclsh8.5 for example?), then better to just use the makefile to figure
+out what works.
+
+Yes. I'm going to implement this.
+
+Sun Jun 19 16:24:57 EDT 2011
+
+Um... where do I do pkg-config stuff then? And how does that relate to
+LD_LIBRARY_PATH now? Hmm... That's something I should consider.
+
+Sun Jun 19 16:45:00 EDT 2011
+
+So I just do the pkg-config stuff in sconscript after sourcing the config
+file. That way users can set PKG_CONFIG_PATH appropriately. Then for
+LD_LIBRARY_PATH, I give a couple of example ways to set it. One from libs,
+another from an explicit list.
+
+I think that's decent.
+

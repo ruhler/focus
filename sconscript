@@ -15,10 +15,17 @@ env['VERSION'] = "1.0.0"
 env.MergeFlags("-DFOCUS_VERSION_STRING=\\\\\\\"%s\\\\\\\"" % env['VERSION'])
 
 # configuration
-tobuild = SConscript('config/config')
+SConscript('config')
+
+# Use pkg-config to extend LIBS, LIBPATH, and CPPPATH lists
+for req in ['libpng', 'poppler-cpp', 'freetype2', 'fontconfig', 'sdl']:
+    try:
+        env.ParseConfig("pkg-config --silence-errors --cflags --libs %s" % req)
+    except OSError:
+        pass
 
 # Build each of the components
-for comp in tobuild:
+for comp in env['COMPONENTS']:
     SConscript('src/%s/sconscript' % comp)
 
 # Build the documentation

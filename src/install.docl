@@ -29,6 +29,23 @@ section {Building and Installing Focus} {
     library paths.
   }
 
+  section {Component Package Requirements} {
+    description {
+      boxer none
+      consoler none
+      filler none
+      fonter {freetype2, fontconfig}
+      green none
+      pdfer {
+        freetype2, fontconfig,
+        poppler-cpp (patched for cairo with cpp recommended)
+      }
+      pnger libpng
+      sdlcsr sdl
+      termer {freetype2, fontconfig}
+    }
+  }
+
   paragraph {
     Please report any difficulties you encounter in building and installing
     focus.
