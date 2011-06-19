@@ -272,6 +272,48 @@ proc onsection_enter_tex {number title} {
     puts ""
 }
 
+proc onparagraph_man {text} {
+    puts ".P"
+    puts $text
+}
+
+proc ondescription_enter_man {} {
+    puts ".P"
+    puts ".RS"
+    puts ".PD 0"
+}
+
+proc ondescription_item_man {name value} {
+    puts ".TP"
+    puts ".B $name"
+    puts [formatblock $value ""] 
+}
+
+proc ondescription_exit_man {} {
+    puts ".RE"
+    puts ".PD"
+}
+
+proc ondocument_enter_man {title} {
+    set date [clock format [clock seconds] -format "%Y-%m-%d"]
+    puts ".TH [string toupper $title] 1 $date \"\" \"Focus Manual\""
+}
+
+proc onsection_enter_man {number title} {
+    set depth 0
+    for {set i 0} {$i < [string length $number]} {incr i} {
+        if {[string equal "." [string index $number $i]]} {
+            incr depth
+        }
+    }
+
+    if {$depth == 0} {
+        puts ".SH $title"
+    } else {
+        puts ".SS $title"
+    }
+}
+
 # global variables used in traversal
 set istop yes
 set section_prefix ""

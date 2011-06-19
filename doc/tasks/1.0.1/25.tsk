@@ -73,3 +73,76 @@ I don't know if I like adding this complexity to the event interface, but it's
 certainly worth a try to see if it fixes the scrolling problem, just so I can
 know what the scrolling problem is from.
 
+Sat Jun 18 20:04:51 EDT 2011
+
+Some issues came up in attempting to implement this:
+ - stdcon can't be initialized statically.
+    So either I need an init function, or change stdcon to itself be a
+    function.
+ - test cases, which are servers, need to flush to finish.
+    Or maybe this is just a bug in my implementation?
+
+I'm having problems establishing communication bewteen client and server. Let
+me see if this is just the specific test case. I might crash my machine now...
+
+Which brings another experiment to mind. Let me see if the scroll issues exist
+when running on X.
+
+Yes. They totally exist in X. So I don't have to crash my computer when I do
+these tests.
+
+I don't understand. Sending events works fine. But the server never recieves
+the displays sent from the client. The reason I don't get this is because
+nothing changed with regards to the display!
+
+Oh. I found the bug. Forgot a return.
+
+Sat Jun 18 20:27:30 EDT 2011
+
+Well, so, pdfer in X and termer feel a little better certainly. But I'm not
+sure they feel as good as they should yet.
+
+No. Rather I think they still don't feel right. Or, at least, termer doesn't
+feel right.
+
+Definately termer isn't fixed by this.
+
+Maybe it's the sdlcsr parameters for key repeat?
+
+Sat Jun 18 20:35:04 EDT 2011
+
+Even if I set the sdlcsr parameter for key repeat so that it doesn't repeat
+often at all, it still fills jumpy with the display.
+
+I'm beginning to suspect the issue is sending the display from the client to
+the server.
+
+Hmm... What do you think? Should we go buffered there too? Why not?
+
+Sat Jun 18 20:43:07 EDT 2011
+
+So it seems a little better, but still jumpy. Let me try not explicitly
+flushing the display.
+
+No. That just made it completely unusable, and didn't fix the jumpiness.
+
+Perhaps it's all a performance issue. If that's the case, wouldn't it make
+sense to do some profiling? Turn on profiling for termer, for example, see
+where it spends all it's time if I spend all my time scrolling.
+
+
+Perhaps it has something to do with how libSDL implements key repeat? Who
+knows.
+
+Sat Jun 18 21:04:39 EDT 2011
+
+I'm noticing now some slugishness in termer that has been there all along but
+I've gotten used to (or didn't notice it compared to the 30 second per
+character days).
+
+This suggests the scroll problem is really a termer display performance
+problem, and profiling would be the appropriate next action.
+
+And to make it easy, I should probably add profiling targets to scons which
+are not default.
+

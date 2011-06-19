@@ -4,15 +4,17 @@ Import("env")
 
 focusdoc_text = env.Command('focus.txt', ['docl.tcl', 'focus.docl'],
     "tclsh8.5 ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
+Default(focusdoc_text)
 
 focusdoc_html = env.Command('focus.html', ['docl.tcl', 'focus.docl'],
     "tclsh8.5 ${SOURCES[0]} html ${SOURCES[1]} > $TARGET")
+Default(focusdoc_html)
 
 focusdoc_tex = env.Command('focus.tex', ['docl.tcl', 'focus.docl'],
     "tclsh8.5 ${SOURCES[0]} tex ${SOURCES[1]} > $TARGET")
+Default(focusdoc_tex)
 
 env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
-    "consoler/consoler.docl",
     "consoler/consoler.docl",
     "fonter/fonter.docl",
     "boxer/boxer.docl",
@@ -24,7 +26,21 @@ env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
     "termer/termer.docl"
     ])
 
-Default(focusdoc_text)
-Default(focusdoc_html)
-Default(focusdoc_tex)
+programs = ['boxer', 'filler', 'pdfer', 'pnger', 'sdlcsr', 'termer']
+for prog in programs:
+    man = env.Command("%s.1" % prog, ["docl.tcl", "%s/%s.docl" % (prog, prog)],
+            "tclsh8.5 ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
+    Default(man)
+    env.Install("$PREFIX/share/man/man1", man)
+
+# green is special because it has two programs
+sgreenman = env.Command("sgreen.1", ["docl.tcl", "green/green.docl"],
+        "tclsh8.5 ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
+Default(sgreenman)
+env.Install("$PREFIX/share/man/man1", sgreenman)
+
+cgreenman = env.Command("cgreen.1", ["docl.tcl", "green/green.docl"],
+        "tclsh8.5 ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
+Default(cgreenman)
+env.Install("$PREFIX/share/man/man1", cgreenman)
 

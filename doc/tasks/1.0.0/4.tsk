@@ -689,3 +689,37 @@ I hacked up a tex version too, though it has some problems:
  - needs to escape %, _, and do double quotes right
  - should produce a pdf, not just a tex (I haven't installed pdftex yet)
 
+Sun Jun 19 10:32:11 EDT 2011
+
+I've had some ideas.
+
+To make the man pages more tractable, for release 1.0.0, what if I don't worry
+about the man page conventions, and only about the man page formatting? Then
+the man pages could be generated to look just like the other documentation,
+only in the format of man. All the info is there, as required, it's just way
+different from a normal man page in terms of layout and such.
+
+The other idea is, we can separate the documentation out into modules, then
+collect them together differently for the book documentation and the man page
+documentation. I think my commands will work fine for specifying man page
+sections too.
+
+So, for example, have pdfer/synopsis.docl, pdfer/description.docl, and then
+pdfer/man.docl, which will include synopsis and description at the appropriate
+places, and pdfer/guide.docl, which will also include synopsis and description
+at appropriate places, which may be different.
+
+That's a thought anyway. I'll keep that in mind, but definately I'm going to
+try generating man pages straight from the program .docl file, and see how
+they turn out.
+
+If they turn out not so unreasonable, and have all the content I need, then
+I'll accept them for 1.0.0 and improve them in later releases.
+
+Sun Jun 19 11:02:07 EDT 2011
+
+So, they turned out not so unreasonable, which means I'll keep them and say
+they are good enough for this release. I think they'll improve a bit in future
+releases if I make them to.
+
+

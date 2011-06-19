@@ -6,7 +6,7 @@ section green {
   }
 
   paragraph {
-    green consists of two programs, sgreen and sgreen.
+    green consists of two programs, sgreen and cgreen.
   }
 
   synopsis {sgreen [-s socketname]}
