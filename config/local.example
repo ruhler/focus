@@ -1,0 +1,42 @@
+
+# vim: ft=python
+
+# Example config/local file for building focus.
+
+# Import the environment to change (sconsism)
+Import('env')
+
+# Specify the desired prefix where things should be installed.
+env['PREFIX'] = "/usr/local"
+
+## If you have any non standard include paths for packages, list them here.
+#env['CPPPATH'] = [
+#    '/pkg/sdl-1.2.14/include',
+#    '/pkg/poppler-0.16.5/include/poppler/cpp',
+#    '/pkg/libpng-1.4.5/include',
+#    '/pkg/freetype-2.4.3/include',
+#    '/pkg/freetype-2.4.3/include/freetype2',
+#    '/pkg/fontconfig-2.8.0/include'
+#    ]
+
+## If you have any non standard library paths for packages, list them here.
+#env['LIBPATH'] = [
+#    '/pkg/sdl-1.2.14/lib',
+#    "/pkg/libpng-1.4.5/lib",
+#    '/pkg/poppler-0.16.5/lib',
+#    '/pkg/freetype-2.4.3/lib',
+#    '/pkg/fontconfig-2.8.0/lib'
+#    ]
+
+## For tests we need to run and link with libraries, so make sure those are all
+## avaiable during the build. Often times LD_LIBRARY_PATH needs to include the
+## same list from LIBPATH
+#env['ENV']['LD_LIBRARY_PATH'] = ":".join(env['LIBPATH'])
+
+## For any programs we need during build that aren't in standard path, add
+## those here.
+#env['ENV']['PATH'] = ':'.join([
+#    env['ENV']['PATH'],
+#    '/pkg/tcl-8.5.9/bin'
+#    ])
+

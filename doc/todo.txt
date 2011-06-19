@@ -3,7 +3,6 @@ List of pending issues.
 
 1.0.0
 - choice and application of license (14.tsk)
-- document how to configure, build, install (24.tsk)
 - release of 1.0.0 (1.tsk)
 
 1.0.1
@@ -30,4 +29,5 @@ unassigned
 - automatically detect functions in scons for library man pages
 - automatically detect docl dependencies in scons
 - library man page function prototypes are formatted wrong
+- add build dir option to config/local?
 

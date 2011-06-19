@@ -32,5 +32,7 @@ section Focus {
   include pnger/pnger.docl
   include sdlcsr/sdlcsr.docl
   include termer/termer.docl
+ 
+  include install.docl
 }
 

@@ -23,7 +23,8 @@ env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
     "pdfer/pdfer.docl",
     "pnger/pnger.docl",
     "sdlcsr/sdlcsr.docl",
-    "termer/termer.docl"
+    "termer/termer.docl",
+    "install.docl"
     ])
 
 programs = ['boxer', 'filler', 'pdfer', 'pnger', 'sdlcsr', 'termer']
