@@ -135,3 +135,16 @@ Um... I might not want to use my mit email for this. Probably want my own
 email address specifically. I'll figure that out when I go to actually do the
 release.
 
+Sun Jun 19 12:14:32 EDT 2011
+
+I can't easily figure out how to apply FDL, so I'll just make the .docl files
+GPL. It should still work, and I know how to do it.
+
+Okay? Cool? I like it. All .docl files, and my docl.tcl file will be GPLv3.
+
+Sun Jun 19 12:20:00 EDT 2011
+
+I added the GPLv3 notice to the documentation files. I think I should maybe
+add the notice to the generated files too, but I can do that for a later
+release, in the interest of getting release 1.0.0 released.
+

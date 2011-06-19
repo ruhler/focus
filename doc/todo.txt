@@ -2,7 +2,6 @@
 List of pending issues.
 
 1.0.0
-- choice and application of license (14.tsk)
 - release of 1.0.0 (1.tsk)
 
 1.0.1
@@ -30,4 +29,6 @@ unassigned
 - automatically detect docl dependencies in scons
 - library man page function prototypes are formatted wrong
 - add build dir option to config/local?
+- docl should be in its own package?
+- generated documentation should include copyright notice?
 
