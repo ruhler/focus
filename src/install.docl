@@ -18,15 +18,15 @@
 
 section {Building and Installing Focus} {
   paragraph {
-    To build and install focus, you should create a config/local file
+    To build and install focus, you should create a config file
     describing your local configuration and where to install, run the command
     make in the top level directory, then run make install.
   }
 
   paragraph {
-    There is a sample config/local file called config/local.example. Consult
-    it to see how to set the installation prefix and non standard include and
-    library paths.
+    There is a sample config file in doc/config.example. Consult
+    it to see how to set the installation prefix, non standard include and
+    library paths, and choose which components to build.
   }
 
   section {Component Package Requirements} {
