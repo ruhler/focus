@@ -1,5 +1,5 @@
 
-// Copyright (C) 2011 Richard Uhler
+// Copyright (C) 2011 Richard Uhler <ruhler@member.fsf.org>
 //
 // This file is part of Focus.
 //

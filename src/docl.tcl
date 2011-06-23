@@ -1,5 +1,5 @@
 
-# Copyright (C) 2011 Richard Uhler
+# Copyright (C) 2011 Richard Uhler <ruhler@member.fsf.org>
 #
 # This file is part of Focus.
 #
@@ -343,6 +343,12 @@ proc ondocument_enter_man {title} {
     puts ".TH [string toupper $title] 1 $date \"\" \"Focus Manual\""
 }
 
+proc ondocument_exit_man {} {
+    puts ".SH BUGS"
+    puts "Report bugs to"
+    puts ".BR \\| < ruhler@member.fsf.org >."
+}
+
 proc onsection_enter_man {number title} {
     set depth 0
     for {set i 0} {$i < [string length $number]} {incr i} {
@@ -411,6 +417,10 @@ proc onfunction_enter_libman {rtype name args} {
 }
 
 proc onfunction_exit_libman {} {
+    emitl ".SH BUGS"
+    emitl "Report bugs to"
+    emitl ".BR \\| < ruhler@member.fsf.org >."
+
     global outfile
     close $outfile
     set outfile ""

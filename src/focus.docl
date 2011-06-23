@@ -1,5 +1,5 @@
 
-# Copyright (C) 2011 Richard Uhler
+# Copyright (C) 2011 Richard Uhler <ruhler@member.fsf.org>
 #
 # This file is part of Focus.
 #
@@ -51,5 +51,13 @@ section Focus {
   include termer/termer.docl
  
   include install.docl
+  
+  section {Reporting Bugs} {
+    paragraph {
+      Focus makes no claims about being bug free. If you encounter a bug and
+      would like it fixed in a future release, please send a description of
+      the bug by email to ruhler@member.fsf.org.
+    }
+  }
 }
 

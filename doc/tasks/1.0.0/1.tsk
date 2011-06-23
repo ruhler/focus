@@ -136,3 +136,39 @@ Sun Jun 19 17:26:58 EDT 2011
 I just realized, I have a free software foundation email address I can use if
 I want. What do you think about that?
 
+Wed Jun 22 21:36:19 EDT 2011
+
+I need to figure out how to call this release done, so that I can move on to
+fixing new bugs and adding new features.
+
+So here's the plan. I don't want this to depend on me setting up a website and
+all that. But regardless of what way I want to distribute the release in, I'll
+want a .tar.gz like package. So let's say what I need to do to consider
+release 1.0.0 done and move on is to have a way of automatically generating
+from the git repository a release package: focus-1.0.0.tar.gz.
+
+Then when I do set up a website (if I do), I'll have everything I need for
+release in that package.
+
+This should include a reasonable README file. It should also include a way to
+contact me. I suggest use my fsf email account (after testing to make sure it
+works) whereever I need to there (copyright notice, readme, man page bugs).
+
+Deal with these other minor issues: tclsh vs tclsh8.5 and tic install. Add a
+way to make the source package. Perhaps the easiest way will be to have a
+scons target, because I suspect some things in the release will be generated
+(I'm thinking the README file). When I reach a git revision where I can
+automatically generate the release .tar.gz that I'm happy with, tag that as
+r1.0.0, and then I'm done with this release.
+
+If I ever want to go back to this release, I can just checkout the tag r1.0.0
+and generate the package. If I really want to I can save a separate version of
+the package somewhere too.
+
+Okay? Clear? Good. So let me figure out how to make a release package.
+
+Wed Jun 22 21:52:39 EDT 2011
+
+I have verified ruhler@member.fsf.org gets to me, so I'll use that for the
+contact info.
+
