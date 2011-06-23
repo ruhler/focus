@@ -20,7 +20,9 @@ section {Building and Installing Focus} {
   paragraph {
     To build and install focus, you should create a config file
     describing your local configuration and where to install, run the command
-    make in the top level directory, then run make install.
+    make in the top level directory, then run make install. If you want to
+    install the terminfo entery for the termer component, you should also run
+    tic src/termer/termer.ti.
   }
 
   paragraph {

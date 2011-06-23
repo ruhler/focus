@@ -34,7 +34,8 @@ section termer {
   }
 
   paragraph {
-    The terminal type for termer is \"termer\".
+    The terminal type for termer is \"termer\". A terminfo file is provided in
+    the source release. To install the terminfo entry, run `tic termer.ti`.
   }
 }
 

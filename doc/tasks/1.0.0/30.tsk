@@ -1,0 +1,24 @@
+
+Wed Jun 22 22:17:28 EDT 2011
+
+Task: run tic on termer.ti for install
+
+Not sure the best way to do this in scons. Just have no target? alias to
+install? Something like that?
+
+Wed Jun 22 22:23:30 EDT 2011
+
+Maybe this env.Execute thing is the way to go? But how do I specify the
+dependency? There isn't any target.
+
+I can't figure out how to make it work. Maybe I can fake it. I'll add a dummy
+file, which is the output of running tic.
+
+Wed Jun 22 22:39:52 EDT 2011
+
+Bugger. Scons doesn't propagate username, so tic can't do it's job without
+permissions. Let me put this in the installation docs, let the user do it
+manually.
+
+Err. That will have to do for now.
+

@@ -2,7 +2,6 @@
 List of pending issues.
 
 1.0.0
-- run tic on termer.ti for install (30.tsk)
 - release of 1.0.0 (1.tsk)
 
 1.0.1
