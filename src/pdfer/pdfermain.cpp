@@ -115,12 +115,12 @@ int main(int argc, char* argv[])
                 case CNSLK_k: pdfer->scroll(0, ctrlon ? .01 : 0.1); break;
                 case CNSLK_l: pdfer->scroll(ctrlon ? -.01 : -0.1, 0); break;
 
-                case CNSLK_d: pdfer->scroll(0, -.5);
-                case CNSLK_u: pdfer->scroll(0, .5);
-                case CNSLK_f: pdfer->scroll(0, -.9);
-                case CNSLK_b: pdfer->scroll(0, .9);
-                case CNSLK_t: pdfer->top();
-                case CNSLK_e: pdfer->bottom();
+                case CNSLK_d: pdfer->scroll(0, -.5); break;
+                case CNSLK_u: pdfer->scroll(0, .5); break;
+                case CNSLK_f: pdfer->scroll(0, -.9); break;
+                case CNSLK_b: pdfer->scroll(0, .9); break;
+                case CNSLK_t: pdfer->top(); break;
+                case CNSLK_e: pdfer->bottom(); break;
 
                 case CNSLK_i: pdfer->zoom(zoomamt(shifton, ctrlon)); break;
                 case CNSLK_o: pdfer->zoom(1.0/zoomamt(shifton, ctrlon)); break;

@@ -124,7 +124,7 @@ void Pdfer::last()
 void Pdfer::scroll(double xp, double yp)
 {
     m_x -= xp * m_width;
-    m_y -= yp * m_width;
+    m_y -= yp * m_height;
 }
 
 void Pdfer::top()
@@ -134,7 +134,7 @@ void Pdfer::top()
 
 void Pdfer::bottom()
 {
-    m_y = m_height - pageheight()/m_zoom;
+    m_y = pageheight()/m_zoom - m_height;
 }
 
 void Pdfer::zoom(double zf)

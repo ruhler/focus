@@ -56,6 +56,110 @@ int main(int argc, char* argv[])
     fprintf(stderr, "%08x\n", color);
     assert(color == CNSL_MakeColor(0, 0xff, 0));
 
+    // Test that 'j' vertical scroll is 10%
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_a));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_a));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_j));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_j));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 430);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 434);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
+    // Test that 'd' vertical scroll is 50%
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_a));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_a));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_d));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_d));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 238);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 242);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
+    // Test that 'u' vertical scroll is 50%
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_a));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_a));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_u));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_u));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 242);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 238);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
+    // Test that 'f' vertical scroll is 90%
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_a));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_a));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_f));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_f));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 46);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 50);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
+    // Test that 'b' vertical scroll is 90%
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_a));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_a));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_b));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_b));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 434);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 430);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
+    // Test that 't' goes to top
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_w));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_w));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_t));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_t));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_k));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_k));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 50);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 46);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
+    // Test that 'e' goes to bottom ("end")
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_w));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_w));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_e));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_e));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_j));
+    CNSL_SendEvent(pdfer, CNSL_MakeKeyrelease(CNSLK_j));
+    CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 330);
+    fprintf(stderr, "%08x\n", color);
+    assert(color == CNSL_MakeColor(0, 0xff, 0));
+    color = 0xFFFFFF & CNSL_GetPixel(display, 320, 334);
+    fprintf(stderr, "%08x\n", color);
+    assert(color != CNSL_MakeColor(0, 0xff, 0));
+
     CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_q));
     CNSL_CloseClient(pdfer);
     return 0;

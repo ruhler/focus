@@ -1,0 +1,30 @@
+
+Sun Jun 19 23:33:43 EDT 2011
+
+Task: Can I have a consoler firefox application?
+
+One of the few things I have to use X for still is firefox. There are some
+web sites that you need firefox for, as much as I hate to admit it. And some,
+like yahoo, where for some reason I want firefox. It lets you see the pretty
+pictures.
+
+What would be cool is if I could strip away the interface of firefox, import
+it into consoler, and put my own nicer interface on top. This way I could make
+the best of a bad situation (the situation where I have to use firefox).
+
+I could imagine this could be a really really hard thing to do. But then,
+maybe it's not so hard?
+
+The question is: how does firefox convert commands (from menus and keypress
+and such) into actions. Then I can see if I can call those actions
+programatically from key presses.
+
+The other question is, how does firefox update the display.
+
+Let me look at the source code, see if I find anything interesting.
+
+Sun Jun 19 23:55:48 EDT 2011
+
+Looks messy. Very messy. There are a set of widgets I could implement, but
+it's the widgets which are part of the interface I want to get rid of. Hum.
+

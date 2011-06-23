@@ -1,0 +1,157 @@
+
+Mon Jun 20 22:41:24 EDT 2011
+
+Task: Test pdfer commands.
+
+It has come to my attention that the new pdfer commands, which were never
+tested, don't work. Not a surprise.
+
+Here's the plan. I want to test each command manually. For any command that's
+broken, write an automated test for it, then fix the bug.
+
+Mon Jun 20 22:51:30 EDT 2011
+
+Well, we have a list of commands, so this shouldn't be hard.
+
+    q {quit the application}
+        Works swell.
+
+    {space, pagedown, n} {view the next page in the document}
+        All work swell.
+        
+    {pageup, p} {view the previous page in the document}
+        Works swell.
+
+    {end} {view the last page in the document}
+        Works.
+
+    {home} {view the first page in the document}
+        Works.
+
+    {0-9} {append a digit to the accumulator}
+    c {clear the accumulator}
+    g {
+      view the page specified by the accumulato.
+      For example, to go to page 27, you would type: "27g"
+      The first page is page 1.
+    }
+        Works fine.
+
+    h {scroll left 10% of the view}
+    j {scroll down 10% of the view}
+    k {scroll up 10% of the view}
+    l {scroll right 10% of the view}
+        The scrolling works. I'm not convinced it's 10%.
+        10% of the view means... 10 times should be 100% of the view.
+        But I'm getting 6.5 times 100% vertical and
+        10 times horizontal (that's right)
+
+        So left and right seem wrong by magnitude.
+        Aha! and I see the bug: I multiplied by width instead of height.
+        Let me list the bug below.
+
+
+
+    {ctrl-h} {scroll left 1% of the view}
+    {ctrl-j} {scroll down 1% of the view}
+    {ctrl-k} {scroll up 1% of the view}
+    {ctrl-l} {scroll right 1% of the view}
+        Works fine, module that same vertical scroll amount issue.
+        
+
+    d {scroll down 50% of the view}
+        Zooms for some reason and moves. Must be missing a break;
+        Ah yes. Missing lots of breaks.
+
+
+    u {scroll up 50% of the view}
+        Missing break.
+
+    f {scroll down 90% of the view}
+        Missing break.
+
+    b {scroll up 90% of the view}
+        missing break.
+
+    t {scroll to the top of the current page}
+        missing break.
+
+    e {scroll to the end of the current page}
+        missing break.
+
+    i {zoom in 20%}
+    o {zoom out 20%}
+        Zooms in and out. I don't know how to test percent.
+
+    I {zoom in 50%}
+    O {zoom out 50%}
+        Zooms in more. But it looks like this is just double i/o. So is that
+        right?
+
+    {ctrl-i} {zoom in 10%}
+    {ctrl-o} {zoom out 10%}
+        Zooms in less, but looks like half i/o. Is that right?
+
+
+    w {fit the page to the width of the window}
+        works.
+
+    a {fit the page to the entire window}
+        works.
+
+    v {
+      show information about the pdf file viewed and current page.
+      This pops up a status bar which will go away at the next input.
+    }
+        works.
+
+Bugs:
+- vertical scroll is by % of width, not % of height.
+- d, u, f, b, t, and e are all missing breaks in the switch statement.
+
+Okay. That explains it I think.
+
+Now, how to do these tests automatically.
+
+1. vertical scroll
+    do 'a' to go full screen.
+    do 'j' 9 times, verify a spot at the top is colored.
+    do 'j' a 10th time, verify a spot at the top isn't colored.
+
+    Cool. Caught and fixed the bug.
+
+    I suppose it would have been much easier to just go up once...
+    Hmm... I should probably fix the test.
+
+2. d 
+
+Mon Jun 20 23:28:35 EDT 2011
+
+I tested the vertical scrolling commands. What's left is top and bottom. How
+best to test that? I suppose just like the vertical scroll commands, only
+opposite.
+
+Okay, so I tested top, but not bottom because the test case didn't trigger the
+bug. But I think having all these tests now is great! Wonderful work.
+
+Except, the 'e' doesn't work. That's bottom, right?
+
+I had better write a test for that. It works fine with the zoom is full
+screen, but not when the zoom is width. So here's the test: zoom width, goto
+bottom, then scroll and verify we scrolled to the right place.
+
+Tue Jun 21 00:52:06 EDT 2011
+
+I wrote the test case, but I can't figure out the fix. Why isn't my math
+working out right? I need to sleep on it I guess.
+
+Wed Jun 22 21:32:29 EDT 2011
+
+Yes, sleep is the answer. I was looking from the wrong coordinate (should be
+relative to page, not relative to view), so I got a sign flipped. Let me fix
+it the right way and see the test pass.
+
+Yup! Passed.
+
+So this is all done now.
+

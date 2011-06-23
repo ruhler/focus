@@ -2,33 +2,34 @@
 List of pending issues.
 
 1.0.0
+- tclsh or tclsh8.5 (29.tsk)
+- run tic on termer.ti for install (30.tsk)
 - release of 1.0.0 (1.tsk)
 
 1.0.1
 - fonter clips bottoms of g and y in termer (15.tsk)
 - scrolling in termer still feels uncomfortable (25.tsk)
+- fix pdfer rotation bug
+- may be memory leak in pdfer
+- library man page function prototypes are formatted wrong
 
 1.1.0
 - add kill command to sgreen?
+- add split to screen
+- add rotate command to pdfer
 
 unassigned
-- config should check for tclsh (needed to generate documentation) 
-- config should check for pdflatex (needed to generate some documentation) 
+- automatically detect functions in scons for library man pages
+- automatically detect docl dependencies in scons
 - add italics to termer
 - add status bar to sgreen
-- fix pdfer rotation bug
-- add rotate command to pdfer
 - add search command to pdfer
-- add split to screen
 - key remapping library
-- may be memory leak in pdfer
 - colors get inverted on sparc (endian issues)?
 - get poppler patch into poppler release
 - shift-tab same as tab in termer?
-- automatically detect functions in scons for library man pages
-- automatically detect docl dependencies in scons
-- library man page function prototypes are formatted wrong
-- add build dir option to config/local?
+- add build dir option to config?
 - docl should be in its own package?
 - generated documentation should include copyright notice?
+- can I have a consoler version of firefox (27.tsk)
 
