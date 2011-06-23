@@ -3,17 +3,17 @@ Import("env")
 
 
 focusdoc_text = env.Command('focus.txt', ['docl.tcl', 'focus.docl'],
-    "tclsh8.5 ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
+    "tclsh ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
 Default(focusdoc_text)
 
 focusdoc_html = env.Command('focus.html', ['docl.tcl', 'focus.docl'],
-    "tclsh8.5 ${SOURCES[0]} html ${SOURCES[1]} > $TARGET")
+    "tclsh ${SOURCES[0]} html ${SOURCES[1]} > $TARGET")
 Default(focusdoc_html)
 
 env.Install("$PREFIX/share/doc/focus-$VERSION", [focusdoc_text, focusdoc_html])
 
 focusdoc_tex = env.Command('focus.tex', ['docl.tcl', 'focus.docl'],
-    "tclsh8.5 ${SOURCES[0]} tex ${SOURCES[1]} > $TARGET")
+    "tclsh ${SOURCES[0]} tex ${SOURCES[1]} > $TARGET")
 Default(focusdoc_tex)
 
 env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
@@ -32,18 +32,18 @@ env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
 programs = ['boxer', 'filler', 'pdfer', 'pnger', 'sdlcsr', 'termer']
 for prog in programs:
     man = env.Command("%s.1" % prog, ["docl.tcl", "%s/%s.docl" % (prog, prog)],
-            "tclsh8.5 ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
+            "tclsh ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
     Default(man)
     env.Install("$PREFIX/share/man/man1", man)
 
 # green is special because it has two programs
 sgreenman = env.Command("sgreen.1", ["docl.tcl", "green/green.docl"],
-        "tclsh8.5 ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
+        "tclsh ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
 Default(sgreenman)
 env.Install("$PREFIX/share/man/man1", sgreenman)
 
 cgreenman = env.Command("cgreen.1", ["docl.tcl", "green/green.docl"],
-        "tclsh8.5 ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
+        "tclsh ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
 Default(cgreenman)
 env.Install("$PREFIX/share/man/man1", cgreenman)
 
@@ -74,7 +74,7 @@ consolermans = [
         'consoler/CNSL_GetGeometry.3'
         ]
 env.Command(consolermans, ["docl.tcl", "consoler/consoler.docl"],
-        "tclsh8.5 ${SOURCES[0]} libman ${SOURCES[1]}")
+        "tclsh ${SOURCES[0]} libman ${SOURCES[1]}")
 Default(consolermans)
 env.Install("$PREFIX/share/man/man3", consolermans)
 
@@ -91,7 +91,7 @@ fontermans = [
         'fonter/FNTR_DrawString.3'
         ]
 env.Command(fontermans, ["docl.tcl", "fonter/fonter.docl"],
-        "tclsh8.5 ${SOURCES[0]} libman ${SOURCES[1]}")
+        "tclsh ${SOURCES[0]} libman ${SOURCES[1]}")
 Default(fontermans)
 env.Install("$PREFIX/share/man/man3", fontermans)
 

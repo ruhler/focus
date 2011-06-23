@@ -1,0 +1,18 @@
+
+Wed Jun 22 22:07:43 EDT 2011
+
+Task: tclsh or tclsh8.5?
+
+The issue was I tried make on a different computer which didn't have tclsh8.5
+installed, but it did have tclsh8.4, which worked just fine if I used that.
+
+So how about this, change to tclsh, and it can use whatever version people
+have.
+
+The only problem is my local install doesn't have tclsh as an alias for
+tclsh8.5. I can fix that locally.
+
+Wed Jun 22 22:16:44 EDT 2011
+
+Well, that was easy to fix.
+

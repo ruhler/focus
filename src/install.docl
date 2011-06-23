@@ -44,6 +44,10 @@ section {Building and Installing Focus} {
       sdlcsr sdl
       termer {freetype2, fontconfig}
     }
+
+    paragraph {
+      Additionally, tclsh is needed to produce the documentation.
+    }
   }
 
   paragraph {
