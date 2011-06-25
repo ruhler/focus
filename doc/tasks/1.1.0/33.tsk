@@ -1,0 +1,36 @@
+
+Sat Jun 25 13:23:59 EDT 2011
+
+Task: Release 1.1.0
+
+I'm skipping 1.0.1, because I want to add some new features and not just do a
+bunch of bug fixes.
+
+I think the focus of this release will be adding split to screen. That will
+require rewriting screen to fix the concurrency bugs.
+
+For pdfer I think rotation is easy and doable and nice, so I would like to add
+that feature.
+
+Switching to asciidoc for the documentation looks like a fun task that will
+clean things up, so I would like to do that to.
+
+In addition to those 3 major things, we have a number of minor bugs to deal
+with.
+
+I think I don't want to do key remapping or pdf search yet. So let's have
+release 1.1.0 be simple: screen split, pdfer rotate, asciidoc, and bug fixes.
+
+Sat Jun 25 13:30:59 EDT 2011
+
+So then, how do I convert over to asciidoc in a meaningful way?
+
+I think start with something easy. Start with boxer or filler. Port it over to
+asciidoc. Try generating the documentation for it in the three forms: text,
+html, and man.
+
+I think the way to make the man pages and docs share is to split up the
+documentation into little files whereever I want to share content.
+
+Yeah. This sounds like a plan to me.
+

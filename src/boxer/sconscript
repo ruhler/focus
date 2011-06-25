@@ -9,6 +9,15 @@ Default(boxer)
 boxertest = env.Program('boxertest', 'boxertest.c', LIBS=['consoler'])
 Default(env.Command('boxertest.out', [boxertest, boxer], "$SOURCES > $TARGET"))
 
+boxerdoc = env.Command('boxer.html', 'boxer.txt', "asciidoc -o $TARGET $SOURCE")
+env.Default(boxerdoc)
+
+env.Command('boxer.1.xml', ['boxer.1.txt', 'boxer.txt'],
+        "asciidoc -d manpage -b docbook -o $TARGET $SOURCE")
+boxerman = env.Command('boxer.1', 'boxer.1.xml',
+        "cd ${TARGET.dir} ; docbook2man -N ${SOURCE.file}")
+env.Default(boxerman)
+
 env.Install("$PREFIX/bin", boxer)
 env.Install("$RELEASE", [
     'boxer.c',

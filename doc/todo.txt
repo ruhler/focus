@@ -1,7 +1,7 @@
 
 List of pending issues.
 
-1.0.1
+1.1.0
 - fonter clips bottoms of g and y in termer (15.tsk)
 - scrolling in termer still feels uncomfortable (25.tsk)
 - fix pdfer rotation bug
@@ -9,11 +9,12 @@ List of pending issues.
 - library man page function prototypes are formatted wrong
 - print a nicer message if config file doesn't exist.
 - shift-tab same as tab in termer?
-
-1.1.0
 - add kill command to sgreen?
+- fix concurrency issues in screen (34.tsk)
 - add split to screen
 - add rotate command to pdfer
+- switch to asciidoc for documentation? (32.tsk)
+- release 1.1.0 (33.tsk)
 
 unassigned
 - automatically detect functions in scons for library man pages
@@ -29,4 +30,5 @@ unassigned
 - generated documentation should include copyright notice?
 - can I have a consoler version of firefox (27.tsk)
 - clean up and document scons files
+- man pages should include version number
 

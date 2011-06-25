@@ -11,7 +11,7 @@ Export('env')
 env['CFLAGS'] = ['-ggdb']
 
 # define the version string.
-env['VERSION'] = "1.0.0"
+env['VERSION'] = "1.1.0"
 env.MergeFlags("-DFOCUS_VERSION_STRING=\\\\\\\"%s\\\\\\\"" % env['VERSION'])
 
 # configuration

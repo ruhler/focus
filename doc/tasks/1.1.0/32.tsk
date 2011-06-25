@@ -1,0 +1,65 @@
+
+Sat Jun 25 13:08:17 EDT 2011
+
+Task: Switch to asciidoc for documentation?
+
+Currently I'm using my own home cooked solution, but I've found it to be a
+whole lot of work even to get the basic thing going. Anywhere I can use a
+standard solution that works for me sounds good.
+
+So I came across this asciidoc thing that looks like a maybe very promising
+alternative to my own system. You write documents in an ascii format, and it
+has ways of generating lots of back ends, including html, pdf, text, and man.
+So it supports all the back ends I want.
+
+It supports sections, paragraphs, description lists, and includes.
+I'm not sure how it supports function prototypes.
+But it does support a whole bunch of other stuff.
+
+I'm concerned it may not have the full power of a programming language, but it
+appears to have easily 90% of what I want. I think it would be worth a try.
+
+It has a way to relevel sections, so I can write each section part as if it
+were its own top level, which is nice.
+
+And from experience, the only advantage I take of full programming language
+power is... really none. Everything is pretty contained.
+
+So I think it would be worth trying out asciidoc. Never be afraid to throw
+away code I say. If I switch to asciidoc and run into problems, I can always
+revive my docl thing.
+
+Sat Jun 25 13:47:04 EDT 2011
+
+First questions to answer:
+
++ how to I include a comment? I'm thinking about for my copyright notice.
+    I got it.
++ what is the level 1 section marker?
+    title with --------- underneath
++ how do I do a description list?
+    Okay, got it.
+
+Sat Jun 25 15:37:46 EDT 2011
+
+I figured out how to generate html and man pages, and the text themselves
+seems to qualify for text.
+
+It look nice for boxer. The issue is that setting up docbook to generate the
+man pages is a bit of work I still have to figure out.
+
+But I like this. I think this is better than docl, and I should try switching
+over to it completely.
+
+While I'm at it I can fix where we do things.
+
+man pages, local documentation belongs in the component directories.
+I can have a global documentation in the src directory.
+I can have a README.txt in the root directory, and it can serve as is (without
+any generation) as the README file. Except, inclusion might make it less than
+friendly, so put README.txt in src and generate README from that for the
+distribution.
+
+I have to stop and get lunch now. So I'll go get lunch and play with this more
+when I come back.
+

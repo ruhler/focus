@@ -1,0 +1,50 @@
+
+Sat Jun 25 13:34:24 EDT 2011
+
+Task: Fix concurrency issues in screen.
+
+I don't do anything to guarantee the atomicity requirements in screen are met,
+so there are race conditions and the bugs corresponding.
+
+I've seen in the field screen randomly seems to crash, and I suspect this is
+the problem.
+
+I need to fix this before adding the split feature.
+
+The way to fix it, I think, is to provide some transactions that I can use to
+manipulate the screen structures. So like a library.
+
+I'll want the following transactions I think:
+
+- switch current window
+Input: window to switch to.
+Result: current window is switched if that window exists, otherwise nothing
+happens.
+
+- redraw current window
+Input: dimensions to redraw
+
+- update a window
+Input: maybe a client? Should this be blocking? Then how could it be a
+transaction?
+
+Some thought is needed for this one.
+
+- close window
+Input: window to close
+If it's the current window, it should select a different current window.
+
+- new window
+Input: client of the new window.
+
+- send event
+Sends an event to whichever client is the current window.
+
+
+All the main data structures should be protected by a lock. I think one lock
+is fine for now. I don't expect us to run into much contention.
+
+The server stuff should be the user of this library. Maybe call the library
+green and the client still cgreen and the server, which uses the green
+library, sgreen.
+
