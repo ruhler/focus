@@ -19,3 +19,12 @@ Default(env.Command('cgreentest.out', [cgreentest, sgreen, cgreen, env["filler"]
 
 env.Install("$PREFIX/bin", [sgreen, cgreen])
 
+env.Install("$RELEASE", [
+    'cgreen.c',
+    'cgreentest.c',
+    'green.docl',
+    'sconscript',
+    'sgreen.c',
+    'sgreentest.c',
+    ])
+

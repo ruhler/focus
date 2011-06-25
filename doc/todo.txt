@@ -1,15 +1,14 @@
 
 List of pending issues.
 
-1.0.0
-- release of 1.0.0 (1.tsk)
-
 1.0.1
 - fonter clips bottoms of g and y in termer (15.tsk)
 - scrolling in termer still feels uncomfortable (25.tsk)
 - fix pdfer rotation bug
 - may be memory leak in pdfer
 - library man page function prototypes are formatted wrong
+- print a nicer message if config file doesn't exist.
+- shift-tab same as tab in termer?
 
 1.1.0
 - add kill command to sgreen?
@@ -25,9 +24,9 @@ unassigned
 - key remapping library
 - colors get inverted on sparc (endian issues)?
 - get poppler patch into poppler release
-- shift-tab same as tab in termer?
 - add build dir option to config?
 - docl should be in its own package?
 - generated documentation should include copyright notice?
 - can I have a consoler version of firefox (27.tsk)
+- clean up and document scons files
 

@@ -26,10 +26,20 @@ for req in ['libpng', 'poppler-cpp', 'freetype2', 'fontconfig', 'sdl']:
 
 # Build each of the components
 for comp in env['COMPONENTS']:
+    env['RELEASE'] = Dir('focus-%s/src/%s' % (env['VERSION'], comp))
     SConscript('src/%s/sconscript' % comp)
 
 # Build the documentation
+env['RELEASE'] = Dir('focus-%s/src' % env['VERSION'])
 SConscript('src/sconscript')
 
 env.Alias('install', '$PREFIX')
+
+
+env['RELEASE'] = Dir('focus-%s' % env['VERSION'])
+env.Install("$RELEASE", ['COPYING', 'makefile', 'sconscript', 'sconstruct'])
+env.Install("$RELEASE", "#/doc")
+release = env.Command('%s.tar.gz' % env['RELEASE'], "$RELEASE",
+        "tar -c -f $TARGET --directory ${TARGET.dir} ${SOURCE.srcpath}")
+env.Alias('release', release)
 

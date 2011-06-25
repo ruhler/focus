@@ -7,4 +7,5 @@ sdlcsr = env.Program('sdlcsr', 'sdlcsr.c', LIBS=['consoler', 'SDL'])
 Default(sdlcsr)
 
 env.Install("$PREFIX/bin", sdlcsr)
+env.Install("$RELEASE", ['sconscript', 'sdlcsr.c', 'sdlcsr.docl'])
 

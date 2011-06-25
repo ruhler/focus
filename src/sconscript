@@ -26,7 +26,8 @@ env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
     "pnger/pnger.docl",
     "sdlcsr/sdlcsr.docl",
     "termer/termer.docl",
-    "install.docl"
+    "install.docl",
+    'bugs.docl',
     ])
 
 programs = ['boxer', 'filler', 'pdfer', 'pnger', 'sdlcsr', 'termer']
@@ -94,4 +95,18 @@ env.Command(fontermans, ["docl.tcl", "fonter/fonter.docl"],
         "tclsh ${SOURCES[0]} libman ${SOURCES[1]}")
 Default(fontermans)
 env.Install("$PREFIX/share/man/man3", fontermans)
+
+env.Install("$RELEASE", [
+    'bugs.docl',
+    'docl.tcl',
+    'focus.docl',
+    'install.docl',
+    'readme.docl',
+    'sconscript'
+    ])
+
+readme = env.Command('README', ['docl.tcl', 'readme.docl'],
+    "tclsh ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
+Default(readme)
+env.Install("$RELEASE/..", readme)
 

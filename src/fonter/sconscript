@@ -23,3 +23,13 @@ env.Install("$PREFIX/include", 'fonter.h')
 env.Install("$PREFIX/lib", fonter);
 env.Install("$PREFIX/lib/pkgconfig", fonterpkgconfig);
 
+env.Install("$RELEASE", [
+    'fonter.c',
+    'fonter.docl',
+    'fonterexample.c',
+    'fonter.h',
+    'fonter.pc.in',
+    'fontertest.c',
+    'sconscript'
+    ])
+

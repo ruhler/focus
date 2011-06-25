@@ -172,3 +172,24 @@ Wed Jun 22 21:52:39 EDT 2011
 I have verified ruhler@member.fsf.org gets to me, so I'll use that for the
 contact info.
 
+Fri Jun 24 23:24:39 EDT 2011
+
+I have a way to generate the release tarball now. So then. What do I want to
+do? What more do I need for this release?
+
+The README file is somehow unsatisfying.
+
+But really it's not so bad. Good enough I think. The only thing missing is a
+website for directing people to and maybe my name.
+
+So I think I'm there. I've done everything I wanted for this release. Is it
+perfect? By no means. But it's a solid starting point, and there has been lots
+of great progress from where I was three weeks ago.
+
+It will never be perfect. If I wait for it to be perfect, I'll never release.
+So I think this is it. We have satisfied the release goals for this first
+release of focus. It's ready to tag and ship.
+
+Here's what I'll do. I'll sleep on it tonight. If nothing comes to mind, I'll
+tag this git revision as release 1.0.0 and then go ahead to release 1.1.0.
+

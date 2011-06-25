@@ -1,0 +1,119 @@
+
+Wed Jun 22 23:20:46 EDT 2011
+
+Task: How to package release?
+
+The goal is to have an automatic way to produce a focus-x.x.x.tar.gz release
+package.
+
+This should contain everything in doc, src, and the top level COPYING,
+makefile, sconscript, sconstruct.
+
+Additionally, it should include a README file with the explanation of how to
+build and install, notice about bugs, contact info, and maybe a section on
+copyright and licensing. See other projects for sample README files. This I
+may want to generate from the .docl files.
+
+It should not include build/ config or .git.
+
+It should unpack to the directory focus-1.0.0/.
+
+So I think it's clear what I want. What's not clear is how best to
+automatically produce this.
+
+Scons provides the following relevant items:
+
+- env.Package, which has a src_targz option.
+It sounds like this will include all the files needed to build everything. But
+that doesn't include things like termer.ti, or the documentation. The only way
+I'll know for sure what this does is to try it.
+
+If I can make this work, it might make it easier to generate more package
+types in the future. Not sure how helpful that is.
+
+So try this, and see if I can answer the questions:
+ - how do I include a file not needed to build something?
+ - can I include a generated file?
+
+- env.Tar
+ Tar up files and directories.
+ Now, this looks like it will be easy to use. Maybe I don't even want to try
+ the above.
+
+ How this interacts with generated files in unclear. I'll have to try this to
+ see what it really does too.
+
+git provides the following relevant items:
+- git-archive
+Makes a tar file from the git source. This will capture all the files under
+git, which is very close to what I want. It won't capture generated files. But
+it might be harder to use. Harder to remember how to use, and won't make the
+version name, and things like that.
+
+
+Let me try the scons options, see what happens.
+
+Wed Jun 22 23:42:50 EDT 2011
+
+I tried the scons env.Package thing. It's packaging up everything in the build
+directory, including generated stuff, and installed stuff from $PREFIX in that
+path, and even trying to package up itself, which is silly. No, this isn't
+looking like a good solution right now.
+
+Let me try the Tar solution.
+
+The Tar solution too is trying to include the build directory version of
+things, which is causing problems, and isn't really what I want.
+
+Perhaps each component should append its list of important source to the tar
+file? Then everything is explicit.
+
+The unfortunate thing about that is we might miss some important files and
+have it not be so obvious. Let me try this at least and see how it goes.
+
+Tar seems to have a bug where it doesn't include the sources as dependencies.
+What's with that?
+
+No, it's still having trouble. I'm beginning to think the right way to use Tar
+is to construct a release with Copy's and such, and tar the directory build
+up. Let me see if I can do that.
+
+Thu Jun 23 00:03:54 EDT 2011
+
+Well, it's getting closer. Now I think I just need to give the right tar
+parameters so it will create a tar file with the right root. But using
+env.Install to install files into the release package seems like a good idea
+to me. Then everything is explicit, I can generate stuff, and all that cool
+stuff.
+
+Let me go with this method. Just work out the details.
+
+Fri Jun 24 22:12:09 EDT 2011
+
+Ug! This is annoying. So I'm dumping the env.Tar in favor of my own
+env.Command which calls tar, because I ran into issues with variant dirs. That
+works better now.
+
+The problem now is I can't figure out how to install the doc directory.
+Scons doesn't seem to think it should copy doc to the variant dir. Gah! How
+annoying.
+
+Fri Jun 24 22:32:29 EDT 2011
+
+Okay, I'm getting upset now.
+
+Maybe what I have to do is have a sconscript for each subdirectory in doc? I
+really don't like that idea.
+
+Fri Jun 24 23:18:01 EDT 2011
+
+Well, so I finally worked things out. I list each source file explicitly to
+include in the release. So I have to remember to include them all. But this
+way I don't pick up any junk left over from builds. doc/ gets copied
+wholesale. I generate a README file from the docl source.
+
+I'm not so happy with the scons stuff, becuase it's getting more and more
+complicated and I haven't documented what all means what in the scons files.
+
+So I think this will do for now.
+

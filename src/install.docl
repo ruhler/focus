@@ -54,7 +54,8 @@ section {Building and Installing Focus} {
 
   paragraph {
     Please report any difficulties you encounter in building and installing
-    focus.
+    focus. Suggestions on how to make the install experience nicer are also
+    welcome, otherwise it will probably stay the way it is now.
   }
 }
 
