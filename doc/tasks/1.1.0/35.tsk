@@ -1,0 +1,58 @@
+
+Sun Jun 26 11:35:49 EDT 2011
+
+Task: Infer function doc from header files?
+
+Currently I'm listing all the documentation for library functions in a
+separate .docl file.
+
+I think there would be some benefits if this documentation was instead in the
+header files.
+
+- Documentation would be installed with the source code (which is where normal
+  people would probably look for it anyway)
+- The prototype for man pages and documents is inferred from the real thing,
+  so I don't have to change it in three different places if ever it changes.
+- You don't have to remember to change the documentation in another file
+  You just have to remember to change it in the comment.
+
+Here's what I'm envisioning:
+
+/// CNSL_RecvDisplay
+///
+/// Receive a display from a client by copying it to the given display.
+/// The location of the update will be as specified by the client when it
+/// called SendDisplay. Pixels not in range of the display d will be
+/// ignored.
+///
+/// The parameters dstx, dsty, width, and height are set to the updated
+/// region of the display. They may be NULL.
+///
+/// Returns true if a display was recieved, false on end of file or other
+/// error.
+bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
+        unsigned int* dstx, unsigned int* dsty,
+        unsigned int* width, unsigned int* height);
+
+It has all the info I need. Use special comments indicators /// to indicate
+this is asciidoc description for the function. Use the prototype from c
+directly.
+
+And now we have that, I imagine we can put that together with asciidoc's
+conditional include stuff so that a single .h file generates a single .h.txt
+file, which has sections for all the functions, with the prototypes defined in
+different ways for the different uses (man, doc, etc...), and all
+conditionally defined so you could do something like:
+
+include::consoler.h.txt[function=CNSL_RecvDisplay,type=man]
+
+Or something like that. Wouldn't that be cool? I think it would.
+
+Things I need to figure out how to do then:
+- parse the prototypes correctly
+- format of generated document.
+  I might want to write one by hand first (converted from the .docl files I
+  currently have) to figure out all the conditionals and stuff.
+
+But I must say, I like this idea.
+

@@ -1,0 +1,25 @@
+
+Sun Jun 26 11:44:07 EDT 2011
+
+Task: Write scons tool for asciidoc
+
+Specifically scons needs to correctly identify the dependencies based on the
+include:: macros in the asciidoc files.
+
+I did this when I wrote my ghc scons tool, so it shouldn't be too hard.
+Probably I can adapt the ghc scons tool.
+
+We currently use asciidoc in the following ways:
+- generate an html: asciidoc -o $TARGET $SOURCE
+- generate a docbook man page: asciidoc -d manpage -b docbook
+    After which we run xmlto to turn it into a man page.
+
+It might be worth trying a2x to make the man page, see if that's any cleaner.
+
+I can imagine some other options we may want, like: generate a docbook
+article, or generate a docbook book. To start, though, I think just the above
+two need be supported.
+
+If a2x works, I could just have a single a2x builder tool, which I think can
+handle all those things. I should try it.
+

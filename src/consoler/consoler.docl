@@ -17,7 +17,7 @@
 # along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
 function {const char*} CNSL_Version {} {
-  Return a string describing the version of the library.
+    Return a string describing the version of the library.
 }
 
 function CNSL_Event CNSL_MakeKeypress {CNSL_Keysym sym} {
@@ -33,43 +33,43 @@ function CNSL_Event CNSL_MakeQuit {} {
 }
 
 function bool CNSL_IsKeypress {CNSL_event event  CNSL_Keysym* sym} {
-    Return true if the event is a keypress event, and output the keysym
-    associated with the keypress event to the sym parameter.  Otherwise return
-    false and sym is untouched.
+    Return true if 'event' is a keypress event, and output the keysym
+    associated with the keypress event to the 'sym' parameter.  Otherwise return
+    false and 'sym' is untouched.
 }
 
 function bool CNSL_IsKeyrelease {CNSL_event event  CNSL_Keysym* sym} {
-    Return true if the event is a keyrelease event, and output the keysym
-    associated with the keyrelease event to the sym parameter.  Otherwise
-    return false and sym is untouched.
+    Return true if 'event' is a keyrelease event, and output the keysym
+    associated with the keyrelease event to the 'sym' parameter.  Otherwise
+    return false and 'sym' is untouched.
 }
 
 function bool CNSL_IsQuit {CNSL_Event event} {
-    Return true if the event is a quit event, false otherwise.
+    Return true if 'event' is a quit event, false otherwise.
 }
 
 function uint8_t CNSL_GetRed8 {CNSL_Color c} {
-    Return the red component of the color c. The value returned is in the
+    Return the red component of the color 'c'. The value returned is in the
     range 0 to 255 inclusive.
 }
   
 function uint8_t CNSL_GetGreen8 {CNSL_Color c} {
-    Return the green component of the color c. The value returned is in the
+    Return the green component of the color 'c'. The value returned is in the
     range 0 to 255 inclusive.
 }
   
 function uint8_t CNSL_GetBlue8 {CNSL_Color c} {
-    Return the blue component of the color c. The value returned is in the
+    Return the blue component of the color 'c'. The value returned is in the
     range 0 to 255 inclusive.
 }
   
 function uint32_t CNSL_GetRGB8 {CNSL_Color c} {
-    Get the component values of the color c all together in a single word.
+    Get the component values of the color 'c' all together in a single word.
     Bits 23:16 contain the red component, 15:8 contain the green component,
     and 7:0 contain the blue component of the color.
 
     This function is currently the identify function, but will be useful if
-    later on the underlying representation for CNSL_Color changes.
+    later on the underlying representation for +CNSL_Color+ changes.
 }
   
 function CNSL_Color CNSL_MakeColor {uint8_t r uint8_t g uint8_t b} {
@@ -82,7 +82,7 @@ function CNSL_Display CNSL_AllocDisplay {
     Allocate a display of the given dimensions. More specifically, this
     allocates memory for the pixel data of the display.
 
-    The display should be freed with a call to CNSL_FreeDisplay when it is no
+    The display should be freed with a call to +CNSL_FreeDisplay+ when it is no
     longer needed.
 
     If there is in error allocating the display, the returned display's pixels
@@ -97,7 +97,7 @@ function CNSL_Color CNSL_GetPixel {
   CNSL_Display display {unsigned int} x {unsigned int} y} {
     Get the color of the pixel at the given location in the display.
 
-    It is undefined what happens if x and y are outside the dimensions of the
+    It is undefined what happens if 'x' and 'y' are outside the dimensions of the
     display.
 }
   
@@ -108,7 +108,7 @@ function void CNSL_SetPixel {
   CNSL_Color color} {
     Set the color of the pixel at the given location in the display.
 
-    It is undefined what happens if x and y are outside the dimensions of the
+    It is undefined what happens if 'x' and 'y' are outside the dimensions of the
     display.
 }
   
@@ -135,6 +135,7 @@ function CNSL_Event CNSL_RecvEvent {CNSL_Console console} {
   
 function bool CNSL_SendEvent {CNSL_Client client CNSL_Event event} {
     Send an event to a client.
+
     Returns true if the event was sent successfully, false otherwise.
 }
   
@@ -144,9 +145,9 @@ function void CNSL_SendDisplay {
   {unsigned int} dstx {unsigned int} dsty
   {unsigned int} width {unsigned int} height} {
     Send a display to a server. Pixels are sent from the rectangular
-    box with given width and height and upper left corner at
-    coordinates (srcx, srcy). The pixels will be written to the
-    destination coordinates (dstx, dsty) of a master display the
+    box with given 'width' and 'height' and upper left corner at
+    coordinates ('srcx', 'srcy'). The pixels will be written to the
+    destination coordinates ('dstx', 'dsty') of a master display the
     server keeps track of for the client.
 }
   
@@ -156,10 +157,10 @@ function bool CNSL_RecvDisplay {
   {unsigned int*} width {unsigned int*} height} {
     Receive a display from a client by copying it to the given display.
     The location of the update will be as specified by the client when it
-    called SendDisplay. Pixels not in range of the display d will be
+    called SendDisplay. Pixels not in range of 'display' will be
     ignored.
   
-    The parameters dstx, dsty, width, and height are set to the updated
+    The parameters 'dstx', 'dsty', 'width', and 'height' are set to the updated
     region of the display. They may be NULL.
   
     Returns true if a display was recieved, false on end of file or other
@@ -167,14 +168,14 @@ function bool CNSL_RecvDisplay {
 }
   
 function void CNSL_SetGeometry {int width int height} {
-    Set the environment variables CNSLWIDTH and CNSLHEIGHT to the given
+    Set the environment variables +CNSLWIDTH+ and +CNSLHEIGHT+ to the given
     width and height. This can be called by a server before the server
     launches a client to propagate the screen dimensions to the client.
 }
   
 function void CNSL_GetGeometry {{int*} width {int*} height} {
-    Read the environment variables CNSLWIDTH and CNSLHEIGHT into width and
-    height. If those environment variables are not set, width and height
+    Read the environment variables +CNSLWIDTH+ and +CNSLHEIGHT+ into 'width' and
+    'height'. If those environment variables are not set, 'width' and 'height'
     are unchanged. This can be used by the client to discover the screen
     dimensions when it first starts.
 }

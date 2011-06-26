@@ -13,12 +13,11 @@ List of pending issues.
 - fix concurrency issues in screen (34.tsk)
 - add split to screen
 - add rotate command to pdfer
-- switch to asciidoc for documentation? (32.tsk)
+- write scons tool for asciidoc (36.tsk)
+- infer function doc from header files? (35.tsk)
 - release 1.1.0 (33.tsk)
 
 unassigned
-- automatically detect functions in scons for library man pages
-- automatically detect docl dependencies in scons
 - add italics to termer
 - add status bar to sgreen
 - add search command to pdfer
@@ -26,11 +25,9 @@ unassigned
 - colors get inverted on sparc (endian issues)?
 - get poppler patch into poppler release
 - add build dir option to config?
-- docl should be in its own package?
 - generated documentation should include copyright notice?
 - can I have a consoler version of firefox (27.tsk)
 - clean up and document scons files
-- man pages should include version number
 - get rid of src directory?
 - write tutorial for getting started with focus?
 - write development policy docs?
