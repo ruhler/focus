@@ -23,3 +23,25 @@ two need be supported.
 If a2x works, I could just have a single a2x builder tool, which I think can
 handle all those things. I should try it.
 
+Sun Jun 26 12:15:54 EDT 2011
+
+a2x manages the docbook tool chain, it doesn't do the raw html.
+
+I suppose I should abstract that all away from the user anyway.
+So let's say I provide the following builders:
+
+Html
+    source: an asciidoc file .txt
+    target: a .html file
+
+Man
+    source: an asciidoc file .n.txt
+    target: a man page: .n
+
+I can provide both with the same tool perhaps.
+
+Sun Jun 26 13:10:57 EDT 2011
+
+I wrote it. This is really cool. It works great, and the scons code is much
+cleaner now.
+

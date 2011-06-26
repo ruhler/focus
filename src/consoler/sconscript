@@ -16,7 +16,7 @@ env.Default(consolerpkgconfig)
 
 functions = [
         'CNSL_Version',
-        'CNSL_MakeKeyrelease',
+        'CNSL_MakeKeypress',
         'CNSL_MakeKeyrelease',
         'CNSL_MakeQuit',
         'CNSL_IsKeypress',

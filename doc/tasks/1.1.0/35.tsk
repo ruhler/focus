@@ -56,3 +56,16 @@ Things I need to figure out how to do then:
 
 But I must say, I like this idea.
 
+Sun Jun 26 13:11:38 EDT 2011
+
+I thought of something else. The man pages need a brief for the function. This
+could fit in fine with my comments as the first line:
+
+/// CNSL_RecvDisplay - get a client display update
+///
+/// Receive a display from a client by copying it to the given display.
+/// The location of the update will be as specified by the client when it
+etc...
+
+nifty, eh?
+

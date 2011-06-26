@@ -13,7 +13,6 @@ List of pending issues.
 - fix concurrency issues in screen (34.tsk)
 - add split to screen
 - add rotate command to pdfer
-- write scons tool for asciidoc (36.tsk)
 - infer function doc from header files? (35.tsk)
 - release 1.1.0 (33.tsk)
 

@@ -2,27 +2,11 @@
 Import("env")
 
 
-html = env.Command('focus.html', [
-    'focus.txt',
-    'consoler/consoler.html',
-    'fonter/fonter.html',
-    'boxer/boxer.txt',
-    'filler/filler.txt',
-    'green/green.txt',
-    'green/sgreen.txt',
-    'green/cgreen.txt',
-    'pdfer/pdfer.txt',
-    'pnger/pnger.txt',
-    'sdlcsr/sdlcsr.txt',
-    'termer/termer.txt',
-    'install.txt',
-    'bugs.txt',
-    ], "asciidoc -o $TARGET $SOURCE")
+html = env.Html('focus.html', 'focus.txt')
 env.Default(html)
 env.Install("$PREFIX/share/doc/focus-$VERSION", html)
 
-readme = env.Command('README.html', ['README.txt', 'install.txt', 'bugs.txt'],
-    "asciidoc -o $TARGET $SOURCE")
+readme = env.Html('README.html', 'README.txt')
 Default(readme)
-env.Install("$RELEASE/..", readme)
+env.InstallAs("$RELEASE/../README", readme)
 
