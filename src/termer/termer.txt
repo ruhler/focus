@@ -1,3 +1,4 @@
+
 // Copyright (C) 2011 Richard Uhler <ruhler@member.fsf.org>
 //
 // This file is part of Focus.
@@ -14,32 +15,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
-BOXER(1)
-========
-:author: Richard Uhler
-:doctype: manpage
-:man version: {VERSION}
-:man manual: Focus Manual
 
-NAME
-----
-boxer - a consoler box game
+termer is a terminal emulator consoler application. It attempts to emulate a
+standard terminal as best it can. Termer supports utf8 unicode characters.
 
-SYNOPSIS
---------
-*boxer*
+termer starts a shell based on the SHELL environment variable, defaulting to
+/bin/sh. It gets the window size from CNSLWIDTH and CNSLHEIGHT, defaulting to
+640x480. The font used is taken from the environment variable TERMERFONT,
+which should be a fontconfig font name, such as `Monospace-20:Bold`, the
+font defaults to `Monospace`. Termer will pack as many lines and columns
+that fit into the window based on your chosen font.
 
-DESCRIPTION
------------
-include::boxer.txt[]
+The terminal type for termer is `termer`. A terminfo file is provided in the
+source release. To install the terminfo entry, run `tic termer.ti`.
 
-OPTIONS
--------
-*--help*::
-    Output a help message and exit.
-*--version*::
-    Output version information and exit.
-
-BUGS
-----
-Report bugs to <ruhler@member.fsf.org>.

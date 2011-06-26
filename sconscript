@@ -24,6 +24,73 @@ for req in ['libpng', 'poppler-cpp', 'freetype2', 'fontconfig', 'sdl']:
     except OSError:
         pass
 
+
+# PROGRAMDOC 
+# Generates documentation for a program component.
+#  name - the name of the component, for example "filler"
+# Assumptions:
+#   $name.txt is the asciidoc description of the program.
+#   $name.1.txt is the asciidoc man page for the program.
+#   $name.1.txt includes $name.txt
+def programdoc(name):
+    mantxt = name + ".1.txt"
+    manxml = name + ".1.xml"
+    man = name + ".1"
+    desctxt = name + ".txt"
+    html = name + ".html"
+    xmlcmd = "asciidoc -d manpage -b docbook "
+    xmlcmd += "-o $TARGET -a 'VERSION=$VERSION' $SOURCE"
+    mancmd = "xmlto -o ${TARGET.dir} man $SOURCE"
+    htmlcmd = "asciidoc -o $TARGET $SOURCE"
+    env.Command(manxml, [mantxt, desctxt], xmlcmd)
+    env.Command(man, manxml, mancmd)
+    env.Command(html, desctxt, htmlcmd)
+    env.Default(html)
+    env.Default(man)
+    env.Install("$PREFIX/share/man/man1", man)
+
+env['PROGRAMDOC'] = programdoc
+
+# LIBRARYDOC
+# Generates documentation for a library component.
+#  name - the name of the component, for example "fonter".
+#  funcs - a list of all the library functions.
+#   TODO: it would be nice to infer this list from $name.docl
+# Assumptions:
+#   $name.txt is the asciidoc description of the library.
+#   $name.docl describes all the library functions.
+#   $name.docl generates $func.txt and $func.3.txt for each function where
+#       $func.txt is the asciidoc description of the function
+#       $func.3.txt is an asciidoc man page for the function
+#   $name.txt includes descriptions $func.txt
+def librarydoc(name, funcs):
+    docl = name + ".docl"
+    txt = name + ".txt"
+    html = name + ".html"
+    descriptions = map(lambda x: x+".txt", funcs)
+    mansources = map(lambda x: x+".3.txt", funcs)
+    doclgen = descriptions + mansources
+    docsrc = [txt] + descriptions
+    env.Command(doclgen, ["#/src/docl.tcl", docl], "tclsh $SOURCES")
+    env.Command(html, docsrc, "asciidoc -o $TARGET $SOURCE")
+    env.Default(html)
+    for func in funcs:
+        fxml = func + ".3.xml"
+        fman = func + ".3"
+        fmantxt = func + ".3.txt"
+        ftxt = func + ".txt"
+        xmlcmd = "asciidoc -d manpage -b docbook "
+        xmlcmd += "-a 'VERSION=$VERSION' $SOURCE"
+        mancmd = "xmlto -o ${TARGET.dir} man $SOURCES"
+        env.Command(fxml, [fmantxt, ftxt], xmlcmd)
+        env.Command(fman, fxml, mancmd)
+        env.Default(fman)
+        env.Install("$PREFIX/share/man/man3", fman)
+
+env['LIBRARYDOC'] = librarydoc
+
+
+
 # Build each of the components
 for comp in env['COMPONENTS']:
     env['RELEASE'] = Dir('focus-%s/src/%s' % (env['VERSION'], comp))

@@ -63,3 +63,92 @@ distribution.
 I have to stop and get lunch now. So I'll go get lunch and play with this more
 when I come back.
 
+Sat Jun 25 18:47:47 EDT 2011
+
+I figured out how to build things more nicely with asciidoc. It requires some
+setup stuff with docbook.
+
+Here's a question: how do I specify the name of the manual for man pages and
+the version number?
+
+I can include it. The manual works fine, the version seems to get lost by
+docbook2man. I wonder if I can use xmlto instead like git does?
+
+Sat Jun 25 19:17:08 EDT 2011
+
+Anyway, now I have filler and boxer in asciidoc format. I suppose I should
+really try to do fonter in it too, to make sure I can do function prototypes
+in a reasonable way, and man pages aren't too bad. Then I should try compiling
+a composite document. Then I can port everything else over to asciidoc if I
+don't run into major problems.
+
+Sat Jun 25 19:50:46 EDT 2011
+
+Not sure how to describe functions best in asciidoc. I'm especially wondering
+what I should do when it comes to writing the man pages.
+
+I'm sure it will get better as I learn more, so don't worry for now if things
+aren't perfect. But how should I do this?
+
+Maybe I write an asciidoc for each function description. This can be used in
+the man page and the document. The prototypes I'll do separately.
+
+Let me try that, see how painful it is.
+
+Sat Jun 25 19:57:34 EDT 2011
+
+Lots of really small files is pretty painful. I bet I can add a little wrapper
+up front. I can document it in tcl using a special markup like
+
+function name rtype args {
+    description as verbatim asciidoc text
+}
+
+And just list them all. Then a single script can generate all the .txt files
+for the document and man pages, and the man pages themselves. I like that idea
+much better. Call it functions.txt? Could I make it a docl file? Or have some
+nicer syntax? No, just stick with the simple tcl for now. Call it fonter.docl.
+
+Sat Jun 25 20:44:44 EDT 2011
+
+Listing the functions separately works out okay.
+
+I definately will want to write some scons tools though to clean up the scons
+scripts.
+
+What do you think? Should I go ahead and translate all the other documentation
+now? That way I can get rid of these silly .docl files and clean things up a
+bit. I can always work on improving the documentation infrastructure later.
+
+Sure. I'll do some gruntwork now.
+
+Sat Jun 25 21:13:35 EDT 2011
+
+For the libraries, wouldn't it be cool if I could just embed the asciidoc
+markup in comments in front of each prototype? Then you would have the
+documentation with the source code, and the prototypes could be inferred from
+the real things. The only problem there is you have to parse real prototypes,
+which could be tricky.
+
+Sat Jun 25 21:45:17 EDT 2011
+
+I moved everything over to asciidoc format. Now let's see if it will compile
+at all. Probably not.
+
+Because there is so much repitition, I would like to write some scons
+functions that can be used in general. I'm thinking of the following:
+
+1. Given the name of a library component file foo,
+It expects to find:
+    foo.docl with the list of functions
+    foo.txt with the description, where foo.txt depends on output of foo.docl.
+
+It generates all man pages and installs them properly.
+It builds all the asciidoc files for each function.
+
+2. Given the name of a program component foo,
+It expects to find: 
+    foo.txt with the description
+    foo.1.txt with the man page, where foo.1.txt depends on foo.txt.
+It generates the man page and installs it properly.
+

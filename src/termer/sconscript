@@ -27,6 +27,7 @@ termer = env.Program('termer',
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
 env.Default(termer)
 
+env['PROGRAMDOC']('termer')
 env.Install("$PREFIX/bin", termer)
 
 env.Install("$RELEASE", [

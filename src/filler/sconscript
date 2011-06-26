@@ -11,6 +11,7 @@ env["filler"] = filler
 fillertest = env.Program('fillertest', 'fillertest.c', LIBS=['consoler'])
 Default(env.Command('fillertest.out', [fillertest, filler], "$SOURCES > $TARGET"))
 
+env['PROGRAMDOC']('filler')
 env.Install("$PREFIX/bin", filler)
 
 env.Install("$RELEASE", [

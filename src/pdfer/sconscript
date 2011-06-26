@@ -12,6 +12,7 @@ pdfertest = env.Program('pdfertest', 'pdfertest.c',
 Default(env.Command('pdfertest.out', [pdfertest, pdfer, 'colors.pdf'],
     "$SOURCES > $TARGET"))
 
+env['PROGRAMDOC']('pdfer')
 env.Install("$PREFIX/bin", pdfer)
 
 env.Install("$RELEASE", [

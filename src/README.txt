@@ -16,23 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
+README
+======
+:leveloffset: 1
+include::install.txt[]
 
-Boxer is a consoler application where you move a small box around the
-screen, leaving a trail of where the box has been. The follow keys are
-supported.
+include::bugs.txt[]
 
-[horizontal]
-h:: Move the box to the left.
-j:: Move the box down.
-k:: Move the box up.
-l:: Move the box to the right.
-q:: Quit.
+:leveloffset: 0
 
-More specifically, the background is solid black, taking up the full screen
-dimensions as specified by CNSLWIDTH and CNSLHEIGHT environment variables,
-defaulting to 640x480. The current box position is white. Past box positions
-are red. The box starts at position (100, 100), and is of size 10x10 pixels.
-
-If you move the box off the screen, it will wrap around to the other side of
-the screen, staying on the same 10x10 grid.
 

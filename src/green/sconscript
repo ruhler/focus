@@ -17,6 +17,8 @@ cgreentest = env.Program('cgreentest', 'cgreentest.c', LIBS=['consoler'])
 Default(env.Command('cgreentest.out', [cgreentest, sgreen, cgreen, env["filler"]],
     "$SOURCES > $TARGET"))
 
+env['PROGRAMDOC']('sgreen')
+env['PROGRAMDOC']('cgreen')
 env.Install("$PREFIX/bin", [sgreen, cgreen])
 
 env.Install("$RELEASE", [

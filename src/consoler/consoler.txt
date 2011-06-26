@@ -1,0 +1,404 @@
+
+// Copyright (C) 2011 Richard Uhler <ruhler@member.fsf.org>
+//
+// This file is part of Focus.
+//
+// Focus is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Focus is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Focus.  If not, see <http://www.gnu.org/licenses/>.
+
+The Consoler Library provides an API for interacting with graphical
+applications. It can be thought of as a graphical analog to the ncurses
+library for terminal applications, or as an alternative to the X11 library.
+
+A consoler server is an application which sends input events and reads an
+output display from consoler client applications. A consoler client
+application receives input events, processes them however it will, and sends a
+graphical display back to its server.
+
+Consoler client applications can themselves be consoler servers to other
+client applications, which provides a nice way of composing consoler
+applications.
+
+To use the consoler library, include the header consoler.h in your program and
+link with -lconsoler. All the consoler library functions are prefixed with
+CNSL.
+
+---------------------------------------
+const char* CNSL_Version();
+---------------------------------------
+include::CNSL_Version.txt[]
+
+Events
+------
+Currently there are three different types of events supported by the consoler
+API. Those are key press events, key release events, and a quit event. The key
+press and key release events contain information about the symbol of which key
+was pressed or released.
+
+The intended interpretation of events is as follows.
+
+keypress sym::
+    A keyboard key was pressed which has the symbol sym on it.
+
+keyrelease sym::
+    A keyboard key was release which has the symbol sym on it. 
+    
+quit::
+    A request for the client application to quit.
+    
+Keysyms
+~~~~~~~
+The type CNSL_Keysym is used for keysyms. The valid keysyms are as follows.
+They were chosen to be consistent with keysyms from the SDL library.
+
+CNSLK_BACKSPACE:: 8
+CNSLK_TAB:: 9
+CNSLK_CLEAR:: 12
+CNSLK_RETURN:: 13
+CNSLK_PAUSE:: 19
+CNSLK_ESCAPE:: 27
+CNSLK_SPACE:: 32
+CNSLK_EXCLAIM:: 33
+CNSLK_QUOTEDBL:: 34
+CNSLK_HASH:: 35
+CNSLK_DOLLAR:: 36
+CNSLK_AMPERSAND:: 38
+CNSLK_QUOTE:: 39
+CNSLK_LEFTPAREN:: 40
+CNSLK_RIGHTPAREN:: 41
+CNSLK_ASTERISK:: 42
+CNSLK_PLUS:: 43
+CNSLK_COMMA:: 44
+CNSLK_MINUS:: 45
+CNSLK_PERIOD:: 46
+CNSLK_SLASH:: 47
+CNSLK_0::  48
+CNSLK_1::  49
+CNSLK_2::  50
+CNSLK_3::  51
+CNSLK_4::  52
+CNSLK_5::  53
+CNSLK_6::  54
+CNSLK_7::  55
+CNSLK_8::  56
+CNSLK_9::  57
+CNSLK_COLON:: 58
+CNSLK_SEMICOLON:: 59
+CNSLK_LESS:: 60
+CNSLK_EQUALS:: 61
+CNSLK_GREATER:: 62
+CNSLK_QUESTION:: 63
+CNSLK_AT::  64
+CNSLK_LEFTBRACKET:: 91
+CNSLK_BACKSLASH:: 92
+CNSLK_RIGHTBRACKET:: 93
+CNSLK_CARET:: 94
+CNSLK_UNDERSCORE:: 95
+CNSLK_BACKQUOTE:: 96
+CNSLK_a::  97
+CNSLK_b::  98
+CNSLK_c::  99
+CNSLK_d::  100
+CNSLK_e::  101
+CNSLK_f::  102
+CNSLK_g::  103
+CNSLK_h::  104
+CNSLK_i::  105
+CNSLK_j::  106
+CNSLK_k::  107
+CNSLK_l::  108
+CNSLK_m::  109
+CNSLK_n::  110
+CNSLK_o::  111
+CNSLK_p::  112
+CNSLK_q::  113
+CNSLK_r::  114
+CNSLK_s::  115
+CNSLK_t::  116
+CNSLK_u::  117
+CNSLK_v::  118
+CNSLK_w::  119
+CNSLK_x::  120
+CNSLK_y::  121
+CNSLK_z::  122
+CNSLK_DELETE:: 127
+CNSLK_KP0:: 256
+CNSLK_KP1:: 257
+CNSLK_KP2:: 258
+CNSLK_KP3:: 259
+CNSLK_KP4:: 260
+CNSLK_KP5:: 261
+CNSLK_KP6:: 262
+CNSLK_KP7:: 263
+CNSLK_KP8:: 264
+CNSLK_KP9:: 265
+CNSLK_KP_PERIOD:: 266
+CNSLK_KP_DIVIDE:: 267
+CNSLK_KP_MULTIPLY:: 268
+CNSLK_KP_MINUS:: 269
+CNSLK_KP_PLUS:: 270
+CNSLK_KP_ENTER:: 271
+CNSLK_KP_EQUALS:: 272
+CNSLK_UP::  273
+CNSLK_DOWN:: 274
+CNSLK_RIGHT:: 275
+CNSLK_LEFT:: 276
+CNSLK_INSERT:: 277
+CNSLK_HOME:: 278
+CNSLK_END:: 279
+CNSLK_PAGEUP:: 280
+CNSLK_PAGEDOWN:: 281
+CNSLK_F1::  282
+CNSLK_F2::  283
+CNSLK_F3::  284
+CNSLK_F4::  285
+CNSLK_F5::  286
+CNSLK_F6::  287
+CNSLK_F7::  288
+CNSLK_F8::  289
+CNSLK_F9::  290
+CNSLK_F10:: 291
+CNSLK_F11:: 292
+CNSLK_F12:: 293
+CNSLK_F13:: 294
+CNSLK_F14:: 295
+CNSLK_F15:: 296
+CNSLK_NUMLOCK:: 300
+CNSLK_CAPSLOCK:: 301
+CNSLK_SCROLLOCK:: 302
+CNSLK_RSHIFT:: 303
+CNSLK_LSHIFT:: 304
+CNSLK_RCTRL:: 305
+CNSLK_LCTRL:: 306
+CNSLK_RALT:: 307
+CNSLK_LALT:: 308
+CNSLK_RMETA:: 309
+CNSLK_LMETA:: 310
+CNSLK_LSUPER:: 311
+CNSLK_RSUPER:: 312
+CNSLK_MODE:: 313
+CNSLK_COMPOSE:: 314
+CNSLK_HELP:: 315
+CNSLK_PRINT:: 316
+CNSLK_SYSREQ:: 317
+CNSLK_BREAK:: 318
+CNSLK_MENU:: 319
+CNSLK_POWER:: 320
+CNSLK_EURO:: 321
+CNSLK_UNDO:: 322
+
+The special pseudo keysym CNSLK_LAST is also defined to have a value greater
+than all the other keysyms. It can be useful for specifying the bounds of an
+array indexed by keysyms for example.
+    
+Event
+~~~~~
+The type CNSL_Event is used to hold consoler events. It should be considered
+an abstract type which is cheap to copy.
+
+The following functions are provided to construct events.
+
+----------------------------------
+CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym);
+----------------------------------
+include::CNSL_MakeKeypress.txt[]
+
+----------------------------------
+CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym);
+----------------------------------
+include::CNSL_MakeKeyrelease.txt[]
+
+----------------------------------
+CNSL_Event CNSL_MakeQuit();
+----------------------------------
+include::CNSL_MakeQuit.txt[]
+
+The following functions are provided to deconstruct events.
+
+----------------------------------
+bool CNSL_IsKeypress(CNSL_event event, CNSL_Keysym* sym);
+----------------------------------
+include::CNSL_IsKeypress.txt[]
+
+----------------------------------
+bool CNSL_IsKeyrelease(CNSL_event event, CNSL_Keysym* sym);
+----------------------------------
+include::CNSL_IsKeyrelease.txt[]
+
+----------------------------------
+bool CNSL_IsQuit(CNSL_Event event);
+----------------------------------
+include::CNSL_IsQuit.txt[]
+
+Display
+-------
+A consoler client receives input events and produces a graphical display to
+send to a consoler server, which may show the display to the user.  A display
+is a rectangular array of pixels, where each pixel is some color.
+  
+Colors
+~~~~~~
+The type CNSL_Color represents a color. Its format is 8 bits each for the red,
+green, and blue components of the color. The following constructor and
+destructor functions are provided to work with colors.  It is recommended you
+use them rather than directly accessing the bits of a color, because the
+underlying representation for CNSL_Color may change in future releases.
+  
+----------------------------------
+function uint8_t CNSL_GetRed8(CNSL_Color c);
+----------------------------------
+include::CNSL_GetRed8.txt[]
+  
+----------------------------------
+function uint8_t CNSL_GetGreen8(CNSL_Color c);
+----------------------------------
+include::CNSL_GetGreen8.txt[]
+  
+----------------------------------
+uint8_t CNSL_GetBlue8(CNSL_Color c);
+----------------------------------
+include::CNSL_GetBlue8.txt[]
+  
+----------------------------------
+function uint32_t CNSL_GetRGB8(CNSL_Color c);
+----------------------------------
+  
+----------------------------------
+CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b);
+----------------------------------
+  
+Display
+~~~~~~~
+The type CNSL_Display describes a rectangular array of pixels.  CNSL_Display
+is a structure with the fields as follow.
+  
+unsigned int width:: The width of the display in pixels.
+unsigned int height:: The height of the display in pixels.
+CNSL_Color* pixels::
+    Pixel data for the display. The pixel at coordinate (x,y) has color
+    pixels[width*y + x].
+  
+The coordinate (0,0) is the upper left corner of the display, with y
+increasing down the display, and x increasing to the right.
+  
+The following functions are provided to work with displays.
+  
+----------------------------------
+CNSL_Display CNSL_AllocDisplay(unsigned int width, unsigned int height);
+----------------------------------
+include::CNSL_AllocDisplay.txt[]
+  
+----------------------------------
+void CNSL_FreeDisplay(CNSL_Display display);
+----------------------------------
+include::CNSL_FreeDisplay.txt[]
+  
+----------------------------------
+CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y);
+----------------------------------
+include::CNSL_GetPixel.txt[]
+  
+----------------------------------
+void CNSL_SetPixel(
+    CNSL_Display display,
+    unsigned int x,
+    unsigned int y,
+    CNSL_Color color);
+----------------------------------
+include::CNSL_SetPixel.txt[]
+  
+Communication Protocol
+----------------------
+The consoler server and client communicate using the unix file abstraction.
+For example, unix pipes and sockets are common means of connecting the server
+and client together. The consoler library provides functions for sending and
+receiving events and displays over this communication link.
+    
+CNSL_Console is a structure used by a client to refer to a server. The
+structure consists of two fields.
+  
+fdin::  File descriptor for reading from the server.
+fdout:: File descriptor for writing to the server.
+  
+
+stdcon is the standard console server for clients to use. It uses the standard
+input and output streams to communicate with the server.
+  
+The CNSL_Client structure is used by a consoler server to refer to a client.
+The structure consists of two fields, similar to the CNSL_Console.
+  
+fdin::  File descriptor for reading from the client.
+fdout:: File descriptor for writing to the client.
+  
+The following functions are provided for working with client and server
+connections.
+  
+----------------------------------
+CNSL_Client CNSL_LaunchClient(const char* path, char* const args[]);
+----------------------------------
+include::CNSL_LaunchClient.txt[]
+  
+----------------------------------
+void CNSL_CloseClient(CNSL_Client client);
+----------------------------------
+include::CNSL_CloseClient.txt[]
+  
+----------------------------------
+CNSL_Event CNSL_RecvEvent(CNSL_Console console);
+----------------------------------
+include::CNSL_RecvEvent.txt[]
+
+----------------------------------
+bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
+----------------------------------
+include::CNSL_SendEvent.txt[]
+  
+----------------------------------
+void CNSL_SendDisplay(
+    CNSL_Console console, CNSL_Display display,
+    unsigned int srcx, unsigned int srcy,
+    unsigned int dstx, unsigned int dsty,
+    unsigned int width, unsigned int height);
+----------------------------------
+include::CNSL_SendDisplay.txt[]
+  
+----------------------------------
+bool CNSL_RecvDisplay(
+    CNSL_Client client, CNSL_Display display,
+    unsigned int* dstx, unsigned int* dsty,
+    unsigned int* width, unsigned int* height);
+----------------------------------
+include::CNSL_RecvDisplay.txt[]
+  
+Specifying Screen Dimensions
+----------------------------
+By convention the environment variables CNSLWIDTH and CNSLHEIGHT are set to
+the dimensions of the screen available to the client to use. The consoler
+library provides a couple of functions for facilitating the use of the
+CNSLWIDTH and CNSLHEIGHT environment variables.
+  
+----------------------------------
+void CNSL_SetGeometry(int width, int height);
+----------------------------------
+Set the environment variables CNSLWIDTH and CNSLHEIGHT to the given width and
+height. This can be called by a server before the server launches a client to
+propagate the screen dimensions to the client.
+  
+----------------------------------
+void CNSL_GetGeometry(int* width, int* height);
+----------------------------------
+Read the environment variables CNSLWIDTH and CNSLHEIGHT into width and height.
+If those environment variables are not set, width and height are unchanged.
+This can be used by the client to discover the screen dimensions when it first
+starts.
+

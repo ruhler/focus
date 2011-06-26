@@ -68,6 +68,17 @@ env['COMPONENTS'] = [
 ## those here.
 #env['ENV']['PATH'] = ':'.join([
 #    env['ENV']['PATH'],
-#    '/pkg/tcl-8.5.9/bin'
+#    '/pkg/tcl-8.5.9/bin',
+#    '/pkg/asciidoc-8.6.5/bin',
+#    '/pkg/python-2.7/bin',
+#    '/pkg/docbook2X-0.8.8/bin'
+#    ])
+
+## docbook2man may need some configuration
+#env['ENV']['XML_CATALOG_FILES'] = " ".join([
+#    '/pkg/docbook/docbook-xsl-1.76.1/catalog.xml',
+#    '/pkg/docbook2X-0.8.8/install/share/docbook2X/dtd/catalog.xml',
+#    '/pkg/docbook2X-0.8.8/install/share/docbook2X/xslt/catalog.xml',
+#    '/pkg/docbook/4.5/catalog.xml',
 #    ])
 

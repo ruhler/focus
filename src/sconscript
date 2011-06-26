@@ -2,111 +2,27 @@
 Import("env")
 
 
-focusdoc_text = env.Command('focus.txt', ['docl.tcl', 'focus.docl'],
-    "tclsh ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
-Default(focusdoc_text)
+html = env.Command('focus.html', [
+    'focus.txt',
+    'consoler/consoler.html',
+    'fonter/fonter.html',
+    'boxer/boxer.txt',
+    'filler/filler.txt',
+    'green/green.txt',
+    'green/sgreen.txt',
+    'green/cgreen.txt',
+    'pdfer/pdfer.txt',
+    'pnger/pnger.txt',
+    'sdlcsr/sdlcsr.txt',
+    'termer/termer.txt',
+    'install.txt',
+    'bugs.txt',
+    ], "asciidoc -o $TARGET $SOURCE")
+env.Default(html)
+env.Install("$PREFIX/share/doc/focus-$VERSION", html)
 
-focusdoc_html = env.Command('focus.html', ['docl.tcl', 'focus.docl'],
-    "tclsh ${SOURCES[0]} html ${SOURCES[1]} > $TARGET")
-Default(focusdoc_html)
-
-env.Install("$PREFIX/share/doc/focus-$VERSION", [focusdoc_text, focusdoc_html])
-
-focusdoc_tex = env.Command('focus.tex', ['docl.tcl', 'focus.docl'],
-    "tclsh ${SOURCES[0]} tex ${SOURCES[1]} > $TARGET")
-Default(focusdoc_tex)
-
-env.Depends([focusdoc_text, focusdoc_html, focusdoc_tex], [
-    "consoler/consoler.docl",
-    "fonter/fonter.docl",
-    "boxer/boxer.docl",
-    "filler/filler.docl",
-    "green/green.docl",
-    "pdfer/pdfer.docl",
-    "pnger/pnger.docl",
-    "sdlcsr/sdlcsr.docl",
-    "termer/termer.docl",
-    "install.docl",
-    'bugs.docl',
-    ])
-
-programs = ['boxer', 'filler', 'pdfer', 'pnger', 'sdlcsr', 'termer']
-for prog in programs:
-    man = env.Command("%s.1" % prog, ["docl.tcl", "%s/%s.docl" % (prog, prog)],
-            "tclsh ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
-    Default(man)
-    env.Install("$PREFIX/share/man/man1", man)
-
-# green is special because it has two programs
-sgreenman = env.Command("sgreen.1", ["docl.tcl", "green/green.docl"],
-        "tclsh ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
-Default(sgreenman)
-env.Install("$PREFIX/share/man/man1", sgreenman)
-
-cgreenman = env.Command("cgreen.1", ["docl.tcl", "green/green.docl"],
-        "tclsh ${SOURCES[0]} man ${SOURCES[1]} > $TARGET")
-Default(cgreenman)
-env.Install("$PREFIX/share/man/man1", cgreenman)
-
-consolermans = [
-        'consoler/CNSL_Version.3',
-        'consoler/CNSL_MakeKeyrelease.3',
-        'consoler/CNSL_MakeKeyrelease.3',
-        'consoler/CNSL_MakeQuit.3',
-        'consoler/CNSL_IsKeypress.3',
-        'consoler/CNSL_IsKeyrelease.3',
-        'consoler/CNSL_IsQuit.3',
-        'consoler/CNSL_GetRed8.3',
-        'consoler/CNSL_GetGreen8.3',
-        'consoler/CNSL_GetBlue8.3',
-        'consoler/CNSL_GetRGB8.3',
-        'consoler/CNSL_MakeColor.3',
-        'consoler/CNSL_AllocDisplay.3',
-        'consoler/CNSL_FreeDisplay.3',
-        'consoler/CNSL_GetPixel.3',
-        'consoler/CNSL_SetPixel.3',
-        'consoler/CNSL_LaunchClient.3',
-        'consoler/CNSL_CloseClient.3',
-        'consoler/CNSL_RecvEvent.3',
-        'consoler/CNSL_SendEvent.3',
-        'consoler/CNSL_SendDisplay.3',
-        'consoler/CNSL_RecvDisplay.3',
-        'consoler/CNSL_SetGeometry.3',
-        'consoler/CNSL_GetGeometry.3'
-        ]
-env.Command(consolermans, ["docl.tcl", "consoler/consoler.docl"],
-        "tclsh ${SOURCES[0]} libman ${SOURCES[1]}")
-Default(consolermans)
-env.Install("$PREFIX/share/man/man3", consolermans)
-
-fontermans = [
-        'fonter/FNTR_Version.3',
-        'fonter/FNTR_Create.3',
-        'fonter/FNTR_Free.3',
-        'fonter/FNTR_MaxWidth.3',
-        'fonter/FNTR_Height.3',
-        'fonter/FNTR_LoadGlyph.3',
-        'fonter/FNTR_GlyphWidth.3',
-        'fonter/FNTR_GlyphLevel.3',
-        'fonter/FNTR_DrawGlyph.3',
-        'fonter/FNTR_DrawString.3'
-        ]
-env.Command(fontermans, ["docl.tcl", "fonter/fonter.docl"],
-        "tclsh ${SOURCES[0]} libman ${SOURCES[1]}")
-Default(fontermans)
-env.Install("$PREFIX/share/man/man3", fontermans)
-
-env.Install("$RELEASE", [
-    'bugs.docl',
-    'docl.tcl',
-    'focus.docl',
-    'install.docl',
-    'readme.docl',
-    'sconscript'
-    ])
-
-readme = env.Command('README', ['docl.tcl', 'readme.docl'],
-    "tclsh ${SOURCES[0]} text ${SOURCES[1]} > $TARGET")
+readme = env.Command('README.html', ['README.txt', 'install.txt', 'bugs.txt'],
+    "asciidoc -o $TARGET $SOURCE")
 Default(readme)
 env.Install("$RELEASE/..", readme)
 
