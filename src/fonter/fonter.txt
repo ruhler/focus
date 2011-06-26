@@ -24,92 +24,40 @@ consoler displays.
 To use the fonter library, include fonter.h and link with -lfreetype
 -lfontconfig -lfonter
 
--------------------------------
-    const char* FNTR_Version();
--------------------------------
 include::FNTR_Version.txt[]
 
 The type FNTR_Fonter is a reference to a fonter object. It should be
 treated as an abstract data type.
 
----------------------------------------------------
-    FNTR_Fonter FNTR_Create (const char* fontname);
----------------------------------------------------
 include::FNTR_Create.txt[]
 
-----------------------------------------
-    void FNTR_Free(FNTR_Fonter fonter);
-----------------------------------------
 include::FNTR_Free.txt[]
 
 The following functions on fonter objects give you access to font global
 metrics.
 
-------------------------------------------
-    int FNTR_MaxWidth(FNTR_Fonter fonter);
-------------------------------------------
 include::FNTR_MaxWidth.txt[]
 
-------------------------------------
-    int FNTR_Height(FNTR_Fonter fonter);
-------------------------------------
 include::FNTR_Height.txt[]
 
 After you have created a fonter object, you can load a specific glyph for
 drawing.
 
--------------------------------------------------------
-    void FNTR_LoadGlyph(FNTR_Fonter fonter, wchar_t c);
--------------------------------------------------------
 include::FNTR_LoadGlyph.txt[]
 
 Once a glyph is loaded, you can ask for its width and access the greyscale
 rendering of the glyph.
 
---------------------------------------------
-    int FNTR_GlyphWidth(FNTR_Fonter fonter);
---------------------------------------------
 include::FNTR_GlyphWidth.txt[]
 
---------------------------------------------------------------
-    uint8_t FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y);
---------------------------------------------------------------
-Return the grey level of the loaded glyph at the given location. The level
-ranges from 0 to 255 inclusive.  Coordinate (0,0) is the upper left hand
-corner of the glyph, with x increasing to the left and y increasing down.
+include::FNTR_GlyphLevel.txt[]
    
-It is okay if the coordinate (x,y) is outside the glyph rendering. In that
-case the level returned will be 0.
-
 The following convenience functions are provided to draw characters to
 consoler displays.
 
-------------------------------------------
-    void FNTR_DrawGlyph(
-      FNTR_Fonter fonter,
-      CNSL_Display display,
-      CNSL_Color fg,
-      CNSL_Color bg,
-      int x,
-      int y);
------------------------------------------
-Draw the currently loaded glyph to the given display with the upper left hand
-corner of the glyph at (x, y) of the display. The color fg is used for the
-foreground color, and bg used for the background color of the glyph drawn.
+include::FNTR_DrawGlyph.txt[]
 
------------------------------------------
-    void FNTR_DrawString(
-      FNTR_Fonter fonter,
-      CNSL_Display display,
-      CNSL_Color fg,
-      CNSL_Color bg,
-      int x,
-      int y,
-      const char* str);
------------------------------------------
-Draw the given string to the display with the upper left hand corner of the
-string drawn to position (x,y) of the display. This overwrites the currently
-loaded glyph.
+include::FNTR_DrawString.txt[]
 
 Fonter Example
 --------------

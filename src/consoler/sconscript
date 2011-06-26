@@ -14,33 +14,7 @@ consolerpkgconfig = env.Substfile('consoler.pc', 'consoler.pc.in',
         SUBST_DICT= {"@PREFIX@": env['PREFIX'], "@VERSION@": env['VERSION']})
 env.Default(consolerpkgconfig)
 
-functions = [
-        'CNSL_Version',
-        'CNSL_MakeKeypress',
-        'CNSL_MakeKeyrelease',
-        'CNSL_MakeQuit',
-        'CNSL_IsKeypress',
-        'CNSL_IsKeyrelease',
-        'CNSL_IsQuit',
-        'CNSL_GetRed8',
-        'CNSL_GetGreen8',
-        'CNSL_GetBlue8',
-        'CNSL_GetRGB8',
-        'CNSL_MakeColor',
-        'CNSL_AllocDisplay',
-        'CNSL_FreeDisplay',
-        'CNSL_GetPixel',
-        'CNSL_SetPixel',
-        'CNSL_LaunchClient',
-        'CNSL_CloseClient',
-        'CNSL_RecvEvent',
-        'CNSL_SendEvent',
-        'CNSL_SendDisplay',
-        'CNSL_RecvDisplay',
-        'CNSL_SetGeometry',
-        'CNSL_GetGeometry',
-        ]
-env['LIBRARYDOC']('consoler', functions)
+env['LIBRARYDOC']('consoler')
 
 env.Install("$PREFIX/include", ['consoler.h', 'consoler_keysym.h'])
 env.Install("$PREFIX/lib", consoler);

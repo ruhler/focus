@@ -1,4 +1,6 @@
 
+import re
+
 env = Environment(
         tools=['ar', 'asciidoc', 'gcc', 'g++', 'link', 'textfile'],
         toolpath=['scons'],
@@ -44,30 +46,42 @@ env['PROGRAMDOC'] = programdoc
 # LIBRARYDOC
 # Generates documentation for a library component.
 #  name - the name of the component, for example "fonter".
-#  funcs - a list of all the library functions.
-#   TODO: it would be nice to infer this list from $name.docl
 # Assumptions:
-#   $name.txt is the asciidoc description of the library.
-#   $name.docl describes all the library functions.
-#   $name.docl generates $func.txt and $func.3.txt for each function where
-#       $func.txt is the asciidoc description of the function
-#       $func.3.txt is an asciidoc man page for the function
-def librarydoc(name, funcs):
-    docl = name + ".docl"
-    txt = name + ".txt"
-    descriptions = map(lambda x: x+".txt", funcs)
-    mansources = map(lambda x: x+".3.txt", funcs)
-    doclgen = descriptions + mansources
-    env.Command(doclgen, ["#/src/docl.tcl", docl], "tclsh $SOURCES")
-    for func in funcs:
-        fman = func + ".3"
-        fmantxt = func + ".3.txt"
-        env.Man(fman, fmantxt, ASCIIDOCFLAGS="-a 'VERSION=$VERSION'")
-        env.Default(fman)
-        env.Install("$PREFIX/share/man/man3", fman)
+#   $name.h is a header file where each function to be documented is proceeded
+#   with a special comment of the form:
+#   /// name - brief
+#   ///
+#   /// asciidoc description
+#   /// more description
+#   /// etc...
+#   prototype;
+#
+#   The prototype may span multiple lines. The current implementation is very
+#   picky about everything else, so be exact or the function will be ignored.
+# Generates: man pages for each function, and an asciidoc file with the
+# description suitable for including in a guide called $name.txt.
+func_re = re.compile(r"/// ([a-zA-Z_0-9]+) - (.*)((?:\n///.*)*)\n([^;]*);")
+titlebar = "=============================================================="
+def librarydoc(name):
+    header = File(name + ".h").srcnode().abspath
+    entries = func_re.findall(open(header, "r").read())
+    for f in entries:
+        name = f[0]
+        dict = {
+                "@NAME@": name,
+                "@TITLEBAR@": titlebar[:len(name)],
+                "@BRIEF@": f[1],
+                "@DESCRIPTION@": f[2].replace("\n/// ", "\n").replace("\n///", "\n"),
+                "@PROTOTYPE@": f[3],
+                "@VERSION@": env['VERSION'],
+                }
+        env.Substfile(name + ".3.txt", '#/src/function.3.txt.in', SUBST_DICT = dict)
+        env.Substfile(name + ".txt", '#/src/function.txt.in', SUBST_DICT = dict)
+        man = env.Man(name + ".3", name + ".3.txt")
+        env.Default(man)
+        env.Install("$PREFIX/share/man/man3", man)
 
 env['LIBRARYDOC'] = librarydoc
-
 
 
 # Build each of the components

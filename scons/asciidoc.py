@@ -27,7 +27,7 @@ import SCons.Node.FS
 import re
 import os.path
 
-include_re = re.compile(r"include::?([A-Za-z0-9._/]+)\[\]")
+include_re = re.compile(r"include::?([A-Za-z0-9._/]+)\[.*\]")
 
 def asciidoc_scan(node, env, path):
     contents = node.get_text_contents()

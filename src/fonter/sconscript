@@ -19,19 +19,7 @@ fonterpkgconfig = env.Substfile('fonter.pc', 'fonter.pc.in',
         SUBST_DICT= {"@PREFIX@": env['PREFIX'], "@VERSION@": env['VERSION']})
 env.Default(fonterpkgconfig)
 
-functions = [
-    'FNTR_Version',
-    'FNTR_Create',
-    'FNTR_Free',
-    'FNTR_MaxWidth',
-    'FNTR_Height',
-    'FNTR_LoadGlyph',
-    'FNTR_GlyphWidth',
-    'FNTR_GlyphLevel',
-    'FNTR_DrawGlyph',
-    'FNTR_DrawString',
-    ]
-env['LIBRARYDOC']('fonter', functions)
+env['LIBRARYDOC']('fonter')
 
 
 env.Install("$PREFIX/include", 'fonter.h')

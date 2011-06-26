@@ -69,3 +69,243 @@ etc...
 
 nifty, eh?
 
+Sun Jun 26 13:14:30 EDT 2011
+
+I would love to get this working right now. How can I go about doing that?
+
+I have the following tasks:
+
+- figure out how to parse a c prototype with a python regular expression.
+I want to extract the return type as a string, the function name as a string,
+and a list of type/name pairs for the arguments. It needen't be perfect to
+start, but it should be able to handle whatever is thrown at it in some way.
+
+- figure out the format of the file I want to generate.
+That is, do it by hand for, say fonter.
+
+Once those tasks are done, it should be fairly easy to write a python function
+to translate from the header file to the asciidoc version of it.
+
+Allow me to start with the later task, which can be a meaningful step in its
+own right. The goal being to get rid of the .docl and docl.txt.
+
+Okay, so we want a single file with all the function documentation. Why a
+single file? It's easier to describe in scons (just one target). It does mean
+we have some false dependencies which could get annoying, but I can fix that
+later with more scons code.
+
+It's also easier to write a single file by hand and know what's going on than
+lots of little files.
+
+The file will be used in the following way:
+
+For a given function, it gives:
+ - man page name, brief
+ - man page synopsis (prototype)
+ - man page description
+ - guide synopsis (prototype)
+ - guide description
+
+Because I anticipate this will be a generated document, it's okay if it
+repeates information. The guide description and man page description I expect
+to be the same. The prototypes for now can be the same, but they'll have
+slightly different specifications.
+
+let's play with an example.
+
+The man stuff we want to generate is:
+
+NAME
+----
+FNTR_GlyphLevel - get a grey level from a loaded glpyh
+
+SYNOPSIS
+--------
+uint8_t FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y);
+
+DESCRIPTION
+-----------
+foobar ...
+
+The guide stuff we want to generate is:
+
+    uint8_t FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y);
+
+foobar ...
+    
+I expect the synopsis for the man page and the guide will eventually turn out
+to be formatted differently. Though they could be the same, right? Yes. For
+now they can be the same.
+
+So let me propose the following format, see how bad it is.
+
+ifeval::[{function}=="FNTR_Glyphlevel"]
+ifdef<for_man>[]
+NAME
+----
+FNTR_GlyphLevel - get a grey level from a loaded glpyh
+
+SYNOPSIS
+--------
+endif::<for_man>[]
+    uint8_t FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y);
+
+ifdef<for_man>[]
+DESCRIPTION
+-----------
+endif::<for_man>[]
+foobar ...
+endif::[]
+
+I should be able to generate this from the docl file pretty easily. Let me try
+that just temporarally, see how it works.
+
+Sun Jun 26 13:37:04 EDT 2011
+
+Oh. I forgot one thing. I need to generate the full man page, don't I? Where
+do I put the top level man page?
+
+I certainly don't want to write it by hand.
+And you know what?  If I'm going to generate it automatically, I may as well
+generate all the individual .3.txt and .txt files for each function too.
+
+So scratch this idea of generating a .h.txt file, because even with it I need
+all these little files generated. And the little files help scons dependency.
+
+So really want I want is just a way to generate the .3.txt and .txt files
+directly from c code instead of through tcl. Since we need python for scons
+and this task isn't so hard that tcl makes any more or less sense than python,
+I'll just write the code entirely in python.
+
+The task now then: Figure out how to parse properly annotated c header files
+and build up a dictionary to print out in python. Let me start easy. It's a
+dictionary that looks like:
+
+function name => (brief, desc, prototype)
+
+We can further decompose the prototype later.
+
+What do you think? Can I do this with a single regular expression? Is that
+easiest?
+
+/// (name) - (brief)
+/// (description)
+/// ...
+(prototype);
+
+I could just write a loop. For each line in the file
+
+If it matches "/// name - brief"
+    while it starts with ///
+        append to description
+    until it ends with ';'
+        append to prototype
+
+Let me try writting that up.
+
+I suppose first of all I should annotate fonter.h appropriatly.
+
+Sun Jun 26 14:06:42 EDT 2011
+
+I annotated fonter.h. I wrote a python regular expression to extract all the
+info I want.
+
+I a little worried that it's very picky. You must use the format:
+
+/// name - breif
+///
+/// description1
+/// description2
+...
+prototype;
+
+And I'm realizing now that's even too picky, because it doesn't handle
+multiline prototypes. I bet I can fix that.
+
+Anyway, it's real picky, and will silently drop things. Hopefully that will be
+obvious when you go to compile the documentation and it says the function file
+is missing.
+
+How shall I install this now? Let me write a function in the top level
+sconscript for now? Or should I make a builder? A builder would be more
+useful, don't you think? Reusable. And cleaner? But it's kind of specific, so
+it might be too soon for a builder...
+
+Sun Jun 26 14:15:50 EDT 2011
+
+I think I need a builder for this. It's too complicated otherwise.
+Because we have to figure out:
+ - which files does it generate.
+ - specify a command (function) for generating those files.
+It seems like a builder would be more natural.
+
+I can call the tool head, for header embedded asciidoc.
+
+Okay. Questions then.
+1. How do I write a builder which is a python function?
+2. How do I describe what targets will be generated?
+
+Okay, looks like action = foo is used to specify the python function foo as
+the builder action, and emitter = foo to specify foo as an emitter which
+generates the target list. Should be pretty easy.
+
+Sun Jun 26 14:33:00 EDT 2011
+
+Next thing to figure out: do we just generate the man page sources:
+name.3.txt, or do we generate the man pages themselves?
+
+If we just do the sources, I know how to describe that easily, but then the
+person has to figure out which man pages to generate? That seems silly.
+
+But if we go straight to the man pages, I would like to involve the Man
+asciidoc builder. Can I do that somehow nicely?
+
+There must be a way. That's how the Program builder works, right? To build
+programs from .c instead of .o?
+
+There's a thing called src_builder, which lets you build a source object if
+the extension is wrong...
+
+I don't know. This doesn't feel quite right.
+
+What if I had two stages.
+Let's say the Head tool, rather than producing man pages, produces some
+intermediate files which lists all the functions, and also outputs the man
+page source.
+
+Then we have another builder (maybe as part of the asciidoc tool?) which
+takes as input a head file listing functions, and...
+
+This sounds terribly complicated. Why don't I just have, maybe in the
+emmitter, um...
+
+It would be cool if in my action function I could somehow call the man
+builders action function directly. That would solve everything, don't you
+think? Should I try it? env.Man.action(target, src, env)?
+
+Yes. I like this plan. I'll try and hack it together and let you know how it
+works out.
+
+Sun Jun 26 15:01:13 EDT 2011
+
+Here's a different idea. Rather than make a builder, let's just have a
+function. What it does is read the source file and register the appropriate
+commands.
+
+We can have template file and use the substfile builder, plugging in name,
+brief, desc, and proto. That's so much easier, don't you think?
+
+Yes. I think.
+
+Sun Jun 26 15:47:39 EDT 2011
+
+There! It's perfect! It's wonderful! No more .docl files.
+
+Function documentation is everywhere we want it:
+ header files
+ man pages
+ user guide
+
+And only specified in one very convinient place in a very convinient way.
+I love it.
+

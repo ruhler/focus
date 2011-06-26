@@ -13,7 +13,7 @@ List of pending issues.
 - fix concurrency issues in screen (34.tsk)
 - add split to screen
 - add rotate command to pdfer
-- infer function doc from header files? (35.tsk)
+- review install and release targets
 - release 1.1.0 (33.tsk)
 
 unassigned

@@ -33,8 +33,6 @@ To use the consoler library, include the header consoler.h in your program and
 link with -lconsoler. All the consoler library functions are prefixed with
 CNSL.
 
-    const char* CNSL_Version();
-
 include::CNSL_Version.txt[]
 
 Events
@@ -208,29 +206,17 @@ an abstract type which is cheap to copy.
 
 The following functions are provided to construct events.
 
-    CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym);
-
 include::CNSL_MakeKeypress.txt[]
 
-    CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym);
-
 include::CNSL_MakeKeyrelease.txt[]
-
-    CNSL_Event CNSL_MakeQuit();
 
 include::CNSL_MakeQuit.txt[]
 
 The following functions are provided to deconstruct events.
 
-    bool CNSL_IsKeypress(CNSL_event event, CNSL_Keysym* sym);
-
 include::CNSL_IsKeypress.txt[]
 
-    bool CNSL_IsKeyrelease(CNSL_event event, CNSL_Keysym* sym);
-
 include::CNSL_IsKeyrelease.txt[]
-
-    bool CNSL_IsQuit(CNSL_Event event);
 
 include::CNSL_IsQuit.txt[]
 
@@ -249,26 +235,14 @@ use them rather than directly accessing the bits of a color, because the
 underlying representation for +CNSL_Color+ may change in future releases.
   
 
-    function uint8_t CNSL_GetRed8(CNSL_Color c);
-
 include::CNSL_GetRed8.txt[]
-
-    function uint8_t CNSL_GetGreen8(CNSL_Color c);
 
 include::CNSL_GetGreen8.txt[]
   
-
-    uint8_t CNSL_GetBlue8(CNSL_Color c);
-
 include::CNSL_GetBlue8.txt[]
-
-    uint32_t CNSL_GetRGB8(CNSL_Color c);
 
 include::CNSL_GetRGB8.txt[]
   
-
-    CNSL_Color CNSL_MakeColor(uint8_t r, uint8_t g, uint8_t b);
-
 include::CNSL_MakeColor.txt[]
   
 Display
@@ -288,26 +262,14 @@ increasing down the display, and x increasing to the right.
 The following functions are provided to work with displays.
   
 
-    CNSL_Display CNSL_AllocDisplay(unsigned int width, unsigned int height);
-
 include::CNSL_AllocDisplay.txt[]
   
-
-    void CNSL_FreeDisplay(CNSL_Display display);
 
 include::CNSL_FreeDisplay.txt[]
   
 
-    CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y);
-
 include::CNSL_GetPixel.txt[]
   
-
-    void CNSL_SetPixel(
-        CNSL_Display display,
-        unsigned int x,
-        unsigned int y,
-        CNSL_Color color);
 
 include::CNSL_SetPixel.txt[]
   
@@ -339,39 +301,20 @@ The following functions are provided for working with client and server
 connections.
   
 
-    CNSL_Client CNSL_LaunchClient(const char* path, char* const args[]);
-
 include::CNSL_LaunchClient.txt[]
   
-
-    void CNSL_CloseClient(CNSL_Client client);
 
 include::CNSL_CloseClient.txt[]
   
 
-    CNSL_Event CNSL_RecvEvent(CNSL_Console console);
-
 include::CNSL_RecvEvent.txt[]
 
-
-    bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
 
 include::CNSL_SendEvent.txt[]
   
 
-    void CNSL_SendDisplay(
-        CNSL_Console console, CNSL_Display display,
-        unsigned int srcx, unsigned int srcy,
-        unsigned int dstx, unsigned int dsty,
-        unsigned int width, unsigned int height);
-
 include::CNSL_SendDisplay.txt[]
   
-
-    bool CNSL_RecvDisplay(
-        CNSL_Client client, CNSL_Display display,
-        unsigned int* dstx, unsigned int* dsty,
-        unsigned int* width, unsigned int* height);
 
 include::CNSL_RecvDisplay.txt[]
   
@@ -383,12 +326,8 @@ library provides a couple of functions for facilitating the use of the
 +CNSLWIDTH+ and +CNSLHEIGHT+ environment variables.
   
 
-    void CNSL_SetGeometry(int width, int height);
-
 include::CNSL_SetGeometry.txt[]
   
-
-    void CNSL_GetGeometry(int* width, int* height);
 
 include::CNSL_GetGeometry.txt[]
 
