@@ -708,3 +708,22 @@ still bothers me. I suspect it will, but maybe to a lesser extent. Maybe it's
 a good enough improvement for this release and I can try again for the next
 release? Who knows.
 
+Mon Jun 27 23:39:36 EDT 2011
+
+I think scrolling is better. It feels better. Still a little uppity, but
+better.
+
+I want to try one more thing with this. I'm going to profile termer with me
+actually giving it input commands and see if it has anything interesting. I
+think scrolling around man man should work swell.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 40.51      7.87     7.87  1378475     0.00     0.00  CNSL_FillRect
+ 33.61     14.40     6.53  1378469     0.00     0.00  FNTR_DrawGlyph
+ 11.22     16.58     2.18 199234374     0.00     0.00  CNSL_SetPixel
+  8.16     18.17     1.59 201991322     0.00     0.00  CNSL_MakeColor
+  1.29     18.42     0.25  2717974     0.00     0.00  eq_cell
+
+Just goes to show you, it's not fetching events or updating the display or
+anything like that. This is consistent with my previous profiling.
+

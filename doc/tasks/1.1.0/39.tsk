@@ -1,0 +1,22 @@
+
+Mon Jun 27 23:53:22 EDT 2011
+
+Task: print a nicer messag if config file doesn't exist
+
+Currently you get a nasty scons backtrace. Nicer would be:
+
+Error: config file not found.
+
+Or, better yet, if no config file found, why not supply defaults?
+Well, then people don't know they were supposed to write a config file. So for
+now let's just complain.
+
+Tue Jun 28 00:08:55 EDT 2011
+
+So it's unfortunate that scons just prints a warning if the SConscript isn't
+found, and the current working directory is in build and not the top level. I
+don't know the right way to do this, so I just refer to the path of the config
+file knowing we are executing in the build directory.
+
+It's better than a stack trace anyway.
+

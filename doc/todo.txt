@@ -2,18 +2,13 @@
 List of pending issues.
 
 1.1.0
-- fonter clips bottoms of g and y in termer (15.tsk)
-- scrolling in termer still feels uncomfortable (25.tsk)
 - fix pdfer rotation bug
 - may be memory leak in pdfer
-- library man page function prototypes are formatted wrong
-- print a nicer message if config file doesn't exist.
+- add rotate command to pdfer
 - shift-tab same as tab in termer?
-- add kill command to sgreen?
 - fix concurrency issues in screen (34.tsk)
 - add split to screen
-- add rotate command to pdfer
-- review install and release targets
+- review install and release targets (37.tsk)
 - release 1.1.0 (33.tsk)
 
 unassigned
@@ -29,4 +24,6 @@ unassigned
 - clean up and document scons files
 - write tutorial for getting started with focus?
 - write development policy docs?
+- library man page function prototypes are formatted wrong
+- get rid of FNTR_GlyphLevel function?
 

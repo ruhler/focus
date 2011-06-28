@@ -1,0 +1,17 @@
+
+Mon Jun 27 22:18:34 EDT 2011
+
+Task: Review install and release targets
+
+I'm finding it an awful pain to keep the RELEASE targets in the scons file up
+to date. I just don't want to do it, because so many files are changing.
+
+I hope you'll consider making the RELEASE targets for src just like doc: take
+the wholesale directory. Then files don't have to be identified explicitly.
+
+The only downside is if you have junk in your directory when you make the
+release, that will be included in the release. But that's much easier to check
+than that all the right files have been explicitly written down.
+
+Yes, I think I'm almost sold on this.
+

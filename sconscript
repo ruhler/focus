@@ -1,4 +1,5 @@
 
+import os.path
 import re
 
 env = Environment(
@@ -18,7 +19,11 @@ env['VERSION'] = "1.1.0"
 env.MergeFlags("-DFOCUS_VERSION_STRING=\\\\\\\"%s\\\\\\\"" % env['VERSION'])
 
 # configuration
+if not os.path.exists('../config'):
+    print "Error: 'config' file not found."
+    env.Exit(1)
 SConscript('config')
+
 
 # Use pkg-config to extend LIBS, LIBPATH, and CPPPATH lists
 for req in ['libpng', 'poppler-cpp', 'freetype2', 'fontconfig', 'sdl']:

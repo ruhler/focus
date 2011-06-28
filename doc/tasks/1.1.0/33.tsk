@@ -34,3 +34,10 @@ documentation into little files whereever I want to share content.
 
 Yeah. This sounds like a plan to me.
 
+Mon Jun 27 23:51:07 EDT 2011
+
+I feel like I'm making good progress on this release. I see three areas
+remaining: pdfer, sgreen, and scons.
+
+The sgreen stuff kind of worries me. That's the major feature in this release.
+
