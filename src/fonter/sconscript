@@ -4,6 +4,13 @@
 Import('env')
 
 fonter = env.Library('fonter.c')
+env.Object('fonter_prof.o', 'fonter.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Default(env.Library('fonter_prof', 'fonter_prof.o',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+    )
 env['CPPPATH'].append(Dir('.'))
 env['LIBPATH'].append(Dir('.'))
 

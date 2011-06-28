@@ -168,24 +168,34 @@ uint8_t FNTR_GlyphLevel(FNTR_Fonter fonter, int x, int y)
 void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display,
         CNSL_Color fg, CNSL_Color bg, int dx, int dy)
 {
-    int fgr = CNSL_GetRed8(fg);
-    int fgg = CNSL_GetGreen8(fg);
-    int fgb = CNSL_GetBlue8(fg);
     int bgr = CNSL_GetRed8(bg);
     int bgg = CNSL_GetGreen8(bg);
     int bgb = CNSL_GetBlue8(bg);
+    int dr = CNSL_GetRed8(fg) - bgr;
+    int dg = CNSL_GetGreen8(fg) - bgg;
+    int db = CNSL_GetBlue8(fg) - bgb;
 
-    int gx, gy;
-    for (gy = 0; gy < FNTR_Height(fonter); gy++) {
-        for (gx = 0; gx < FNTR_GlyphWidth(fonter); gx++) {
-            uint8_t level = FNTR_GlyphLevel(fonter, gx, gy);
+    int cell_width = FNTR_GlyphWidth(fonter);
+    int cell_height = FNTR_Height(fonter);
+    CNSL_FillRect(display, dx, dy, cell_width, cell_height, bg);
 
-            unsigned int red = 0xFF & ((fgr * level + bgr * (256-level))/256);
-            unsigned int green = 0xFF & ((fgg * level + bgg * (256-level))/256);
-            unsigned int blue = 0xFF & ((fgb * level + bgb * (256-level))/256);
+    int left = fonter->face->glyph->bitmap_left;
+    int width = fonter->face->glyph->bitmap.width;
+    int top = fonter->ascender - fonter->face->glyph->bitmap_top;
+    int height = fonter->face->glyph->bitmap.rows;
+    uint8_t* bitmap = fonter->face->glyph->bitmap.buffer;
 
-            CNSL_Color c = CNSL_MakeColor(red, green, blue);
-            CNSL_SetPixel(display, dx + gx, dy + gy, c);
+    int bx, by;
+    for (by = 0; by < height; by++) {
+        for (bx = 0; bx < width; bx++) {
+            int level = bitmap[by * width + bx];
+
+            CNSL_Color c = CNSL_MakeColor(
+                    bgr + ((level * dr) >> 8),
+                    bgg + ((level * dg) >> 8),
+                    bgb + ((level * db) >> 8));
+
+            CNSL_SetPixel(display, dx + left + bx, dy + top + by, c);
         }
     }
 }

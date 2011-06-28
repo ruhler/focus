@@ -4,6 +4,13 @@
 Import('env')
 
 consoler = env.Library('consoler.c')
+env.Object('consoler_prof.o', 'consoler.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Default(env.Library('consoler_prof', 'consoler_prof.o',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+    )
 env['CPPPATH'].append(Dir('.'))
 env['LIBPATH'].append(Dir('.'))
 

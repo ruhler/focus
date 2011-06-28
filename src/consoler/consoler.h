@@ -145,6 +145,14 @@ CNSL_Color CNSL_GetPixel(CNSL_Display display, unsigned int x, unsigned int y);
 /// the display.
 void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Color color);
 
+/// CNSL_FillRect - fill a rectangular area
+///
+/// Fill a retangular region of the given display with a solid color.
+///
+/// It is undefined what happens if the rectangular area is outside the
+/// dimensions of the display.
+void CNSL_FillRect(CNSL_Display display, unsigned int x, unsigned int y, unsigned int w, unsigned int h, CNSL_Color color);
+
 
 typedef struct {
     int fdin;

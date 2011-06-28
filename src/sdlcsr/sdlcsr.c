@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
     info.display.height = info.screen->h;
     info.display.pixels = info.screen->pixels;
 
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    SDL_EnableKeyRepeat(400, 40);
     SDL_ShowCursor(SDL_DISABLE);
 
     // Launch the client.

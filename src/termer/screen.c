@@ -16,7 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <assert.h>
 #include <stdlib.h>
 
 #include "screen.h"
@@ -201,7 +200,6 @@ SCREEN_Cell getcell(SCREEN_Screen* scr, int x, int y)
 
 void setcell(SCREEN_Screen* scr, int x, int y, SCREEN_Cell cell)
 {
-    assert(x >= 0 && x < scr->columns && y >= 0 && y < scr->lines);
     scr->cells[y*scr->columns + x] = cell;
 }
 

@@ -146,3 +146,565 @@ problem, and profiling would be the appropriate next action.
 And to make it easy, I should probably add profiling targets to scons which
 are not default.
 
+Sun Jun 26 17:34:02 EDT 2011
+
+Yes, more and more I'm noticing termer seems to have a performance problem.
+Well, now that we're on r1.1.0 I can tackle the problem.
+
+Here's the plan. I'll first record a session with lots of scrolling and other
+stuff. Scrolling through asciidocs in vim is especially troublesome, so that
+should give me some good meat. Maybe target around 10 or 20 seconds of
+recorded stuff or some such.
+
+Then add to the sconscript a way to do profiling. I want a command like:
+scons profile, which does the whole suite of stuff in a totally repeatable
+fashion. We'll generate a termer_prof version and run that and all.
+
+Understood? Cool. Here I go.
+
+I wonder what profiling will say? Here are some hunches:
+ - lots of time doing unbuffered event io
+ - rendering characters is slow?
+
+Not really sure what it will be. Let's find out.
+
+Sun Jun 26 17:55:11 EDT 2011
+
+I should note: the way I do the recording thing, it only measures the output
+performance. There is no waiting for events or anything like that, so that
+will not show up.
+
+Also, from making the recording, I wonder if the reason scrolling feels bad is
+because termer, when it has lots to output, doesn't update all the time. It
+will skip if it can, and maybe it's that skipping that's the problem.
+
+Also, I fear this measurement won't give me the best idea of what's going on,
+because it took me a long time to scroll through the document manually, but
+just catting the recording takes a lot less time.
+
+Now here's something interesting. fbcon, which scrolls just fine, takes twice
+as long to output the recording as termer. But it displays everything (it
+doesn't skip). So again, maybe performance isn't the issue so much as
+jerkiness of display. What if we updated the display after every change?
+
+The fear is, of course, that then performance really would be a problem. But
+maybe if you update the display often, then there isn't much to update display
+wise, so it isn't really much of a problem.
+
+I don't know. Some thing we clearly don't need to update: like the cursor
+jumping to the bottom of the screen to update the number there. Other things,
+like scrolling, it seems we do want to update, just to have a consistent
+scroll feel. Maybe the answer then is to do something special, like any time
+you do a scroll, force an update of the page right then. That way you get the
+best of both worlds.
+
+Sun Jun 26 18:30:05 EDT 2011
+
+I'm running into issues generating the profile with scons which I don't
+understand.
+
+Okay, I think I worked out the issues. So I can make a termer profile now. I
+don't understand why I see the thing on the screen... but oh well.
+
+Profiling is interesting because it suggests the bulk of the time is spent in
+FNTR_GlyphLevel and FNTR_DrawGlyph. I may want to build a profiling version of
+fonter to see where it spends all its time. The others are getcell and
+setcell and parm_delete_line and FNTR_GlyphWidth.
+
+Yes. I should implement a profiling version of fonter first.
+
+Here it is. The important stuff.
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 29.62      1.30     1.30   212715     0.00     0.00  FNTR_DrawGlyph
+ 19.14      2.14     0.84 25525800     0.00     0.00  FNTR_GlyphLevel
+ 15.26      2.81     0.67 28716525     0.00     0.00  FNTR_GlyphWidth
+  7.75      3.15     0.34 28716528     0.00     0.00  from26_6
+  5.24      3.38     0.23 18887445     0.00     0.00  setcell
+  4.78      3.59     0.21 17556302     0.00     0.00  getcell
+  4.78      3.80     0.21     5627     0.00     0.00  parm_delete_line
+  4.78      4.01     0.21                             CNSL_SetPixel
+
+Not so surprisingly, for this benchmark, rendering the characters is slow.
+
+But again, I don't think that's the main problem. I think the problem with
+scrolling is it's jerky because we don't update consistently.
+
+Sun Jun 26 18:57:45 EDT 2011
+
+I factored out the call to GlyphWidth in FNTR_DrawGlyph, which I think
+improves performance a little. Other steps we could take would be to not call
+GlyphLevel, but access the underlying bitmap directly. And to cache glyphs.
+
+But what I really want to try is see what happens if I update the display way
+more often. See how that feels.
+
+Sun Jun 26 19:24:32 EDT 2011
+
+I changed it so the display is updated after every character from the client.
+This is too often. We spend all our time in diff, followed by the fntr stuff.
+
+It's not clear to me with such poor performance if the scrolling issue is
+fixed. But it does look more like how fbcon works: you can see everything
+which is drawn.
+
+So I think what it comes down to is the following things:
+
+1. performance of drawing characters on the display is significant.
+2. not consistently updating display gives jerky scroll feeling
+    (I'm not positive of this, I just suspect)
+3. if you run diff too often, diff performance is significant.
+
+So I need to strike a balance somehow.
+
+
+I guess ideally what we could do is update the screen after every change, and
+do it fast enough that you just don't see the little changes. Notice I say
+update it after every change, not every input character.
+
+If we do this, we maybe don't need diff, because the screen knows what it
+changes.
+
+Not using diff and constantly updating means we do more work if multiple
+changes cancel each other out. This happens when moving the cursor around the
+screen and when scrolling if characters happen to not change (for example
+there's lots of white space.). It's not so clear to me that makes such a big
+difference.
+
+Hmm...
+
+To make the updating faster I can cache glyphs and otherwise improve fonter
+performance. I don't remember if we tried not using diff when things were fast
+enough. Let me review past performance notes.
+
+Past performance notes say I switched to using the diff method before I
+switched to c and fixed the display communications problem.
+
+So I think the diff thing is now much less important than it used to be.
+
+I propose the following experiment be made:
+
+dump the diff thing. Instead screen should have a function it calls with every
+cell which changes. That function will be to update the changed character on
+the display.
+
+If the performance isn't too terrible, check the scrolling issue. I'm okay
+with a little performance problem, because I think we can improve things
+elsewhere by caching glyphs and such. This will test if the communication
+channel gets overwhelmed by so much information.
+
+Yes. That's it. I'll make the change and run profiling. If the problem is
+still in fonter, that's one thing. If the problem switches to sending the
+display, that's another. The former I have ideas of how I can deal with. The
+later not so much yet.
+
+So. What do you say? Shall I try to hack this together and see what happens?
+
+Yes. I'm going to do it.
+
+You know what to do. Add to screen a callback function and user data. That
+callback function will call drawcell. Now the question is, when should we send
+the display to the server? Every time we draw a cell? Sure. We can just only
+send what's changed. That will simplify some logic too. Except, it won't help
+with buffering sending all these small changes. Consoler is sort of optimized
+for sending large amounts of data.
+
+I think what we really want is send the display to the server after each
+screen command executed. It would be great if outputter could tell us when it
+executes a command. Maybe add another function to it which it can call to
+update the display. Yes. I like that.
+ 
+Here I go then.
+
+Let's say screen doesn't tell you about the cursor change. I'll handle that in
+the senddisplay function: it can make sure to update both the old and new
+cursor positions.
+
+Sun Jun 26 20:28:31 EDT 2011
+
+It was surprisingly easy to make the change. I blame that on my good coding
+style when I write haskell code.
+
+Anyway, it's still too slow. And it's clear drawing the glyphs is what is hard
+(not the communication of the display).
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 43.55     81.09    81.09 19684299     0.00     0.00  FNTR_DrawGlyph
+ 34.45    145.22    64.13 2362115880     0.00     0.00  FNTR_GlyphLevel
+ 10.71    165.16    19.94                             CNSL_SetPixel
+  4.69    173.89     8.73                             CNSL_MakeColor
+  1.34    176.38     2.49 19684299     0.00     0.00  FNTR_GlyphWidth
+
+All the time is in DrawGlyph. Note this is not LoadGlyph. So rendering the
+glyphs isn't what's taking so much time.
+
+I think it's a combination of us calling DrawGlyphs so many times, and having
+to calculate the colors from the levels.
+
+I want to try one thing. I want to see if I can use this non-diff strategy,
+but still only update the display when do a get on an empty buffer. If that is
+useable, I think I should keep the changes I made, then focus on getting
+DrawGlyph to be much faster.
+
+I tried it. What we see now is performance is fine for normal use, except the
+scrolling problem is much exacerbated. This suggests to me the buffering
+really is the scrolling problem (though I'm not sure why it suggests that to
+me...).
+
+I'm running profiling on it now to see what the problem is. How much do you
+want to bet its FNTR_DrawGlyph still?
+
+I'm thinking the simplest way to deal with this is just to fix DrawGlyph to
+run much faster. It really shouldn't be taking that long.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 42.60     86.24    86.24 18888238     0.00     0.00  FNTR_DrawGlyph
+ 37.23    161.60    75.36 2266588560     0.00     0.00  FNTR_GlyphLevel
+  9.55    180.94    19.33                             CNSL_SetPixel
+  4.13    189.30     8.36                             CNSL_MakeColor
+
+Just like before, only with a tiny bit less calls to DrawGlyph. Of course.
+Remember, it's not updating the display which takes a long time, it's drawing
+the glyphs. So of course changing when we update the display won't do
+anything.
+
+I've got to believe all the time in DrawGlyph is due to the color calculation.
+The question is: how can we efficiently determine, given a background color
+and foreground color and grey level, what color to use?
+
+Let me play with some math.
+
+I rewrote the color calculations in a way I thought would be much faster. No
+divide, much simpler. And the colors come out fine. It just doesn't appear to
+go much faster.
+
+I have this fear the profiling stuff may be accumulating rather than being
+rerun from scratch, so I've started a profile run after deleting all the past
+info. Let's see if it has anything nice to say.
+
+I have a hard time believing multiplication takes all the time here. And we
+really aren't doing much else. Isn't this strange?
+
+I suppose I could do some experiments where I, for example, ignore the color.
+Just draw everything a solid color or in greyscale and see if there are still
+performance problems.
+
+I guess what I'm saying is, I don't trust the profiling output, because it
+doesn't make much sense to me. It also isn't giving enough detail.
+ 
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 43.65     85.85    85.85 2362004280     0.00     0.00  FNTR_GlyphLevel
+ 33.76    152.23    66.38 19683369     0.00     0.00  FNTR_DrawGlyph
+  8.30    168.55    16.32                             CNSL_SetPixel
+  6.17    180.69    12.13                             CNSL_MakeColor
+  1.45    183.55     2.86 19683369     0.00     0.00  FNTR_GlyphWidth
+  1.31    186.12     2.57                             CNSL_GetRGB8
+  1.02    188.13     2.01 19683369     0.00     0.00  ctermer_DrawCell
+
+Lots of calls to GlyphLevel now. I bet I can speed things up a bit by not
+calling Glyph Level. Caching some of the accesses. Hmm... Yes. Let me try
+that. Of course, if this really is a problem, there's not really any reason to
+implement the GlyphLevel function. (Does that count as an interface change?)
+
+Sun Jun 26 21:16:20 EDT 2011
+
+What do you think about implementing a CNSL_FillRect function? It's a common
+task. I could optimize the fill rect then too...
+
+So what I did was access pixels directly instead of calling glyph level. This
+way I don't have to do the bounds check maybe? And I don't have to do the
+color calculation for pixels outside the rendered bitmap.
+
+I haven't switched to using a FillRect function, which maybe could make
+things go faster. I'll know if that's the case if all our time is in SetPixel.
+
+I don't notice much of a performance improvement. I'm interested in seeing
+what happens.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 50.38     33.64    33.64 19683369     0.00     0.00  FNTR_DrawGlyph
+ 29.39     53.26    19.62                             CNSL_SetPixel
+  3.10     55.33     2.07 19683369     0.00     0.00  ctermer_DrawCell
+  2.40     56.93     1.60                             CNSL_MakeColor
+
+
+So I implemented FillRect in the most efficient way I could think of and
+switched to using it. In this case I fill the whole cell solid first, then
+draw the character on top. I suppose I could just fill the outside parts of
+the character and draw the screen in the middle. Let's see what profiling says
+first. My manual tests suggest its faster, but still noticably too slow.
+
+I don't understand what I changed so that the screen is so slow to update. Is
+it because I call update for each character on the screen instead of just
+updating once? If that was the case, wouldn't the updatedisplay function be
+assigned all the time? Or is that because I'm outputting to /dev/null?
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 48.54     20.31    20.31                             CNSL_FillRect
+ 18.22     27.93     7.62 19683369     0.00     0.00  FNTR_DrawGlyph
+  4.78     29.93     2.00 19683369     0.00     0.00  ctermer_DrawCell
+  3.96     31.59     1.66 18351844     0.00     0.00  getcell
+  3.63     33.11     1.52                             CNSL_SetPixel
+  3.19     34.44     1.34                             CNSL_MakeColor
+
+Fill rect is getting the brunt of it now. Though draw glyph is still
+expensive.
+
+I filled just around the edges. It doesn't feel faster. Profile says...
+
+ 52.50     24.33    24.33                             CNSL_FillRect
+ 17.12     32.26     7.93 19683369     0.00     0.00  FNTR_DrawGlyph
+  4.17     34.19     1.93 19683369     0.00     0.00  ctermer_DrawCell
+  4.03     36.06     1.87                             CNSL_MakeColor
+  3.24     37.56     1.50                             CNSL_SetPixel
+
+Nope. That didn't help. Let me go back to one big fill.
+
+I don't know. I don't know how to write the function to go any faster.
+The only thing I can think to try is... turn on gcc optimizations.
+
+Turned on -O3. It didn't make a noticable difference in performance.
+
+So the only thing I can think of is to call DrawGlyph less often. Will caching
+displays help? Then the cost of drawing will just be a memory copy (or rather,
+a mem copy for each row).
+
+The other idea is to maybe update the display less... Now why would that make
+any difference? We've already said it shouldn't...
+
+I don't know what to say. I don't know how to make it any faster.
+
+Even with all these changes, the original termer seems to work best. Except
+for scrolling... So maybe diff is important after all?
+
+I wonder. Maybe the throttling should be done based on input events? For the
+most part each input event corresponds to a change I want to see happen. So
+how about update the display with each input event?
+
+The problem with that is we have concurrency issues. The screen would be
+touched by multiple threads.
+
+Okay, how about this. Have an integer. If I can make it atomic that might be
+great. Or whatever. The integer keeps track of the number of input events
+recieved since the last time we updated the display. If in getf we find this
+to be greater than 1, update the display. What do you think about that, eh?
+
+I suppose it's worth a try. So let me revert all the changes I've made and try
+along this new course.
+
+Sun Jun 26 22:51:18 EDT 2011
+
+The new course hasn't seemed to help any. What we really want is to update the
+display once every change caused by the most recent input event has happened.
+
+Like, what if we didn't even ask for the next input event until we had handled
+all the output generated from the previous input event? What if termer wasn't
+multithreaded?
+
+The idea then would be, you get an input event, you send it to the inputter,
+the inputter sends it to the client, the client responds (though how you know
+when the client is done responding is not clear to me...) you send the
+response to the outputter, you update the screen, you do the diff to figure
+out what changed, you send the screen on, and only then do you consider the
+next input event.
+
+How hard would that be to try out? I would have to change inputter and
+outputter so they don't think they are their own thread anymore. That would be
+annoying. You have to keep track of the current state in a variable somehow
+rather than with a pc. But I think the algorithm is clear then. You have one
+big main loop.
+
+Gosh. I don't know what to do.
+
+I suppose one thing I haven't done is try optimizing the current termer (which
+I can base on past results). Profile for it looks familiar, and we can
+probably make it better.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 26.60      0.96     0.96   212979     0.00     0.00  FNTR_DrawGlyph
+ 26.32      1.91     0.95 25557480     0.00     0.00  FNTR_GlyphLevel
+  8.31      2.21     0.30 28752165     0.00     0.00  FNTR_GlyphWidth
+
+Mon Jun 27 20:20:29 EDT 2011
+
+Okay! I have a plan. What I want to do, before I try to apply the
+optimizations from above that I think work, is experiment. I want to run the
+following experiments.
+
+A. Run where drawcell does nothing.
+This will verify drawcell really is the main issue as I believe from
+profiling.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 43.00      0.68     0.68 18887445     0.00     0.00  setcell
+ 24.21      1.06     0.38 17556302     0.00     0.00  getcell
+ 18.47      1.35     0.29     5627     0.00     0.00  parm_delete_line
+  4.46      1.42     0.07     5627     0.00     0.00  parm_insert_line
+  2.23      1.45     0.04  1331525     0.00     0.00  blank
+  1.27      1.47     0.02      192     0.00     0.00  diff
+
+
+B. Run where DrawGlyph does nothing.
+This will see how big an issue loading the glyph is.
+
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 33.96      0.28     0.28 18887445     0.00     0.00  setcell
+ 29.64      0.52     0.24 17556302     0.00     0.00  getcell
+ 17.29      0.66     0.14     5627     0.02     0.10  parm_delete_line
+  4.94      0.70     0.04     5627     0.01     0.03  parm_insert_line
+  3.09      0.72     0.03  1331525     0.00     0.00  blank
+  2.47      0.74     0.02   212715     0.00     0.00  drawcell
+  2.47      0.76     0.02      192     0.10     0.26  diff
+  2.47      0.78     0.02        1    20.00   809.81  outputter
+  1.23      0.79     0.01   425430     0.00     0.00  blueof
+  1.23      0.80     0.01   365266     0.00     0.00  cursor_address
+  1.23      0.81     0.01   288131     0.00     0.00  put_char
+
+Wow! draw glyph is the big issue.
+Notice that load glyph isn't an issue at all, and updating the display is
+still no issue.
+
+C. Run where DrawGlyph uses level was the color.
+This will see if calculating the colors is the issue.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 26.65      0.69     0.69 25525800     0.00     0.00  FNTR_GlyphLevel
+ 13.71      1.05     0.36 18887445     0.00     0.00  setcell
+ 11.97      1.36     0.31   212715     0.00     0.00  FNTR_DrawGlyph
+ 11.59      1.66     0.30     5627     0.00     0.00  parm_delete_line
+ 10.43      1.93     0.27 17556302     0.00     0.00  getcell
+  6.56      2.10     0.17 25525800     0.00     0.00  CNSL_SetPixel
+  5.21      2.23     0.14 28716525     0.00     0.00  FNTR_GlyphWidth
+  2.70      2.30     0.07     5627     0.00     0.00  parm_insert_line
+  2.12      2.36     0.06 28716528     0.00     0.00  from26_6
+  1.16      2.39     0.03   781856     0.00     0.00  getf
+
+The cost of drawglyph goes down noticably compared to (E).
+
+D. Run where DrawGlyph just fills the cell with a solid color
+This will see how much assigning a cells worth of color values is an issue.
+This is about what we would see with caching of cells (minus glyph load
+issues).
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 20.08      0.55     0.55 25525800     0.00     0.00  CNSL_SetPixel
+ 16.79      1.01     0.46   212715     0.00     0.00  FNTR_DrawGlyph
+ 13.51      1.38     0.37 28716525     0.00     0.00  FNTR_GlyphWidth
+ 11.68      1.70     0.32 18887445     0.00     0.00  setcell
+ 11.50      2.02     0.32 28716528     0.00     0.00  from26_6
+ 10.22      2.30     0.28     5627     0.00     0.00  parm_delete_line
+  5.84      2.46     0.16 17556302     0.00     0.00  getcell
+  2.56      2.53     0.07     5627     0.00     0.00  parm_insert_line
+  1.10      2.56     0.03                             CNSL_GetPixel
+  1.10      2.59     0.03   288131     0.00     0.00  put_char
+
+GlyphLevel dissappears, not surprisingly. Now setpixel dominates. But notice
+draw glyph is still up there pretty high. The glyph width thing we know how to
+make better.
+
+E. Run how things are presently.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 27.03      1.10     1.10   212979     0.00     0.00  FNTR_DrawGlyph
+ 21.75      1.99     0.89 25557480     0.00     0.00  FNTR_GlyphLevel
+ 11.06      2.44     0.45 25557480     0.00     0.00  CNSL_SetPixel
+  6.76      2.71     0.28 17556312     0.00     0.00  getcell
+  6.39      2.97     0.26 28752168     0.00     0.00  from26_6
+  6.39      3.23     0.26     5627     0.00     0.00  parm_delete_line
+  5.65      3.46     0.23 28752165     0.00     0.00  FNTR_GlyphWidth
+  4.55      3.65     0.19 18887445     0.00     0.00  setcell
+  3.56      3.79     0.15 25983438     0.00     0.00  CNSL_MakeColor
+  1.47      3.85     0.06     5627     0.00     0.00  parm_insert_line
+  1.11      3.90     0.05   504320     0.00     0.00  eq_cell
+
+Looks like draw glyph dominates, glyph level follows, setting lots of pixels.
+Loading glyphs and updating displays is mentioned nowhere.
+
+F. Run where fonter just fills the cell solid, but without repeatedly calling
+the width and height functions.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 22.29      0.41     0.41   213690     0.00     0.00  FNTR_DrawGlyph
+ 18.75      0.76     0.35 18887445     0.00     0.00  setcell
+ 16.31      1.06     0.30 25642800     0.00     0.00  CNSL_SetPixel
+ 14.68      1.33     0.27     5627     0.00     0.00  parm_delete_line
+ 12.50      1.56     0.23 17556304     0.00     0.00  getcell
+  3.26      1.62     0.06     5627     0.00     0.00  parm_insert_line
+  1.90      1.65     0.04  1331525     0.00     0.00  blank
+  1.63      1.68     0.03   494080     0.00     0.00  eq_cell
+  1.63      1.71     0.03   213690     0.00     0.00  FNTR_LoadGlyph
+  1.63      1.74     0.03      193     0.00     0.00  diff
+  1.09      1.76     0.02   213690     0.00     0.00  ctermer_DrawCell
+  1.09      1.78     0.02        1     0.02     1.83  outputter
+
+So draw glyph still takes up a bunch of time, but not so much as before. Oh,
+hey look. LoadGlyph shows up for the first time.
+
+
+You know what? I think some of these profiling results are bogus. They are so
+inconsistent.
+
+Anyway, big takeaways are:
+- Loading glyphs not a problem.
+- updating display not a problem (could be because we pipe to /dev/null)
+- drawglyph is a problem
+   - repeated calls to glyph width hurt
+   - calculating colors hurt
+   - raw pixel setting hurts (not sure there's a way around this)
+
+Well, what does that suggest to you?
+
+caching the drawn glyph displays (with colors calculated) could maybe help,
+but there are so many possible color combinations, I don't think it makes
+sense to do in general.
+
+So let me do the following and see if it helps. All the stuff from before.
+1. CNSL_FillRect to fill background
+2. change color calculation strategy to not use divides, etc...
+3. Don't repeatedly call the width and height functions.
+
+The other thing to try: slow down the key repeat rate. The jerkiness is, I
+believe, because the key repeat rate is faster than the rate at which we can
+update the entire display.
+
+Here I go. I'll let you know if it turns out any better. I'm not sure what I
+can do otherwise.
+
+Mon Jun 27 21:36:13 EDT 2011
+
+Here's the profile after my performance optimizations.
+
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 21.28      0.40     0.40   212715     0.00     0.00  CNSL_FillRect
+ 15.96      0.70     0.30     5627     0.00     0.00  parm_delete_line
+ 14.90      0.98     0.28   212715     0.00     0.00  FNTR_DrawGlyph
+ 14.10      1.25     0.27 18887445     0.00     0.00  setcell
+  8.51      1.41     0.16 17556302     0.00     0.00  getcell
+  5.05      1.50     0.10  6611820     0.00     0.00  CNSL_MakeColor
+  4.79      1.59     0.09  6186390     0.00     0.00  CNSL_SetPixel
+  3.72      1.66     0.07     5627     0.00     0.00  parm_insert_line
+  1.86      1.70     0.04  1331525     0.00     0.00  blank
+  1.60      1.73     0.03   491520     0.00     0.00  eq_cell
+  1.06      1.75     0.02   301283     0.00     0.00  column_address
+  1.06      1.77     0.02   288131     0.00     0.00  put_char
+  1.06      1.79     0.02   281978     0.00     0.00  eq_attributes
+  1.06      1.81     0.02   212715     0.00     0.00  ctermer_DrawCell
+
+I think it feels a little better, but still isn't perfect.
+
+Mon Jun 27 21:48:23 EDT 2011
+
+I'm not sure what to say. I think I'll keep these changes and try them out for
+a little bit. I don't think any of them are majorly onerous. Everything is
+well contained.
+
+Looking over the changes, I think they actually improve code clarity over what
+was there before. So I don't feel bad about committing them.
+
+This does force the other fonter bug issue though, so I'll have to fix that
+soon. I suppose that's a good thing.
+
+The plan then is to use the updated version for a while, see if scrolling
+still bothers me. I suspect it will, but maybe to a lesser extent. Maybe it's
+a good enough improvement for this release and I can try again for the next
+release? Who knows.
+

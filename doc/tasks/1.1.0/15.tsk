@@ -6,3 +6,13 @@ Task: fonter clips the bottom of g and y in termer
 Some work has already looked at this I feel. Who knows. Something about it
 not working for only some font sizes? I don't recall.
 
+Mon Jun 27 21:21:52 EDT 2011
+
+I changed how fonter draw glyph function is implemented, and I think I'm
+running into this problem again. It seems to be that FNTR_Height is returning
+a number smaller than some of the glyphs bitmap top+height are. I wonder why
+that is.
+
+I should print out the value of fonter->face->size->metrics.height and all the
+top and rows for each glyph printed and see if I can find out what's going on.
+

@@ -20,12 +20,37 @@ outputtertest = env.Program('outputtertest',
 env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET"))
 
 # termer
-termer_o = env.Object('termer.o', 'termer.c')
-
 termer = env.Program('termer',
-    [termer_o, 'ctermer.c', inputter_o, outputter_o, screen_o],
+    ['termer.c', 'ctermer.c', inputter_o, outputter_o, screen_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
 env.Default(termer)
+
+# A profiling version of termer
+env.Object('termer_prof.o', 'termer.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Object('ctermer_prof.o', 'ctermer.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Object('inputter_prof.o', 'inputter.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Object('outputter_prof.o', 'outputter.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Object('screen_prof.o', 'screen.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Program('termer_prof',
+    ['termer_prof.o', 'ctermer_prof.o', 'inputter_prof.o', 'outputter_prof.o', 'screen_prof.o'],
+    LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter_prof', 'consoler_prof'],
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage']
+    )
+env.Command('gmon.out', ['runbench.sh', 'benchshell.sh', 'termer.bench', 'termer_prof'],
+        "cd ${TARGET.dir} ; rm -f gmon.out *.gcda ../*/*.gcda ; ./${SOURCE.file}")
+env.Command('termer.prof', ['gmon.out', 'termer_prof'],
+        "cd ${SOURCE.dir} ; gprof termer_prof > ${TARGET.file}")
 
 env['PROGRAMDOC']('termer')
 env.Install("$PREFIX/bin", termer)

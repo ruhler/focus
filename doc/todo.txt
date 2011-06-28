@@ -27,7 +27,6 @@ unassigned
 - generated documentation should include copyright notice?
 - can I have a consoler version of firefox (27.tsk)
 - clean up and document scons files
-- get rid of src directory?
 - write tutorial for getting started with focus?
 - write development policy docs?
 

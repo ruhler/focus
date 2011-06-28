@@ -128,6 +128,20 @@ void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Co
     display.pixels[y*display.width + x] = color;
 }
 
+void CNSL_FillRect(CNSL_Display display, unsigned int x, unsigned int y, unsigned int w, unsigned int h, CNSL_Color color)
+{
+    CNSL_Color* top = display.pixels + y*display.width;
+    CNSL_Color* bottom = top + h*display.width;
+    CNSL_Color* row;
+    for (row = top; row < bottom; row += display.width) {
+        CNSL_Color* left = row + x;
+        CNSL_Color* right = left + w;
+        CNSL_Color* ptr = left + w;
+        for (ptr = left; ptr < right; ptr++) {
+            *ptr = color;
+        }
+    }
+}
 
 CNSL_Console stdcon = { STDIN_FILENO, STDOUT_FILENO };
 
