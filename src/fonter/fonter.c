@@ -72,8 +72,11 @@ FNTR_Fonter FNTR_Create(const char* fontname)
         return NULL;
     }
 
+    // Freetype says the metrics can be off by up to a pixel, and we have had
+    // trouble with the height in the past (see 1.1.0/15.tsk), so we'll add 1
+    // to it just to be safe.
     fonter->width = from26_6(fonter->face->size->metrics.max_advance);
-    fonter->height = from26_6(fonter->face->size->metrics.height);
+    fonter->height = 1+from26_6(fonter->face->size->metrics.height);
     fonter->ascender = from26_6(fonter->face->size->metrics.ascender);
 
     fonter->name = strdup(fontname);

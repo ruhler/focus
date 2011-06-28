@@ -16,3 +16,36 @@ that is.
 I should print out the value of fonter->face->size->metrics.height and all the
 top and rows for each glyph printed and see if I can find out what's going on.
 
+Mon Jun 27 21:57:03 EDT 2011
+
+Now I've started using the changed version of fonter, I need to fix this or
+I'll get very annoyed.
+
+Let me print out the metrics things and see what I see.
+
+I see:
+
+metrics.height = 7c0
+fonter->height = 31
+
+For most characters, top+height = 26
+For characters being clipped, top+height = 32
+
+Now, obviously 32 is bigger than 31.
+
+7c0 in 26.6 units is... 'b11111 = 31. So it would seem metrics.height is not
+giving me the info that I want.
+
+The freetype documentation says the metrics could be off by a pixel, as I'm
+seeing. So perhaps I should just add 1 to whatever the height I get is. Is
+there any other way?
+
+I don't see another metric I can use. Let me try adding 1 to metrics height
+and see what happens.
+
+Mon Jun 27 22:14:00 EDT 2011
+
+Looks like that fixed the issue. No more clipping of ys and gs. I'm happy with
+that fix for now. If the issue never comes up again, then we'll say we fixed
+it right and we can be satisfied.
+
