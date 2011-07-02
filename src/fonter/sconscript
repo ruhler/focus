@@ -15,11 +15,11 @@ env['CPPPATH'].append(Dir('.'))
 env['LIBPATH'].append(Dir('.'))
 
 fontertest = env.Program('fontertest', 'fontertest.c',
-        LIBS=['fontconfig', 'freetype', 'fonter', 'consoler'])
+        LIBS=['m', 'fontconfig', 'freetype', 'fonter', 'consoler'])
 Default(env.Command('fontertest.out', fontertest, "$SOURCES > $TARGET"))
 
 fonterexample = env.Program('fonterexample', 'fonterexample.c',
-        LIBS=['fontconfig', 'freetype', 'fonter', 'consoler'])
+        LIBS=['m', 'fontconfig', 'freetype', 'fonter', 'consoler'])
 Default(fonterexample)
 
 fonterpkgconfig = env.Substfile('fonter.pc', 'fonter.pc.in',

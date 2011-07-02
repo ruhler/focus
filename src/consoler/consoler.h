@@ -147,7 +147,7 @@ void CNSL_SetPixel(CNSL_Display display, unsigned int x, unsigned int y, CNSL_Co
 
 /// CNSL_FillRect - fill a rectangular area
 ///
-/// Fill a retangular region of the given display with a solid color.
+/// Fill a rectangular region of the given display with a solid color.
 ///
 /// It is undefined what happens if the rectangular area is outside the
 /// dimensions of the display.

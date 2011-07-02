@@ -34,29 +34,37 @@ int main(int argc, char* argv[])
     CNSL_Event event;
 
     setenv("CNSLSHELL", fillerpath, 1);
+    fprintf(stderr, "launching sgreen\n");
     CNSL_Client sgreen = CNSL_LaunchClient(sgreenpath, noargs);
 
     // Verify we can interact with filler as expected.
     // first recv display is from clearing the client display
     // second recv display is from filler starting up
+    fprintf(stderr, "first receive\n");
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    fprintf(stderr, "second receive\n");
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
-    printf("%x\n", CNSL_GetPixel(display, 20, 30));
+    fprintf(stderr, "%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0));
 
     event = CNSL_MakeKeypress(CNSLK_w);
+    fprintf(stderr, "sending w\n");
     CNSL_SendEvent(sgreen, event);
+    fprintf(stderr, "recieving\n");
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
-    printf("%x\n", CNSL_GetPixel(display, 20, 30));
+    fprintf(stderr, "%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
 
     event = CNSL_MakeKeypress(CNSLK_r);
+    fprintf(stderr, "sending r\n");
     CNSL_SendEvent(sgreen, event);
+    fprintf(stderr, "recieving\n");
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
-    printf("%x\n", CNSL_GetPixel(display, 20, 30));
+    fprintf(stderr, "%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 0, 0));
 
     event = CNSL_MakeKeypress(CNSLK_q);
+    fprintf(stderr, "sending q\n");
     CNSL_SendEvent(sgreen, event);
     return 0;
 }

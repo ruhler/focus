@@ -3,7 +3,8 @@
 
 Import('env')
 
-sgreen = env.Program('sgreen', 'sgreen.c', LIBS = ['pthread', 'consoler']);
+sgreen = env.Program('sgreen', ['sgreen.c', 'green.c'],
+        LIBS = ['pthread', 'consoler']);
 env.Default(sgreen);
 
 cgreen = env.Program('cgreen', 'cgreen.c');

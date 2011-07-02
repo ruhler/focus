@@ -1,0 +1,15 @@
+
+Fri Jul  1 19:35:42 EDT 2011
+
+Task: termer strands artifacts sometimes
+
+Like when I first start screen, sometimes little white dots are left after the
+opening notice.
+
+And now on pacific in vim, I see if I write a 'w', then do an with the cursor
+on that w, and type some stuff, it leaves a long trail of messed up.
+
+I somehow suspect fonter width precision issues are at play. See the task for
+1.1.0 on g and y being clipped (15.tsk).
+
+

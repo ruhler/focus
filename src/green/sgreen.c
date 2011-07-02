@@ -27,121 +27,63 @@
 #include <pthread.h>
 
 #include "consoler.h"
+#include "green.h"
 
-#define MAX_WINDOWS 10
 #define UNIX_PATH_MAX    108
 
-typedef struct {
-    bool valid;
-    CNSL_Client client;
-    CNSL_Display display;
-} ClientInfo;
+GRN_Green green;
 
-// Displays for each window.
-ClientInfo g_clients[MAX_WINDOWS];
-
-// The currently active window.
-int g_curwin;
-bool done = false;
-
-// switch to the given window.
-// Does nothing if that window is not valid.
-void switch_to_window(int windowid)
+// Handle a client.
+//  - adds it to the green object
+//  - allocates a display for it
+//  - receives and deals with display updates
+//  - detects when client closes, and removes from green object.
+void handle_client(CNSL_Client client)
 {
-    if (g_clients[windowid].valid) {
-        g_curwin = windowid;
-        CNSL_Display b = g_clients[windowid].display;
-        CNSL_SendDisplay(stdcon, b, 0, 0, 0, 0, b.width, b.height);
-    }
-}
+    int width = 640;
+    int height = 480;
+    CNSL_GetGeometry(&width, &height);
 
-// Handle output 
-// Input is pointer to integer specifying which output to handle.
-// That pointer will be freed by this function, so make sure it's been
-// malloced to begin with.
-void* handle_output(void* vwid)
-{
-    int id = *(int*)vwid;
-    free(vwid);
+    CNSL_Display display = CNSL_AllocDisplay(width, height);
+    CNSL_FillRect(display, 0, 0, width, height, CNSL_MakeColor(0, 0, 0));
 
-    assert(g_clients[id].valid && "tried to handle output of invalid client");
-
-    CNSL_Client client = g_clients[id].client;
-    CNSL_Display display = g_clients[id].display;
+    client_id id = GRN_AddClient(green, client);
+    GRN_SendDisplay(green, id, display, 0, 0, 0, 0, width, height);
+    GRN_ChangeCurrent(green, id);
 
     int x, y, w, h;
     bool recved = CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
     while (recved) {
-        if (id == g_curwin) {
-            CNSL_SendDisplay(stdcon, display, x, y, x, y, w, h);
-        }
+        GRN_SendDisplay(green, id, display, x, y, x, y, w, h);
         recved = CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
     }
 
-    g_clients[id].valid = false;
-
-    CNSL_CloseClient(client);
+    GRN_RemoveClient(green, id);
     CNSL_FreeDisplay(display);
+    CNSL_CloseClient(client);
+}
 
-    if (id == g_curwin) {
-        int i;
-        for (i = 0; i < MAX_WINDOWS; i++) {
-            if (g_clients[i].valid) {
-                switch_to_window(i);
-                return;
-            }
-        }
-
-        // we are out of clients. Time to stop.
-        done = true;
-    }
-
+// wrapper around handle_client for pthreads.
+// ud should be a pointer to a malloced client.
+void* handle_client_thread(void* ud)
+{
+    CNSL_Client* client = (CNSL_Client*)ud;
+    handle_client(*client);
+    free(client);
     return NULL;
 }
 
-void new_client(CNSL_Client client)
+// Yet another wrapper (I love pthreads) around handle_client.
+// This one launches a handle_client thread.
+void handle_client_create(CNSL_Client client)
 {
-    int id = -1;
-    int i;
-    for (i = 0; i < MAX_WINDOWS; i++) {
-        if (!g_clients[i].valid) {
-            id = i;
-            break;
-        }
-    }
-
-    if (id == -1) {
-        fprintf(stderr, "exceeded max clients\n");
-        return;
-    }
-
-    g_clients[id].valid = true;
-    g_clients[id].client = client;
-
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
-    g_clients[id].display = CNSL_AllocDisplay(width, height);
-
-    // clear the display
-    int x, y;
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            CNSL_SetPixel(g_clients[id].display, x, y, CNSL_MakeColor(0, 0, 0));
-        }
-    }
-
-    switch_to_window(id);
-
-    // Spawn the thread to handle output from this client.
+    CNSL_Client* ptr = malloc(sizeof(CNSL_Client));
+    *ptr = client;
     pthread_t thread;
-    int* vid = (int*)malloc(sizeof(int));
-    assert(vid && "malloc failed");
-    *vid = id;
-    pthread_create(&thread, NULL, &handle_output, (void*)vid);
+    pthread_create(&thread, NULL, &handle_client_thread, (void*)ptr);
 }
 
-void new_shellclient()
+void shell_client_create()
 {
     char* shellclient = getenv("CNSLSHELL");
     if (!shellclient) {
@@ -150,15 +92,16 @@ void new_shellclient()
 
     char* argv[] = {shellclient, NULL};
     CNSL_Client client = CNSL_LaunchClient(shellclient, argv);
-    new_client(client);
+    handle_client_create(client);
 }
 
+// Start a server and return the file descriptor for it if successful,
+// otherwise -1.
 int start_server(const char* socketname)
 {
     int lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (lsfd < 0) {
         perror("socket");
-        done = true;
         return -1;
     }
 
@@ -173,35 +116,32 @@ int start_server(const char* socketname)
 
     if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {
         perror("bind");
-        done = true;
         return -1;
     }
 
     if (listen(lsfd, 3) < 0) {
         perror("listen");
-        done = true;
         return -1;
     }
     return lsfd;
 } 
 
-void* serve_clients(int* lsfdp)
+void* serve_clients_thread(void* lsfdp)
 {
-    int lsfd = *lsfdp;
+    int lsfd = *((int*)lsfdp);
     while (1) {
         struct sockaddr_un paddr;
         socklen_t paddr_size;
         int pfd = accept(lsfd, (struct sockaddr*) &paddr, &paddr_size);
         if (pfd < 0) {
             perror("accept");
-            done = true;
-            return NULL;
+            continue;
         }
 
         CNSL_Client client;
         client.fdout = pfd;
         client.fdin = pfd;
-        new_client(client);
+        handle_client_create(client);
     }
 
     return NULL;
@@ -212,7 +152,9 @@ void handle_input()
     CNSL_Event event;
     bool ctrlon = false;
     bool commandpending = false;
-    while (!done) {
+    bool started = false;
+    while (!started || GRN_HasClients(green)) {
+        started = true;
         event = CNSL_RecvEvent(stdcon);
         int sym;
 
@@ -224,23 +166,19 @@ void handle_input()
             ctrlon = false;
         }
 
-        // (for now: number keys choose the window)
         if (ctrlon && CNSL_IsKeypress(event, &sym) && sym == CNSLK_QUOTE) {
             // This is a control sequence. Mark it.
             commandpending = true;
         } else if (commandpending && CNSL_IsKeypress(event, &sym)) {
             if (sym >= CNSLK_0 && sym <= CNSLK_9) {
-                switch_to_window(sym - CNSLK_0);
+                GRN_ChangeCurrent(green, sym - CNSLK_0);
             } else if (sym == CNSLK_c) {
-                new_shellclient();
+                shell_client_create();
             }
 
             commandpending = false;
         } else {
-            // Forward the event to the current window
-            if (g_clients[g_curwin].valid) {
-                CNSL_SendEvent(g_clients[g_curwin].client, event);
-            }
+            GRN_SendEvent(green, event);
         }
     }
 }
@@ -269,12 +207,7 @@ int main(int argc, char* argv[])
         socketname = argv[2];
     }
 
-    int i;
-    for (i = 0; i < MAX_WINDOWS; i++) {
-        g_clients[i].valid = false;
-    }
-    g_curwin = 0;
-
+    green = GRN_CreateGreen();
 
     int lsfd = start_server(socketname);
     if (lsfd < 0) {
@@ -282,9 +215,9 @@ int main(int argc, char* argv[])
     }
 
     pthread_t scthread;
-    pthread_create(&scthread, NULL, (void* (*)(void*))&serve_clients, &lsfd);
+    pthread_create(&scthread, NULL, (void* (*)(void*))&serve_clients_thread, &lsfd);
 
-    new_shellclient();
+    shell_client_create();
     handle_input();
 
     unlink(getenv("GREENSVR"));

@@ -46,7 +46,7 @@ def generate(env):
             suffix = ".html", src_suffix = ".txt")
 
     manbld = Builder(
-            action = "a2x -f manpage -D ${TARGET.dir} ${ASCIIDOCFLAGS} $SOURCE",
+            action = "a2x -v -f manpage -D ${TARGET.dir} ${ASCIIDOCFLAGS} $SOURCE",
             src_suffix = ".txt")
 
     env.Append(SCANNERS = asciidocscan)

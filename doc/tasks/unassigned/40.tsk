@@ -1,0 +1,14 @@
+
+Fri Jul  1 15:52:41 EDT 2011
+
+Task: General purpose image viewer
+
+I need a gif viewer.
+
+Why don't I instead just expand pnger to be a general purpose image viewer?
+
+Any (raster) image viewer will have the same interface, right? I could have an
+image viewer library or... I don't know.
+
+Or maybe just a gif viewer.
+
