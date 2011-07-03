@@ -63,9 +63,65 @@ int main(int argc, char* argv[])
     fprintf(stderr, "%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 0, 0));
 
-    event = CNSL_MakeKeypress(CNSLK_q);
-    fprintf(stderr, "sending q\n");
-    CNSL_SendEvent(sgreen, event);
+    // Launch another filler using ctrl-' c
+    // Screen should go black
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_RCTRL));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_QUOTE));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_RCTRL));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_QUOTE));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_c));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_c));
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0));
+
+    // Send 'b' command to filler
+    // screen should go blue
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_b));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_b));
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0xff));
+
+    // Switching back to window 0, screen should go back to red
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_RCTRL));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_QUOTE));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_RCTRL));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_QUOTE));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_0));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_0));
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0xff, 0, 0));
+
+    // TODO:
+    //   ctrl-' o 1 (blue)
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_RCTRL));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_QUOTE));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_RCTRL));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_QUOTE));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_o));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_o));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_1));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_1));
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0xff));
+
+    // i g (green)
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_i));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_i));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_g));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_g));
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    fprintf(stderr, "%08x\n", CNSL_GetPixel(display, 20, 30));
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0xff, 0));
+
+    // q (red)
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_q));
+    CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_q));
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0xff, 0, 0));
+
+    // q
+    CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_q));
     return 0;
 }
 

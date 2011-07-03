@@ -6,7 +6,7 @@ List of pending issues.
 - may be memory leak in pdfer
 - add rotate command to pdfer
 - shift-tab same as tab in termer?
-- add split to screen
+- add split to screen (42.tsk)
 - review install and release targets (37.tsk)
 - release 1.1.0 (33.tsk)
 
@@ -27,4 +27,5 @@ unassigned
 - get rid of FNTR_GlyphLevel function?
 - general purpose image viewer (40.tsk)
 - termer strands artifacts sometimes (41.tsk)
+- sgreen doesn't always clean up sockets
 

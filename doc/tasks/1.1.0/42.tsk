@@ -1,0 +1,401 @@
+
+Fri Jul  1 22:58:44 EDT 2011
+
+Task: add split to screen
+
+Now I've cleaned up screen some, it's time to think about how to implement
+splitting. This is a pretty desireable feature, mostly so you can read
+information from one window and write it into another at the same time.
+
+We'll limit splitting to one spilt. So at most you can see two clients at
+once. I think that's plenty.
+
+Obviously you want to be able to not split too.
+
+First task is to figure out the usage.
+
+sgreen starts single client. It should have a split command. I think ctrl-' s.
+
+When you call split, it splits the screen in half. It should probably put some
+sort of divider line between them, but I'll not worry about that for now.
+Focus will belong to one of the windows.
+
+Within a window you can still do changing. So changing windows changes the
+primary window, not the secondary.
+
+We need some way to switch which window has focus. The window with focus isn't
+necessarily the "primary" window. Umm... not sure what primary means.
+
+We have top/bottom, and focus/unfocus. Those may be different.
+
+Should it be allowed for both windows to have the same client? Sure. I don't
+see how it's useful, but there's no reason to disallow it.
+
+    ctrl-' s    - split
+    ctrl-' q    - unsplit and switch to focus client
+    ctrl-' tab  - switch focus to other client
+
+What window is opened when you split? How about, try to find some window other
+than what's there, if that fails use what's there. Sounds reasonable to me. I
+don't see a need for a blank client like screen has.
+
+Cool. So I think the usage is clear. What's next?
+
+How will I implement this? I think we can do all of it in the green (aside
+from interpreting the new commands). The client handler doesn't need to know.
+
+So add to green the following:
+    GRN_Split
+    GRN_Unsplit
+
+The green object should have the notion of state as:
+
+    single current
+    split top bottom
+
+So it knows if it's split or not, and if split it knows the top and bottom
+windows. I guess it also has to know which window has focus, top or bottom,
+when in split mode.
+
+How do things work then?
+
+Sending an event sends to the focus window. That's easy.
+
+Sending a display...
+
+So we have to get to the last thing to work out. Window resizing. This could
+complicate things.
+
+I think we do want to resize the window. Or at least allow the client to learn
+about a window resize. But I hate that clients will have to be updated to
+handle this. I wish clients didn't have to be updated for this.
+
+Termer will have to figure out how to change the number of lines dynamically.
+Pdfer should resize its view. What about filler and boxer? Do they have to
+know about the resize too? Does everyone who writes a client application have
+to know how to handle resize events to make it useable?
+
+That's sort of a violation of modularity I think. You shouldn't have to know
+about those things. But if you do know, you should be able to take advantage
+of it...
+
+How could I support that? Well, the way to tell clients about the window
+resize is simple. Have a client resize event. Easy. You send a resize event,
+then sgreen only displays that part of the display on the window. Anything a
+client sends outside of that is just plain not seen.
+
+This won't work for termer by default, because you'll probably want to be
+writing to the bottom, not the top.
+
+What do you think about this. Let's have a way in sgreen to scroll the window.
+Um. This is starting to make me think of pdfer, because pdfer has a lot of
+these capabilities. A way to move a view around a larger content area.
+
+We could have commands in sgreen to
+ - scroll up, down, left, right of varying magnitudes
+ - go to the top or bottom of the window. (or left or right?)
+        
+That's all you need, right?
+
+Because I think I only need horizontal split, no need to be able to scroll
+left and right. Then I would propose the following additional commands:
+
+  ctrl-' j  scroll down
+  ctrl-' J  scroll down a lot
+  ctrl-' ctrl-j  scroll down a little
+
+  ctrl-' k  scroll up
+  ctrl-' K  scroll up a lot
+  ctrl-' ctrl-k  scroll up a little
+
+  ctrl-' t  go to the top of the window
+  ctrl-' b  go to the bottom of the window
+
+Then you could easily scroll to where ever it is you want to see. For termer
+scroll to the bottom (though it still will have problems).
+
+Err... I don't know. I must admit to some skepticism.
+
+I feel like it won't make sense if your applications don't support resize. I
+feel like it will be a terrible pain to scroll, because you have to keep
+pressing ctrl-' before the character.
+
+What about making it modal? Maybe I can have a key combination to enter insert
+mode and leave insert mode. Then scrolling would be easy. You could make
+switching windows easy that way too. It's a thought.
+
+So, I guess the thing to decide is how to handle this resize event, and if the
+clients are forced to handle them. Once I decide that, implementing the thing
+should be easy. The harder part will be implementing support for a resize
+event in the client...
+
+I'll let you know if I come up with anything.
+
+Fri Jul  1 23:46:41 EDT 2011
+
+Okay! I think I've figured it out.
+
+We should definately have a modal sgreen scrollable thing. Think of pnger for
+example. It might take up more of the screen than fits in the window, in which
+case it would be great if you could scroll. Then this same thing can be used
+to handle resizing of clients which don't handle resizing.
+
+Hmm... There's just one issue. How does sgreen know how big a display the
+client wants? Currently it just keeps track of the those pixels the client
+sends that fit in the CNSLWIDTH by CNSLHEIGHT window.
+
+Anyway, let's assume I solve that. Then we have a model sgreen. It should have
+two modes, insert and normal. In insert everything goes to the client.
+Probably we want to spend most of our time in insert mode (so pick a better
+name for normal mode.)
+
+In insert you can do
+    ctrl-' space - enter normal mode
+    ctrl-' X    - execute normal mode command X
+
+    Commands:
+        0-9 - go to that window
+        c - create a window
+        s - split
+        q - unsplit
+        i - enter insert mode
+
+    And we can continue to add things.
+
+I like this idea! It's cool.
+
+Well then. This raises questions. What is the next thing I should do?
+
+Options:
+ - switch to modal architecture
+ - figure out how to discover client window size
+ - add scrolling commands
+ - add split command
+
+After all that, then I have to implement resize support in termer at least,
+and probably pdfer too. perhaps boxer as well.
+
+I'm thinking maybe I should spawn other tasks off for some of these.
+
+I guess all these things are easy except for discovery of window size, so let
+me think about that a little.
+
+I wonder if you can assume the first time a client updates the display it will
+update the entire display. If that's the case, you could wait to allocate the
+display after the first display is received using those sizes. That's easy
+enough, right?
+
+Should we make it a rule? A convention? That the first time you update the
+display you have to update the whole thing? That it sets the size?
+
+It does complicate things just a little in sgreen, but not much. The question
+is, is there ever a time when the first display update a client sends is not
+of the whole display?
+
+Well, currently boxer is like that. It only draws the box. But that's rather
+bad form, don't you think? Drawing to an initialized display?
+
+I'll have to think about it a little more, but here's what my current thoughts
+are. This is not an unreasonable thing to do. Have a convention that the first
+time you SendDisplay, you should send the whole display. Then servers can use
+that if they wish, or they can ignore it, or whatever. Okay?
+
+Good. Battery is running a little on the low side, and I need to do a little
+more thinking anyway, so I think I'll call it a day on this.
+
+Good thoughts.
+
+Sat Jul  2 12:49:10 EDT 2011
+
+So I need to work out what I want to do. The issue is this: the client and
+server may both have different display sizes. That's acceptable, but they also
+both may want to change their display size, and the other end might want to
+know about it.
+
+For example:
+ - most clients want to know screen size when they start
+ - screen split: server changes, client may want to know
+ - pnger next png: client changes, server may want to know
+
+Then there's the question of whether you want to read the geometry from the
+other side, or be interrupted with a geometry change from the other side.
+
+Here are some ways this could work:
+ - client reads from CNSLXXX env vars
+    This is how we currently do it. Doesn't allow a change in size dynamically.
+ - server could send size change event to client
+    Then client could do something. Or client could save it. Maybe client
+    could update CNSLXXX so it can read it later too if it wants?
+ - client could send screen dimensions with display updates
+    Either as an explicit field, or an implicitly as the update dimensions
+    after size change events?
+ - client could send an explicit size change back to the server.
+
+Let me look at one side of it first.
+
+server -> client.
+
+I think sending a resize event is a fine way to tell the client about the
+size. Then the client can store that and read it if it wants.
+
+The only problem is, what size does the client use before the first resize
+event? Should it make something up? Use the CNSLXXX environment variables?
+Assume a resize event will be sent first thing and wait for it? I would rather
+avoid requirements about when events are sent, because it makes it much harder
+to understand things.
+
+Well, I think it's clear. Have CNSLXXX for the first geometry from server to
+client, then resize events for all the rest? But should the server send the
+first size event? Err...
+
+From the client side it's the same sort of thing. I think sending an initial
+display which is full makes sense. Hm... I don't know. Needs more thought.
+
+Sat Jul  2 17:14:33 EDT 2011
+
+I think I've come across the important point which will let me go forward.
+It's this.
+
+If a client wants to know what the server's screen size is when the client
+starts, then the client will also want to know of any server screen size
+changes and handle those. This means I expect no (well written) client would
+want to use the environment variables to get the initial size which wouldn't
+also implement support for a resize event.
+
+Of course, applications are free to ignore resize events if they want, and
+just use their own size event.
+
+So I think the server to client screen size thing is very clear. Get rid of
+the environment variable CNSLHEIGHT and CNSLWIDTH, and introduce a
+ScreenResize event. It's a simple event, just conveying the width and height
+of the new server screen.
+
+How should clients handle this? I don't know. I'll see what happens when I go
+to implement. I think default to an acceptable standard size window (if zero
+is acceptable, that might save extra allocation), then handle the first screen
+resize event like any other resize event.
+
+Cool. That seems to solve that problem. It will take a bit of work rewriting
+things, and I'll perhaps want to depricate the SetGeometry and GetGeometry,
+which means I'll document them as depricated, stop using them, and when I
+switch to release 2.0.0 I'll remove them.
+
+The next question will be how the client can tell the server about a resize.
+My idea is we'll want an event like thing going from client to server just
+like we currently have from server to client. So you can have a resize event,
+and you can have a display update event from the client. This seems like a
+pretty big change in things, so maybe I'll want to punt it to a later release.
+
+But somehow the server needs to know the size. I suppose for now we can have
+it just be the first dimensions of the first display update.
+
+How would an event thing work? Well, it could work just like they do from
+server to client. And that would be fine I think. The thing is, display update
+events can be large. How do you handle those? Does the server need to supply a
+display to the RecvClientEvent function? Or is the display update event just a
+header, and then you have to call another function to get the rest of the
+display? Is that yet another copy of pixels I have to make?
+
+Sigh. I suppose I've got more thinking to do then. I'll get to it. But good
+progress. I'm getting closer I think.
+
+Sun Jul  3 11:29:38 EDT 2011
+
+The only problem comes in here when I worry about performance. If performance
+doesn't matter, it's easy. We have a RecvClientEvent like think function which
+will block until a complete resize or display update event shows up. Then you
+have functions to deconstruct those, where you can copy the sent display to
+your own display.
+
+The client structure should maybe be extended to include a display, or maybe
+just a big array of pixels (if I really care about performance) to hold the
+updated display in between the time you recieve the event and the time you
+deconstruct it.
+
+What are the performance consequences of this? For sgreen, none. It just moves
+the extra buffering we had from the application to the library. For sdlcsr,
+this introduces an extra level of copying to update the display.
+
+I do notice now when I run ps that sgreen seems to use twice the cpu as
+sdlcsr. I wonder if it's because of this copying thing? And if I switch sdlcsr
+over to the same thing, will it take twice as much cpu?
+
+Anyway, if performance turns out to be a real problem, then I can introduce
+some lower level commands to optimize it. We could have one big recieve and
+deconstruct function.
+
+There. Satisfied? Yes. I think it's clear how I want to send size info from
+client to server. Now this change is a compatibility change, because recieve
+display will go away and other things will change. That means it should go
+into 2.0.0. Let me punt that change until 2.0.0.
+
+For this release, 1.1.0, I can just not support dynamic resizing of client
+displays from the servers point of view, and assume the original client
+display size is sent as the dimensions to the first display update sent from
+client to server.
+
+
+There you have it then. All the thoughts needed to start implementing stuff.
+Let me summarize the plan for this release (1.1.0):
+
+- clients should update whole screen for first update they send
+- add a ResizeEvent which server calls when screen size changes
+- stop using CNSL_GetGeometry and CNSL_SetGeometry
+- clients interested in screen size should handle resize event
+    boxer, filler, termer, pdfer, sgreen
+- sgreen should be made modal
+    with commands for scrolling added
+
+For next release (2.0.0):
+- remove CNSL_GetGeometry and CNSL_SetGeometry
+- distinguish between ClientEvent and ServerEvent (ConsoleEvent?)
+- replace RecvDisplay with new RecvClientEvent and client event deconstruction
+
+Okay? Sure. But what should I implement next?
+
+To make sure I haven't left out something important, I think best thing to
+implement next would be splitting and scrolling in sgreen, even before the
+clients know how to handle resize events.
+
+How about this list:
+ + implement sgreen modality
+    I can test by switching between windows, going in and out of insert mode.
+ - implement scrolling sgreen commands
+ - implement sgreen split command
+    After this, split should be usable.
+ - add resize event
+ - support resize event for each component which needs to.
+
+And that's it. That all should easily suffice for the green part of this
+release.
+
+First step is modality. Commands are
+  sgreen mode:
+    0-9 switch window
+    i   go to insert mode
+    o   go to sgreen mode
+    c   create a window
+  insert mode:
+    ctrl-' <cmd>    execute sgreen command cmd.
+
+Sun Jul  3 15:15:16 EDT 2011
+
+I implemented the modality thing with just a few lines of code changed. How
+should I test it? Not sure. Maybe I should just wait until there's a problem
+and figure out a test for that. Or, I suppose I could do:
+    ctrl-' o
+    0           should go to window 0
+    1           should go to window 1
+    i
+    w           should color window 1 white or some such.
+Yes, that would be a reasonable basic test.
+
+Sun Jul  3 17:45:30 EDT 2011
+
+I wrote up the test case. After fixing filler so it didn't gratuitously update
+the screen, the test passes.
+
+So now we have a modal sgreen.
+
+Next step is scrolling.
+

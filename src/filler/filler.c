@@ -20,6 +20,12 @@
 
 #include "consoler.h"
 
+void fill(CNSL_Display display, CNSL_Color color)
+{
+    CNSL_FillRect(display, 0, 0, display.width, display.height, color);
+    CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, display.width, display.height);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
@@ -56,18 +62,10 @@ int main(int argc, char* argv[])
     CNSL_Color purple = CNSL_MakeColor(255, 0, 255);
     CNSL_Color white = CNSL_MakeColor(255, 255, 255);
 
-    CNSL_Color color = black;
+    fill(display, black);
 
     while (!done) {
         int x, y;
-
-        // Fill the screen with the current color.
-        for (y = 0; y < height; y++) {
-            for (x = 0; x < width; x++) {
-                CNSL_SetPixel(display, x, y, color);
-            }
-        }
-        CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
         // Get the next color.
         event = CNSL_RecvEvent(stdcon);
@@ -75,14 +73,14 @@ int main(int argc, char* argv[])
             done = true;
         } else if (CNSL_IsKeypress(event, &sym)) {
             switch (sym) {
-                case CNSLK_r: color = red; break;
-                case CNSLK_g: color = green; break;
-                case CNSLK_b: color = blue; break;
-                case CNSLK_c: color = cyan; break;
-                case CNSLK_y: color = yellow; break;
-                case CNSLK_p: color = purple; break;
-                case CNSLK_w: color = white; break;
-                case CNSLK_n: color = black; break;
+                case CNSLK_r: fill(display, red); break;
+                case CNSLK_g: fill(display, green); break;
+                case CNSLK_b: fill(display, blue); break;
+                case CNSLK_c: fill(display, cyan); break;
+                case CNSLK_y: fill(display, yellow); break;
+                case CNSLK_p: fill(display, purple); break;
+                case CNSLK_w: fill(display, white); break;
+                case CNSLK_n: fill(display, black); break;
                 case CNSLK_q: done = true; break;
             }
         }

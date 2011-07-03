@@ -153,6 +153,7 @@ void handle_input()
     bool ctrlon = false;
     bool commandpending = false;
     bool started = false;
+    bool insert = true;
     while (!started || GRN_HasClients(green)) {
         started = true;
         event = CNSL_RecvEvent(stdcon);
@@ -166,18 +167,22 @@ void handle_input()
             ctrlon = false;
         }
 
-        if (ctrlon && CNSL_IsKeypress(event, &sym) && sym == CNSLK_QUOTE) {
+        if (insert && ctrlon && CNSL_IsKeypress(event, &sym) && sym == CNSLK_QUOTE) {
             // This is a control sequence. Mark it.
             commandpending = true;
-        } else if (commandpending && CNSL_IsKeypress(event, &sym)) {
+        } else if ((!insert || commandpending) && CNSL_IsKeypress(event, &sym)) {
             if (sym >= CNSLK_0 && sym <= CNSLK_9) {
                 GRN_ChangeCurrent(green, sym - CNSLK_0);
             } else if (sym == CNSLK_c) {
                 shell_client_create();
+            } else if (sym == CNSLK_i) {
+                insert = true;
+            } else if (sym == CNSLK_o) {
+                insert = false;
             }
 
             commandpending = false;
-        } else {
+        } else if (insert) {
             GRN_SendEvent(green, event);
         }
     }
