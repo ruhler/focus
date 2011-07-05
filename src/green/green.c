@@ -32,7 +32,82 @@ void unlock(GRN_Green green)
     pthread_mutex_unlock(&green->mutex);
 }
 
-GRN_Green GRN_CreateGreen()
+// Show the given client.
+// It is expected this client is newly shown. This will send a resize event to
+// the client if needed, and update the display appropriately given the
+// current single/split state.
+// Requires locking in the caller.
+void ShowClientRL(GRN_Green green, client_id id)
+{
+    if (green->mode == GRN_MODE_SINGLE) {
+        if (id == green->current[GRN_FOCUS_TOP]) {
+            if (green->clients[id].width != green->width || green->clients[id].height != green->height) {
+                CNSL_SendEvent(green->clients[id].client, CNSL_MakeResize(green->width, green->height));
+                green->clients[id].width = green->width;
+                green->clients[id].height = green->height;
+            }
+
+            CNSL_Display display = green->clients[id].display;
+            CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, green->width, green->height);
+        }
+    } else if (green->current[GRN_FOCUS_TOP] == id) {
+        if (green->clients[id].width != green->width || green->clients[id].height != green->height/2) {
+            CNSL_SendEvent(green->clients[id].client, CNSL_MakeResize(green->width, green->height/2));
+            green->clients[id].width = green->width;
+            green->clients[id].height = green->height/2;
+        }
+
+        CNSL_Display display = green->clients[id].display;
+        CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, green->width, green->height/2);
+    } else if (green->current[GRN_FOCUS_BOTTOM] == id) {
+        if (green->clients[id].width != green->width || green->clients[id].height != green->height/2) {
+            CNSL_SendEvent(green->clients[id].client, CNSL_MakeResize(green->width, green->height/2));
+            green->clients[id].width = green->width;
+            green->clients[id].height = green->height/2;
+        }
+
+        CNSL_Display display = green->clients[id].display;
+        CNSL_SendDisplay(stdcon, display, 0, 0, 0, green->height/2, green->width, green->height/2);
+    }
+}
+
+
+// Find and display clients to display in the window if needed.
+// This will check if the current displays are valid and do the appropriate
+// thing.
+// Requires locking in the caller.
+void ChooseClientsRL(GRN_Green green)
+{
+    client_id ti = green->current[GRN_FOCUS_TOP];
+    if (ti == -1 || !green->clients[ti].valid) {
+        green->current[GRN_FOCUS_TOP] = -1;
+        client_id i;
+        for (i = 0; i < MAX_NUM_CLIENTS; i++) {
+            if (green->clients[i].valid) {
+                green->current[GRN_FOCUS_TOP] = i;
+                ShowClientRL(green, i);
+                break;
+            }
+        }
+    }
+
+    if (green->mode == GRN_MODE_SPLIT) {
+        client_id bi = green->current[GRN_FOCUS_BOTTOM];
+        if (bi == -1 || !green->clients[bi].valid) {
+            green->current[GRN_FOCUS_BOTTOM] = -1;
+            client_id i;
+            for (i = 0; i < MAX_NUM_CLIENTS; i++) {
+                if (green->clients[i].valid) {
+                    green->current[GRN_FOCUS_BOTTOM] = i;
+                    ShowClientRL(green, i);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+GRN_Green GRN_CreateGreen(int width, int height)
 {
     GRN_Green green = malloc(sizeof(GRN_Green_));
     if (!green) {
@@ -43,7 +118,12 @@ GRN_Green GRN_CreateGreen()
     for (i = 0; i < MAX_NUM_CLIENTS; i++) {
         green->clients[i].valid = false;
     }
-    green->current = -1;
+    green->current[GRN_FOCUS_TOP] = -1;
+    green->current[GRN_FOCUS_BOTTOM] = -1;
+    green->mode = GRN_MODE_SINGLE;
+    green->focus = GRN_FOCUS_TOP;
+    green->width = width;
+    green->height = height;
     pthread_mutex_init(&green->mutex, NULL);
 
     return green;
@@ -67,11 +147,10 @@ void GRN_FreeGreen(GRN_Green green)
 
 client_id GRN_AddClient(GRN_Green green, CNSL_Client client)
 {
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
-
     lock(green);
+
+    int width = green->width;
+    int height = green->height;
 
     client_id found = -1;
     client_id i;
@@ -79,6 +158,8 @@ client_id GRN_AddClient(GRN_Green green, CNSL_Client client)
         if (!green->clients[i].valid) {
             green->clients[i].client = client;
             green->clients[i].display = CNSL_AllocDisplay(width, height);
+            green->clients[i].width = 0;
+            green->clients[i].height = 0;
             green->clients[i].valid = true;
             found = i;
             break;
@@ -98,20 +179,7 @@ void GRN_RemoveClient(GRN_Green green, client_id client)
         green->clients[client].valid = false;
     }
 
-    // If this was the current client, we switch to a different current client
-    // if possible.
-    if (green->current == client) {
-        green->current = -1;
-        client_id i;
-        for (i = 0; i < MAX_NUM_CLIENTS; i++) {
-            if (green->clients[i].valid) {
-                green->current = i;
-                CNSL_Display d = green->clients[i].display;
-                CNSL_SendDisplay(stdcon, d, 0, 0, 0, 0, d.width, d.height);
-                break;
-            }
-        }
-    }
+    ChooseClientsRL(green);
 
     unlock(green);
 }
@@ -138,9 +206,45 @@ void GRN_ChangeCurrent(GRN_Green green, client_id which)
     lock(green);
 
     if (green->clients[which].valid) {
-        green->current = which;
-        CNSL_Display d = green->clients[which].display;
-        CNSL_SendDisplay(stdcon, d, 0, 0, 0, 0, d.width, d.height);
+        green->current[green->focus] = which;
+        ShowClientRL(green, which);
+    }
+
+    unlock(green);
+}
+
+void GRN_Split(GRN_Green green)
+{
+    lock(green);
+
+    if (green->mode != GRN_MODE_SPLIT) {
+        green->mode = GRN_MODE_SPLIT;
+        ChooseClientsRL(green);
+    }
+
+    unlock(green);
+}
+
+void GRN_Unsplit(GRN_Green green)
+{
+    lock(green);
+
+    if (green->mode != GRN_MODE_SINGLE) {
+        green->mode = GRN_MODE_SINGLE;
+        green->focus = GRN_FOCUS_TOP;
+        green->current[GRN_FOCUS_BOTTOM] = -1;
+        ShowClientRL(green, green->current[GRN_FOCUS_TOP]);
+    }
+
+    unlock(green);
+}
+
+void GRN_SetFocus(GRN_Green green, GRN_Focus focus)
+{
+    lock(green);
+
+    if (green->mode == GRN_MODE_SPLIT) {
+        green->focus = focus;
     }
 
     unlock(green);
@@ -150,8 +254,8 @@ void GRN_SendEvent(GRN_Green green, CNSL_Event event)
 {
     lock(green);
 
-    client_id i = green->current;
-    if (green->clients[i].valid) {
+    client_id i = green->current[green->focus];
+    if (i != -1 && green->clients[i].valid) {
         CNSL_SendEvent(green->clients[i].client, event);
     }
 
@@ -174,8 +278,13 @@ void GRN_SendDisplay(GRN_Green green, client_id client, CNSL_Display display,
             }
         }
         
-        if (green->current == client) {
+        // TODO: make sure we don't go off the bottom of the screen.
+        if (green->mode == GRN_MODE_SINGLE && green->current[GRN_FOCUS_TOP] == client) {
             CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty, width, height);
+        } else if (green->mode == GRN_MODE_SPLIT && green->current[GRN_FOCUS_TOP] == client) {
+            CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty, width, height);
+        } else if (green->mode == GRN_MODE_SPLIT && green->current[GRN_FOCUS_BOTTOM] == client) {
+            CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty + green->height/2, width, height);
         }
     }
 

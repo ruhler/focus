@@ -33,8 +33,6 @@
 #include "ctermer.h"
 
 typedef struct {
-    // The most recently gotten event.
-    CNSL_Event event;
     CNSL_Display display;
 
     FNTR_Fonter fonter;
@@ -124,21 +122,6 @@ int ctermer_Init(int* cols, int* lines)
 
 void ctermer_DeInit()
 {
-}
-
-void ctermer_EventGet()
-{
-    gstate.event = CNSL_RecvEvent(stdcon);
-}
-
-int ctermer_EventType()
-{
-    return gstate.event.type;
-}
-
-int ctermer_EventValue()
-{
-    return gstate.event.value;
 }
 
 void ctermer_ToTermClient(char c)

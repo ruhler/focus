@@ -32,12 +32,13 @@ const char* CNSL_Version()
 #define CNSLE_KEYPRESS 0
 #define CNSLE_KEYRELEASE 1
 #define CNSLE_QUIT 2
+#define CNSLE_RESIZE 3
 
 CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym)
 {
     CNSL_Event event;
     event.type = CNSLE_KEYPRESS;
-    event.value = sym;
+    event.v1 = sym;
     return event;
 }
 
@@ -45,7 +46,7 @@ CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym)
 {
     CNSL_Event event;
     event.type = CNSLE_KEYRELEASE;
-    event.value = sym;
+    event.v1 = sym;
     return event;
 }
 
@@ -53,14 +54,22 @@ CNSL_Event CNSL_MakeQuit()
 {
     CNSL_Event event;
     event.type = CNSLE_QUIT;
-    event.value = 0;
+    return event;
+}
+
+CNSL_Event CNSL_MakeResize(int width, int height)
+{
+    CNSL_Event event;
+    event.type = CNSLE_RESIZE;
+    event.v1 = width;
+    event.v2 = height;
     return event;
 }
 
 bool CNSL_IsKeypress(CNSL_Event event, CNSL_Keysym* sym)
 {
     if (event.type == CNSLE_KEYPRESS) {
-        *sym = event.value;
+        *sym = event.v1;
     }
     return event.type == CNSLE_KEYPRESS;
 }
@@ -68,7 +77,7 @@ bool CNSL_IsKeypress(CNSL_Event event, CNSL_Keysym* sym)
 bool CNSL_IsKeyrelease(CNSL_Event event, CNSL_Keysym* sym)
 {
     if (event.type == CNSLE_KEYRELEASE) {
-        *sym = event.value;
+        *sym = event.v1;
     }
     return event.type == CNSLE_KEYRELEASE;
 }
@@ -76,6 +85,16 @@ bool CNSL_IsKeyrelease(CNSL_Event event, CNSL_Keysym* sym)
 bool CNSL_IsQuit(CNSL_Event event)
 {
     return event.type == CNSLE_QUIT;
+}
+
+bool CNSL_IsResize(CNSL_Event event, int* width, int* height)
+{
+    if (event.type == CNSLE_RESIZE) {
+        *width = event.v1;
+        *height = event.v2;
+        return true;
+    }
+    return false;
 }
 
 

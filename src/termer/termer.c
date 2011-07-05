@@ -68,12 +68,7 @@ char getf()
 
 CNSL_Event getevent()
 {
-    ctermer_EventGet();
-
-    CNSL_Event e;
-    e.type = ctermer_EventType();
-    e.value = ctermer_EventValue();
-    return e;
+    return CNSL_RecvEvent(stdcon);
 }
     
 

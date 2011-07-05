@@ -38,11 +38,9 @@ int main(int argc, char* argv[])
     CNSL_Client sgreen = CNSL_LaunchClient(sgreenpath, noargs);
 
     // Verify we can interact with filler as expected.
-    // first recv display is from clearing the client display
-    // second recv display is from filler starting up
-    fprintf(stderr, "first receive\n");
+    // I never understand how many of these recieves we need. I need to fix that.
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
-    fprintf(stderr, "second receive\n");
+    CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
     fprintf(stderr, "%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0));
@@ -80,6 +78,7 @@ int main(int argc, char* argv[])
     CNSL_SendEvent(sgreen, CNSL_MakeKeypress(CNSLK_b));
     CNSL_SendEvent(sgreen, CNSL_MakeKeyrelease(CNSLK_b));
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);
+    fprintf(stderr, "BLUE ?= %08x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(0, 0, 0xff));
 
     // Switching back to window 0, screen should go back to red

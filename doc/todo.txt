@@ -27,5 +27,5 @@ unassigned
 - get rid of FNTR_GlyphLevel function?
 - general purpose image viewer (40.tsk)
 - termer strands artifacts sometimes (41.tsk)
-- sgreen doesn't always clean up sockets
+- sgreen doesn't always clean up sockets (43.tsk)
 

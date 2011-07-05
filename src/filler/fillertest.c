@@ -41,10 +41,14 @@ int main(int argc, char* argv[])
     int sar = sigaction(SIGPIPE, &action, NULL);
     assert(sar == 0);
 
-    CNSL_Display display = CNSL_AllocDisplay(640, 480);
+    int width = 640;
+    int height = 480;
+
+    CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_Event event;
 
     CNSL_Client filler = CNSL_LaunchClient(argv[1], argv+1);
+    CNSL_SendEvent(filler, CNSL_MakeResize(width, height));
 
     CNSL_RecvDisplay(filler, display, NULL, NULL, NULL, NULL);
     printf("%x\n", CNSL_GetPixel(display, 20, 30));

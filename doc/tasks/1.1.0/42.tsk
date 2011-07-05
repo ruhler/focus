@@ -399,3 +399,229 @@ So now we have a modal sgreen.
 
 Next step is scrolling.
 
+Sun Jul  3 22:59:50 EDT 2011
+
+Scrolling should be easy. Add to each ClientInfo an x and y pixel offset. This
+can all be taken care of in the green object. Have commands to scroll left and
+right.
+
+Shall I just hack something up, see if it works?
+
+No. That will not work. For example, is scroll by absolute value or percent?
+
+Mon Jul  4 16:06:40 EDT 2011
+
+I'm having second thoughts about this scrolling thing. Is it really
+appropriate to have in screen? Would it not make more sense to have a separate
+application for doing that sort of thing?
+
+I don't expect to use the scrolling feature for anything currently except the
+pnger, which might as well support its own scrolling (I have another task open
+for a generic image viewer which would solve that, right?).
+
+Maybe it should be the clients job to always stay within the display size
+indicated by the server, and we can have a special virtual server which allows
+scrolling around a server which is much bigger? Yes. Somehow that feels more
+appropriate.
+
+The modes might be a little confusing, admittedly, but... oh well.
+
+What are the next steps in this case? I guess we go right to implementing the
+split. I might note having implemented modality makes less sense now. oh well
+to that too.
+
+Handling the split and implementing the new resize stuff will both have to be
+completed before I know it all works, right? I suppose I could do resize
+first, make pdfer and termer work with it, then implement split. I suppose
+that makes more sense.
+
+Yup! That's the path to take. First step: add resizing support to pdfer.
+Err... or maybe first is sdlcsr should implement sending the initial resize
+event. Yes. Well, I'm not thinking clearly now, but I suggest the following
+steps:
+ 1. Add resize event to consoler
+ 2. Add sending of resize event to sdlcsr
+ 3. Add getting of resize event and resize to filler
+ 4. Add sending of resize event to sgreen
+ 5. Add splitting to sgreen
+
+At this point I should know if spitting can be made to work. The rest is just
+busy work: convert every thing else over to new resize strategy.
+
+Should I try it now? Even though I'm in a fog of thought? Sure.
+
+Mon Jul  4 16:35:08 EDT 2011
+
+Step 1 done.
+Step 2 done.
+
+Step 3... uh, requires a little more work than I want to think about right
+now, so I've left it half implemented.
+
+Tue Jul  5 12:31:17 EDT 2011
+
+Here's the problem. First is I want an abstraction to say: change the color
+and fill the screen. But to do this I need a function with lots of arguments
+(display, color, and pointer to where to save the color), which is annoying.
+That's easily worked past by just bearing with the annoyance.
+
+The harder part is what happens to testing. If I pick some arbitrary size for
+filler to start and resize when I get the resize command, that's something I
+have to be aware of in my test cases. I don't like that.
+
+Maybe it makes sense to have the convention (requirement) that the first event
+sent is a configuration event?
+
+Either way I'll have to add the resize event sending into my test cases. You
+see the annoyance?
+
+For the sake of progress, let me do the following. I'll assume the first event
+sent to the client is a resize event, I'll wait for that in filler, and I'll
+update my test cases to do that. This way filler doesn't need any default
+size.
+
+Okay. Good. A decision. If it's wrong, I'll at least learn why.
+
+Tue Jul  5 12:49:45 EDT 2011
+
+I fixed filler and the filler test. That worked okay.
+
+Now I have to update sgreen because that test isn't passing.
+
+I'll need the following minimal changes:
+ - sgreen should send resize event to all clients initially.
+
+I'll have to make more changes later, but that should be easy enough.
+
+Tue Jul  5 12:54:49 EDT 2011
+
+Yes it was easy. Tests are all passing again. Where was I...
+
+The goal is to implement splitting in sgreen. Do I need sgreen to support
+resizing? Um. How should this work?
+
+The question is, when should sgreen send resize events to the clients?
+
+- When clients are launched.
+
+That's easy. Now we could also say when sgreen gets a resize, but let me not
+worry about that. It isn't needed to get split working.
+
+It has to be when we get a split command. We get a split command, which
+windows do we send resize events to? Only the visible ones? I feel like I
+don't want to send resize events to clients which remain hidden, so let me
+send resize events only to those windows that need it.
+
+That is, record for each client what it's current dimensions are. When a
+window becomes visible, if the display size for it has changed, send it a
+resize event.
+
+I might note, if you are going to have a client shown on both top and bottom
+at the same time, that only makes sense if both top and bottom are the same
+size.
+
+Let me take a little time to think about this before continuing.
+
+Tue Jul  5 14:13:14 EDT 2011
+
+I dove into the implementation of split. I must say, it's pretty messy. Lots
+of cases to handle. Not a clear interface (whose job to send the resize
+event?).
+
+Tue Jul  5 15:05:56 EDT 2011
+
+The trouble is I really need to work out a better decomposition for the
+implementation of the green object. I should decompose in such a way that all
+the functionality is implemented only once.
+
+Let's see. What all things do we need to do?
+- Make a client visible
+    - update the display with the clients display.
+    - send a resize event to the client if needed.
+- Find valid clients for a window
+
+The rest seems to be pretty simple and only happening in one place.
+
+Finding valid cilents has lots of cases:
+ - single mode: just choose any valid client 
+ - split mode: choose a valid client, ideally not the same as the other
+   client. Maybe I should push that requirement off for now. Yes! Good!
+
+Now what about when we split? That's like wanting to find a new client which
+is the same as the client we had, right? Or is that a special case? It's like
+making a client visible, so I can maybe just call that function. Then find
+valid clients, because we opened a window. Okay? Good.
+
+Let me start rewriting things. It might be nice to have a green_private.h
+header file for all the private stuff. Maybe I'll fix that later.
+
+Okay! Here I'll try again.
+
+Tue Jul  5 16:00:27 EDT 2011
+
+Okay. It's a little better now. I have the rough draft of split implemented.
+Let me compile it and see if it works.
+
+Oh wait. I forgot about adding split to sgreen.c. That should be easy. I'll go
+do that, then try it out and hope it works.
+
+What I should do is add split to the sgreen test case. Maybe I'll do that
+after I see the current test case passes.
+
+Tue Jul  5 16:19:01 EDT 2011
+
+Okay! Making progress. It sort of works.
+
+What are the issues we are facing right now...
+ - sgreentest case doesn't pass
+ - it's really hard to tell when screen is split (especially with filler)
+
+There were more issues, but it should be easy to run into those again.
+
+First thing to fix: sgreentest.
+
+Oh. Here's an idea. sgreen forwards resize events, which it should not do.
+That could cause an extra redisplay, which gets me off.
+
+When I run the test manually, it appears to work, so this must be a redisplay
+issue. I keep having these, and it's very annoying...
+
+Let's see how this should work then.
+
+sgreen adds the client, updates the display, changes client to current. But
+chaning client to current also updates the display, so sgreen shouldn't need
+to.
+
+Oh wait. No, this was a call to GRN_SendDisplay.
+
+addclient  (does nothing)
+grn send (sends only if current (which it's not))
+change current (sends display)
+
+How about filler? What does it send? Gah! I hate this counting.
+
+Filler gets resize, it fills black, sends the display.
+
+Here's what happens then:
+
+filler is launched, waits for resize event.
+ChangeCurrent sends resize, updates display (1)
+filler gets resize, updates display, handled by handler (2)
+Event w is forwarded, filler updates display.
+
+Then it should require 2 receieves. After the 3rd we should get white.
+
+That's not what's happening. Why??
+
+It works when I do it by hand. Gah!
+
+Well, one thing I notice when running by hand is we drop input events. That
+could perhaps explain the trouble with testing. It's certainly a bug. Can I
+locate it?
+
+I don't know what the problem is. I'll have to debug. Running termer I see
+lots of input events missed, but I don't know where they go. Running
+sgreentest it fails. Running manual test with filler as shell seems to work
+fine. I need a break clearly.
+
+

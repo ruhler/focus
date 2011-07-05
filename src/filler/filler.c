@@ -26,6 +26,12 @@ void fill(CNSL_Display display, CNSL_Color color)
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, display.width, display.height);
 }
 
+void change(CNSL_Display display, CNSL_Color color, CNSL_Color* save)
+{
+    *save = color;
+    fill(display, color);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
@@ -44,12 +50,16 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
+    int width;
+    int height;
+
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
+    if (!CNSL_IsResize(event, &width, &height)) {
+        fprintf(stderr, "filler: expected recv event.\n");
+        return 1;
+    }
 
     CNSL_Display display = CNSL_AllocDisplay(width, height);
-    CNSL_Event event;
     CNSL_Keysym sym;
     bool done = false;
 
@@ -62,25 +72,27 @@ int main(int argc, char* argv[])
     CNSL_Color purple = CNSL_MakeColor(255, 0, 255);
     CNSL_Color white = CNSL_MakeColor(255, 255, 255);
 
-    fill(display, black);
+    CNSL_Color color;
+    change(display, black, &color);
 
     while (!done) {
-        int x, y;
-
-        // Get the next color.
         event = CNSL_RecvEvent(stdcon);
         if (CNSL_IsQuit(event)) {
             done = true;
+        } else if (CNSL_IsResize(event, &width, &height)) {
+            CNSL_FreeDisplay(display);
+            display = CNSL_AllocDisplay(width, height);
+            fill(display, color);
         } else if (CNSL_IsKeypress(event, &sym)) {
             switch (sym) {
-                case CNSLK_r: fill(display, red); break;
-                case CNSLK_g: fill(display, green); break;
-                case CNSLK_b: fill(display, blue); break;
-                case CNSLK_c: fill(display, cyan); break;
-                case CNSLK_y: fill(display, yellow); break;
-                case CNSLK_p: fill(display, purple); break;
-                case CNSLK_w: fill(display, white); break;
-                case CNSLK_n: fill(display, black); break;
+                case CNSLK_r: change(display, red, &color); break;
+                case CNSLK_g: change(display, green, &color); break;
+                case CNSLK_b: change(display, blue, &color); break;
+                case CNSLK_c: change(display, cyan, &color); break;
+                case CNSLK_y: change(display, yellow, &color); break;
+                case CNSLK_p: change(display, purple, &color); break;
+                case CNSLK_w: change(display, white, &color); break;
+                case CNSLK_n: change(display, black, &color); break;
                 case CNSLK_q: done = true; break;
             }
         }

@@ -29,16 +29,30 @@ typedef int client_id;
 
 typedef struct {
     bool valid;
+    int width;
+    int height;
     CNSL_Client client;
     CNSL_Display display;
 } GRN_ClientInfo;
 
+typedef enum {
+    GRN_MODE_SINGLE,
+    GRN_MODE_SPLIT,
+} GRN_Mode;
+
+typedef enum {
+    GRN_FOCUS_TOP = 0,
+    GRN_FOCUS_BOTTOM = 1,
+} GRN_Focus;
 
 // The shared data structure.
-//  clients - array of client info.
-//  current - the id of the currently displayed client. If there is no
-//            currently displayed client, this is -1.
-//  mutex - lock for all fields of this structure.
+//  clients:: array of client info.
+//  mode:: Whether we are in single mode or split.
+//  focus:: Which window has focus in split mode.
+//  current:: ids of the currently displayed clients (or -1).
+//  width:: width of the view
+//  height:: height of the view
+//  mutex:: lock for all fields of this structure.
 //
 // CNSL_Clients are owned by the user, so we don't have to worry about
 // allocating or cleaning up after them.
@@ -46,7 +60,11 @@ typedef struct {
 // be deallocated for each removed client.
 typedef struct {
     GRN_ClientInfo clients[MAX_NUM_CLIENTS];
-    int current;
+    GRN_Mode mode;
+    GRN_Focus focus;
+    client_id current[2];
+    int width;
+    int height;
     pthread_mutex_t mutex;
 } GRN_Green_;
 
@@ -57,8 +75,11 @@ typedef GRN_Green_* GRN_Green;
 /// Initializes a green object. The object should be freed with the 
 /// +GRN_FreeGreen+ function when you are done with it.
 ///
+/// width:: the width of the view in pixels
+/// height:: the height of the view in pixels
+///
 /// Returns NULL on error.
-GRN_Green GRN_CreateGreen();
+GRN_Green GRN_CreateGreen(int width, int height);
 
 /// GRN_FreeGreen - free a created green object
 ///
@@ -91,6 +112,23 @@ bool GRN_HasClients(GRN_Green green);
 /// Change to the client with id 'which'. If that client is not valid, nothing
 /// happens.
 void GRN_ChangeCurrent(GRN_Green green, client_id which);
+
+/// GRN_Split - split the window
+///
+/// Split the window into two. This does nothing if the window is already
+/// split.
+void GRN_Split(GRN_Green green);
+
+/// GRN_Unsplit - unsplit the window
+///
+/// Unsplit the window, restoring the window with focus as a single client.
+/// This does nothing if the window is not currently split.
+void GRN_Unsplit(GRN_Green green);
+
+/// GRN_Focus - change the window with focus
+/// 
+/// Does nothing if not in split mode
+void GRN_SetFocus(GRN_Green green, GRN_Focus focus);
 
 /// GRN_SendEvent - send an event to the current client
 ///

@@ -47,6 +47,8 @@ void handle_client(CNSL_Client client)
     CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_FillRect(display, 0, 0, width, height, CNSL_MakeColor(0, 0, 0));
 
+    CNSL_SendEvent(client, CNSL_MakeResize(width, height));
+
     client_id id = GRN_AddClient(green, client);
     GRN_SendDisplay(green, id, display, 0, 0, 0, 0, width, height);
     GRN_ChangeCurrent(green, id);
@@ -179,6 +181,14 @@ void handle_input()
                 insert = true;
             } else if (sym == CNSLK_o) {
                 insert = false;
+            } else if (sym == CNSLK_s) {
+                GRN_Split(green);
+            } else if (sym == CNSLK_q) {
+                GRN_Unsplit(green);
+            } else if (sym == CNSLK_j) {
+                GRN_SetFocus(green, GRN_FOCUS_BOTTOM);
+            } else if (sym == CNSLK_k) {
+                GRN_SetFocus(green, GRN_FOCUS_TOP);
             }
 
             commandpending = false;
@@ -212,7 +222,10 @@ int main(int argc, char* argv[])
         socketname = argv[2];
     }
 
-    green = GRN_CreateGreen();
+    int width = 640;
+    int height = 480;
+    CNSL_GetGeometry(&width, &height);
+    green = GRN_CreateGreen(width, height);
 
     int lsfd = start_server(socketname);
     if (lsfd < 0) {

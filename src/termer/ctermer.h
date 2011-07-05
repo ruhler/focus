@@ -30,17 +30,6 @@
 int ctermer_Init(int* cols, int* lines);
 void ctermer_DeInit();
 
-// Get the next event.
-// Stores the event in a static place accessible via the EventType and
-// EventValue functions.
-void ctermer_EventGet();
-
-// Get the type of the most recently gotten event.
-int ctermer_EventType();
-
-// Get the value of the most recently gotten event.
-int ctermer_EventValue();
-
 // Send the given character to the terminal client
 void ctermer_ToTermClient(char c);
 

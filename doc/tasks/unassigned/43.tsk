@@ -1,0 +1,11 @@
+
+Tue Jul  5 16:02:02 EDT 2011
+
+Task: sgreen sometimes leaves sockets stranded
+
+This is annoying on pacific, which doesn't clean out temp each time it
+reboots, so eventually we run into a socket we've used before and sgreen
+refuses to run.
+
+What's the right solution?
+

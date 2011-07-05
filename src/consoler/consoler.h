@@ -29,9 +29,11 @@
 /// Return a string describing the version of the library.
 const char* CNSL_Version();
 
+// TODO: This struct should be private. Can I enforce that somehow in c?
 typedef struct {
     int type;
-    int value;
+    int v1;
+    int v2;
 } CNSL_Event;
 
 /// CNSL_MakeKeypress - construct a keypress event
@@ -48,6 +50,12 @@ CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym);
 ///
 /// Construct a quit event.
 CNSL_Event CNSL_MakeQuit();
+
+/// CNSL_MakeResize - construct a resize event.
+///
+/// Construct a resize event indicating the server screen's dimensions are now
+/// the given 'width' and 'height' in pixels.
+CNSL_Event CNSL_MakeResize(int width, int height);
 
 /// CNSL_IsKeypress - deconstruct a key press event
 ///
@@ -67,6 +75,13 @@ bool CNSL_IsKeyrelease(CNSL_Event event, CNSL_Keysym* sym);
 ///
 /// Return true if 'event' is a quit event, false otherwise.
 bool CNSL_IsQuit(CNSL_Event event);
+
+/// CNSL_IsResize - deconstruct a resize event
+///
+/// Return true if 'event' is a resize event, and output the width and height
+/// associated with the resize event in the 'width' and 'height' parameters.
+/// Otherwise return false and 'width' and 'height' are untouched.
+bool CNSL_IsResize(CNSL_Event event, int* width, int* height);
 
 typedef uint32_t CNSL_Color;
 

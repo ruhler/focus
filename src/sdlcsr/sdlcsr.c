@@ -97,6 +97,11 @@ int main(int argc, char* argv[])
     CNSL_SetGeometry(info.screen->w, info.screen->h);
     info.client = CNSL_LaunchClient(pargv[0], pargv);
 
+    // Send the first resize event.
+    int width = info.display.width;
+    int height = info.display.height;
+    CNSL_SendEvent(info.client, CNSL_MakeResize(width, height));
+
     // Lauch a thread to handle the output.
     SDL_CreateThread((int (*)(void*))handle_output, &info);
 
