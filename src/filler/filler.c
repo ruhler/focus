@@ -22,6 +22,7 @@
 
 void fill(CNSL_Display display, CNSL_Color color)
 {
+    fprintf(stderr, "filler: send %08x\n", color);
     CNSL_FillRect(display, 0, 0, display.width, display.height, color);
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, display.width, display.height);
 }
@@ -80,10 +81,12 @@ int main(int argc, char* argv[])
         if (CNSL_IsQuit(event)) {
             done = true;
         } else if (CNSL_IsResize(event, &width, &height)) {
+            fprintf(stderr, "filler: resize %i, %i\n", width, height);
             CNSL_FreeDisplay(display);
             display = CNSL_AllocDisplay(width, height);
             fill(display, color);
         } else if (CNSL_IsKeypress(event, &sym)) {
+            fprintf(stderr, "filler: keypress: %c(%i)\n", sym, sym);
             switch (sym) {
                 case CNSLK_r: change(display, red, &color); break;
                 case CNSLK_g: change(display, green, &color); break;

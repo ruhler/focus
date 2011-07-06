@@ -47,8 +47,6 @@ void handle_client(CNSL_Client client)
     CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_FillRect(display, 0, 0, width, height, CNSL_MakeColor(0, 0, 0));
 
-    CNSL_SendEvent(client, CNSL_MakeResize(width, height));
-
     client_id id = GRN_AddClient(green, client);
     GRN_SendDisplay(green, id, display, 0, 0, 0, 0, width, height);
     GRN_ChangeCurrent(green, id);

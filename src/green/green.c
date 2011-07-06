@@ -50,7 +50,10 @@ void ShowClientRL(GRN_Green green, client_id id)
             CNSL_Display display = green->clients[id].display;
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, green->width, green->height);
         }
-    } else if (green->current[GRN_FOCUS_TOP] == id) {
+        return;
+    }
+    
+    if (green->current[GRN_FOCUS_TOP] == id) {
         if (green->clients[id].width != green->width || green->clients[id].height != green->height/2) {
             CNSL_SendEvent(green->clients[id].client, CNSL_MakeResize(green->width, green->height/2));
             green->clients[id].width = green->width;
@@ -59,7 +62,9 @@ void ShowClientRL(GRN_Green green, client_id id)
 
         CNSL_Display display = green->clients[id].display;
         CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, green->width, green->height/2);
-    } else if (green->current[GRN_FOCUS_BOTTOM] == id) {
+    }
+
+    if (green->current[GRN_FOCUS_BOTTOM] == id) {
         if (green->clients[id].width != green->width || green->clients[id].height != green->height/2) {
             CNSL_SendEvent(green->clients[id].client, CNSL_MakeResize(green->width, green->height/2));
             green->clients[id].width = green->width;
@@ -89,6 +94,10 @@ void ChooseClientsRL(GRN_Green green)
                 break;
             }
         }
+    } else {
+        // If we are splitting, the top could be full screen and still need
+        // redrawing because it should no longer be full screen.
+        ShowClientRL(green, ti);
     }
 
     if (green->mode == GRN_MODE_SPLIT) {
@@ -281,10 +290,14 @@ void GRN_SendDisplay(GRN_Green green, client_id client, CNSL_Display display,
         // TODO: make sure we don't go off the bottom of the screen.
         if (green->mode == GRN_MODE_SINGLE && green->current[GRN_FOCUS_TOP] == client) {
             CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty, width, height);
-        } else if (green->mode == GRN_MODE_SPLIT && green->current[GRN_FOCUS_TOP] == client) {
-            CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty, width, height);
-        } else if (green->mode == GRN_MODE_SPLIT && green->current[GRN_FOCUS_BOTTOM] == client) {
-            CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty + green->height/2, width, height);
+        } else if (green->mode == GRN_MODE_SPLIT) {
+            if (green->current[GRN_FOCUS_TOP] == client) {
+                CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty, width, height);
+            }
+            
+            if (green->current[GRN_FOCUS_BOTTOM] == client) {
+                CNSL_SendDisplay(stdcon, display, srcx, srcy, dstx, dsty + green->height/2, width, height);
+            }
         }
     }
 

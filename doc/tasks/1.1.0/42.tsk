@@ -624,4 +624,74 @@ lots of input events missed, but I don't know where they go. Running
 sgreentest it fails. Running manual test with filler as shell seems to work
 fine. I need a break clearly.
 
+Tue Jul  5 21:39:39 EDT 2011
+
+What's happening is filler is getting multiple initial resize events. That's
+what I don't expect. That explains the sgreentest failure.
+
+Where do those resize events come from?
+
+I found the extra send. That fixed the test case.
+
+Does sgreen work now then with split? I don't have any tests of the split
+feature. Maybe I should write some? Or should I do the manual test first to
+figure out what to write? Sure. Let me do that.
+
+Tue Jul  5 21:46:02 EDT 2011
+
+Bugs encountered:
+- Self split only shows the client in the top.
+- Top clients not limited to top on split.
+- some inputs start getting dropped after splitting.
+
+I also ran into this problem where filler complained it got not resize event
+when using ./build/src/sdlcsr/sdlcsr, but it did when using just sdlcsr. I
+should probably figure that out. I'm happy to say (sort of) that the dropping
+of input events I was having before seems to have gone away.
+
+Oh. Wait. Maybe that's only when we aren't split, because I'm running into it
+again now. Let me write that down.
+
+The first issue should be easy, but I had better write a test for it. The test
+will be this:
+ 1. Make two versions of filler different colors
+ 2. split. change the bottom of the screen to match the top of the screen and
+    verify the colors in both are right. That should be easy.
+
+Tue Jul  5 22:17:40 EDT 2011
+
+My test case isn't passing. What's supposed to happen when I split with
+    0 red
+    1 green shown
+
+Top is valid, so we don't do anything with it.
+Bottom is not valid, so we find the lowest numbered valid client (0 in this
+case) to show.
+
+There's a bug: the top never got a resize event. The bottom (red) got chosen
+correctly and got the resize event and sent it. But apparently that never
+showed up on the screen. Let me fix the first problem first.
+
+Tue Jul  5 22:35:44 EDT 2011
+
+I worked through a number of bugs. My test case passes now. Should I do
+another round of manual testing? Sure. I'll try all the same things as before.
+
+- Top clients not limited to top on split.
+
+I still get this one. Let me work a little to see if I still get input
+dropping. I think part of the problems I ran into when testing manually,
+especially with termer, is just that termer doesn't handle resize very well.
+Or rather, termer doesn't handle resize at all.
+
+And look here. It appears we are still dropping some input events, though not
+as many as before? How could we be dropping input events? Or is it just me
+imagining things?
+
+In other words, I'm thinking sgreen works as far as I can tell. The real bug
+is in resizing termer.
+
+Let me do this. Let me check in what I have, install the latest sgreen, and
+start using it. I'll implement resize for more of the applications. I'll watch
+for more split bugs, and let you know how it all goes.
 
