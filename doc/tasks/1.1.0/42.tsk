@@ -700,3 +700,11 @@ Tue Jul  5 22:46:52 EDT 2011
 Uh oh. Problem. sdlcsr sgreen doesn't work. It just ends. Is something
 crashing?
 
+Sat Jul  9 15:53:09 EDT 2011
+
+The problem was sgreen was getting a resize event, which triggered the
+"started" thing, and so sgreen quit early. We have a race condition which I'm
+hackishly avoiding. Probably in the future we should have sgreen wait until
+there is some non-zero number of clients before checking if there are zero
+clients and it should quit. I'll not worry about that for now.
+
