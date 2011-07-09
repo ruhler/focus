@@ -8,6 +8,7 @@ List of pending issues.
 - shift-tab same as tab in termer?
 - add split to screen (42.tsk)
 - review install and release targets (37.tsk)
+- review and revise doumentation
 - release 1.1.0 (33.tsk)
 
 unassigned

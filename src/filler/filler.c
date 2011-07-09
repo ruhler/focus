@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
     CNSL_Event event = CNSL_RecvEvent(stdcon);
     if (!CNSL_IsResize(event, &width, &height)) {
-        fprintf(stderr, "filler: expected recv event.\n");
+        fprintf(stderr, "filler: expected resize event. Got %i\n", event.type);
         return 1;
     }
 
@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
     while (!done) {
         event = CNSL_RecvEvent(stdcon);
         if (CNSL_IsQuit(event)) {
+            fprintf(stderr, "filler: quit\n");
             done = true;
         } else if (CNSL_IsResize(event, &width, &height)) {
             fprintf(stderr, "filler: resize %i, %i\n", width, height);

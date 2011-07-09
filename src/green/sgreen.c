@@ -155,9 +155,9 @@ void handle_input()
     bool started = false;
     bool insert = true;
     while (!started || GRN_HasClients(green)) {
-        started = true;
         event = CNSL_RecvEvent(stdcon);
         int sym;
+        int w, h;
 
         if (CNSL_IsKeypress(event, &sym) && (sym == CNSLK_LCTRL || sym == CNSLK_RCTRL)) {
             ctrlon = true;
@@ -190,7 +190,10 @@ void handle_input()
             }
 
             commandpending = false;
+        } else if (CNSL_IsResize(event, &w, &h)) {
+            // TODO: handle this resize event.
         } else if (insert) {
+            started = true;
             GRN_SendEvent(green, event);
         }
     }

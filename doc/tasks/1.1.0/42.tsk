@@ -695,3 +695,8 @@ Let me do this. Let me check in what I have, install the latest sgreen, and
 start using it. I'll implement resize for more of the applications. I'll watch
 for more split bugs, and let you know how it all goes.
 
+Tue Jul  5 22:46:52 EDT 2011
+
+Uh oh. Problem. sdlcsr sgreen doesn't work. It just ends. Is something
+crashing?
+
