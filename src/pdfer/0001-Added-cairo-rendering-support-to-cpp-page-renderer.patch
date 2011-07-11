@@ -1,12 +1,12 @@
-From 9b698427fecf09cc8ef3d9f4649fc72c3a8433bd Mon Sep 17 00:00:00 2001
+From 5938141a97960b91f5439c0251eb1166d04e5cf7 Mon Sep 17 00:00:00 2001
 From: Richard Uhler <ruhler@csail.mit.edu>
-Date: Sat, 7 May 2011 13:01:26 -0400
+Date: Sun, 10 Jul 2011 21:01:34 -0400
 Subject: [PATCH] Added cairo rendering support to cpp page-renderer.
 
 ---
- cpp/Makefile.am               |   11 +++++++-
- cpp/poppler-page-renderer.cpp |   48 ++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 56 insertions(+), 3 deletions(-)
+ cpp/Makefile.am               |   11 ++++++-
+ cpp/poppler-page-renderer.cpp |   61 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 69 insertions(+), 3 deletions(-)
 
 diff --git a/cpp/Makefile.am b/cpp/Makefile.am
 index 6d4954b..3b496d1 100644
@@ -37,7 +37,7 @@ index 6d4954b..3b496d1 100644
  
  libpoppler_cpp_la_LDFLAGS = -version-info 2:0:2 @create_shared_lib@ @auto_import_flags@
 diff --git a/cpp/poppler-page-renderer.cpp b/cpp/poppler-page-renderer.cpp
-index 5e07954..3a9fcf5 100644
+index 5e07954..4067ed3 100644
 --- a/cpp/poppler-page-renderer.cpp
 +++ b/cpp/poppler-page-renderer.cpp
 @@ -24,6 +24,9 @@
@@ -50,30 +50,43 @@ index 5e07954..3a9fcf5 100644
  #if defined(HAVE_SPLASH)
  #include "SplashOutputDev.h"
  #include "splash/SplashBitmap.h"
-@@ -163,7 +166,50 @@ image page_renderer::render_page(const page *p,
+@@ -163,7 +166,63 @@ image page_renderer::render_page(const page *p,
          return image();
      }
  
 -#if defined(HAVE_SPLASH)
 +#if defined(HAVE_CAIRO)
 +
-+    // Currently only x, y, w, and h of -1 are supported with cairo.
-+    // This is because I can't figure out what x, y, w, and h are supposed to
-+    // mean, so I don't know how to implement it correctly when they aren't
-+    // -1.
-+    // TODO: treat x, y, w, h as page units, make it work under that
-+    // assumption.
-+    if (x != -1 || y != -1 || w != -1 || h != -1 || rotate != rotate_0) {
-+        return image();
-+    }
-+
 +    page_private *pp = page_private::get(p);
 +    PDFDoc* pdfdoc = pp->doc->doc;
 +
-+    // How big the image should be...
-+    const int bw = pdfdoc->getPageMediaWidth(pp->index + 1) * xres / 72.0;
-+    const int bh = pdfdoc->getPageMediaHeight(pp->index + 1) * yres / 72.0;
-+    cairo_surface_t* surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, bw, bh);
++    // Calculate the dimensions of the image.
++    // It should just be (w-x) by (h-y). But 
++    //  if x == -1: use x = 0
++    //  if y == -1: use y = 0
++    //  if w == -1: figure out the width in pixels after rotation of the page
++    //  if h == -1: figure out the height in pixels after rotation of the page
++    //   Conversion to pixels: pixels = page * xres/72.0
++    x = (x == -1 ? 0 : x);
++    y = (y == -1 ? 0 : y);
++
++    if (w == -1 || h == -1) {
++        bool sideways;
++        sideways = (p->orientation() == poppler::page::landscape
++                || p->orientation() == poppler::page::seascape);
++        if (rotate % 2 == 1) {
++            sideways = !sideways;
++        }
++
++        if (w == -1) {
++            w = (sideways ? p->page_rect().height() : p->page_rect().width()) * xres/72.0;
++        }
++        if (h == -1) {
++            h = (sideways ? p->page_rect().width() : p->page_rect().height()) * yres/72.0;
++        }
++    }
++
++    cairo_surface_t* surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
 +    cairo_t* cairo = cairo_create(surface);
 +
 +    // Clear the background.
@@ -87,13 +100,13 @@ index 5e07954..3a9fcf5 100644
 +    CairoOutputDev dev;
 +    dev.setCairo(cairo);
 +    dev.startDoc(pdfdoc->getXRef(), pdfdoc->getCatalog());
-+    pdfdoc->displayPage(&dev, pp->index + 1,
++    pdfdoc->displayPageSlice(&dev, pp->index + 1,
 +            xres, yres, int(rotate) * 90,
-+            gFalse, gFalse, gFalse);
++            gFalse, gFalse, gFalse, x, y, w, h);
 +
 +    void* data_ptr = cairo_image_surface_get_data(surface);
 +
-+    const image img(reinterpret_cast<char *>(data_ptr), bw, bh, image::format_argb32);
++    const image img(reinterpret_cast<char *>(data_ptr), w, h, image::format_argb32);
 +    cairo_surface_destroy(surface);
 +    cairo_destroy(cairo);
 +    return img.copy();

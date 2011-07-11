@@ -128,6 +128,8 @@ int main(int argc, char* argv[])
                 case CNSLK_w: pdfer->fitwidth(); break;
                 case CNSLK_a: pdfer->fitpage(); break;
 
+                case CNSLK_r: pdfer->rotate(shifton ? -90 : 90); break;
+
                 case CNSLK_v: pdfer->status(); break;
             }
 

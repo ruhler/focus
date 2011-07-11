@@ -1,0 +1,31 @@
+
+Sun Jul 10 20:52:21 EDT 2011
+
+Task: may be memory leak in pdfer
+
+I have gotten reports that there may be a memory leak in pdfer.
+
+How can I check this? The questions are: is there a leak when redrawing pages
+at different rotation or zoom? And is there a leak going from page to page.
+
+I can run some manual tests to fix this.
+
+First question is, what should the behavior be? I'm thinking we should only
+have one page allocated at a time. In that case, try the following
+experiments:
+
+A. Repeatedly zoom in and out of page
+The zoom ins may increase the memory a little, but zoom out should not
+increase the memory usage (if anything decrease), and certainly we should not
+accumulate memory as we zoom in and out.
+
+B. Go from page to page
+More complex pages may use more memory... but that may not be the case too. I
+would hope going from page to page would not continuously increase memory
+usage. Memory usage should be constant in that respect.
+
+One thing I should note though, it's possible the way poppler works internally
+it uses more memory for these things, so it may be difficult to tell if the
+faults in how I use poppler, or my own fault in some other way, or completely
+inside of poppler.
+

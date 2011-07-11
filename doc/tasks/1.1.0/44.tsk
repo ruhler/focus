@@ -1,0 +1,9 @@
+
+Sat Jul  9 16:13:03 EDT 2011
+
+Task: Add support for Resize to all apps
+
+To make screen split work, we need apps to support resize. Specifically it
+would be good if termer and pdfer supported resize. Ideally I can mark
+CNSL_GetGeometry and CNSL_SetGeometry as depricated and not use them anywhere.
+

@@ -1,0 +1,159 @@
+
+Sat Jul  9 17:52:36 EDT 2011
+
+Task: fix pdfer rotation bug
+
+When viewing pdf files which are rotated, the page size of pdfer is messed up.
+This means parts of the page or clipped.
+
+I ran into this same problem with gylf. Let me use the same test case and
+solution from gylf.
+
+Sat Jul  9 18:03:14 EDT 2011
+
+I have the test pdf which is rotated. I've reproduced the bug manually.
+
+The question is, what is the right way to solve this?
+
+I probably want to think about what I'll do when I add a rotate command too.
+
+Hmm... Now I'm a little confused at where the bug is.
+
+There are two possibilities, it could be in both of them:
+ - the page renderer just renders it wrong.
+ - we calculate zooming wrong.
+
+Looking at my source code, I use this pagewidth thing only for zooming. That
+suggests when I zoom width or page, it will zoom wrong. But I should still be
+able to see the whole image if I zoom out enough, which is not the case.
+
+On the other hand, the width and height of the image drawn are determined by
+the image rendered to in poppler with the render_page function. If that
+doesn't render the page correctly, there's not much I can do about it but
+another patch to poppler.
+
+Looks like to fix this bug I'll need to dive into the poppler cpp interface,
+and how it handles rotation.
+
+How can I tell the page renderer to render a rotated version? Or how can I ask
+the page if it is rotated?
+
+The render_page function has a rotate argument I can pass. That suggests I
+have to know about the rotation of the page and tell the renderer that.
+
+Ah. It would appear it's my own patch of poppler which doesn't handle the
+rotation right. The page class has a way to get the rotation, but apparently
+not to set the rotation.
+
+Okay, so an idea is forming about how this should work.
+
+We would like to have current rotation as a parameter to the view. It will be
+0, 90, 180, or 270 degrees. This rotation will default to whatever the page
+says its rotation is: normally 0, but in the case of rotated.pdf 270.
+
+Err... wait a second. That's not quite it. Because even though rotated.pdf has
+rotation 270, the image is being drawn the correct direction.
+
+This suggests the following to me:
+ - the rotate parameter to pdfdoc->displayPage indicates how much to rotate
+   the document, in degrees, in addition to its built in rotation.
+ - the media box dimensions gotten from the page are for the completely
+   unrotated page
+
+This is why rotated.pdf shows up the right direction even though we pass
+rotate_0 to it, but width and height are wrong.
+
+If that's the case, then I think we should do the following:
+
+pagewidth and pageheight should give the width and height of the page in page
+units under the current rotation, relative to the builtin rotation.
+
+So, absolute rotation from mediabox is builtin+current.
+
+The image generated will take as input current rotation, and the pdfdoc will
+handle adding that as an offset to the builtin rotation. What we need to do
+when we render is ajust the height and width calculation based on the total
+rotation (builtin+current).
+
+So then! I think the bug fix now is clear. Fix my pagewidth and pageheight
+functions to take into account builtin+current rotation, where for now current
+is zero, because we don't support rotation (but I suppose I could add that
+while I fix this bug. Would that be a bad thing to do?).
+
+You know what? Let me support rotation while I'm at it. I know what to do.
+
+Sat Jul  9 19:06:50 EDT 2011
+
+Okay, so I've gone and got confused again. The question is, what do x, y, w,
+and h parameters passed to page-render.render mean?
+
+I think we'll agree they are all in page units. Right? Yes. They are all in
+page units. Right? No. Maybe not. Gar!
+
+This is why I didn't want to deal with them before.
+
+What do I need to know? I need to know the following:
+
+Are x, y, w, h in page units or pixels?
+Do x, y, w, h take into account builtin rotation?
+Do x, y, w, h take into account specified rotation?
+
+What I need to do is given x, y, w, and h, figure out what the width and
+height of the generated image should be in pixels after taking into account
+both builtin and specified rotation. So the target is clear.
+
+x, y, w, or h can be -1, in which case I have to pick a nice default value.
+Presumably default value for x and y is the upper left corner of the page:
+(0,0), where neither rotation nor unit matters. Default values for w and h are
+presumably the full width and height of the page, but I don't know if this is
+before or after rotation or what the units are. If I knew that, the default
+value would be clear.
+
+Let me dig through the poppler code to figure out as much as I can. After that
+I think I should do a bunch of experiments to figure out the units and
+rotation meaning of those parameters, then I can implement things right.
+
+Aha! Poppler documentation says the units are in pixels! Good. That clears up
+one big concern. I know media box units are page units, and the conversion is
+x * xres / 72.0 to get pixels.
+
+Now, how about rotation? If we are talking about pixels, it seems to make
+sense as a destination specification rather than a source? In which case it
+would be after all rotation applied?
+
+"rotate: the rotation to apply when rendering the page". Now that suggests
+it's just an after effect, and that x and y and w and h specify the source of
+the thing to render, and rotation just effects the destination. That suggests
+x, y, w, and h, are unrotated.
+    
+Okay, looking through the code I see the rotate parameter is relative. So
+absolute rotation is specified + builtin.
+
+Well, there are so many conversions in the code it's hard to tell what is
+going on with rotation, but from what little I saw, it looked like the
+rotation was being applied to figure out the source box, so let's assume x, y,
+w, and h all refer to the destination image.
+
+That is, the size of the image will be exactly (w-x) by (h-y). The only tricky
+part is what to do if w and h are -1. In this case it seems the proper thing
+to do is convert media (or crop?) box to pixels then apply full rotation to
+them.
+
+There! I have a plan. Something to try. And we'll see if it works. I think I
+should never pass -1 to the page render function, in which case things will be
+much easier? But then untested... So probably do pass -1.
+
+Okay. Cool. When I get a change I'll try to do this fix to my poppler patch.
+
+Sun Jul 10 20:47:35 EDT 2011
+
+I made the change. My rotated test case passes now. How hard is it to
+implement rotation now? Let me just try real quick with r rotate clockwise 90
+and R rotate counterclockwise 90.
+
+It works! Just like that. Pretty nifty. So I should probably write a test case
+for this, but I don't feel much like it now. Wait until it breaks or
+something.
+
+This task is done.
+

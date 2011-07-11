@@ -26,7 +26,7 @@
 
 Pdfer::Pdfer(const std::string& filename, poppler::document* doc, int width, int height)
     : m_width(width), m_height(height), m_doc(doc),
-      m_page(1), m_zoom(1.0), m_x(0.0), m_y(0.0),
+      m_page(1), m_zoom(1.0), m_x(0.0), m_y(0.0), m_rotation(0),
       m_fonter(FNTR_Create("Monospace-24:Bold")), m_status(false),
       m_filename(filename)
 {
@@ -165,6 +165,26 @@ void Pdfer::fitpage()
     zoom(std::max(wz, hz));
 }
 
+// Given an angle in degrees, return the corresponding angle bounded within 
+// the range [0, 360)
+int normalizeangle(int x)
+{
+    while (x < 0) {
+        x += 360;
+    }
+
+    while (x > 360) {
+        x -= 360;
+    }
+    return x;
+}
+
+void Pdfer::rotate(int x)
+{
+    m_rotation += x;
+    redraw();
+}
+
 int Pdfer::page()
 {
     return m_page;
@@ -185,16 +205,39 @@ void Pdfer::redraw()
     // creating a new one for every page?
     poppler::page_renderer renderer;
     renderer.set_paper_color(0xFFFFFF);
-    m_image = renderer.render_page(page, 72.0/m_zoom, 72.0/m_zoom);
+    m_image = renderer.render_page(page, 72.0/m_zoom, 72.0/m_zoom,
+            -1, -1, -1, -1, (poppler::rotation_enum)(normalizeangle(m_rotation)/90));
 }
 
 double Pdfer::pagewidth()
 {
+    int rotate = m_rotation;
+    switch (m_doc->create_page(m_page-1)->orientation()) {
+        case poppler::page::landscape: rotate += 90; break;
+        case poppler::page::portrait: rotate += 0; break;
+        case poppler::page::seascape: rotate += 270; break;
+        case poppler::page::upside_down: rotate += 180; break;
+    }
+
+    if (normalizeangle(rotate) % 180 == 90) {
+        return m_doc->create_page(m_page-1)->page_rect().height();
+    }
     return m_doc->create_page(m_page-1)->page_rect().width();
 }
 
 double Pdfer::pageheight()
 {
+    int rotate = m_rotation;
+    switch (m_doc->create_page(m_page-1)->orientation()) {
+        case poppler::page::landscape: rotate += 90; break;
+        case poppler::page::portrait: rotate += 0; break;
+        case poppler::page::seascape: rotate += 270; break;
+        case poppler::page::upside_down: rotate += 180; break;
+    }
+
+    if (normalizeangle(rotate) % 180 == 90) {
+        return m_doc->create_page(m_page-1)->page_rect().width();
+    }
     return m_doc->create_page(m_page-1)->page_rect().height();
 }
 

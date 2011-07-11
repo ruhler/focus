@@ -57,6 +57,8 @@ ctrl-i:: zoom in 10%
 ctrl-o:: zoom out 10%
 w:: fit the page to the width of the window
 a:: fit the page to the entire window
+r:: rotate the page 90 degrees clockwise
+R:: rotate the page 90 degrees counterclockwise
 v:: show information about the pdf file viewed and current page.
     This pops up a status bar which will go away at the next input.
 

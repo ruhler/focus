@@ -85,6 +85,11 @@ public:
     // Fit the entire page into the view
     void fitpage();
 
+    // rotate clockwise by the x degrees.
+    // x may be negative to rotate counterclockwise.
+    // It's probably a good idea to have x be a multiple of 90.
+    void rotate(int x);
+
     // Current page number
     int page();
 
@@ -98,7 +103,8 @@ private:
     // the result.
     void redraw();
 
-    // Return the width and height of the current page.
+    // Return the width and height of the current page in page units.
+    // This take into account both the builtin and current rotation.
     double pagewidth();
     double pageheight();
 
@@ -119,6 +125,9 @@ private:
     // left corner of the view (they may be negative).
     double m_x;
     double m_y;
+
+    // The rotation of the page, relative to the builtin rotation.
+    double m_rotation;
 
     // fonter object for drawing status bar
     FNTR_Fonter m_fonter;

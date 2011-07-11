@@ -2,12 +2,11 @@
 List of pending issues.
 
 1.1.0
-- fix pdfer rotation bug
-- may be memory leak in pdfer
-- add rotate command to pdfer
+- may be memory leak in pdfer (46.tsk)
 - shift-tab same as tab in termer?
-- add split to screen (42.tsk)
+- add support for resize in all apps (44.tsk)
 - review install and release targets (37.tsk)
+- documentation should have version number
 - review and revise doumentation
 - release 1.1.0 (33.tsk)
 
