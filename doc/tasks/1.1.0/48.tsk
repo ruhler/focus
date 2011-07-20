@@ -1,0 +1,71 @@
+
+Tue Jul 19 21:27:01 EDT 2011
+
+Task: fonter out of bounds bug
+
+It triggers sometimes at work, and now I've caught it when logging off a
+remote connection to greenfield from in screen.
+
+The problem is termer crashes. From gdb it appears we try to print the
+character ... Um. I'm not sure what character it is. gdb is printing funny
+stuff.
+
+print c: 9492 L'\024'
+
+Oh. It's 9492, but if you just look at the bottom 8 bits, it's hex 20.
+
+The consequence of this is we try to draw a glyph where the bitmap_top (27) is
+greater than the ascender (28). This puts top at -1, so we try to draw with y
+= -1, but that's like 4 billion, out of range, seg fault.
+
+Let me see if I can reproduce this. How? Well, here's the character that
+caused us problems: 0x2514 = └. Perhaps if I scroll it to the top of the
+display it will cause termer to crash.
+
+Yup! I can reproduce it that way.
+
+So, really this is a bug in fonter.
+
+My font is: Monospace-25:Bold. This should be easy to catch in a fonter test
+case. Then I can try to understand what the problem is and what the fix is.
+
+Tue Jul 19 21:44:57 EDT 2011
+
+I caught it in a test case. I guess I have to fix it now.
+
+The problem is the same as before. The metrics freetype gives can be off by a
+pixel. To deal with the height problem I add 1 pixel to the max height. But
+now the ascender seems to be too small?
+
+Well, one thing I can do is verify we stay in bounds. That may slow things
+down, but certainly the bug will go away. Is that the "right" solution? I'm
+not sure there is a right solution.
+
+Fonter should certainly gaurentee it doesn't try to draw outside the
+width by height cell boundary. I think unless we want to pad lots of space
+around each cell, the way to solve this is only draw pixels in bounds. And by
+in bounds I mean within the width by height cell boundary.
+
+left >= 0, width < width, top >= 0, height < height.
+
+I bet this fixes my artifacts trouble too (41.tsk).
+
+Tue Jul 19 21:58:40 EDT 2011
+
+Well, I made the fix. The test case passes. Let me just visually verify
+everything looks okay still.
+
+Tue Jul 19 22:01:21 EDT 2011
+
+Yup. Everything looks fine. Let me finally check that I can't manually
+reproduce the bug.
+
+Uh oh. The fix is bad. It doesn't render the character right. Let me fix that.
+I'm not sure how automatically to test this fix unfortunately.
+
+Tue Jul 19 22:06:47 EDT 2011
+
+Okay. Now it's fixed right. Cool.
+
+This task is done.
+

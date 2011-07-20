@@ -7,3 +7,146 @@ To make screen split work, we need apps to support resize. Specifically it
 would be good if termer and pdfer supported resize. Ideally I can mark
 CNSL_GetGeometry and CNSL_SetGeometry as depricated and not use them anywhere.
 
+Sun Jul 17 12:59:42 EDT 2011
+
+Here is the current status for each application.
+
+boxer:: uses GetGeometry and SetGeometry. Needs update to resize.
+filler:: uses resize, so this is all set.
+sgreen:: uses GetGeometry and SetGeometry. Needs update to resize.
+pdfer:: uses GetGeometry and SetGeometry. Needs update to resize.
+pnger:: uses nothing. Can continue to use nothing.
+termer:: uses GetGeometry and SetGeometry. Needs update to reize.
+
+So the following need update: boxer, sgreen, pdfer, termer.
+
+Let me lay down my thoughts on what each of these will involve, and maybe I
+can start to make some forward progress.
+
+- Boxer
+    The dimenions are used to know when to wrap the box around to the other
+    side of the screen. The question is, what behavior do we want?
+
+Have I said this yet? I'm not so happy how complicated this resize thing makes
+things. It's perhaps worth reminding myself why I'm doing it.
+
+There is one reason, and one reason only, I expect to use resizing: splitting
+in sgreen. More specifically, splitting between a termer and a pdfer is really
+the only thing I imagine right now.
+
+termer has to know about the screen resize, so things like vim can work at the
+resized screen. pdfer should know too.
+
+But gah! Wouldn't it be nice if my applications didn't have to know about
+resize? I think I have had all of these discussions before though. Let me find
+my thoughts then, and see what my conclusions were. I have an idea...
+
+Sun Jul 17 13:23:48 EDT 2011
+
+I reread my previous thoughts on splitting. The key idea was that if an
+application is interested in the initial screen size, it should be interested
+in resizes too. So boxer should be interested in resizes.
+
+I must say, I'm worried about all this split and resize stuff. It's all so
+complicated! And all for just a tiny (albiet very important) use case.
+
+I'm thinking it's worth exploring more alternatives to the whole split resize
+thing.
+
+Is there a way I can have the split functionality I need without having any
+resize? The functionality I need is: ability to read from one client while
+keyboard focus is on another client. And hopefully I can see parts of both
+clients at the same time.
+
+An assumption I've been making is to be effective the clients should know what
+their screen size is. For example, if you are using vim in one of the clients
+which is split, you want to be able to see what's going on? Maybe that
+assumption isn't so important.
+
+Let me throw out some ideas.
+A. Have sgreen implement split with scrolling via it's modality. Clients don't
+have to know about resize, you can position the windows where you want.
+Scrolling will have to be based on absolute pixels, or it can be based on the
+view size, that's not bad.
+
+So if I'm using pdfer and I want to scroll down or up, well, that's not any
+problem, because pdfer can already do that. If I'm using vim and I want to
+scroll down or up, for the most part that isn't a problem. Only when we are at
+the top or the bottom of the file is that a problem, in which case I can do
+the sgreen scroll to see what I want.
+
+B. I was going to say maybe you can wire things so the top window of a split
+always shows the top half of its client and the bottom window of a split
+always shows the bottom half of its client. That seems a little wierd though.
+
+Sigh. Here's what I'm seeing right now. I've launched this big sequence of
+changes to allow for resizing to satisfy my split requirement. I'm in the
+middle of those changes and I find there is a lot I don't like. Mostly I don't
+like the complexity introduced by dynamic resizing of applications.
+
+Now I have an alternative proposal to the whole thing which sounds like it
+would be functionaly acceptable (though perhaps slightly annoying) and save us
+almost all the complexity introduced by resizing. That is, the complexity is
+concentrated into sgreen, which seems appropriate. Additionally, with this
+alternative solution, you get other benefits like pnger being more usable (if
+sgreen uses first display update to figure out the display dimensions).
+
+I don't know. I'll have to stew a bit more on this.
+
+Sun Jul 17 13:55:01 EDT 2011
+
+Here's an idea. The problem with resizing is the introduced complexity in the
+clients that support it, right? Maybe the real problem is I'm trying to have
+one interface which works for all clients. But perhaps different clients need
+different interfaces. I always say you should use the right interface for what
+you need, then translate to other interfaces separately. Maybe what's wrong
+with X, and what's so complicated about it, is it tries to support anything
+any client may want to do with a single interface, so even if your client
+doesn't want to do a bunch of stuff, it still has to know about that to use
+the interface.
+
+An alternative would be we could have lots of different interfaces. The client
+can choose exactly that interface he wants to use, then we provided adaptors
+to go between the interface.
+
+For example, terminal applicaitions like bash, screen, readline, vim, etc...
+all use a terminal interface. Some applications may not care about screen
+resizing and stuff, so they don't need to use a complex interface for
+resizing, like pnger. Others you may want resizing for, such as termer and
+maybe pdfer (though I think part of my complaint is having to implement
+resizing in those applications).
+
+Then you have converters. termer converts terminal applications to the
+consoler application interface. Maybe you have a resizable application which
+converts those who don't care about resize to those who do care about resize.
+
+hmm...
+
+Mon Jul 18 23:31:54 EDT 2011
+
+I've thought some more about this. I don't know why it's so hard. I'm not
+convinced any way, but right now I'm leaning towards: just implement the
+resize capability. You know there will be other times you want it, and it
+really won't be so hard to implement as you fear, and it makes sense to have.
+Having multiple different kinds of interfaces which are close but different
+will just be way more confusing.
+
+Perhaps the real problem I'm facing is what to do with boxer. What should
+happen if you resize it? Should it be a resizeable application?
+
+Well, I suppose there are a limited number of rational behaviors. Let me list
+them.
+
+A. blank the screen, reinitialize.
+B. blank the screen, map box location to new size.
+C. blank anything outside the new screen, remap box location
+D. remap the box location, keep everything else as it was.
+E. Rewrite the box game and how it behaves when you go off screen:
+  Instead of wrapping around to the top, scroll the screen automatically to
+  fit the box. Then all you do when you resize is shrink the screen and
+  position it over the box. You get to retain all the drawing you have done so
+  far.
+
+Think about that some. Maybe the real takeaway here is not to start with
+boxer. Start with pdfer.
+

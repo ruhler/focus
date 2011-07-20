@@ -53,6 +53,13 @@ int main()
        ret = 1;
     }
 
+    // Test for 48.tsk.
+    const char* fontname3 = "Monospace-25:Bold";
+    FNTR_Fonter fonter3 = FNTR_Create(fontname3);
+    FNTR_LoadGlyph(fonter3, 0x2514);
+    CNSL_Display display = CNSL_AllocDisplay(64, 48);
+    FNTR_DrawGlyph(fonter3, display, 0xffffff, 0x000000, 0, 0);
+
     return ret;
 }
 

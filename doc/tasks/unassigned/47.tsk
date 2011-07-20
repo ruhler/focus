@@ -1,0 +1,15 @@
+
+Mon Jul 11 23:41:59 EDT 2011
+
+Task: Get poppler patch included in release
+
+After fixing the rotation stuff I think the patch is as generally as it could
+nicely be. I haven't found memory leaks. So I emailed the poppler mailing
+list. Let's see what they say.
+
+Sat Jul 16 17:57:54 EDT 2011
+
+I haven't gotten a meaningful response yet. Still waiting...
+
+Maybe I should find their bugzilla thing and try to submit my patch that way?
+

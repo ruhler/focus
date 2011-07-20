@@ -188,9 +188,17 @@ void FNTR_DrawGlyph(FNTR_Fonter fonter, CNSL_Display display,
     int height = fonter->face->glyph->bitmap.rows;
     uint8_t* bitmap = fonter->face->glyph->bitmap.buffer;
 
+    // Make sure we won't try to draw outside the cell_width or cell_height.
+    // This might otherwise happen because of the inaccuracy in freetype's
+    // reported metrics.
+    int bxmin = (left < 0) ? -left : 0;
+    int bymin = (top < 0) ? -top : 0;
+    int bxmax = (left + width > cell_width) ? cell_width - left : width;
+    int bymax = (top + height > cell_height) ? cell_height - top : height;
+
     int bx, by;
-    for (by = 0; by < height; by++) {
-        for (bx = 0; bx < width; bx++) {
+    for (by = bymin; by < bymax; by++) {
+        for (bx = bxmin; bx < bxmax; bx++) {
             int level = bitmap[by * width + bx];
 
             CNSL_Color c = CNSL_MakeColor(

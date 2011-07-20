@@ -12,4 +12,9 @@ on that w, and type some stuff, it leaves a long trail of messed up.
 I somehow suspect fonter width precision issues are at play. See the task for
 1.1.0 on g and y being clipped (15.tsk).
 
+Tue Jul 19 22:08:18 EDT 2011
+
+The fix for 48.tsk may have solved this issue. Let me double check on pacific,
+and if it's fixed, call the task done.
+
 

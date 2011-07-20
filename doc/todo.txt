@@ -2,12 +2,11 @@
 List of pending issues.
 
 1.1.0
-- may be memory leak in pdfer (46.tsk)
-- shift-tab same as tab in termer?
+- termer strands artifacts sometimes (41.tsk)
 - add support for resize in all apps (44.tsk)
-- review install and release targets (37.tsk)
 - documentation should have version number
 - review and revise doumentation
+- review install and release targets (37.tsk)
 - release 1.1.0 (33.tsk)
 
 unassigned
@@ -16,7 +15,7 @@ unassigned
 - add search command to pdfer
 - key remapping library
 - colors get inverted on sparc (endian issues)?
-- get poppler patch into poppler release
+- get poppler patch into poppler release (47.tsk)
 - add build dir option to config?
 - generated documentation should include copyright notice?
 - can I have a consoler version of firefox (27.tsk)
@@ -26,6 +25,6 @@ unassigned
 - library man page function prototypes are formatted wrong
 - get rid of FNTR_GlyphLevel function?
 - general purpose image viewer (40.tsk)
-- termer strands artifacts sometimes (41.tsk)
 - sgreen doesn't always clean up sockets (43.tsk)
+- termer feels slow again
 
