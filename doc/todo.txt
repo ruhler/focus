@@ -2,7 +2,6 @@
 List of pending issues.
 
 1.1.0
-- termer strands artifacts sometimes (41.tsk)
 - add support for resize in all apps (44.tsk)
 - documentation should have version number
 - review and revise doumentation

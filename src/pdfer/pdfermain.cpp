@@ -56,9 +56,14 @@ int main(int argc, char* argv[])
 
     std::string pdffilename = argv[1];
 
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
+    int width;
+    int height;
+
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
+    if (!CNSL_IsResize(event, &width, &height)) {
+        fprintf(stderr, "pdfer: expected resize event. Got %i\n", event.type);
+        return 1;
+    }
 
     Pdfer* pdfer = Pdfer::load(pdffilename, width, height);
     if (!pdfer) {
@@ -70,7 +75,6 @@ int main(int argc, char* argv[])
     pdfer->show(display);
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
-    CNSL_Event event;
     bool done = false;
     bool shifton = false;
     bool ctrlon = false;
@@ -134,7 +138,6 @@ int main(int argc, char* argv[])
             }
 
             pdfer->show(display);
-
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
         } else if (CNSL_IsKeyrelease(event, &sym)) {
             switch (sym) {
@@ -143,6 +146,14 @@ int main(int argc, char* argv[])
                 case CNSLK_LCTRL: ctrlon = false; break;
                 case CNSLK_RCTRL: ctrlon = false; break;
             }
+        } else if (CNSL_IsQuit(event)) {
+            done = true;
+        } else if (CNSL_IsResize(event, &width, &height)) {
+            CNSL_FreeDisplay(display);
+            display = CNSL_AllocDisplay(width, height);
+            pdfer->resize(width, height);
+            pdfer->show(display);
+            CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
         }
     }
 

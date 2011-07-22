@@ -241,3 +241,9 @@ double Pdfer::pageheight()
     return m_doc->create_page(m_page-1)->page_rect().height();
 }
 
+void Pdfer::resize(int width, int height)
+{
+    m_width = width;
+    m_height = height;
+}
+

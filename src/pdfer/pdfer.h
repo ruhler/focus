@@ -96,6 +96,9 @@ public:
     // Total number of pages.
     int pages();
 
+    // Change the field dimensions to the given width and height.
+    void resize(int width, int height);
+
 private:
     Pdfer(const std::string& filename, poppler::document* doc, int width, int height);
 

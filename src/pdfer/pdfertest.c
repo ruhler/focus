@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
     CNSL_Client pdfer = CNSL_LaunchClient(argv[1], argv+1);
     CNSL_Color color;
 
+    CNSL_SendEvent(pdfer, CNSL_MakeResize(640, 480));
     CNSL_RecvDisplay(pdfer, display, NULL, NULL, NULL, NULL);
 
     CNSL_SendEvent(pdfer, CNSL_MakeKeypress(CNSLK_w));
