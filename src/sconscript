@@ -2,7 +2,7 @@
 Import("env")
 
 
-html = env.Html('focus.html', 'focus.txt')
+html = env.Html('focus.html', 'focus.txt', ASCIIDOCFLAGS="-a 'VERSION=$VERSION'")
 env.Default(html)
 env.Install("$PREFIX/share/doc/focus-$VERSION", html)
 

@@ -159,3 +159,136 @@ Thu Jul 21 22:37:36 EDT 2011
 
 Yup! It was really easy to implement. Cool. Next on to termer I suppose.
 
+Thu Jul 21 22:38:56 EDT 2011
+
+Okay, cool. So I've almost got split to be useful. I just need termer to be
+resizable.
+
+Now this is going to be a bit more work than pdfer was.
+
+I need to add a resize function to the screen. Not sure what it does to the
+characters already there. It could... I suppose the obvious thing to do is any
+character that still fits in the screen stays, all the others go.
+
+We'll probably want to redisplay the entire screen. That shouldn't be too
+hard.
+
+Then the thing I need to figure out is how to tell the terminal client that
+the screen size changed. Is it this WINCH signal? Whatever screen does when it
+splits. Or whatever xterm does when you resize it. There must be a pretty
+standard way of doing this sort of thing.
+
+Time for research.
+
+SIGWINCH    28,28,20    Ign     Window resize signal (4.3BSD, Sun)
+
+It certainly looks like this is the way to go. But how does it work? Somehow I
+need to tell the client what the new dimensions are, right?
+
+Let me look into the screen source code, see if I can find anything.
+
+Thu Jul 21 23:04:44 EDT 2011
+
+Can't find much in screen.
+
+Is there an ioctl for it? Maybe: TIOCGWINSZ?
+
+Then maybe what I do is use an ioctl to set the window size, then send the
+signal to the child, and the child will use the ioctl to read the window size?
+Let me see if I can figure out anything more.
+
+Yes, it looks like maybe this is the way to go. Or TIOCGSIZE.
+
+Perhaps also, though, there is some terminfo entry for it that I didn't come
+across in the terminfo man page?
+
+Like: u6 = \E[%i%d,%dR (report)
+      u7 = \E[6n (request)
+
+Can I do stuff with stty?
+
+`stty size` prints the size according to the kernel.
+
+Looks like size information can be passed via kernel (TIOCGSIZE or TIOCGWINSZ)
+or via environment (LINES or COLUMNS). The environment doesn't support dynamic
+resize (sound familiar?).
+
+I need to do a little bit of research. Try writing a simple program to change
+the terminal size using TIOCG... Run it, verify it changes `stty size`, then
+experiment with screen and changine LINES and COLUMNs and stuff like that
+until I can figure out the proper method for resizing a terminal. I'm
+currently thinking the way to do it is: use ioctl to set size and send a
+SIGWINCH signal to the child. Or is SIGWINCH sent automatically? Something to
+play with.
+
+Sat Jul 23 16:59:25 EDT 2011
+
+What is the first experiment I should run?
+
+Write a program to change the screen size using TIOCGSIZE. Run it on whatever
+terminal screen is running on, and see if it works.
+
+Well, that's not good enough, because what does it mean for it to work?
+
+How about this. We think screen uses LINES and COLUMNS environment variables
+when it starts. The question is, how do we know how big screen thinks it is?
+What does it do differently? Like what if I told it to resize to a 80,12 sized
+window?
+
+Some ideas:
+1. ctrl-a i  gives the size screen thinks it is.
+2. let's change LINES and COLS and see what screen does different appearance
+wise. I can do this now.
+
+Oh. That's nice. The status bar is shown where you would expect for the small
+size, and vim works in the small size. Some other things (like pressing enter
+a lot) don't work as you would hope.
+
+In other words, it's pretty clear when screen thinks it is a different size.
+
+So I can do this experiment. Write a simple program to change the terminal
+size using TIOCGSIZE, run it, see if screen actually changes size.
+
+I might also note, inside screen after changing LINES before boot, stty size
+prints the smaller size.
+
+Cool. Here I go then.
+
+Sat Jul 23 17:30:36 EDT 2011
+
+I used TIOCSWINSZ, and it looks like it could work if I get the right file
+descriptor to do the ioctl on. We have the right file descriptor in ctermer,
+it's called tcfd.
+
+Well then. What's left to do? Try it out? Write a rough draft and see how it
+goes?
+
+Let me scope out the information flow.
+
+Here's the use case:
+  the consoler server sends us a resize event
+  we resize the screen object, resize the terminal file descriptor,
+  and maybe we redisplay something.
+
+Flow is: 
+  inputter calls getevent, which does the recv event.
+  if inputter gets the event, that isn't really useful, because it doesn't
+  know about any of the things it needs to do the resize.
+
+  I propose we have ctermer watch for the resize event and deal with it
+  separately, and never even tell the inputter about it.
+
+  Now ctermer gets the resize event, it has access to everything it needs to
+  calculate a new terminal size and send the ioctl.
+
+  What ctermer doesn't have access to is the screen object to tell it about
+  the resize.
+
+So this resize thing violates the intended design of termer. That is, normally
+input goes from consoler to inputter to client to screen to consoler. But now
+I'm asking to go from consoler to screen and other stuff to consoler.o
+
+Do you think it makes any sense to redesign the way termer works? It's gotten
+pretty messy the way we decomposed it from when it was a haskell program. Let
+me think about it some and get back to you.
+
