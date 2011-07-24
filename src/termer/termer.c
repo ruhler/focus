@@ -26,11 +26,20 @@
 #include "outputter.h"
 #include "screen.h"
 
+typedef struct {
+    bool pending;
+    int width;
+    int height;
+    pthread_mutex_t lock;
+} ResizeInfo_t;
+
+
 SCREEN_Screen scr;
 SCREEN_Position oldcursor;
 char* fromclientptr = NULL;
 DISPLAY_Display display;
 CLIENT_Client client;
+ResizeInfo_t resize;
 
 void drawcell(SCREEN_Position pos, const SCREEN_Cell* cell)
 {
@@ -47,7 +56,17 @@ SCREEN_Cell curserify(SCREEN_Cell c)
 char getf()
 {
     if (*fromclientptr == '\0') {
-        // Update the screen now, then ask for more input.
+        // Check for a resize event and handle if needed.
+        pthread_mutex_lock(&resize.lock);
+        if (resize.pending) {
+            resize.pending = false;
+            DISPLAY_Resize(display, resize.width, resize.height);
+            CLIENT_Resize(client, DISPLAY_Columns(display), DISPLAY_Lines(display));
+            SCREEN_Resize(&scr, DISPLAY_Columns(display), DISPLAY_Lines(display));
+        }
+        pthread_mutex_unlock(&resize.lock);
+
+        // Update the screen.
         diff(&scr, drawcell);
         SCREEN_Cell cell = cellat(&scr, oldcursor);
         drawcell(oldcursor, &cell);
@@ -57,18 +76,29 @@ char getf()
         drawcell(oldcursor, &cell);
         DISPLAY_Show(display);
 
+        // Get more input.
         fromclientptr = CLIENT_Read(client);
     }
 
     char c = *fromclientptr;
     fromclientptr++;
-    fprintf(stderr, "rc: %c\n", c);
     return c;
 }
 
 CNSL_Event getevent()
 {
-    return CNSL_RecvEvent(stdcon);
+    int width, height;
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
+    while (CNSL_IsResize(event, &width, &height)) {
+        pthread_mutex_lock(&resize.lock);
+            resize.pending = true;
+            resize.width = width;
+            resize.height = height;
+        pthread_mutex_unlock(&resize.lock);
+
+        event = CNSL_RecvEvent(stdcon);
+    }
+    return event;
 }
     
 
@@ -114,7 +144,11 @@ int main(int argc, char* argv[])
     setenv("LINES", linesstr, 1);
 
     client = CLIENT_Open();
+    CLIENT_Resize(client, DISPLAY_Columns(display), DISPLAY_Lines(display));
     scr = screen(DISPLAY_Columns(display), DISPLAY_Lines(display));
+
+    resize.pending = false;
+    pthread_mutex_init(&resize.lock, NULL);
 
     pthread_t othread;
     pthread_create(&othread, NULL, &runoutputter, NULL);

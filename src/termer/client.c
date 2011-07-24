@@ -2,6 +2,7 @@
 #include <pty.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "client.h"
@@ -49,7 +50,16 @@ char* CLIENT_Read(CLIENT_Client client)
         red = 0;
     }
     client_read_buf[red] = '\0';
-    fprintf(stderr, "read: %s\n", client_read_buf);
     return client_read_buf;
+}
+
+void CLIENT_Resize(CLIENT_Client client, int columns, int lines)
+{
+    struct winsize ws;
+    ws.ws_col = columns;
+    ws.ws_row = lines;
+    ws.ws_xpixel = 0;
+    ws.ws_ypixel = 0;
+    ioctl(client, TIOCSWINSZ, &ws);
 }
 

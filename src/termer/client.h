@@ -45,5 +45,10 @@ void CLIENT_Write(CLIENT_Client client, char c);
 /// Returns an empty string if there is no more input from the client.
 char* CLIENT_Read(CLIENT_Client client);
 
+/// CLIENT_Resize - resize the client
+///
+/// Resize the client to the given character dimensions.
+void CLIENT_Resize(CLIENT_Client, int columns, int lines);
+
 #endif//CLIENT_H
 

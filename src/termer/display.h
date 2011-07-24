@@ -82,5 +82,10 @@ void DISPLAY_DrawCell(DISPLAY_Display display,
 /// must be called.
 void DISPLAY_Show(DISPLAY_Display display);
 
+/// DISPLAY_Resize - resize the display
+///
+/// Resize the display to the given width and height in pixels.
+void DISPLAY_Resize(DISPLAY_Display display, int width, int height);
+
 #endif//DISPLAY_H
 

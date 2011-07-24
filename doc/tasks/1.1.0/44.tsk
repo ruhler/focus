@@ -316,3 +316,74 @@ Sat Jul 23 20:14:24 EDT 2011
 Okay, first step is to clean up termer. I want to merge termer.c and
 ctermer.c. Should this get its own task? Sure. 50.tsk.
 
+Sun Jul 24 00:25:40 EDT 2011
+
+50.tsk is done. Now back to the resize question. I think I'm closer now. It's
+relatively simple right?
+
+- implement client resize 
+   does the ioctl on the terminal client file descriptor to set the new window
+   size.
+
+- implement screen resize
+   reallocates the character display to the new size.
+
+- implement display resize
+   resets boundaries and updates lines and columns or some such.
+
+After all that's done we need to add the screen lock (which is really annoying
+to me), and call everything.
+
+Screen lock will be... troublesome. Because outputter calls the screen
+functions directly, it doesn't know about locking. I would have to change
+every call. Or change every call in screen itself.
+
+Maybe there's an easier way. Maybe outputter itself can check for a resize?
+But can a resize come in the middle of an output and would waiting be bad? Is
+that something to worry about?
+
+I don't know. That's too hard a question to think about right now. I'll sleep
+on it and get back to you.
+
+In the meantime, I can write down rough drafts for all the resize and maybe
+that will be useful?
+
+Sun Jul 24 00:48:05 EDT 2011
+
+Wrote rough drafts for client and display. Next for screen... though this
+touches on the race condition issue. I suppose it's still worth writing down
+the core logic.
+
+Sun Jul 24 00:51:49 EDT 2011
+
+Question. What do I do with the cursor if we are resizing it out of where it
+used to be? Can I just move it? Is that allowed? Can I keep it where it is? Is
+that allowed? Maybe I can move it to where it is and it will go to where it
+should be? Yes! I like that idea.
+
+Okay, it's done. Rough draft of code written for screen now too. The rest of
+the task is to figure out locking and call the resize functions (and obviously
+I'll need to debug them too).
+
+Sun Jul 24 16:52:18 EDT 2011
+
+Okay! I think I've worked out the screen lock issue.
+
+We do the resizing all from the outputter thread. This way there is no current
+conflict over the screen, so I don't have to put the lock on the screen.
+Instead I'll put a lock on a flag which says if we should resize or not, and
+I'll have the outputter read that just before it updates the display.
+
+This should be a very easy thing to implement now, so let me try it.
+
+Sun Jul 24 17:03:34 EDT 2011
+
+I wrote the code for resize, all that remains now is to try it out.
+
+Sun Jul 24 17:09:16 EDT 2011
+
+It works! Wow. Cool. Who would have thought?
+
+Let me just get rid of the printfs from previous debugging and I'll check it
+in. I'm not going to figure out how to test this automatically (sorry).
+

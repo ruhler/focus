@@ -463,4 +463,39 @@ SCREEN_Position mkpos(int col, int line)
     return pos;
 }
 
+void SCREEN_Resize(SCREEN_Screen* scr, int columns, int lines)
+{
+    int old_columns = scr->columns;
+    int old_lines = scr->lines;
+
+    SCREEN_Cell* old_cells = scr->cells;
+    SCREEN_Cell* old_oldcells = scr->oldcells;
+
+    scr->cells = malloc(columns * lines * sizeof(SCREEN_Cell));
+    scr->oldcells = malloc(columns * lines * sizeof(SCREEN_Cell));
+    scr->columns = columns;
+    scr->lines = lines;
+
+    // initialize both cells and oldcells.
+    clear_screen(scr);
+    diff(scr, nop);
+
+    // Now fill in the characters from before the resize.
+    int w = columns < old_columns ? columns : old_columns;
+    int h = lines < old_lines ? lines : old_lines;
+
+    int x, y;
+    for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+            scr->cells[y*columns + x] = old_cells[y*old_columns + x];
+            scr->oldcells[y*columns + x] = old_oldcells[y*old_columns + x];
+        }
+    }
+
+    free(old_cells);
+    free(old_oldcells);
+
+    // Make sure the cursor gets back in bounds.
+    cursor_address(scr, scr->cursor);
+}
 

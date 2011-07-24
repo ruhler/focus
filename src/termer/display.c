@@ -142,3 +142,34 @@ void DISPLAY_Show(DISPLAY_Display display)
     display->maxrow = -1;
 }
 
+void DISPLAY_Resize(DISPLAY_Display display, int width, int height)
+{
+    CNSL_Display ndisplay = CNSL_AllocDisplay(width, height);
+
+    int oldwidth = display->display.width;
+    int oldheight = display->display.height;
+    int w = width < oldwidth ? width : oldwidth;
+    int h = height < oldheight ? height : oldheight;
+
+    int x, y;
+    for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+            CNSL_SetPixel(ndisplay, x, y, CNSL_GetPixel(display->display, x, y));
+        }
+    }
+
+    CNSL_FreeDisplay(display->display);
+    display->display = ndisplay;
+
+    display->columns = width / display->cell_width;
+    display->lines = height / display->cell_height;
+
+    if (display->maxrow >= display->lines) {
+        display->maxrow = display->lines-1;
+    }
+
+    if (display->maxcol >= display->columns) {
+        display->maxcol = display->columns-1;
+    }
+}
+

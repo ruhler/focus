@@ -125,6 +125,9 @@ void put_char(SCREEN_Screen* scr, wchar_t c);
 SCREEN_Cell cellat(SCREEN_Screen* scr, SCREEN_Position pos);
 SCREEN_Position cursor(SCREEN_Screen* scr);
 
+// resize the screen to the given number of columns and lines.
+void SCREEN_Resize(SCREEN_Screen* scr, int columns, int lines);
+
 // diff: calls the given function for each cell which has changed.
 typedef void (*DiffFunction)(SCREEN_Position, const SCREEN_Cell*);
 void diff(SCREEN_Screen* scr, DiffFunction df);
