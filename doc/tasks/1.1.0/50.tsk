@@ -1,0 +1,154 @@
+
+Sat Jul 23 20:15:01 EDT 2011
+
+Task: merge ctermer.c and termer.c
+
+Goal is to clean up termer a little bit, plan is to merge the functionality of
+ctermer.c and termer.c into a single file. Question is what all functions we
+should have doing what.
+
+Here is the current list of functions:
+
+termer.c
+  drawcell - given a position and cell, draws the cell to the display. 
+  curserify - reformat a cell so it has the cursor on it.
+  getf - get the next client input, redraw screen occasionaly.
+  getevent - get the next consoler event
+  runoutputter - pthread wrapper around outputter.
+  main - get args, initialize stuff, launch outputter and inputter.
+
+ctermer.c
+  forkterminalclient
+  init - loads the font, calculate dimensions, forks the client
+  deinit - does nothing
+  totermclient - write a character to the terminal client.
+  fromtermclient - read output from the terminal client
+  redof, blueof, greenof - calculate truecolor for given terminal colors.
+  fromfixed - convert 16.16 fixed point to floating
+  drawcell - call fonter to draw cell to display.
+  showdisplay - send part of display that has changed to server.
+
+You see some overlap and such? I do. Allow me to propose a new set of
+functions.
+  init - load the font, launch the client and threads, initialize stuff.
+  drawcell - draw a cell to the screen with fonter.
+  showdisplay - send the display to the server as needed.
+  getf - get next client input, redraw screen occasionally.
+  
+Everything else is either not needed or just convinience. Those are the main
+things.
+
+I expect this should be a pretty easy clean up. Mostly just moving code around
+and deleting code.
+
+Sat Jul 23 22:01:04 EDT 2011
+
+I went to start making changes, and I think I see now why I divided it up the
+way I did. Termer.c doesn't have to know anything about how the characters are
+actually displayed on the screen. It doesn't have to know anything about
+consoler... err... except in the one place which I changed without thinking
+about it some time ago I think.
+
+Sat Jul 23 22:15:21 EDT 2011
+
+Okay, I think I've come up with a better idea. What we really want to do is
+decompose it like this:
+
+screen - exec screen actions
+inputter - translate console events to client input chars
+outputter - translate client output chars to screen actions
+display - draw the screen and send it to console server
+client - deal with the terminal client connection
+termer - main glue everything together
+
+screen, inputter, and outputter are already in good shape I think.
+I want to make a display and client which are in nice shapes too. None of this
+global data structure junk. Pass around pointers to dynamically allocated
+structures like we do for screen. Termer alone can have global stuff because
+it's an easier way to have partially applied functions.
+
+Cool. So display should have what interface?
+
+Display* Alloc() - initialize the display.
+  loads fonter, stuff like that.
+void Free(Display*) - clean up a display object.
+
+int Lines(Display*) - return the number of cell rows that fit in the display.
+int Columns(Display*) - return the number of cell cols that fit in the display.
+
+void DrawCell(pos, cell) - draw a cell on the display.
+void Show() - send the display to the consoler server.
+
+Simple! Wonderful! Yes, I'll do that.
+
+While I'm at it, what's the client connection thing look like?
+
+init, close, send, get, and in the future resize.
+
+Cool. Simple. Let me go write it up now then.
+
+Sat Jul 23 23:13:10 EDT 2011
+
+I implemented the display thing. Now all that's left is to implement the
+client thing (which should be really easy) and then pull it all together. Oh
+boy!
+
+Sat Jul 23 23:27:10 EDT 2011
+
+I implemented the client thing. That was very easy.
+
+So now I should be able to throw away ctermer and update termer and it should
+all be nice, right? Let's see what happens.
+
+Sat Jul 23 23:43:29 EDT 2011
+
+I made the change. Unfortunately I don't know how to test termer so well right
+now, so the only way I'll be confident it works is if I switch to it main
+time. Let me do that, then play with it a little, and if there are no issues,
+check in the change and call it clean.
+
+Sat Jul 23 23:49:10 EDT 2011
+
+Nope. I broke something. When I run vim it prints out something like:
+25h0c25llc
+at the cursor every time it's updated.
+
+That's very strange.
+
+The only thing I can think it might be now is my use of a static char* for the
+read buffer instead of a global one. Not sure why that would cause that...
+
+Something is being sent to the screen for it to output that isn't from the
+client. They must be characters placed on the screen. Who places characters?
+So they must be unconsumed characters, so there could be a problem with null
+termination of the read from client buffer, so that could make sense.
+
+Nope. Changing to global didn't fix anything.
+
+Sun Jul 24 00:11:38 EDT 2011
+
+It appears we aren't reading those characters from the client, which seems
+very odd to me. How else could they be getting to the screen? This must be a
+pointer bug or something like that.
+
+Display bug?
+
+Sun Jul 24 00:18:40 EDT 2011
+
+Hypothesis: we aren't handling ESC [ ? 25h; sequence, and we give up once we
+get the ?, so we print literaly out the 25h.
+
+The funny part is, why didn't we have this problem before? What changed? Did
+outputter change? Did the terminfo file change?
+
+Sun Jul 24 00:21:47 EDT 2011
+
+I found the problem. I wasn't setting TERM right (I had deleted the line).
+
+That all makes sense. What is sad is that I don't know how to write an
+automated test case for this.
+
+Oh well. I'm happy enough now to check it all in.
+
+So this task is done.
+

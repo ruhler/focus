@@ -21,7 +21,7 @@ env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET")
 
 # termer
 termer = env.Program('termer',
-    ['termer.c', 'ctermer.c', inputter_o, outputter_o, screen_o],
+    ['termer.c', 'client.c', 'display.c', inputter_o, outputter_o, screen_o],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
 env.Default(termer)
 
@@ -29,7 +29,10 @@ env.Default(termer)
 env.Object('termer_prof.o', 'termer.c',
     CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
     LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
-env.Object('ctermer_prof.o', 'ctermer.c',
+env.Object('client_prof.o', 'client.c',
+    CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
+    LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
+env.Object('display_prof.o', 'display.c',
     CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
     LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
 env.Object('inputter_prof.o', 'inputter.c',
@@ -42,7 +45,7 @@ env.Object('screen_prof.o', 'screen.c',
     CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
     LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'])
 env.Program('termer_prof',
-    ['termer_prof.o', 'ctermer_prof.o', 'inputter_prof.o', 'outputter_prof.o', 'screen_prof.o'],
+    ['termer_prof.o', 'display_prof.o', 'client_prof.o', 'inputter_prof.o', 'outputter_prof.o', 'screen_prof.o'],
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter_prof', 'consoler_prof'],
     CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],
     LINKFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage']

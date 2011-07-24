@@ -20,7 +20,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "ctermer.h"
+#include "client.h"
+#include "display.h"
 #include "inputter.h"
 #include "outputter.h"
 #include "screen.h"
@@ -28,14 +29,12 @@
 SCREEN_Screen scr;
 SCREEN_Position oldcursor;
 char* fromclientptr = NULL;
+DISPLAY_Display display;
+CLIENT_Client client;
 
 void drawcell(SCREEN_Position pos, const SCREEN_Cell* cell)
 {
-    int fgc = cell->cattrs.style.reverse ? cell->cattrs.bgcolor : cell->cattrs.fgcolor;
-    int bgc = cell->cattrs.style.reverse ? cell->cattrs.fgcolor : cell->cattrs.bgcolor;
-    int style = cell->cattrs.style.bold ? 1 : 0;
-
-    ctermer_DrawCell(pos.column, pos.line, cell->character, style, fgc, bgc);
+    DISPLAY_DrawCell(display, pos, cell);
 }
 
 SCREEN_Cell curserify(SCREEN_Cell c)
@@ -56,13 +55,14 @@ char getf()
         oldcursor = cursor(&scr);
         cell = curserify(cellat(&scr, oldcursor));
         drawcell(oldcursor, &cell);
-        ctermer_ShowDisplay();
+        DISPLAY_Show(display);
 
-        fromclientptr = ctermer_FromTermClient();
+        fromclientptr = CLIENT_Read(client);
     }
 
     char c = *fromclientptr;
     fromclientptr++;
+    fprintf(stderr, "rc: %c\n", c);
     return c;
 }
 
@@ -74,10 +74,15 @@ CNSL_Event getevent()
 
 void* runoutputter(void* ud)
 {
-    fromclientptr = ctermer_FromTermClient();
+    fromclientptr = CLIENT_Read(client);
     oldcursor = mkpos(0, 0);
     outputter(&scr, '\0', getf);
     exit(0);
+}
+
+void iput(char c)
+{
+    CLIENT_Write(client, c);
 }
     
 
@@ -99,15 +104,24 @@ int main(int argc, char* argv[])
         return 0;
     }
     
-    int cols, lines;
-    ctermer_Init(&cols, &lines);
+    display = DISPLAY_Alloc();
 
-    scr = screen(cols, lines);
+    char colsstr[10] = {0};
+    char linesstr[10] = {0};
+    snprintf(colsstr, 10, "%i", DISPLAY_Columns(display));
+    snprintf(linesstr, 10, "%i", DISPLAY_Lines(display));
+    setenv("COLUMNS", colsstr, 1);
+    setenv("LINES", linesstr, 1);
+
+    client = CLIENT_Open();
+    scr = screen(DISPLAY_Columns(display), DISPLAY_Lines(display));
 
     pthread_t othread;
     pthread_create(&othread, NULL, &runoutputter, NULL);
-    inputter(getevent, ctermer_ToTermClient);
-    ctermer_DeInit();
+    inputter(getevent, iput);
+    
+    CLIENT_Close(client);
+    DISPLAY_Free(display);
     return 0;
 }
 

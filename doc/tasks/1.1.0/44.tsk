@@ -292,3 +292,27 @@ Do you think it makes any sense to redesign the way termer works? It's gotten
 pretty messy the way we decomposed it from when it was a haskell program. Let
 me think about it some and get back to you.
 
+Sat Jul 23 19:33:31 EDT 2011
+
+Here's the first problem. The screen is in termer.c, the resize comes to
+ctermer.c. That could be solved, perhaps, by first cleaning up the termer
+implementation (merge stuff from ctermer.c into termer.c for example).
+
+Here's the second problem. The resize event comes from the console server and
+has to change the screen. But the screen is also, perhaps currently, being
+updated by the terminal client. That means we need mutual exclusion. A lock.
+Yuck.
+
+So there's not nice easy pleasent way to do it all.
+
+Looking at ctermer.c and termer.c, I think these can be merged into one file
+(termer.c) in a much nicer way. It really is a very funny decomposition the
+way it is now. Then add snooping of the resize events, and a lock on screen.
+Implement a screen_resize function, and that's pretty much it. Doable. Not as
+clean as I would like it, but I guess that's just the way things are.
+
+Sat Jul 23 20:14:24 EDT 2011
+
+Okay, first step is to clean up termer. I want to merge termer.c and
+ctermer.c. Should this get its own task? Sure. 50.tsk.
+
