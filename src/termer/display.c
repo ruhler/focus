@@ -124,9 +124,11 @@ void DISPLAY_Show(DISPLAY_Display display)
     int h = 0;
 
     if (display->mincol != -1) {
-        assert(display->maxcol != -1);
-        assert(display->minrow != -1);
-        assert(display->maxrow != -1);
+        assert(display->maxcol >= 0);
+        assert(display->minrow >= 0);
+        assert(display->maxrow >= 0);
+        assert(display->maxcol >= display->mincol);
+        assert(display->maxrow >= display->minrow);
 
         x = display->cell_width * display->mincol;
         y = display->cell_height * display->minrow;

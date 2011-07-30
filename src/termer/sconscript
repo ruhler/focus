@@ -58,22 +58,3 @@ env.Command('termer.prof', ['gmon.out', 'termer_prof'],
 env['PROGRAMDOC']('termer')
 env.Install("$PREFIX/bin", termer)
 
-env.Install("$RELEASE", [
-    'ctermer.c',
-    'ctermer.h',
-    'inputter.c',
-    'inputter.h',
-    'inputtertest.c',
-    'outputter.c',
-    'outputter.h',
-    'outputtertest.c',
-    'sconscript',
-    'screen.c',
-    'screen.h',
-    'screentest.c',
-    'termer.c',
-    'termer.docl',
-    'termer.ti'
-    ])
-
-

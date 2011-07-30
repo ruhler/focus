@@ -8,5 +8,4 @@ Default(sdlcsr)
 
 env['PROGRAMDOC']('sdlcsr')
 env.Install("$PREFIX/bin", sdlcsr)
-env.Install("$RELEASE", ['sconscript', 'sdlcsr.c', 'sdlcsr.docl'])
 

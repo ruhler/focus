@@ -11,11 +11,4 @@ Default(env.Command('pngertest.out', [pngertest, pnger, 'green.png'],
 
 env['PROGRAMDOC']('pnger')
 env.Install("$PREFIX/bin", pnger)
-env.Install("$RELEASE", [
-    'green.png',
-    'pnger.c',
-    'pnger.docl',
-    'pngertest.c',
-    'sconscript'
-    ])
 

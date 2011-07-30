@@ -15,3 +15,21 @@ than that all the right files have been explicitly written down.
 
 Yes, I think I'm almost sold on this.
 
+Sun Jul 24 17:42:54 EDT 2011
+
+I'm getting close to releasing 1.1.0, and I think the file structure is pretty
+set, so let me start working on this now.
+
+Sun Jul 24 17:55:25 EDT 2011
+
+Stupid. Because src/ is a variant dir, for some reason scons can't handle
+installing it as a directory elsewhere.
+
+Sun Jul 24 20:23:26 EDT 2011
+
+I tried lots of variations on install. I don't understand why it doesn't work.
+The closest useful thing I've found so far is to copy it with an env.Command,
+but then it doesn't do the recursive dependency tracking right.
+
+I hate scons.
+

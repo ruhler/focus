@@ -15,15 +15,3 @@ Default(env.Command('pdfertest.out', [pdfertest, pdfer, 'colors.pdf'],
 env['PROGRAMDOC']('pdfer')
 env.Install("$PREFIX/bin", pdfer)
 
-env.Install("$RELEASE", [
-    'colors.pdf',
-    'pdfer.cpp',
-    'pdfer.docl',
-    'pdfer.h',
-    'pdfermain.cpp',
-    'pdfertest.c',
-    'poppler_cpp_cairo.patch',
-    'sconscript',
-    ])
-
-

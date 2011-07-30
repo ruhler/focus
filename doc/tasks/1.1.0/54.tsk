@@ -1,0 +1,35 @@
+
+Sat Jul 30 14:13:07 EDT 2011
+
+Task: CNSL_RecvDisplay fails on realloc
+
+See 51.tsk for the motivation of this task.
+
+Here's what I did: double up filler a bunch of times, then you see when you
+call CNSL_RecvDisplay, it crashes at realloc of junk or something funny like
+that which I don't understand.
+
+That is, I guess we never really tested properly the case where the display
+being sent is larger than the display receiving into. Let me add this test to
+consolertest. Er, no. fillertest is where it goes (that's as much a consoler
+test as anything else).
+
+Sat Jul 30 14:19:06 EDT 2011
+
+Problem is we run out of memory. That is, the test doesn't seem to trigger on
+filler, which is interesting...
+
+Sat Jul 30 14:36:03 EDT 2011
+
+I wonder now if this is related to a sgreen bug, like memory overflow or
+something that we don't catch until we try to do the realloc.
+
+Well, but I found another related bug. Let me open a new task for that, test
+it, then come back to this.
+
+Sat Jul 30 14:47:19 EDT 2011
+
+With that task I mentioned (55.tsk) fixed and done, the thing which was
+triggering this error went away. I don't think this is a true error, so I'll
+close this task too.
+

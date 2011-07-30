@@ -25,4 +25,3 @@ include::bugs.txt[]
 
 :leveloffset: 0
 
-

@@ -1,0 +1,179 @@
+
+Sun Jul 24 17:19:38 EDT 2011
+
+Task: termer crashes on split.
+
+If I split termer in sgreen, it crashes or something. The screen freezes and
+we loose focus.
+
+Sun Jul 24 17:23:26 EDT 2011
+
+I wonder if this is a race condition, because it seems to happen sometimes and
+not others.
+
+Tue Jul 26 21:32:39 EDT 2011
+
+Times it happened:
+   in sdlcsr sgreen termer screen vim
+   in sdlcsr sgreen termer vim
+   in sdlcsr sgreen termer
+
+It seems to be fairly consistent around now.
+
+Oh... here's an idea. Maybe it happens only when the cursor is on the bottom
+half of the screen?
+
+Let me try moving the cursor to the top half of the screen.
+
+Aha! It's working! Hmm...
+
+So it would seem the problem is related to the cursor being outside the screen
+when it is resized. I thought I had taken care of that in screen resize, but
+I guess not.
+
+What I should really do is implement an automated test case for this. Before
+anything else! Do it! Now! Go! !
+
+Hmm... Maybe it's because the application thinks the cursor is one place, and
+suddenly you've moved it to another place. That could be sort of the race
+condition? We have to wait for the client to move the cursor back in
+bounds, not do it for the client?
+
+I'll think about it (not that that will do much good, but...)
+
+Fri Jul 29 22:55:32 EDT 2011
+
+I have a plan for the test case. I can write this.
+
+I'll open up a termer (no sgreen needed), send a bunch of enter events to
+scroll to the bottom, then send a resize smaller event, then send "exit". If
+it works, it should work, if it doesn't, it shouldn't.
+
+I'll want to make this work manually first if I can. In fact, for the purposes
+of progress, let me get the test to work manually right now.
+
+Sat Jul 30 12:55:09 EDT 2011
+
+I don't know if it works manually. Ah. Now I remember. I was going to attach a
+debugger and see if it exited normally or crashed. Okay, let me do that then.
+
+Sat Jul 30 12:59:09 EDT 2011
+
+The debugger says it didn't crash. I'm not sure why it should crash. What
+would crash is vim, right? So let me try a manual test with vim to see if I
+can crash termer that way.
+
+Sat Jul 30 13:02:46 EDT 2011
+
+This time I got the crashing behavior (input didn't do anything, output wasn't
+updated correctly), but gdb didn't see any problems at all. Is it possible the
+problem isn't with termer? Maybe it's with sgreen?
+
+sgreen said it exited normally. Hum...
+
+I'm going to try now with both termer and sgreen under gdb and see what
+happens.
+
+Sat Jul 30 13:12:56 EDT 2011
+
+I got termer to seg fault in a call to CNSL_FillRect. But for some reason gdb
+then exited. Let me try to do it again and get a core dump.
+
+Sat Jul 30 13:18:55 EDT 2011
+
+This time sgreen seg faulted, because it recieved a display with width and
+height 11447982, which is too big.
+
+So there are multiple problems going on here.
+
+1. Why did termer send such a large display? (Or did it?)
+2. Why doesn't sgreen handle too large of a display?
+
+We could be facing a couple simultaneous bugs here.
+
+Let me start with (2), because that should be easy to understand from the
+source code.
+
+Okay, there's a TODO written in the code. green currently happily assumes the
+width and height will be in bounds. It should just do the simple check to
+verify that's the case, and limit it if needed (ignore the rest of the pixels).
+
+This, like so many things, will be much easier to fix than it will be to test
+automatically. Maybe I can write a simple malicious consoler application which
+sends bad sized displays.
+
+Or, I could make filler more general, have it take as input a width/height
+override flag, then use that.
+
+Okay, so we see that issue there. Now how about termer. Why does it send such
+a large dimensions size?
+
+The only thing I can think is if maxcol is smaller than mincol or maxrow is
+smaller than minrow. I've added assertions to the termer code. We'll see if we
+trigger those.
+
+Sat Jul 30 13:34:08 EDT 2011
+
+I can't tell. I'm afraid the core file from sgreen might be overwritting any
+core file from termer.
+
+That means the first step is to fix the bug in sdlcsr. Make it so it can
+handle bogus input dimensions.
+
+Hmm... I wonder if we should take care of this in consoler itself. We could
+just make sure the width_out and height_out reflect what's been updated on the
+display, as opposed to what's been sent by the client. Is that what we want?
+Or would we ever want to know what's been sent by the client even though we
+don't have a big enough display to capture the pixels?
+
+Either way, we still need to handle the overflow case in sgreen where the
+display is bigger than the view, right?
+
+Here's my proposal. Add a key command to filler, call it 'd', for double. This
+will be treated as if a resize request to double the screen size was called.
+Now in my screen split tests, I can send this command to filler on the top
+window and make sure it doesn't mess up the bottom window.
+
+Once I have the test case, the fix should be easy. After that we can decide
+what we want to do about the CNSL_RecvDisplay function, and hopefully the
+termer bug will be more clear.
+
+Sat Jul 30 13:59:06 EDT 2011
+
+Okay, so I wrote up the filler thing, but it... It crashes sgreen when I run
+manually, but not when I run my test case. What's with that, huh?
+
+Sat Jul 30 14:09:00 EDT 2011
+
+Okay, so I got a crash if I went deeper than just one, but guess what? The
+crash was in CNSL_RecvDisplay in the junk reallocation. So it never got into
+sgreen itself.
+
+Gah. What we are seeing here is a whole big pile of bugs. Bugs on top of bugs
+on top of bugs, and I need to fix them in the right order.
+
+Here's what the stack looks like right now, going top down:
+
+1. CNSL_RecvDisplay crashes on realloc? (54.tsk)
+2. sgreen fails to handle oversized display sends.
+3. termer sends doesn't do resizing right.
+
+Each of these needs it's own separate task. All contribute to the termer split
+problem. Okay. I'll make tasks for each. But maybe just one at a time.
+
+Sat Jul 30 14:48:21 EDT 2011
+
+(1) turned out to be bogus, though I did fix the CNSL_RecvDisplay with and
+height problem (55.tsk), at which point the sgreen test case failure went
+away.
+
+So, the question now is, did that fix the terminal splitting problem?
+
+We still have that TODO thing in sgreen which should cause a problem for
+something at some time, but maybe that's not the issue I'm having now.
+
+Sat Jul 30 14:53:29 EDT 2011
+
+Well, the split bug hasn't gone away. I'll have to keep working at it I
+suppose.
+

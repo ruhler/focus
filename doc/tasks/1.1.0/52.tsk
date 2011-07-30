@@ -1,0 +1,18 @@
+
+Sun Jul 24 17:34:20 EDT 2011
+
+Task: termer doesn't redraw full display on resizing larger
+
+So, for example, if I'm split sgreen and then I make termer take up the full
+screen, the bottom of the screen will still contain what used to be there
+instead of the lower half blank part of the newly resized larger screen.
+
+The fix might be as simple as makeing maxcol and maxrow the maxcol and maxrow
+when sizing larger.
+
+Sat Jul 30 12:53:50 EDT 2011
+
+Testing is much harder. I'm thinking write an ncurses version of filler for
+terminal applications. Then fill the screen a color, redraw it bigger, and
+verify the bigger space is made the right color?
+

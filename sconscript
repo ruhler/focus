@@ -102,8 +102,11 @@ env.Alias('install', '$PREFIX')
 
 
 env['RELEASE'] = Dir('focus-%s' % env['VERSION'])
-env.Install("$RELEASE", ['COPYING', 'makefile', 'sconscript', 'sconstruct'])
-env.Install("$RELEASE", "#/doc")
+#env.Install("$RELEASE", ['COPYING', 'makefile', 'sconscript', 'sconstruct'])
+env.Install("$RELEASE", ['COPYING', 'makefile'])
+env.Install("$RELEASE", Dir("#/doc"))
+env.Install("$RELEASE", "#/src")
+env.Install("$RELEASE/scons", "#/scons/asciidoc.py")
 release = env.Command('%s.tar.gz' % env['RELEASE'], "$RELEASE",
         "tar -c -f $TARGET --directory ${TARGET.dir} ${SOURCE.srcpath}")
 env.Alias('release', release)

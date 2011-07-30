@@ -387,3 +387,16 @@ It works! Wow. Cool. Who would have thought?
 Let me just get rid of the printfs from previous debugging and I'll check it
 in. I'm not going to figure out how to test this automatically (sorry).
 
+Sun Jul 24 17:14:26 EDT 2011
+
+Well now. All the hard parts done (right?). What, if anything, still uses the
+CNSL_GetGeometry function?
+
+Err... I had a problem when I tried out split with pdfer and termer. The
+termer seemed to crash or something.
+
+Yup. I'll open a  new task to deal with that (51.tsk).
+
+Anyway, users of CNSL_GetGeometry remaining are:
+  boxer, fonterexample, sgreen.
+

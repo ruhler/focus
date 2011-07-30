@@ -41,8 +41,8 @@ int main(int argc, char* argv[])
     int sar = sigaction(SIGPIPE, &action, NULL);
     assert(sar == 0);
 
-    int width = 640;
-    int height = 480;
+    int width = 64;
+    int height = 48;
 
     CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_Event event;
@@ -59,6 +59,23 @@ int main(int argc, char* argv[])
     CNSL_RecvDisplay(filler, display, NULL, NULL, NULL, NULL);
     printf("%x\n", CNSL_GetPixel(display, 20, 30));
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
+
+    // Verify CNSL_RecvDisplay reports the right width and height if the
+    // display sent is too big. (55.tsk)
+    int x, y, w, h;
+    event = CNSL_MakeKeypress(CNSLK_d);
+    CNSL_SendEvent(filler, event);
+    CNSL_RecvDisplay(filler, display, &x, &y, &w, &h);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
+    assert(w == display.width);
+    assert(h == display.height);
+
+    event = CNSL_MakeKeypress(CNSLK_h);
+    CNSL_SendEvent(filler, event);
+    CNSL_RecvDisplay(filler, display, &x, &y, &w, &h);
+    assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
+    assert(w == display.width);
+    assert(h == display.height);
 
     event = CNSL_MakeKeypress(CNSLK_r);
     CNSL_SendEvent(filler, event);

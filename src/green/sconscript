@@ -22,12 +22,3 @@ env['PROGRAMDOC']('sgreen')
 env['PROGRAMDOC']('cgreen')
 env.Install("$PREFIX/bin", [sgreen, cgreen])
 
-env.Install("$RELEASE", [
-    'cgreen.c',
-    'cgreentest.c',
-    'green.docl',
-    'sconscript',
-    'sgreen.c',
-    'sgreentest.c',
-    ])
-

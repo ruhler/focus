@@ -1,0 +1,9 @@
+
+Sat Jul 30 12:58:15 EDT 2011
+
+Task: handle unhandled input key 308
+
+When I run sdlcsr sgreen it outputs to standard error this warning message
+that input key 308 isn't handled. Can I make that go away by figuring out the
+appropriate thing to do when we get a 308 key?
+

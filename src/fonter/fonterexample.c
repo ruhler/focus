@@ -26,13 +26,17 @@ int main()
     const char* fontname = "Monospace-25:Bold";
     const char* string = "Hello there! goodbye!";
 
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
+    int width;
+    int height;
+
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
+    if (!CNSL_IsResize(event, &width, &height)) {
+        fprintf(stderr, "fonterexample: expected resize event. Got %i\n", event.type);
+        return 1;
+    }
 
     CNSL_Display display = CNSL_AllocDisplay(width, height);
 
-    CNSL_Event event;
     CNSL_Keysym sym;
     bool done = false;
 

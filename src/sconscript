@@ -8,5 +8,4 @@ env.Install("$PREFIX/share/doc/focus-$VERSION", html)
 
 readme = env.Html('README.html', 'README.txt')
 Default(readme)
-env.InstallAs("$RELEASE/../README", readme)
 

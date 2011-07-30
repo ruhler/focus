@@ -27,13 +27,3 @@ env.Install("$PREFIX/include", ['consoler.h', 'consoler_keysym.h'])
 env.Install("$PREFIX/lib", consoler);
 env.Install("$PREFIX/lib/pkgconfig", consolerpkgconfig)
 
-env.Install("$RELEASE", [
-    'consoler.c',
-    'consoler.docl',
-    'consoler.h',
-    'consoler_keysym.h',
-    'consoler.pc.in',
-    'consolertest.c',
-    'sconscript'
-    ])
-

@@ -12,10 +12,4 @@ Default(env.Command('boxertest.out', [boxertest, boxer], "$SOURCES > $TARGET"))
 env['PROGRAMDOC']('boxer')
 
 env.Install("$PREFIX/bin", boxer)
-env.Install("$RELEASE", [
-    'boxer.c',
-    'boxer.docl',
-    'boxertest.c',
-    'sconscript'
-    ])
 

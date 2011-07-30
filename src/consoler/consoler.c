@@ -304,6 +304,7 @@ bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         read(client.fdin, buf, wuse * sizeof(CNSL_Color));
         read(client.fdin, junk, wleft * sizeof(CNSL_Color));
     }
+    int huse = y - dsty;
 
     for (; y < dsty + height; y++) {
         read(client.fdin, junk, width * sizeof(CNSL_Color));
@@ -316,10 +317,10 @@ bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         *dsty_out = dsty;
     }
     if (width_out) {
-        *width_out = width;
+        *width_out = wuse;
     }
     if (height_out) {
-        *height_out = height;
+        *height_out = huse;
     }
 
     return true;
