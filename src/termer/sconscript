@@ -25,6 +25,15 @@ termer = env.Program('termer',
     LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
 env.Default(termer)
 
+# termfiller
+termfiller = env.Program('termfiller', 'termfiller.c', LIBS=['curses'])
+env.Default(termfiller)
+
+# termertest
+termertest = env.Program('termertest', 'termertest.c', LIBS=['consoler'])
+env.Default(env.Command('termertest.out', [termertest, termer, termfiller],
+    "$SOURCES > $TARGET"))
+
 # A profiling version of termer
 env.Object('termer_prof.o', 'termer.c',
     CFLAGS = ['-pg', '-fprofile-arcs', '-ftest-coverage'],

@@ -2,7 +2,6 @@
 List of pending issues.
 
 1.1.0
-- termer doesn't redraw full display on resizing larger (52.tsk)
 - add support for resize in all apps (44.tsk)
 - review and revise doumentation
 - review install and release targets (37.tsk)

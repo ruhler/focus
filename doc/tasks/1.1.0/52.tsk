@@ -16,3 +16,20 @@ Testing is much harder. I'm thinking write an ncurses version of filler for
 terminal applications. Then fill the screen a color, redraw it bigger, and
 verify the bigger space is made the right color?
 
+Sun Jul 31 18:43:23 EDT 2011
+
+I'll try writing the ncurses thing. If it's too hard... Hopefully it won't be,
+and I'll be able to write it and catch this bug in a test case and fix the bug
+and be happy.
+
+Sun Jul 31 19:40:01 EDT 2011
+
+Test case isn't working out for some reason. Bugger.
+
+It's so hard to figure out what's supposed to go on at the corner cases.
+
+Can I call this fixed until I run into it again? If I run into it again I can
+explain what I don't like and write a proper test case for it?
+
+Yes, I'll do that. Bugger these hard to test bugs.
+

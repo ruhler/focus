@@ -171,12 +171,12 @@ void DISPLAY_Resize(DISPLAY_Display display, int width, int height)
     display->columns = width / display->cell_width;
     display->lines = height / display->cell_height;
 
-    if (display->maxrow >= display->lines) {
-        display->maxrow = display->lines-1;
-    }
-
-    if (display->maxcol >= display->columns) {
-        display->maxcol = display->columns-1;
-    }
+    // Set it to redraw the whole display. We could be more clever, but this
+    // isn't an often occurence, so might as well take the time and keep
+    // things simple.
+    display->minrow = 0;
+    display->mincol = 0;
+    display->maxrow = display->lines-1;
+    display->maxcol = display->columns-1;
 }
 
