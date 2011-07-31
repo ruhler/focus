@@ -71,7 +71,8 @@ int DISPLAY_Columns(DISPLAY_Display display);
 
 /// DISPLAY_DrawCell - draw a character on the display
 ///
-/// Draw the given 'cell' on the display at 'pos'.
+/// Draw the given 'cell' on the display at 'pos'. The 'pos' may be outside
+/// the screen boundary, in which case nothing will be drawn.
 void DISPLAY_DrawCell(DISPLAY_Display display,
         SCREEN_Position pos, const SCREEN_Cell* cell);
 

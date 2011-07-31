@@ -218,6 +218,9 @@ bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event);
 /// coordinates ('srcx', 'srcy'). The pixels will be written to the
 /// destination coordinates ('dstx', 'dsty') of a master display the
 /// server keeps track of for the client.
+///
+/// The source rectangle must fit entirely within 'display', otherwise the
+/// behavior is undefined (but likely very bad).
 void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         unsigned int srcx, unsigned int srcy,
         unsigned int dstx, unsigned int dsty,

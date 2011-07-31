@@ -1,0 +1,48 @@
+
+Sun Jul 31 15:29:29 EDT 2011
+
+Task: alternative to scons?
+
+Scons is much better than make, but it's still a big pain to use.
+
+Complaints about scons:
+  - figuring out how to add a builder is complicated
+    (though I'm always surprised when I get it working that it works)
+  - strange and very annoying stuff happens when trying to copy a directory
+    with the same name as a variant directory. I don't understand how it
+    works.
+  - implicit intermediate files for different environments need to be
+    explicitly renamed (thinking profiling versus nonprofiling programs)
+  - dependencies must be specified properly and could be wrong (happens
+    occasionally)
+  - it's too complicated to expect someone else to learn and figure it out.
+    *** this is a big point ***
+
+I would like to at least consider some alternatives.
+
+One alternative may be to use scons, but not to do it in the sconsish way.
+Write and use my own abstractions and just use the underlying scons mechanism.
+That may or may not help.
+
+What I would really like to try (though it will likely have its own problems),
+is a tcl based solution which leverages something like strace to automatically
+and accuratly figure out all the dependencies for any command you run.
+
+So it will be like tcl, but we remove those command that let you interact with
+the world except for some explicit exec command which has been modified to run
+the command with strace and figure out the dependencies.
+
+For the first try we could have a model where you always build the entire
+project by running all the commands in order, but the tool is clever enough to
+sometimes make things go faster by not rerunning things that don't need to be
+rerun.
+
+The overhead to learn it? Hopefully none. You just have to know how to specify
+your build commands, and you can use all the scriptability of tcl that you
+already know and love.
+
+No complicated explicit dependency lists or dependency search algorithms, or
+having to worry about such things (perhaps). We may need to make it a little
+more complicated to handle certain things (like allowing commands to depend on
+generated files), but I could deal with that when I get there, right?
+

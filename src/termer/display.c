@@ -90,6 +90,11 @@ void DISPLAY_DrawCell(DISPLAY_Display display,
     int col = pos.column;
     int row = pos.line;
 
+    if (col < 0 || col >= display->columns
+            || row < 0 || row >= display->lines) {
+        return;
+    }
+
     // expand the display update rectangle if needed.
     if (display->mincol == -1 || display->mincol > col) {
         display->mincol = col;

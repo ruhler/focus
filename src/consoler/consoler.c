@@ -16,6 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <assert.h>
 #include <poll.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -250,6 +251,11 @@ void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
         unsigned int dstx, unsigned int dsty,
         unsigned int width, unsigned int height)
 {
+    assert(srcx < display.width);
+    assert(srcy < display.height);
+    assert(srcx + width <= display.width);
+    assert(srcy + height <= display.height);
+
     // Output the data using the following format:
     // ui4: x destination
     // ui4: y destination

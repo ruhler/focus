@@ -3,7 +3,6 @@ List of pending issues.
 
 1.1.0
 - termer doesn't redraw full display on resizing larger (52.tsk)
-- termer crashes on split (51.tsk)
 - add support for resize in all apps (44.tsk)
 - review and revise doumentation
 - review install and release targets (37.tsk)
@@ -28,4 +27,5 @@ unassigned
 - sgreen doesn't always clean up sockets (43.tsk)
 - termer feels slow again
 - handle unhandled input key 308 (53.tsk)
+- alternatives to scons? (56.tsk)
 

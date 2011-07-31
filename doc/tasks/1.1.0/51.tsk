@@ -177,3 +177,197 @@ Sat Jul 30 14:53:29 EDT 2011
 Well, the split bug hasn't gone away. I'll have to keep working at it I
 suppose.
 
+Sat Jul 30 19:42:44 EDT 2011
+
+Okay, that time the bug happened when the cursor was near the top of the
+screen, but inside vim.
+
+And an interesting thing has happened. I can create a new sgreen window. I
+could reattach to my screen (I'm in it now). If I go to the original window
+though, it just shows some junk that was at one time displayed and seems to
+ignore any input events.
+
+What's somewhat surprising is that I have three termer's running now, when I
+expect I should only have 2.
+
+Okay, I connected to the first one. It gets my input events. What's happening
+to those? Do they do something? Anything? Is it possible the terminal client
+died? But then screen would have been detached, right? Can I reattach it
+somehow?
+
+No, I can see the client is still running. I just mistyped something.
+ 
+Yes, and I managed to reattach the screen. So the problem isn't with the
+terminal client.
+
+What happens to the display? Why doesn't it get updated?
+
+Well, I see termer is sending the update. The question is, why isn't green
+getting the update?
+
+Let me attach to that then.
+
+I don't know. It doesn't make sense to me.
+
+One of my termer's is a zombie. That's interesting...
+
+Well, I've run out of time for now. I'll come back later. I think I learned
+some stuff though, so that's good...
+
+Sun Jul 31 13:49:48 EDT 2011
+
+What could explain the behavior I saw? Why was there a perfectly functioning
+termer running, getting input, sending output, that sgreen wasn't getting any
+output from? Why was there a zombie termer process? Is it possible sgreen was
+sending input to the working termer, but getting the output from the zombie
+termer? That doesn't seem to make any sense to me.
+
+Let me see if I can reproduce the same sort of situation as before, or any
+situation, and do more debugging to figure out what's happening.
+
+Sun Jul 31 13:55:31 EDT 2011
+
+Tried: split with cursor at top of screen. Worked fine.
+Tried: split with cursor near bottom of screen
+    The split worked, but the cursor wasn't on the screen, and when I tried to
+    go down in vim, something crashed and sgreen exited. I've enabled core
+    dumps, so maybe I can duplicate this somehow and figure out what happened.
+
+Sun Jul 31 14:04:03 EDT 2011
+
+Aha! Making progress. We got the split problem again where it just freezes.
+sgreen was stuck in CNSL_RecvDisplay. It apparently had gotten like y, w, and
+h were all 11447982. x was 0.
+
+Just for the fun of it, let's translate those values to hex.
+
+x: 00000000
+y: 00aeaeae
+w: 00aeaeae
+h: 00aeaeae
+
+That looks suspiciously like a color value, wouldn't you say?
+
+It seems RecvDisplay and SendDisplay get out of alignment somehow. That's not
+so surprising when you consider termer is probably sending too large a display
+area when we do the resize, and that code hasn't been exercised so well.
+
+I wonder. Maybe termer is even sending a part of a display which is entirely
+out of bounds... what would that do?
+
+Let me do a code review of the CNSL_SendDisplay and CNSL_RecvDisplay, see if
+anything jumps out at me.
+
+- dstx, dsty, width, and height can't be negative passed to SendDisplay
+    If it is, then bad stuff will happen (it wraps around to 4 billion or so)
+- no bounds checking is done by send (it assumes it fits in display)
+- bytes written by send:
+    4*4 for header
+    height * width * 4  for data
+
+    total: 16 + 4hw bytes
+- bytes read by recv:
+    4*4 for header
+
+    case (dsty + height < display.height):
+        height * 4 * (wuse + wleft) = height * width * 4
+    case (dsty + height > display.height):
+        (display.height - dsty) * width * 4
+        (dsty + height - display.height) * width * 4)
+        Totals to: height * width * 4
+
+So the alignment is correct. We always read the same amount as we send.
+        
+Maybe I can just print out the x, y, w, h fields written and read and make
+sure they all line up. Okay? Sounds like a plan to me.
+
+Sun Jul 31 14:29:12 EDT 2011
+
+Well, there you have it. One problem at least. Termer after resize has it so
+that maxrow is 20, but the total number of lines is 12 or some such.
+
+That is, I suspect because of a race condition on resize, some stuff gets
+drawn outside the screen.
+
+When we resize, we set maxrow and maxcol to be inside the bounds of the newly
+sized screen. When we draw cell, we might change that.
+
+That means drawcell must be being called for a cell outside the screen range.
+Which seems very...odd.
+
+Unless! oldcursor is out of the screen range, and we unecessarally try to
+delete it.
+
+There are lots of places we could do checks to prevent these problems. For
+example, in drawcell we could make sure we only draw things in the bounds of
+the display.
+
+Yes. That's it. The easy and sensical thing. Just ignore drawing outside of
+the display in the DISPLAY_DrawCell function. That will handle maxcol, maxrow,
+and cursor, and all that fun stuff.
+
+Okay, good. I have a known problem with a proposed simple fix. All I need now
+is a test case. It has to involve termer and resizing. I'm hoping the
+assertions I put in consoler should trigger fairly naturally. I think the
+cursor has to be outside the reized area (because that way we try to write
+it). I think my test case will work.
+
+Sun Jul 31 15:08:47 EDT 2011
+
+Sadness. I can't get the test case to work.
+
+Maybe I should just create a display and draw outside of the screen and watch
+it throw an assertion?
+
+Blast! Bugger! Arg! Why is this so hard?
+
+Screw it. I'm fixing the bug without a test case. And just you watch, it will
+come back to bite me, or someone else. You'll see.
+
+At least I tried. I really did.
+
+I suppose I at leat need to justify why it's hard, to hopefully learn
+something.
+
+We want termer to throw an assertion. The problem with termer is it is very
+nondeterminate. Depending on what rate it gets input, and at what rate it gets
+output from its client, it will do very different things. This doesn't matter
+when you are using it as a terminal, because you don't much notice the
+difference. It's kind of important for performance reasons.
+
+But when you want to write a test case, and you want to trigger a very
+specific sequence (something that is very easy to do manually because you know
+when to wait between things happening), that makes it hard. It's hard to force
+things to go the order you want. Notice here I don't care about all possible
+behaviors. I'm just trying to force a single sequence, and even that I'm
+having a hard time with.
+
+So that's the first issue: nondeterminacy.
+
+The second issue is the use of unix processes makes things hard, because an
+assertion in the termer child processes doesn't turn into an assertion in the
+test process, and for some reason my attempt at using signals and such didn't
+help any. What I would like is for the assertion to propagate up into the
+parent process.
+
+The third issue is, when I wanted to do the much lower level test with
+display, the display object assumes it's a consoler environment, using the
+resize event to figure out how big to be. That makes it hard to reuse the
+display object in a testing environment where it's not going to get a resize
+event.
+
+An alternative implemention for the diplay object would be to pass the initial
+size to it as an input. Without those side effects it would be much easier to
+use in the test environment.
+
+There you have it. At least some explanation for what was hard.
+
+1. nondeterminacy
+2. cross process error propagation
+3. side effects limit reuse
+
+Sun Jul 31 15:27:35 EDT 2011
+
+Anyway, I made the fix to draw cell, without the automatic test case, it tried
+split, and it works now. So there you go.
+
