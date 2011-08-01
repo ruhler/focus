@@ -39,7 +39,7 @@ The following keys also do interesting things.
 [horizontal]
 q:: quit filler
 d:: halve the size of the display filler fills
-d:: double the size of the display filler fills
+h:: double the size of the display filler fills
 
 Normally filler reads consoler resize events to determine the size of the
 display to fill. The 'd' key tells filler to use double the current dimensions

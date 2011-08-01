@@ -10,4 +10,9 @@ In particular, make sure we get:
  - resize events replace geometry
  - any new consoler functions (fill rect?)
  - add change list
+ - sgreen modality thing?
+
+Sun Jul 31 20:48:44 EDT 2011
+
+All done. It looks decently in date now.
 

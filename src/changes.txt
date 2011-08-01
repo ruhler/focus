@@ -1,0 +1,11 @@
+Changes
+=======
+
+1.1.0 from 1.0.0
+--------------
+- Switched to using asciidoc for documentation
+- Added support for rotation to pdfer
+- Added support for dynamic resizing of consoler applications
+- Added split to sgreen
+- Bug fixes in fonter, sgreen, and others
+

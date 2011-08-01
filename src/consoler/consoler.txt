@@ -37,10 +37,10 @@ include::CNSL_Version.txt[]
 
 Events
 ------
-Currently there are three different types of events supported by the consoler
-API. Those are key press events, key release events, and a quit event. The key
-press and key release events contain information about the symbol of which key
-was pressed or released.
+Currently there are four different types of events supported by the consoler
+API. Those are key press events, key release events, a quit event, and a
+display resize event. The key press and key release events contain information
+about the symbol of which key was pressed or released.
 
 The intended interpretation of events is as follows.
 
@@ -49,9 +49,12 @@ keypress 'sym'::
 
 keyrelease 'sym'::
     A keyboard key was release which has the symbol 'sym' on it. 
-    
+
 quit::
     A request for the client application to quit.
+
+resize 'width' 'height'::
+    A notification of the display being resized to the given dimensions.
     
 Keysyms
 ~~~~~~~
@@ -212,6 +215,8 @@ include::CNSL_MakeKeyrelease.txt[]
 
 include::CNSL_MakeQuit.txt[]
 
+include::CNSL_MakeResize.txt[]
+
 The following functions are provided to deconstruct events.
 
 include::CNSL_IsKeypress.txt[]
@@ -219,6 +224,14 @@ include::CNSL_IsKeypress.txt[]
 include::CNSL_IsKeyrelease.txt[]
 
 include::CNSL_IsQuit.txt[]
+
+include::CNSL_IsResize.txt[]
+
+Specifying Screen Dimensions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+By convention the first event sent from consoler server to client is a resize
+event. This can be used by the client to determine the initial size of the
+display area visible to the user.
 
 Display
 -------
@@ -321,17 +334,4 @@ include::CNSL_SendDisplay.txt[]
   
 
 include::CNSL_RecvDisplay.txt[]
-  
-Specifying Screen Dimensions
-----------------------------
-By convention the environment variables +CNSLWIDTH+ and +CNSLHEIGHT+ are set to
-the dimensions of the screen available to the client to use. The consoler
-library provides a couple of functions for facilitating the use of the
-+CNSLWIDTH+ and +CNSLHEIGHT+ environment variables.
-  
-
-include::CNSL_SetGeometry.txt[]
-  
-
-include::CNSL_GetGeometry.txt[]
 

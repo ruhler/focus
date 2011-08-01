@@ -105,8 +105,9 @@ include::termer/termer.txt[]
 :leveloffset: 1
 include::install.txt[]
 
-
 include::bugs.txt[]
+
+include::changes.txt[]
 
 :leveloffset: 0
 

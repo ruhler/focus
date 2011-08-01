@@ -32,13 +32,27 @@ time. Green has two modes. In insert mode, events are passed directly to the
 currently visible client application. In green mode, green accepts the
 following commands.
 
+[horizontal]
 0-9:: Go to window corresponding to the digit pressed.
 c:: Start a new shell based on the CNSLSHELL environment variable.
 i:: Enter insert mode.
 o:: Enter green mode.
+s:: Split the window.
+q:: Unsplit the window.
+j:: Move focus to bottom window of split.
+k:: Move focus to top window of split.
 
 The special sequence ctrl-' is used to execute one of the green commands in
 insert mode. For example, +ctrl-' o+ can be used to enter green mode from
 within insert mode, and +ctrl-' 2+ can be used to switch to window 2 from
 insert mode while remaining in insert mode.
+
+Split Mode
+----------
+Sgreen can be put into split mode using the 's' green mode command. In split
+mode sgreen will split the screen horizontally and show two client windows
+simultaneously. Input is sent to the window with focus, which can be changed
+using the 'j' and 'k' green mode commands. The 'q' green mode command will
+unsplit the windows, restoring the window with current focus to the full
+screen dimensions.
 

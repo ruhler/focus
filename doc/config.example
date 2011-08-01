@@ -57,7 +57,7 @@ env['COMPONENTS'] = [
 #
 ## Otherwise you can add them explicitly:
 #env['ENV']['LD_LIBRARY_PATH'] = [
-#    '/pkg/sdl-1.2.14/lib',
+#    '/pkg/asciidoc-8.6.5/lib',
 #    "/pkg/libpng-1.4.5/lib",
 #    '/pkg/poppler-0.16.5/lib',
 #    '/pkg/freetype-2.4.3/lib',
@@ -68,17 +68,15 @@ env['COMPONENTS'] = [
 ## those here.
 #env['ENV']['PATH'] = ':'.join([
 #    env['ENV']['PATH'],
-#    '/pkg/tcl-8.5.9/bin',
 #    '/pkg/asciidoc-8.6.5/bin',
 #    '/pkg/python-2.7/bin',
-#    '/pkg/docbook2X-0.8.8/bin'
+#    '/pkg/libxml2-2.7.7/bin'
+#    '/pkg/libxslt-1.1.24/bin'
 #    ])
 
-## docbook2man may need some configuration
+## docbook may also need some configuration
 #env['ENV']['XML_CATALOG_FILES'] = " ".join([
 #    '/pkg/docbook/docbook-xsl-1.76.1/catalog.xml',
-#    '/pkg/docbook2X-0.8.8/install/share/docbook2X/dtd/catalog.xml',
-#    '/pkg/docbook2X-0.8.8/install/share/docbook2X/xslt/catalog.xml',
 #    '/pkg/docbook/4.5/catalog.xml',
 #    ])
 
