@@ -3,7 +3,7 @@ List of pending issues.
 
 1.1.0
 - add support for resize in all apps (44.tsk)
-- review and revise doumentation
+- review and revise doumentation (57.tsk)
 - review install and release targets (37.tsk)
 - release 1.1.0 (33.tsk)
 

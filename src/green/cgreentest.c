@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 
     setenv("CNSLSHELL", fillerpath, 1);
     CNSL_Client sgreen = CNSL_LaunchClient(sgreenpath, sgreenargs);
+    CNSL_SendEvent(sgreen, CNSL_MakeResize(64, 48));
 
     // Make the shell filler white
     CNSL_RecvDisplay(sgreen, display, NULL, NULL, NULL, NULL);

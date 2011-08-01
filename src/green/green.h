@@ -88,6 +88,16 @@ GRN_Green GRN_CreateGreen(int width, int height);
 /// when you go to free it.
 void GRN_FreeGreen(GRN_Green green);
 
+/// GRN_Width - get the width of green
+///
+/// Return the width of the full green view in pixels.
+int GRN_Width(GRN_Green green);
+
+/// GRN_Height - get the height of green
+///
+/// Return the height of the full green view in pixels.
+int GRN_Height(GRN_Green green);
+
 /// GRN_AddClient - add a new client
 ///
 /// Adds a new client. Returns the id of the newly added client, or -1 on

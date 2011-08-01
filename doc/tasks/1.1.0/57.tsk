@@ -1,0 +1,13 @@
+
+Sun Jul 31 19:59:59 EDT 2011
+
+Task: review and revise documentation
+
+I fear my documentation is out of date. Go over it all to make sure it's not
+out of date.
+
+In particular, make sure we get:
+ - resize events replace geometry
+ - any new consoler functions (fill rect?)
+ - add change list
+

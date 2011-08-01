@@ -29,10 +29,13 @@ int main(int argc, char* argv[])
     CNSL_Display display = CNSL_AllocDisplay(640, 480);
     CNSL_Event event;
     CNSL_Client boxer = CNSL_LaunchClient(argv[1], argv+1);
+    CNSL_SendEvent(boxer, CNSL_MakeResize(640, 480));
+
     CNSL_Color white = CNSL_MakeColor(0xff, 0xff, 0xff);
     CNSL_Color red = CNSL_MakeColor(0xff, 0x00, 0x00);
     CNSL_Color black = CNSL_MakeColor(0x00, 0x00, 0x00);
     CNSL_Color color;
+
 
     CNSL_RecvDisplay(boxer, display, NULL, NULL, NULL, NULL);
     color = CNSL_GetPixel(display, 105, 105);

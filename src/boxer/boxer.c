@@ -62,9 +62,15 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
+    int width;
+    int height;
+
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
+    if (!CNSL_IsResize(event, &width, &height)) {
+        fprintf(stderr, "boxer: expected resize event. Got %i\n", event.type);
+        return 1;
+    }
+
     CNSL_Display display = CNSL_AllocDisplay(width, height);
 
     int gridwidth = width/BOX_LENGTH;
@@ -73,7 +79,6 @@ int main(int argc, char* argv[])
     CNSL_Color red = CNSL_MakeColor(0xff, 0x00, 0x00);
     CNSL_Color white = CNSL_MakeColor(0xff, 0xff, 0xff);
 
-    CNSL_Event event;
     bool done = false;
     int x = 100/BOX_LENGTH;
     int y = 100/BOX_LENGTH;

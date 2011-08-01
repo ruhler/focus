@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
     CNSL_Event event;
 
     setenv("CNSLSHELL", fillerpath, 1);
-    CNSL_SetGeometry(64, 48);
     CNSL_Client sgreen = CNSL_LaunchClient(sgreenpath, noargs);
     CNSL_SendEvent(sgreen, CNSL_MakeResize(64, 48));
 

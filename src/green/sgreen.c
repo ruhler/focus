@@ -40,9 +40,8 @@ GRN_Green green;
 //  - detects when client closes, and removes from green object.
 void handle_client(CNSL_Client client)
 {
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
+    int width = GRN_Width(green);
+    int height = GRN_Height(green);
 
     CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_FillRect(display, 0, 0, width, height, CNSL_MakeColor(0, 0, 0));
@@ -223,10 +222,17 @@ int main(int argc, char* argv[])
         socketname = argv[2];
     }
 
-    int width = 640;
-    int height = 480;
-    CNSL_GetGeometry(&width, &height);
+    int width;
+    int height;
+
+    CNSL_Event event = CNSL_RecvEvent(stdcon);
+    if (!CNSL_IsResize(event, &width, &height)) {
+        fprintf(stderr, "sgreen: expected resize event. Got %i\n", event.type);
+        return 1;
+    }
+
     green = GRN_CreateGreen(width, height);
+
 
     int lsfd = start_server(socketname);
     if (lsfd < 0) {

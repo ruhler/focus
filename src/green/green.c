@@ -154,6 +154,16 @@ void GRN_FreeGreen(GRN_Green green)
     free(green);
 }
 
+int GRN_Width(GRN_Green green)
+{
+    return green->width;
+}
+
+int GRN_Height(GRN_Green green)
+{
+    return green->height;
+}
+
 client_id GRN_AddClient(GRN_Green green, CNSL_Client client)
 {
     lock(green);

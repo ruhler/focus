@@ -400,3 +400,15 @@ Yup. I'll open a  new task to deal with that (51.tsk).
 Anyway, users of CNSL_GetGeometry remaining are:
   boxer, fonterexample, sgreen.
 
+Sun Jul 31 19:47:18 EDT 2011
+
+For the sake of progress, there's a really easy way to switch from
+CNSL_GetGeometry to Resize. Just don't support dynamic resize events. Simple.
+Let me do that.
+
+Sun Jul 31 19:55:34 EDT 2011
+
+Done. I'll just depricate GetGeometry and SetGeometry and call it a done task.
+
+Done.
+

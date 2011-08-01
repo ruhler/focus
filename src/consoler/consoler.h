@@ -242,19 +242,25 @@ bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
         unsigned int* dstx, unsigned int* dsty,
         unsigned int* width, unsigned int* height);
 
-/// CNSL_GetGeometry - indicate window geometry
-///
-/// Set the environment variables +CNSLWIDTH+ and +CNSLHEIGHT+ to the given
-/// width and height. This can be called by a server before the server
-/// launches a client to propagate the screen dimensions to the client.
-void CNSL_GetGeometry(int* width, int* height);
-
-/// CNSL_SetGeometry - get window geometry
+/// CNSL_GetGeometry - get window geometry (DEPRICATED)
 ///
 /// Read the environment variables +CNSLWIDTH+ and +CNSLHEIGHT+ into 'width' and
 /// 'height'. If those environment variables are not set, 'width' and 'height'
 /// are unchanged. This can be used by the client to discover the screen
 /// dimensions when it first starts.
+///
+/// This function is now depricated in favor of using resize events to
+/// determine screen geometry. It will be removed for release 2.0.0.
+void CNSL_GetGeometry(int* width, int* height);
+
+/// CNSL_SetGeometry - set window geometry (DEPRICATED)
+///
+/// Set the environment variables +CNSLWIDTH+ and +CNSLHEIGHT+ to the given
+/// width and height. This can be called by a server before the server
+/// launches a client to propagate the screen dimensions to the client.
+///
+/// This function is now depricated in favor of using resize events to
+/// specify screen geometry. It will be removed for release 2.0.0.
 void CNSL_SetGeometry(int width, int height);
 
 
