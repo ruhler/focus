@@ -1,10 +1,6 @@
 
 List of pending issues.
 
-1.1.0
-- review install and release targets (38.tsk)
-- release 1.1.0 (33.tsk)
-
 unassigned
 - add italics to termer
 - add status bar to sgreen

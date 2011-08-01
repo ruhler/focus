@@ -33,3 +33,40 @@ but then it doesn't do the recursive dependency tracking right.
 
 I hate scons.
 
+Sun Jul 31 20:50:39 EDT 2011
+
+This is it! The last thing to do before I declare release 1.1.0 done. How am I
+going to do it?
+
+I want to try an experiment. This may be a bad idea, but I'm feeling in an
+adventurous mood. I want to see how hard it will be to not do this variant
+directory thing. Because as far as I can tell, it's invariant directories
+which is messing up what would otherwise be a very simple installation.
+
+Are you willing to try that?
+
+I'm not sure how to even begin...
+
+I guess what I can do is get rid of variant directories, build everything
+locally, and slowly move things over to a build directory until it's all
+cleaned up.
+ 
+First thing to move to a new directory: the consoler library.
+
+It's not working. I'm getting more upset at scons.
+
+Sun Jul 31 21:17:05 EDT 2011
+
+So I switched back to variant directory, not because I think it's better, but
+because the other way was doing even more scary things. I fixed the release
+issue I was having with scons by not placing the release in the build
+directory, but rather in its own release/ directory, which seems to work okay.
+
+No. Actually, it doesn't get the dependencies right. Oh well. Stupid scons. So
+I'll have to clear out the old release and regenerate it from scratch when I'm
+ready. That will have to do for now.
+
+Now, let me quickly review install targets... How?
+
+I installed it. Looks okay to me.
+
