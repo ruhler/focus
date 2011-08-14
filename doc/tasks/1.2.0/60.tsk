@@ -1,0 +1,77 @@
+
+Sat Aug  6 17:07:00 EDT 2011
+
+Task: tclify the major applications
+
+Also known as key remapping library, but really it's more than just key
+remapping.
+
+Here's what I envision. Each application has a bunch of commands. For example,
+pdfer has: quit, next, previous, end, home, goto, scroll, etc... Currently
+each command is hard coded to a key. That works fine for me, because it's all
+the keys I want, but I know if I weren't me, I would really want to change the
+keys to be something else.
+
+So we would like to be able to do local configurations on the applications. Or
+rather, other people would like to be able to have different configurations
+than my configuration, which is hard coded. It will be more flexible if you
+can specify key mappings and configuration stuff at runtime rather than at
+compile time.
+
+Again, it's a little weird, because I don't personally gain anything from this
+change, except if I can get other people to buy the software because of it.
+Perhaps if I have a way to enter tcl commands while the program runs, that
+could give me some nice power I didn't have before. Or I could have different
+modes, like for pdfer a viewing mode and a presentation mode and so on.
+Perhaps it could help with testing? I could write my tests in tcl instead of
+c?
+
+I don't know. Anyway, the idea is each command would be exposed as a tcl
+command, then the user could map them to keys in whatever way he wants to.
+Other configuration commands could also be supplied, like for fonts and colors
+and things.
+
+Sun Aug  7 18:20:10 EDT 2011
+
+I guess the best way to start will be with filler. Be able to remap the filler
+commands and try it out.
+
+Making tcl commands should be easy. I just have to register them
+appropriately. It may even help clean up the code by making it more like a
+library, so more useful.
+
+The hard part will be translating input events into commands to call, and
+figuring out how to change this translation with a command.
+
+Start simple. Say single key presses can be mapped to commands. From the users
+point of view you'll want something like:
+    key <key> <command>
+
+Where <key> is something like
+    a-z, A-Z, maybe ^a-^z for control keys.
+
+To implement it... I feel like I've done this before already.
+prerelease/kmapper.tsk? Just have a big lookup table mapping 
+(shift X ctrl X keysm) -> tclcommand.
+
+The tcl commands things will be specific to each application. The key
+translation thing, however, can be a library. What sort of api do we want for
+this library to have?
+
+I think it's pretty simple. We want a function to let you do a mapping:
+    key(bool shift, bool ctrl, keysym sym, string cmd);
+
+Callable from both c and tcl (the tcl version can take a string for the
+modifier and keysym specification).
+
+Then the user application will instantiate a tcl interpreter, initialize this
+library (which adds the commands to the interpreter), specify a bunch of
+default commands, then as part of the main loop do something like:
+
+    while (!done) {
+        input(GetEvent());
+    }
+
+Where this input function is part of the key mapper library, and calls the
+right application command.
+

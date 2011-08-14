@@ -46,3 +46,42 @@ having to worry about such things (perhaps). We may need to make it a little
 more complicated to handle certain things (like allowing commands to depend on
 generated files), but I could deal with that when I get there, right?
 
+Sat Aug  6 21:41:46 EDT 2011
+
+I want to figure out about how to do this ptrace thing. Maybe try it out on
+some commands and such.
+
+Goal: given a shell command to run, run it and output the list of input files
+and output files. That is, the list of files read and the files written. In
+the future I'll want to do a list of environment variables too probably, but
+don't worry about that now.
+
+So! First step, read the ptrace documentation. And maybe strace too.
+
+First question, I suppose, is do I need to use ptrace, or does strace already
+have everything I need? Would it be easier to piggy back on top of strace than
+to potentially reimplement much of it? I guess the only way I'll know is to
+first understand the ptrace interface, to figure out how hard it is to use...
+
+I suspect what I'll have to do is instrument all the system calls related to
+files. Or is read and write enough? Or is open enough? Then I'll also need to
+instrument the exec and fork family, in order to trace recursively. That
+sounds like a bit of work...
+
+Yes. It looks like a lot of work. Hmm...
+
+Maybe for preliminary investigation I should just play with strace, see if I
+can't at least see the information I want to see using that.
+
+Okay? That sounds fair to me...
+
+Not sure what to try it on first. Maybe a simple call to gcc would be best.
+
+Sat Aug  6 22:35:22 EDT 2011
+
+Well, here's one possible problem. What about programs like gcc which create
+temporary files? The names of the temporary files are certainly likely to
+change, won't that cause problems?
+
+Hmm... Sounds like a lot of work.
+

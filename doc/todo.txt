@@ -1,24 +1,31 @@
 
 List of pending issues.
 
+1.2.0
+- termer feels slow again (59.tsk)
+- key remapping library via tcl (60.tsk)
+- handle unhandled input key 308 (53.tsk)
+- write tutorial for getting started with focus?
+- library man page function prototypes are formatted wrong
+- generated documentation should include copyright notice?
+- release 1.2.0 (58.tsk)
+
+2.0.0
+- remote CNSL_GetGeometry and CNSL_SetGeometry functions
+
 unassigned
 - add italics to termer
 - add status bar to sgreen
 - add search command to pdfer
-- key remapping library
 - colors get inverted on sparc (endian issues)?
 - get poppler patch into poppler release (47.tsk)
 - add build dir option to config?
-- generated documentation should include copyright notice?
 - can I have a consoler version of firefox (27.tsk)
 - clean up and document scons files
-- write tutorial for getting started with focus?
 - write development policy docs?
-- library man page function prototypes are formatted wrong
 - get rid of FNTR_GlyphLevel function?
 - general purpose image viewer (40.tsk)
 - sgreen doesn't always clean up sockets (43.tsk)
-- termer feels slow again
-- handle unhandled input key 308 (53.tsk)
 - alternatives to scons? (56.tsk)
+- have a way to show/hide cursor in sdlcsr?
 

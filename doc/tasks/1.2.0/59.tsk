@@ -1,0 +1,52 @@
+
+Sat Aug  6 13:31:39 EDT 2011
+
+Task: Termer feels slow again
+
+Especially at work, termer is feeling slugish. Scrolling maybe. At work more
+so outputting lots of (different) stuff.
+
+Hmm... The first step here will be to reproduce the problem on greenfield. I
+wonder, though, if all the slugishness is entirely from running remote X at
+work.
+
+For example, doing big compilations would take a long time, not because of the
+computation, but because of all the output that scrolled by. Or just
+outputting a bunch of numbers on the the screen, especially in screen split
+mode would take a long time (and the screen split would flicker up and down).
+
+But working now on greenfield, I don't really see these issues. Let me try
+harder to replicate them.
+
+Sat Aug  6 13:40:08 EDT 2011
+
+I can't replicate the issues on greenfield. At least, not when using the frame
+buffer directly. Maybe I need to use X.
+
+On greenfield clearly the text output is not the limiting factor, and if there
+is a whole bunch of text to output, it manages to skip ahead very fast. dmesg
+comes out fast. man man scrolls nicely, even holding space bar down solidly.
+The terminal is not sluggish.
+
+When in screen split mode, only very occasionaly is there any flickering of
+the screen, and that quickly goes away.
+
+Sat Aug  6 17:02:03 EDT 2011
+
+I tried it out with sdlcsr running on X11 on greenfield. I still don't see the
+problems I was seeing at work.
+
+Well hmm... This is interesting. What I thought would be a major problem to
+tackle isn't locally a major problem at all, and hence I can't really tackle
+it.
+
+Or in other words, the problem at work is not the performance of my
+sdlcsr + sgreen + termer. It's the performance of the remote X connection.
+
+This is not inconsistant with my experience this summer and last that I have
+to turn off antialiasing on the fonts in X otherwise the terminal (gterm or
+xterm) goes real slow. I bet it's that same problem. The way X works we must
+be having to do round trips or something every time we update the display.
+
+Well, I don't know what to say. Stew, I guess.
+

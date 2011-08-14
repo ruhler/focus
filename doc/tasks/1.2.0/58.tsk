@@ -1,0 +1,46 @@
+
+Fri Aug  5 22:57:01 EDT 2011
+
+Task: Make a release 1.2.0
+
+I have to figure out what the release target is.
+
+I'm thinking one major problem I'm facing currently is termer performance. I
+certainly want to take another look at that.
+
+It might be fun to tclify all the big apps, and use that to allow
+customization and key remappings.
+
+I can do the tutorial thing, and improve the docs a bit.
+
+And the little bugs, like: unhandled input key. That sort of thing.
+
+That would make the major feature add be customization, which doesn't really
+add anything to me personally, because it already defaults to just the way I
+like it. It might be easier to specify fonts and such rather than having to
+use environment variables.
+
+The other things to consider are search in pdfer and if I want to refactor the
+scons build setup in any sort of way.
+
+Sat Aug  6 13:13:29 EDT 2011
+
+I'm thinking that for anyone to want to use my applications other than me,
+they should be able to configure the keys the way they want. It may even be
+useful for me, to quickly check key settings or quickly change (maybe for
+presentation mode or some such). For that reason I think I'm proposing the
+following for release 1.2.0:
+
+1. improve termer performance, hopefully in a noticable way, unlike the last
+release where it got improved and then got worse.
+
+2. tclify the major applications to let you do key remapping and perhaps some
+other configuration stuff via an rc file.
+
+3. Clean up documentation, write getting started tutorial, 
+
+4. fix unhandled input key message bug thing.
+
+
+Note in particular: I'm not including pdfer search.
+
