@@ -25,6 +25,7 @@ unassigned
 - write development policy docs?
 - get rid of FNTR_GlyphLevel function?
 - general purpose image viewer (40.tsk)
+- jpeg image viewer (61.tsk)
 - sgreen doesn't always clean up sockets (43.tsk)
 - alternatives to scons? (56.tsk)
 - have a way to show/hide cursor in sdlcsr?

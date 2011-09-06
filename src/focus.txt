@@ -30,6 +30,7 @@ fonter:: Library for drawing fonts on consoler displays.
 boxer:: A box game.
 filler:: A sample program to fill a display with color.
 green:: A screen-like application window manager.
+jpeger:: A jpeg viewer.
 pdfer:: A pdf viewer.
 pnger:: A png viewer.
 sdlcsr:: A consoler server implemented on libSDL.
@@ -71,6 +72,13 @@ Green
 :leveloffset: 1
 
 include::green/green.txt[]
+:leveloffset: 0
+
+Jpeger
+-----
+:leveloffset: 1
+
+include::jpeger/jpeger.txt[]
 :leveloffset: 0
 
 Pdfer

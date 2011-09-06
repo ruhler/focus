@@ -1,0 +1,45 @@
+// Copyright (C) 2011 Richard Uhler <ruhler@member.fsf.org>
+//
+// This file is part of Focus.
+//
+// Focus is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Focus is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Focus.  If not, see <http://www.gnu.org/licenses/>.
+PNGER(1)
+========
+:author: Richard Uhler
+:doctype: manpage
+:man version: {VERSION}
+:man manual: Focus Manual
+
+NAME
+----
+jpeger - a consoler jpeg viewer
+
+SYNOPSIS
+--------
+*jpeger* FILE
+
+DESCRIPTION
+-----------
+include::jpeger.txt[]
+
+OPTIONS
+-------
+*--help*::
+    Output a help message and exit.
+*--version*::
+    Output version information and exit.
+
+BUGS
+----
+Report bugs to <ruhler@member.fsf.org>.
