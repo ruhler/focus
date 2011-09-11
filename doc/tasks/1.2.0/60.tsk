@@ -75,3 +75,90 @@ default commands, then as part of the main loop do something like:
 Where this input function is part of the key mapper library, and calls the
 right application command.
 
+Sun Sep 11 10:15:09 EDT 2011
+
+What do I need to do for this?
+
+I guess firstly I should rewrite filler to be more of a library? Hmm... Or do
+I need to do that?
+
+Perhaps I should make some global variables global. Then implement the
+following commands as separate functions:
+    red, green, blue, cyan, yellow, purple, white, black, quit,
+    double, halve
+
+This is all without tcl. Regardless, that will be a helpful first step.
+
+The next question will be how to register all the commands in a syntax
+friendly way. Does each command need its own little tcl wrapper? Is that too
+much work to write? Can I have a common function to write that? Or perhaps a
+macro? Let me not worry about it for now, because filler is so simple it may
+not matter.
+
+Okay. Plan is clear. Let me global command functionize filler.
+
+Sun Sep 11 10:26:53 EDT 2011
+
+It's interesting to see how filler changes when using global variables. There
+is less repetition of things, less clutter. Is it worse? Harder to read and
+maintain?
+
+I think it would be fine if we had the notion of an object, just a way to
+group concepts together or something. I don't know. What's wrong with global
+variables? Maybe in small code nothing? Maybe if you have the proper abstract
+interface to a chunk of data nothing?
+
+Hmm...
+
+No, I think I see the problem with it. Use of the data is spread throughout
+the code, so it's hard to understand the data structure and what changes are
+done by what parts of the code. If instead we only interact with the data in
+functions specific to how the data is used, it becomes much easier to figure
+out how the data can be accessed and changed and how does so. This means I
+really ought to clean up filler to be like that. Either with a global
+instance, or data structure, or something. That is, I think I should have a
+struct and my functions should take a pointer to a struct to operate on. This
+becomes my filler library.
+
+Let me try it, see how onerous it is.
+
+I must say, there certainly are some nice things about this. For example, it's
+obvious what is a parameter or input vs. what is part of the filler object
+that is being read or modified.
+
+And if I really make it a library with a separate header file, then
+documentation is much nicer.
+
+Let me think a little on what I want to do. Maybe have filler.c and main.c? Or
+something like that in the filler directory. See how that cleans things up.
+The main.c can hold the tcl wrappers.
+
+Sun Sep 11 11:20:52 EDT 2011
+
+I factored filler out into a library. It's kind of nice I guess. Seems like
+more code. But now that we have it like that, it seems perhaps clear that
+filler provides the low level operations: resize and fillwith, and the way to
+implement main will be to implement the commands directly as tcl functions.
+
+The first step, I think, will be to use a tcl interpret for evaluating the
+commands, but not for doing the key mapping?
+
+Err... I'm starting to get confused. Why do I need tcl again?
+
+Because it gives a nice, natural way to do key mapping, and makes filler like
+a tool that you can now script, which could be nice. It make more sense with,
+for example, a pdf viewer, where you maybe want to say things like: go forward
+7 pages. That's a new command you can write without having to recompile the
+code. It makes the application much more general. In fact, with filler, we
+could expose a fillwith command, then you could define your own colors if you
+prefer.
+
+Um, one wonders then if fillwith and resize should be the only tcl commands,
+and the main application should all be written in tcl? Except how do you get
+input?
+
+That is, the main application could be implement as a tcl script rather than
+compiled in. Why shouldn't I do that rather than hard coding something in C?
+
+Let me think about that for a little bit.
+

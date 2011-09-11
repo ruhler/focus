@@ -3,7 +3,7 @@
 
 Import('env')
 
-filler = env.Program('filler', 'filler.c', LIBS=['consoler'])
+filler = env.Program('filler', ['main.c', 'filler.c'], LIBS=['consoler'])
 Default(filler)
 
 env["filler"] = filler
