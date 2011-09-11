@@ -1,0 +1,9 @@
+
+Sun Sep 11 10:09:36 EDT 2011
+
+Task: Generated documentation should include copyright notice?
+
+I'm not sure if the generated like, man pages and html documentation should
+include copyright notice info. Both embedded in the generated source, and
+possibly as a section in the documentation so users know about it.
+

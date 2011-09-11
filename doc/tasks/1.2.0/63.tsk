@@ -1,0 +1,10 @@
+
+Sun Sep 11 10:11:15 EDT 2011
+
+Task: termer should have a way to specify command to execute
+
+Because, for example, on greenfield I want a way to start screen up
+automatically, so I want a way to do something like:
+
+    sdlcsr sgreen -c termer -x screen
+

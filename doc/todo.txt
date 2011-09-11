@@ -2,12 +2,14 @@
 List of pending issues.
 
 1.2.0
-- termer feels slow again (59.tsk)
 - key remapping library via tcl (60.tsk)
 - handle unhandled input key 308 (53.tsk)
-- write tutorial for getting started with focus?
-- library man page function prototypes are formatted wrong
-- generated documentation should include copyright notice?
+- write tutorial for getting started with focus? (64.tsk)
+- library man page function prototypes are formatted wrong (65.tsk)
+- generated documentation should include copyright notice? (66.tsk)
+- general purpose image viewer (40.tsk)
+- sgreen should have a way to specify first window (62.tsk)
+- termer should have a way to specify command to execute (63.tsk)
 - release 1.2.0 (58.tsk)
 
 2.0.0
@@ -24,9 +26,9 @@ unassigned
 - clean up and document scons files
 - write development policy docs?
 - get rid of FNTR_GlyphLevel function?
-- general purpose image viewer (40.tsk)
-- jpeg image viewer (61.tsk)
 - sgreen doesn't always clean up sockets (43.tsk)
 - alternatives to scons? (56.tsk)
 - have a way to show/hide cursor in sdlcsr?
+
+Next Task: 67.tsk
 

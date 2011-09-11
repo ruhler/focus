@@ -1,0 +1,34 @@
+
+Fri Jul  1 15:52:41 EDT 2011
+
+Task: General purpose image viewer
+
+I need a gif viewer.
+
+Why don't I instead just expand pnger to be a general purpose image viewer?
+
+Any (raster) image viewer will have the same interface, right? I could have an
+image viewer library or... I don't know.
+
+Or maybe just a gif viewer.
+
+Mon Sep  5 20:03:36 EDT 2011
+
+I wrote a jpeg viewer, it's basically a copy of pnger. I think a single
+general purpose raster image viewer would be appropriate. You give it a file,
+it loads the file to a display, then you can view it that way.
+
+What my jpeg viewer needs, and probably the other viewers too, is a way to
+view all of images which don't fit in a window. Either by letting you scroll
+the image, or by letting you zoom in and zoom out.
+
+I think a good thing to do would be to consolidate jpeger and pnger, add this
+scroll or zooming capability as seems appropriate, and call that a happy task
+done.
+
+Sun Sep 11 10:10:34 EDT 2011
+
+Yes, decision is, for release 1.2.0, make a single raster image viewer which
+can view png and jpeg and has support for scrolling. Don't worry about zoom
+yet, that can be added to a later release.
+
