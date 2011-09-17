@@ -227,6 +227,10 @@ include::CNSL_IsQuit.txt[]
 
 include::CNSL_IsResize.txt[]
 
+The following function can be used to test for equality of events.
+
+include::CNSL_EventsEqual.txt[]
+
 Specifying Screen Dimensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 By convention the first event sent from consoler server to client is a resize

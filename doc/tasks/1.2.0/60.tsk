@@ -179,3 +179,62 @@ Sat Sep 17 11:29:58 EDT 2011
 I tclified filler. It has the tcl interpreter and the commands. The next thing
 to do will be the key mapping stuff.
 
+Sat Sep 17 11:32:49 EDT 2011
+
+How do I do the key mapping stuff?
+
+I want to create a mapping from ... key press to tcl script. Tcl script can be
+stored as a string, that's easy. What is a key press? Why a keypress and not
+an event? Should I start specific or general?
+
+I know in the near future I'll want to be able to track ctrl and shift
+modifiers, so I might as well allow that now, right? Or better to start with
+just a raw key symbol, without modifiers, make sure that works, then update
+it? As a sort of intermediate step?
+
+Well, whatever I decide, I think it's clear I'll want an implementation of
+some sort of map structure, and that can be abstracted away with two
+functions:
+
+map(event, script); Adds a mapping.
+lookup(event); Looks up a mapping.
+
+Initial implementation can be a singly linked list, which I suspect is easy to
+implement, and won't be too slow for such a small number of entries and the
+whole interactivity of it. I can change it to something else later if needed.
+
+ctrl and shift will be easy enough to add, let me just do so right away. Or I
+suppose I could make it even more general. Use Event directly, but have
+another field which is State, and I can add state later? It can't matter that
+much either way.
+
+After I implement the map, I can try that directly. Add my events to the map,
+verify it works. Allow me to do that now?
+
+EventMap Create() - create a new event map.
+void insert(EventMap, Event, script) - insert an event into the map.
+script lookup(EventMap, Event) - look up an entry in the event map.
+void Free(EventMap) - free an event map.
+
+Start with that. Prefix is... EM? EVNTM EVENTMAP EMAP EVENTM EVMP EVNTMP
+Eventer_ aha! good. Eventually it will be its own library. For now I'll put it
+together with filler.
+
+Sat Sep 17 12:17:07 EDT 2011
+
+Okay, did that. Now the next step will be adding the reconfigurability. I
+figure that will be as simple as:
+
+  1. Provide a tcl command to insert a mapping.
+  2. Source a tcl script at startup.
+
+Here's an idea. I would like to have default key mappings by default, if the
+startup script isn't found (which shouldn't be an error). For now let me just
+define the key mappings, and the user can overwrite those if desired. In the
+future I can add a way to clear all keymappings the user can use if he
+prefers. That way the defaults are built in, don't need an extra file, work
+fine with test cases, and can be completely reconfigured or partially reused
+or whatever.
+
+Cool. Let me try this after lunch.
+

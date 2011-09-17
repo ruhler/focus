@@ -83,6 +83,11 @@ bool CNSL_IsQuit(CNSL_Event event);
 /// Otherwise return false and 'width' and 'height' are untouched.
 bool CNSL_IsResize(CNSL_Event event, int* width, int* height);
 
+/// CNSL_EventsEqual - test for equality of events
+///
+/// Returns true if the two events are equal, false otherwise.
+bool CNSL_EventsEqual(CNSL_Event a, CNSL_Event b);
+
 typedef uint32_t CNSL_Color;
 
 /// CNSL_GetRed8 - get red component of a color

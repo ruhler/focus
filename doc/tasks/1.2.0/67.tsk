@@ -1,0 +1,11 @@
+
+Sat Sep 17 12:03:41 EDT 2011
+
+Task: We need a CNSL_EventsEqual function to semantically test events for
+equality. Because the structure of an event is supposed to be private, the ==
+operator should not be used.
+
+Sat Sep 17 12:20:45 EDT 2011
+
+Done.
+

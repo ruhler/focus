@@ -20,6 +20,7 @@
 #include <tcl.h>
 
 #include "filler.h"
+#include "eventer.h"
 
 bool done;
 Filler filler;
@@ -100,6 +101,7 @@ int main(int argc, char* argv[])
     CNSL_Color purple = CNSL_MakeColor(255, 0, 255);
     CNSL_Color white = CNSL_MakeColor(255, 255, 255);
 
+
     CNSL_Keysym sym;
     done = false;
     filler = Filler_Create(width, height, black, stdcon);
@@ -116,6 +118,19 @@ int main(int argc, char* argv[])
     Tcl_CreateObjCommand(interp, "white", color_cmd, &white, NULL);
     Tcl_CreateObjCommand(interp, "zoom", zoom_cmd, NULL, NULL);
 
+    Eventer eventer = Eventer_Create();
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_r), "red");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_g), "green");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_b), "blue");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_c), "cyan");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_y), "yellow");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_p), "purple");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_w), "white");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_n), "black");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_q), "quit");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_d), "zoom 2 2");
+    Eventer_Insert(eventer, CNSL_MakeKeypress(CNSLK_h), "zoom 0.5 0.5");
+
     while (!done) {
         event = CNSL_RecvEvent(stdcon);
         if (CNSL_IsQuit(event)) {
@@ -126,19 +141,12 @@ int main(int argc, char* argv[])
             Filler_Resize(filler, width, height);
         } else if (CNSL_IsKeypress(event, &sym)) {
             fprintf(stderr, "filler: keypress: %c(%i)\n", sym, sym);
-            switch (sym) {
-                case CNSLK_r: Tcl_Eval(interp, "red"); break;
-                case CNSLK_g: Tcl_Eval(interp, "green"); break;
-                case CNSLK_b: Tcl_Eval(interp, "blue"); break;
-                case CNSLK_c: Tcl_Eval(interp, "cyan"); break;
-                case CNSLK_y: Tcl_Eval(interp, "yellow"); break;
-                case CNSLK_p: Tcl_Eval(interp, "purple"); break;
-                case CNSLK_w: Tcl_Eval(interp, "white"); break;
-                case CNSLK_n: Tcl_Eval(interp, "black"); break;
-                case CNSLK_q: Tcl_Eval(interp, "quit"); break;
-                case CNSLK_d: Tcl_Eval(interp, "zoom 2 2"); break;
-                case CNSLK_h: Tcl_Eval(interp, "zoom 0.5 0.5"); break;
+            const char* script = Eventer_Lookup(eventer, event);
+            if (script) {
+                fprintf(stderr, "action: %s\n", script);
+                Tcl_Eval(interp, script);
             }
+            fprintf(stderr, "key not mapped\n");
         }
     }
 
