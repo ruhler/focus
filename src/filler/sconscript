@@ -3,7 +3,7 @@
 
 Import('env')
 
-filler = env.Program('filler', ['main.c', 'filler.c'], LIBS=['consoler'])
+filler = env.Program('filler', ['main.c', 'filler.c'], LIBS=['tcl8.5', 'consoler'])
 Default(filler)
 
 env["filler"] = filler

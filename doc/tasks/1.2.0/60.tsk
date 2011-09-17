@@ -162,3 +162,20 @@ compiled in. Why shouldn't I do that rather than hard coding something in C?
 
 Let me think about that for a little bit.
 
+Sun Sep 11 15:53:02 EDT 2011
+
+Next step, add a tcl interpreter and implement the commands
+    red, green, blue, cyan, yellow, purple, white, black, quit,
+    double, halve
+
+Instead of calling functions directly, do a tcl eval on the key maps. That
+will be changed eventually, but for now will make a nice step.
+
+So, trick is to remember how to instantiate a tcl interpreter and add
+commands.
+
+Sat Sep 17 11:29:58 EDT 2011
+
+I tclified filler. It has the tcl interpreter and the commands. The next thing
+to do will be the key mapping stuff.
+
