@@ -23,9 +23,13 @@ typedef int CLIENT_Client;
 
 /// CLIENT_Open - start a new client.
 ///
+/// Launches client specified in file with the given arguments as interpreted
+/// by the execvp function. If 'file' is NULL, launches a shell as specified
+/// the SHELL environment variable, defaulting to /bin/sh.
+///
 /// Returns -1 on error. The client should be closed when you are done using
 /// it with the CLIENT_Close function.
-CLIENT_Client CLIENT_Open();
+CLIENT_Client CLIENT_Open(const char* file, char* const argv[]);
 
 /// CLIENT_Close - close a client
 ///

@@ -238,3 +238,60 @@ or whatever.
 
 Cool. Let me try this after lunch.
 
+Sat Sep 17 13:36:48 EDT 2011
+
+Had some thoughts. My Eventer interface, where I specify an Event, doesn't
+make sense. It's overly general in a useless sort of way. If you can specify
+an event, you'll want a way to get at its fields. What use is it to match
+against a Resize 124 422 event, for example? Since I don't have that
+capability, and don't want to have it yet, it makes no sense to use Event
+instead of the much simpler keysym for keypress events.
+
+So let me change the interface to take, rather than an event, a keysym,
+ctrlon, shifton. And you should pass it all the key events so it can maintain
+the state correctly. Or you manually set shift and ctrl values? Or should it
+provide a loop you can run? Or both?
+
+Here's the way I expect I'll always be using it:
+  - call insert a bunch of times to set default key bindings
+  - call insert from a tcl command.
+  - call input in a main loop whenever we get a keypress, have it
+    automatically call the appropriate function.
+
+And I want it to support ctrl and shift, and in the future I could imagine it
+supporting an alt modifier, maybe. Possibly.
+
+In what other ways could it be used or extend that I should consider?
+ - Add support for general events: like resize and quit? This would want some
+   way to map the event values to variables in the tcl script.
+ - General configuration stuff? Or is that completely separate? I think that's
+   separate from the keymapper. This isn't a: hook your program up to tcl
+   thing. It's a: map key events to actions?
+
+What functionality does this have over a generic map container? It keeps track
+of shift and ctrl, which means it expects to get all inputs, which means, I
+think, it makes sense for it to call the actions when appropriate (rather than
+returning them for someone else to call). Should it know about tcl?
+
+I feel like maybe there are two parts. One should be tclless, the other could
+be a tcl/convinience library wrapper.
+
+This would be much easier if it weren't so annoying to specify partially
+applied functions in c. In that case I would just say eventer should take as
+input a keysym, ctrlon, shifton, and a function to call back whenever that
+happens, then provide an input function which does the lookup and callback and
+ctrl and shift tracking. Easy.
+
+It's just annoying to specify a function, because we will need to know:
+  - the address of the function.
+  - the tcl interpreter.
+  - a script to evaluate.
+
+I suppose the easiest way to do partial application is using global variables,
+so the usual function pointer and user data thing. Ug! How annoying. Which is
+why it's so much more convinient if the key mapper event thing knew all about
+tcl and could automatically do eval (so it doesn't need a function address)
+and you pass the tcl interpreter once, and then you give it a script.
+
+
+

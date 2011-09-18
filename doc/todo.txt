@@ -9,7 +9,6 @@ List of pending issues.
 - generated documentation should include copyright notice? (66.tsk)
 - general purpose image viewer (40.tsk)
 - sgreen should have a way to specify first window (62.tsk)
-- termer should have a way to specify command to execute (63.tsk)
 - release 1.2.0 (58.tsk)
 
 2.0.0

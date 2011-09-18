@@ -22,23 +22,12 @@
 
 #include "consoler.h"
 
-// Arg 1: termer program to test.
-// Arg 2: termfiller program
-int main(int argc, char* argv[]) 
+void testfills(CNSL_Client termer)
 {
-    assert(argc > 2);
-    const char* termerpath = argv[1];
-    const char* termfillerpath = argv[2];
-    char* noargs[] = {NULL};
-
     int width = 640;
     int height = 480;
     CNSL_Display display = CNSL_AllocDisplay(width, height);
 
-    setenv("SHELL", termfillerpath, 1);
-    setenv("TERMERFONT", "Monospace-24:Bold", 1);
-
-    CNSL_Client termer = CNSL_LaunchClient(termerpath, noargs);
     CNSL_SendEvent(termer, CNSL_MakeResize(width, height));
 
     CNSL_RecvDisplay(termer, display, NULL, NULL, NULL, NULL);
@@ -57,6 +46,32 @@ int main(int argc, char* argv[])
     CNSL_SendEvent(termer, CNSL_MakeKeypress(CNSLK_q));
 
     CNSL_CloseClient(termer);
+    CNSL_FreeDisplay(display);
+}
+
+// Arg 1: termer program to test.
+// Arg 2: termfiller program
+int main(int argc, char* argv[]) 
+{
+    assert(argc > 2);
+    char* termerpath = argv[1];
+    char* termfillerpath = argv[2];
+
+    // Make termfiller the default shell, test that.
+    setenv("SHELL", termfillerpath, 1);
+    setenv("TERMERFONT", "Monospace-24:Bold", 1);
+    char* noargs[] = {termerpath, NULL};
+
+    CNSL_Client termer = CNSL_LaunchClient(termerpath, noargs);
+    testfills(termer);
+
+    // Now pass termfiller as the command argument instead.
+    setenv("SHELL", "/foo/bar", 1);
+    setenv("TERMERFONT", "Monospace-24:Bold", 1);
+    char* args[] = {termerpath, termfillerpath, NULL};
+
+    CNSL_Client termer2 = CNSL_LaunchClient(termerpath, args);
+    testfills(termer2);
     return 0;
 }
 

@@ -188,10 +188,10 @@ typedef struct {
 
 /// CNSL_LaunchClient - launch a consoler client
 ///
-/// Launch a consoler client specified by the given path and pass it the
-/// given arguments. This forks a new processes to exec the client, sets
-/// up a communication channel with the client using pipes, and returns a
-/// reference to the client.
+/// Launch a consoler client specified by the given 'path' and pass it the
+/// given 'args' as interpreted by the execvp function. This forks a new
+/// processes to exec the client, sets up a communication channel with the
+/// client using pipes, and returns a reference to the client.
 ///
 /// If there is an error in launching the client, both fields of the
 /// returned client will be set to -1.

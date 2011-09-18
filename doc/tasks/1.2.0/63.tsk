@@ -8,3 +8,13 @@ automatically, so I want a way to do something like:
 
     sdlcsr sgreen -c termer -x screen
 
+Sat Sep 17 14:05:45 EDT 2011
+
+See 62.tsk. Everything there applies here. I think just take an optional
+command as the primary argument. For example: `termer screen` would run termer
+starting as the initial command screen.
+
+Sun Sep 18 10:58:09 EDT 2011
+
+Implemented and even tested. Works swell.
+ 
