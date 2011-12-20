@@ -1,0 +1,104 @@
+
+Tue Dec 20 17:55:15 EST 2011
+
+Task: Implement zooming and scroll for raster image viewer
+
+My local git repo is out of date, so not giving this a task number just now,
+and not working on the generic image viewer. Instead I'll apply it to pnger.
+
+Here is the goal for this first step:
+
+1. zoom in and out powers of 2
+2. scroll up down left right
+
+Zoom In
+-------
+Zooming in is easy, because we just double the pixels.
+
+That is, for each pixel x in the original image, we display a 2x2 box of
+pixels
+
+  xx
+  xx
+
+which has each pixel the same value as x in the original.
+
+To zoom in more, double that again, and again, and so on.
+
+You see now why the first step is zooming by powers of 2?
+
+Zoom Out
+--------
+Zoom out is a little trickier. Where we have a 2x2 box of pixels
+
+  ab
+  cd
+
+We want to replace it with a single picture which is the average of the
+pixels: x = (a+b+c+d)/4
+
+Scroll
+------
+Scroll is done after zoom, so whatever display you've drawn you scroll over by
+display pixels. Easy.
+
+
+Implementation Scheme
+---------------------
+How to implement? I think it should be something like what pdfer does, so let
+me review what pdfer does.
+
+One point, before I go into the pdfer review, is 
+  * draw pixels based on the unscaled image, not a scaled image.
+That way we don't loose information if we zoom out then back in.
+
+Review of pdfer way of things
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There's a pdfer class
+  * loads a pdfer
+  * draws to a given display
+  * scroll x and y
+  * zoom
+
+It keeps a pointer to the reference document (image). For pdfer the reference
+changes with each zoom. It's different for pnger. Keeps track of current zoom
+and scroll.
+
+The main program creates this pdfer object, specifying width and height of the
+display. It creates a display, calls pdfer to draw to that display, then sends
+the display onward.
+
+Perfect!
+    
+Here's the plan for pnger then, to start.
+
+Have a Pnger class, with static load constructor. And unload too I suppose.
+Have a show function to draw to a display, zoom, scroll.
+
+That's it. Clear, easy. Ready to go try it?
+
+A couple things to check first
+* does current pnger worry about display size? If not, I'll not worry about it
+  either. If yes, maybe I should worry about it.
+* I should double check I have a suitable png file to do my manual tests on.
+
+Which brings us, sadly, to the question of how to test my png viewer zoom and
+such. Certainly a solid colored image isn't going to help very much. Uh... let
+me not worry about it just now?
+
+Pnger currently does not worry about display dimensions. It just draws the
+entire png file.
+
+I have a cat test input (from rubence) which, though not ideal, is workable.
+
+Cool. So here I go, to implement away.
+
+First step will be: convert to using Pnger class, but don't yet add zoom or
+scroll. Wish me luck.
+
+Tue Dec 20 18:24:21 EST 2011
+
+First issue: pdfer uses c++, pnger doesn't. So should I switch to using c++,
+or just use c? I think use c. The reason pdfer uses c++ is because libpoppler
+does. It won't be so hard to use c.
+
