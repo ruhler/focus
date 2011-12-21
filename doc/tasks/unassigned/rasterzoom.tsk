@@ -142,3 +142,15 @@ Except I haven't written an automated test for it.
 Can I do that easily with green? Err... I'm not really set on specs yet and
 all that... ug. Skip it for now (BAD BAD BAD BAD BAD).
 
+Tue Dec 20 19:14:20 EST 2011
+
+Okay, so now for the fun part. Zoom.
+I just need to be smarter about which pixel I read.
+Shall I just dive into it, without fear, and run into problems when I run into
+them? Sure, why not.
+
+Tue Dec 20 19:28:09 EST 2011
+
+Zooming in works swell, as it turns out. By manual test. Still need automated
+tests. Groan.
+

@@ -47,5 +47,17 @@ void Pnger_Show(Pnger pnger, CNSL_Display display);
 /// direction.
 void Pnger_Scroll(Pnger pnger, int x, int y);
 
+
+/// Pnger_Zoom - zoom out by the given amount
+///
+/// Zoom out of the png image by the given amount.
+/// The amount is a factor of (2^zfp)
+/// 'zfp' may be negative to zoom in.
+///
+/// For example, zoom(1) makes the png image have as big on the display,
+/// zoom(0) does nothing, zoom(-1) makes the png image twice as big on the
+/// display.    
+void Pnger_Zoom(Pnger pnger, int zfp);
+
 #endif//PNGER_H
 

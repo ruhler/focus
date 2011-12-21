@@ -31,6 +31,11 @@ struct Pnger_ {
     // upper left corner of the display. They can be negative.
     int x;
     int y;
+
+    // The zoom factor power from the original picture size.
+    // Each pixel in the original image is represented by a 
+    // 2^zfp x 2^zfp square of pixels in the display.
+    int zfp;
 };
 
 Pnger Pnger_Create(const char* filename)
@@ -74,6 +79,7 @@ Pnger Pnger_Create(const char* filename)
     pnger->height = png_get_image_height(png_ptr, info_ptr);
     pnger->x = 0;
     pnger->y = 0;
+    pnger->zfp = 0;
 
     return pnger;
 }
@@ -95,10 +101,19 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
     int r, c;
     for (r = 0; r < display.height; r++) {
         for (c = 0; c < display.width; c++) {
-            if (y + r >= 0 && y + r < sh && x + c >= 0 && x + c < sw) {
-                uint8_t rc = pnger->data[y+r][3*(x+c)];
-                uint8_t gc = pnger->data[y+r][3*(x+c)+1];
-                uint8_t bc = pnger->data[y+r][3*(x+c)+2];
+            // TODO: allow zooming out as well as in
+            if (pnger->zfp < 0) {
+                fprintf(stderr, "pnger TODO: implement zooming out\n");
+                return;
+            }
+
+            int xsrc = (x + c) / (1 << pnger->zfp);
+            int ysrc = (y + r) / (1 << pnger->zfp);
+
+            if (ysrc >= 0 && ysrc < sh && xsrc >= 0 && xsrc < sw) {
+                uint8_t rc = pnger->data[ysrc][3*xsrc];
+                uint8_t gc = pnger->data[ysrc][3*xsrc+1];
+                uint8_t bc = pnger->data[ysrc][3*xsrc+2];
                 CNSL_Color color = CNSL_MakeColor(rc, gc, bc);
                 CNSL_SetPixel(display, c, r, color);
             } else {
@@ -113,5 +128,10 @@ void Pnger_Scroll(Pnger pnger, int x, int y)
 {
     pnger->x -= x;
     pnger->y -= y;
+}
+
+void Pnger_Zoom(Pnger pnger, int zfp)
+{
+    pnger->zfp -= zfp;
 }
 

@@ -73,10 +73,14 @@ int main(int argc, char* argv[])
         if (CNSL_IsKeypress(event, &sym)) {
             switch (sym) {
                 case CNSLK_q: done = true; break;
+
                 case CNSLK_h: Pnger_Scroll(pnger, 10, 0); break;
                 case CNSLK_j: Pnger_Scroll(pnger, 0, -10); break;
                 case CNSLK_k: Pnger_Scroll(pnger, 0, 10); break;
                 case CNSLK_l: Pnger_Scroll(pnger, -10, 0); break;
+
+                case CNSLK_i: Pnger_Zoom(pnger, -1); break;
+                case CNSLK_o: Pnger_Zoom(pnger, 1); break;
             }
 
             Pnger_Show(pnger, display);
