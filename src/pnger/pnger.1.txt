@@ -27,7 +27,7 @@ pnger - a consoler png viewer
 
 SYNOPSIS
 --------
-*pnger* FILE
+*pnger* 'FILE'
 
 DESCRIPTION
 -----------
