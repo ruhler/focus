@@ -101,25 +101,54 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
     int r, c;
     for (r = 0; r < display.height; r++) {
         for (c = 0; c < display.width; c++) {
-            // TODO: allow zooming out as well as in
+            CNSL_Color color = CNSL_MakeColor(0x80, 0x80, 0x80);
+
             if (pnger->zfp < 0) {
-                fprintf(stderr, "pnger TODO: implement zooming out\n");
-                return;
-            }
+                int count = 0;
+                unsigned int rc = 0;
+                unsigned int gc = 0;
+                unsigned int bc = 0;
 
-            int xsrc = (x + c) / (1 << pnger->zfp);
-            int ysrc = (y + r) / (1 << pnger->zfp);
+                int scale = 1 << (-pnger->zfp);
 
-            if (ysrc >= 0 && ysrc < sh && xsrc >= 0 && xsrc < sw) {
-                uint8_t rc = pnger->data[ysrc][3*xsrc];
-                uint8_t gc = pnger->data[ysrc][3*xsrc+1];
-                uint8_t bc = pnger->data[ysrc][3*xsrc+2];
-                CNSL_Color color = CNSL_MakeColor(rc, gc, bc);
-                CNSL_SetPixel(display, c, r, color);
+                int xmin = (x + c) * scale;
+                int xmax = xmin + scale;
+                int ymin = (y + r) * scale;
+                int ymax = ymin + scale;
+
+                if (xmin < 0) {
+                    xmin = 0;
+                }
+                if (ymin < 0) {
+                    ymin = 0;
+                }
+
+                int xs, ys;
+                for (ys = ymin; ys < ymax && ys < sh; ys++) {
+                    for (xs = xmin; xs < xmax && xs < sw; xs++) {
+                        count++;
+                        rc += pnger->data[ys][3*xs];
+                        gc += pnger->data[ys][3*xs+1];
+                        bc += pnger->data[ys][3*xs+2];
+                    }
+                }
+
+                if (count > 0) {
+                    color = CNSL_MakeColor(rc/count, gc/count, bc/count);
+                }
+                
             } else {
-                // Background color: grey
-                CNSL_SetPixel(display, c, r, CNSL_MakeColor(0x80, 0x80, 0x80));
+                int xsrc = (x + c) / (1 << pnger->zfp);
+                int ysrc = (y + r) / (1 << pnger->zfp);
+
+                if (ysrc >= 0 && ysrc < sh && xsrc >= 0 && xsrc < sw) {
+                    uint8_t rc = pnger->data[ysrc][3*xsrc];
+                    uint8_t gc = pnger->data[ysrc][3*xsrc+1];
+                    uint8_t bc = pnger->data[ysrc][3*xsrc+2];
+                    color = CNSL_MakeColor(rc, gc, bc);
+                }
             }
+            CNSL_SetPixel(display, c, r, color);
         }
     }
 }

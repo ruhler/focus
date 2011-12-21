@@ -154,3 +154,39 @@ Tue Dec 20 19:28:09 EST 2011
 Zooming in works swell, as it turns out. By manual test. Still need automated
 tests. Groan.
 
+Okay, so now the hard part. How do I do zooming out? This is important for
+large png images.
+
+I know the high level idea. The value for a pixel will be the average of a big
+square of pixels.
+
+The problem is, what do we do about the edge? It doesn't make sense to make
+the pixel darker just because it's on the edge. We have to realize it's on an
+edge, and only count those pixels in the image.
+
+Okay, so here's what I say we do. Initialize r, g, b all to zero. Make them
+integers, so we don't have to worry about over flow. For each source pixel in
+the image, increment r, g, b with that, and increment a counter of the pixels.
+If the count of pixels is 0, then use grey, else divide r, g, b by the count
+and use that. Simple.
+
+Question. Should this be a separate case from zoomin, or can they be one and
+the same? Let's make it clear, just do them as two different cases.
+
+Cool. Here I go. Wish me luck.
+
+Tue Dec 20 19:42:14 EST 2011
+
+I implemented it, it doesn't work. It's all fuzzy like. I wonder if there's a
+bug, or if this idea of using the average just will not work. Hmm....
+
+Also, the top doesn't seem to scroll correctly at that zoom. It's getting
+stuff at the top. I bet I switched an x or y somewhere.
+
+Up, it was just a typo: I said ymax instead of ymin. That fixed it. Looks
+swell now.
+
+Except, I still don't have automated tests...
+
+Cool.
+
