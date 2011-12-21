@@ -20,16 +20,6 @@
 
 #include "pnger.h"
 
-bool shouldquit(CNSL_Event event)
-{
-    if (CNSL_IsQuit(event)) {
-        return true;
-    }
-
-    CNSL_Keysym sym;
-    return (CNSL_IsKeypress(event, &sym) && sym == CNSLK_q);
-}
-
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
@@ -74,9 +64,27 @@ int main(int argc, char* argv[])
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
     // Wait for q key press to finish.
-    event = CNSL_RecvEvent(stdcon);
-    while (!shouldquit(event)) {
+    bool done = false;
+
+    while (!done) {
         event = CNSL_RecvEvent(stdcon);
+        CNSL_Keysym sym;
+
+        if (CNSL_IsKeypress(event, &sym)) {
+            switch (sym) {
+                case CNSLK_q: done = true; break;
+                case CNSLK_h: Pnger_Scroll(pnger, 10, 0); break;
+                case CNSLK_j: Pnger_Scroll(pnger, 0, -10); break;
+                case CNSLK_k: Pnger_Scroll(pnger, 0, 10); break;
+                case CNSLK_l: Pnger_Scroll(pnger, -10, 0); break;
+            }
+
+            Pnger_Show(pnger, display);
+            CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
+
+        } else if (CNSL_IsQuit(event)) {
+            done = true;
+        }
     }
 
     Pnger_Destroy(pnger);

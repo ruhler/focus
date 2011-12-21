@@ -26,6 +26,11 @@ struct Pnger_ {
     uint8_t** data;
     unsigned int width;
     unsigned int height;
+
+    // (x, y) is the coordinate in the (post scaled) image which is at the
+    // upper left corner of the display. They can be negative.
+    int x;
+    int y;
 };
 
 Pnger Pnger_Create(const char* filename)
@@ -67,6 +72,8 @@ Pnger Pnger_Create(const char* filename)
     pnger->data = row_pointers;
     pnger->width = png_get_image_width(png_ptr, info_ptr);
     pnger->height = png_get_image_height(png_ptr, info_ptr);
+    pnger->x = 0;
+    pnger->y = 0;
 
     return pnger;
 }
@@ -79,16 +86,32 @@ void Pnger_Destroy(Pnger pnger)
 
 void Pnger_Show(Pnger pnger, CNSL_Display display)
 {
-    unsigned int y;
-    for (y = 0; y < pnger->height && y < display.height; y++) {
-        unsigned int x;
-        for (x = 0; x < pnger->width && x < display.width; x++) {
-            uint8_t r = pnger->data[y][3*x];
-            uint8_t g = pnger->data[y][3*x+1];
-            uint8_t b = pnger->data[y][3*x+2];
-            CNSL_Color color = CNSL_MakeColor(r, g, b);
-            CNSL_SetPixel(display, x, y, color);
+    int x = pnger->x;
+    int y = pnger->y;
+    int sw = pnger->width;
+    int sh = pnger->height;
+
+    // (c, r) are coordinates in the display
+    int r, c;
+    for (r = 0; r < display.height; r++) {
+        for (c = 0; c < display.width; c++) {
+            if (y + r >= 0 && y + r < sh && x + c >= 0 && x + c < sw) {
+                uint8_t rc = pnger->data[y+r][3*(x+c)];
+                uint8_t gc = pnger->data[y+r][3*(x+c)+1];
+                uint8_t bc = pnger->data[y+r][3*(x+c)+2];
+                CNSL_Color color = CNSL_MakeColor(rc, gc, bc);
+                CNSL_SetPixel(display, c, r, color);
+            } else {
+                // Background color: grey
+                CNSL_SetPixel(display, c, r, CNSL_MakeColor(0x80, 0x80, 0x80));
+            }
         }
     }
+}
+
+void Pnger_Scroll(Pnger pnger, int x, int y)
+{
+    pnger->x -= x;
+    pnger->y -= y;
 }
 

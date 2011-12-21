@@ -102,3 +102,43 @@ First issue: pdfer uses c++, pnger doesn't. So should I switch to using c++,
 or just use c? I think use c. The reason pdfer uses c++ is because libpoppler
 does. It won't be so hard to use c.
 
+Tue Dec 20 18:49:52 EST 2011
+
+First step done. Goodly. What, do you suppose, ought to be the next step?
+How about scroll?
+
+It's less interesting, but should be easy to implement. Sure, why not, let's
+do that next.
+
+Simple: add a Pnger_Scroll function, and add the current scroll to the pnger
+object, and have an offset when we draw to the display.
+
+Some trickyness in making sure the bounds are right on the display draw.
+
+And then add the scroll commands. Let's scroll by, say, 10 pixels to start.
+
+To be consistent with pdfer, let's say x and y as positions in the page which
+are shown at the upper left corner of the view, and they may be negative.
+
+And scroll forward and to the left by x and y in the scroll function.
+
+Tue Dec 20 19:08:56 EST 2011
+
+I implemented the scrolling, but it doesn't work. There's a bug.
+
+green.png doesn't show anything. It's crashing (dereferencing into bad memory).
+cat.png shows garbage in the picture, but the grey looks okay, and the size of
+the image and so on.
+
+So, time to track down the bug.
+
+Okay, found it. I had a variable r shadowing another variable r in the wrong
+way.
+
+Scrolling works swell now. Nifty. This part done...
+
+Except I haven't written an automated test for it.
+
+Can I do that easily with green? Err... I'm not really set on specs yet and
+all that... ug. Skip it for now (BAD BAD BAD BAD BAD).
+

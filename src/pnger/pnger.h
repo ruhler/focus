@@ -40,5 +40,12 @@ void Pnger_Destroy(Pnger pnger);
 /// Draw the png file using the Pnger object view to the given display.
 void Pnger_Show(Pnger pnger, CNSL_Display display);
 
+/// Pnger_Scroll - scroll the view
+///
+/// Scroll the view of the png file forward and to the right by the given
+/// number of pixels. 'x' and/or 'y' may be negative to scroll in the reverse
+/// direction.
+void Pnger_Scroll(Pnger pnger, int x, int y);
+
 #endif//PNGER_H
 
