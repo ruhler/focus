@@ -83,6 +83,11 @@ bool CNSL_IsQuit(CNSL_Event event);
 /// Otherwise return false and 'width' and 'height' are untouched.
 bool CNSL_IsResize(CNSL_Event event, int* width, int* height);
 
+/// CNSL_EventsEqual - test for equality of events
+///
+/// Returns true if the two events are equal, false otherwise.
+bool CNSL_EventsEqual(CNSL_Event a, CNSL_Event b);
+
 typedef uint32_t CNSL_Color;
 
 /// CNSL_GetRed8 - get red component of a color
@@ -183,10 +188,10 @@ typedef struct {
 
 /// CNSL_LaunchClient - launch a consoler client
 ///
-/// Launch a consoler client specified by the given path and pass it the
-/// given arguments. This forks a new processes to exec the client, sets
-/// up a communication channel with the client using pipes, and returns a
-/// reference to the client.
+/// Launch a consoler client specified by the given 'path' and pass it the
+/// given 'args' as interpreted by the execvp function. This forks a new
+/// processes to exec the client, sets up a communication channel with the
+/// client using pipes, and returns a reference to the client.
 ///
 /// If there is an error in launching the client, both fields of the
 /// returned client will be set to -1.

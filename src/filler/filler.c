@@ -17,107 +17,53 @@
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "consoler.h"
+#include "filler.h"
 
-void fill(CNSL_Display display, CNSL_Color color)
+// fill - private method
+// Fills the display with the current color and sends that out to console
+void fill(Filler f)
 {
-    fprintf(stderr, "filler: send %08x\n", color);
-    CNSL_FillRect(display, 0, 0, display.width, display.height, color);
-    CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, display.width, display.height);
+    CNSL_FillRect(f->display, 0, 0, f->display.width, f->display.height, f->color);
+    CNSL_SendDisplay(f->console, f->display, 0, 0, 0, 0, f->display.width, f->display.height);
 }
 
-void resize(CNSL_Display* display, CNSL_Color color, int width, int height)
+
+Filler Filler_Create(int width, int height, int color, CNSL_Console console)
 {
-    CNSL_FreeDisplay(*display);
-    *display = CNSL_AllocDisplay(width, height);
-    fill(*display, color);
+    Filler filler = malloc(sizeof(Filler_));
+    if (filler == NULL) {
+        return NULL;
+    }
+
+    filler->width = width;
+    filler->height = height;
+    filler->display = CNSL_AllocDisplay(width, height);
+    filler->color = color;
+    filler->console = console;
+
+    fill(filler);
+    return filler;
 }
 
-void change(CNSL_Display display, CNSL_Color color, CNSL_Color* save)
+void Filler_Free(Filler filler)
 {
-    *save = color;
-    fill(display, color);
+    free(filler);
 }
 
-int main(int argc, char* argv[])
+void Filler_Resize(Filler filler, int width, int height)
 {
-    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("filler %s\n", FOCUS_VERSION_STRING);
-        return 0;
-    }
+    filler->width = width;
+    filler->height = height;
+    CNSL_FreeDisplay(filler->display);
+    filler->display = CNSL_AllocDisplay(width, height);
+    fill(filler);
+}
 
-    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
-        printf("Usage: filler\n");
-        printf("An application to color the screen\n");
-        printf("\n");
-        printf("Options\n");
-        printf("  --help       output this help message and exit\n");
-        printf("  --version    output version information and exit\n");
-        printf("\n");
-        return 0;
-    }
-
-    int width;
-    int height;
-
-    CNSL_Event event = CNSL_RecvEvent(stdcon);
-    if (!CNSL_IsResize(event, &width, &height)) {
-        fprintf(stderr, "filler: expected resize event. Got %i\n", event.type);
-        return 1;
-    }
-
-    CNSL_Display display = CNSL_AllocDisplay(width, height);
-    CNSL_Keysym sym;
-    bool done = false;
-
-    CNSL_Color black = CNSL_MakeColor(0, 0, 0);
-    CNSL_Color red = CNSL_MakeColor(255, 0, 0);
-    CNSL_Color green = CNSL_MakeColor(0, 255, 0);
-    CNSL_Color blue = CNSL_MakeColor(0, 0, 255);
-    CNSL_Color cyan = CNSL_MakeColor(0, 255, 255);
-    CNSL_Color yellow = CNSL_MakeColor(255, 255, 0);
-    CNSL_Color purple = CNSL_MakeColor(255, 0, 255);
-    CNSL_Color white = CNSL_MakeColor(255, 255, 255);
-
-    CNSL_Color color;
-    change(display, black, &color);
-
-    while (!done) {
-        event = CNSL_RecvEvent(stdcon);
-        if (CNSL_IsQuit(event)) {
-            fprintf(stderr, "filler: quit\n");
-            done = true;
-        } else if (CNSL_IsResize(event, &width, &height)) {
-            fprintf(stderr, "filler: resize %i, %i\n", width, height);
-            resize(&display, color, width, height);
-        } else if (CNSL_IsKeypress(event, &sym)) {
-            fprintf(stderr, "filler: keypress: %c(%i)\n", sym, sym);
-            switch (sym) {
-                case CNSLK_r: change(display, red, &color); break;
-                case CNSLK_g: change(display, green, &color); break;
-                case CNSLK_b: change(display, blue, &color); break;
-                case CNSLK_c: change(display, cyan, &color); break;
-                case CNSLK_y: change(display, yellow, &color); break;
-                case CNSLK_p: change(display, purple, &color); break;
-                case CNSLK_w: change(display, white, &color); break;
-                case CNSLK_n: change(display, black, &color); break;
-                case CNSLK_q: done = true; break;
-                case CNSLK_d: 
-                    width *= 2;
-                    height *= 2;          
-                    resize(&display, color, width, height);
-                    break;
-
-                case CNSLK_h: 
-                    width /= 2;
-                    height /= 2;          
-                    resize(&display, color, width, height);
-                    break;
-            }
-        }
-    }
-
-    return 0;
+void Filler_FillWith(Filler filler, CNSL_Color color)
+{
+    filler->color = color;
+    fill(filler);
 }
 

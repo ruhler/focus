@@ -27,7 +27,7 @@ termer - a consoler terminal emulator
 
 SYNOPSIS
 --------
-*termer*
+*termer* ['cmd' ['args' ...]]
 
 DESCRIPTION
 -----------

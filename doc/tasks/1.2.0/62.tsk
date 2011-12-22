@@ -1,0 +1,20 @@
+
+Sun Sep 11 10:11:15 EDT 2011
+
+Task: sgreen should have a way to specify first window
+
+Because, for example, on greenfield I want a way to start screen up
+automatically, so I want a way to do something like:
+
+    sdlcsr sgreen -c termer -x screen
+
+Sat Sep 17 14:00:20 EDT 2011
+
+Um, why wouldn't I just have an optional command to run? Like:
+   sdlcsr sgreen termer screen
+
+Because sgreen doesn't take any other main arguments, it may as well take a
+command. And it wouldn't be so hard to implement.
+
+Yes. I like that. Do it that way.
+

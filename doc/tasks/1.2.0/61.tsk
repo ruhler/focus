@@ -1,0 +1,30 @@
+
+Sun Aug 28 20:23:50 EDT 2011
+
+Task: I need a jpeg viewer
+
+Because some images I've wanted to view are jpegs, and I couldn't view them.
+
+Let me start by making something completely separate from pnger. Much of it
+will look the same, but the underlying jpeg stuff will be different. After I
+make it I can think about how to merge the two into a single app.
+
+So, the first question is, how can I read jpeg files into a buffer? I'm hoping
+there is a jpeg library that knows how to do it. Let's research.
+
+Hmm... I already have this libjpeg thing installed on my computer.
+
+libjpeg.txt provided with the libjpeg source has all the documentation info I
+want.
+
+Mon Sep  5 19:27:05 EDT 2011
+
+Okay, so let me try writing a rough draft jpeg viewer, see how it goes. All I
+have to do is make a display, fill it up, and send it to the server.
+
+Mon Sep  5 19:51:24 EDT 2011
+
+Okay! So first draft appears to work. The only problem is, the specific
+pictures I want to view are all really really big, and I have no way of seeing
+what's not just in the upper left hand corner.
+

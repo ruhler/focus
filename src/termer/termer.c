@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     }
 
     if (argc > 1 && strcmp(argv[1], "--help") == 0) {
-        printf("Usage: termer\n");
+        printf("Usage: termer [cmd [args ...]]\n");
         printf("A consoler terminal emulator\n");
         printf("\n");
         printf("Options\n");
@@ -132,6 +132,12 @@ int main(int argc, char* argv[])
         printf("  --version    output version information and exit\n");
         printf("\n");
         return 0;
+    }
+
+    char* cmdfile = NULL;
+    char** cmdargv = argv + 1;
+    if (argc > 1) {
+        cmdfile = argv[1];
     }
     
     display = DISPLAY_Alloc();
@@ -143,7 +149,7 @@ int main(int argc, char* argv[])
     setenv("COLUMNS", colsstr, 1);
     setenv("LINES", linesstr, 1);
 
-    client = CLIENT_Open();
+    client = CLIENT_Open(cmdfile, cmdargv);
     CLIENT_Resize(client, DISPLAY_Columns(display), DISPLAY_Lines(display));
     scr = screen(DISPLAY_Columns(display), DISPLAY_Lines(display));
 

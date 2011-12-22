@@ -44,3 +44,16 @@ other configuration stuff via an rc file.
 
 Note in particular: I'm not including pdfer search.
 
+Sun Sep 11 09:58:15 EDT 2011
+
+I think I've settled on what all I want included in this release.
+
+Termer performance has been shown to not be a real problem, so nothing to do
+there. The main things are:
+ - tclify applications so keys can be configured to personal taste
+ - general purpose image viewer 
+    can start with just png and jpeg with scrolling command added
+ - update documentation and fix minor bugs
+
+Cool. That's it. I'm set. I'm happy. Let me go to it.
+

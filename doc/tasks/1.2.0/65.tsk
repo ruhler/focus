@@ -1,0 +1,8 @@
+
+Sun Sep 11 10:07:42 EDT 2011
+
+Task: library man page function prototypes are formatted wrong
+
+For example, take a look at FNTR_DrawGlyph man page. What it should do is
+alternate bold and italics or something like that?
+

@@ -75,3 +75,223 @@ default commands, then as part of the main loop do something like:
 Where this input function is part of the key mapper library, and calls the
 right application command.
 
+Sun Sep 11 10:15:09 EDT 2011
+
+What do I need to do for this?
+
+I guess firstly I should rewrite filler to be more of a library? Hmm... Or do
+I need to do that?
+
+Perhaps I should make some global variables global. Then implement the
+following commands as separate functions:
+    red, green, blue, cyan, yellow, purple, white, black, quit,
+    double, halve
+
+This is all without tcl. Regardless, that will be a helpful first step.
+
+The next question will be how to register all the commands in a syntax
+friendly way. Does each command need its own little tcl wrapper? Is that too
+much work to write? Can I have a common function to write that? Or perhaps a
+macro? Let me not worry about it for now, because filler is so simple it may
+not matter.
+
+Okay. Plan is clear. Let me global command functionize filler.
+
+Sun Sep 11 10:26:53 EDT 2011
+
+It's interesting to see how filler changes when using global variables. There
+is less repetition of things, less clutter. Is it worse? Harder to read and
+maintain?
+
+I think it would be fine if we had the notion of an object, just a way to
+group concepts together or something. I don't know. What's wrong with global
+variables? Maybe in small code nothing? Maybe if you have the proper abstract
+interface to a chunk of data nothing?
+
+Hmm...
+
+No, I think I see the problem with it. Use of the data is spread throughout
+the code, so it's hard to understand the data structure and what changes are
+done by what parts of the code. If instead we only interact with the data in
+functions specific to how the data is used, it becomes much easier to figure
+out how the data can be accessed and changed and how does so. This means I
+really ought to clean up filler to be like that. Either with a global
+instance, or data structure, or something. That is, I think I should have a
+struct and my functions should take a pointer to a struct to operate on. This
+becomes my filler library.
+
+Let me try it, see how onerous it is.
+
+I must say, there certainly are some nice things about this. For example, it's
+obvious what is a parameter or input vs. what is part of the filler object
+that is being read or modified.
+
+And if I really make it a library with a separate header file, then
+documentation is much nicer.
+
+Let me think a little on what I want to do. Maybe have filler.c and main.c? Or
+something like that in the filler directory. See how that cleans things up.
+The main.c can hold the tcl wrappers.
+
+Sun Sep 11 11:20:52 EDT 2011
+
+I factored filler out into a library. It's kind of nice I guess. Seems like
+more code. But now that we have it like that, it seems perhaps clear that
+filler provides the low level operations: resize and fillwith, and the way to
+implement main will be to implement the commands directly as tcl functions.
+
+The first step, I think, will be to use a tcl interpret for evaluating the
+commands, but not for doing the key mapping?
+
+Err... I'm starting to get confused. Why do I need tcl again?
+
+Because it gives a nice, natural way to do key mapping, and makes filler like
+a tool that you can now script, which could be nice. It make more sense with,
+for example, a pdf viewer, where you maybe want to say things like: go forward
+7 pages. That's a new command you can write without having to recompile the
+code. It makes the application much more general. In fact, with filler, we
+could expose a fillwith command, then you could define your own colors if you
+prefer.
+
+Um, one wonders then if fillwith and resize should be the only tcl commands,
+and the main application should all be written in tcl? Except how do you get
+input?
+
+That is, the main application could be implement as a tcl script rather than
+compiled in. Why shouldn't I do that rather than hard coding something in C?
+
+Let me think about that for a little bit.
+
+Sun Sep 11 15:53:02 EDT 2011
+
+Next step, add a tcl interpreter and implement the commands
+    red, green, blue, cyan, yellow, purple, white, black, quit,
+    double, halve
+
+Instead of calling functions directly, do a tcl eval on the key maps. That
+will be changed eventually, but for now will make a nice step.
+
+So, trick is to remember how to instantiate a tcl interpreter and add
+commands.
+
+Sat Sep 17 11:29:58 EDT 2011
+
+I tclified filler. It has the tcl interpreter and the commands. The next thing
+to do will be the key mapping stuff.
+
+Sat Sep 17 11:32:49 EDT 2011
+
+How do I do the key mapping stuff?
+
+I want to create a mapping from ... key press to tcl script. Tcl script can be
+stored as a string, that's easy. What is a key press? Why a keypress and not
+an event? Should I start specific or general?
+
+I know in the near future I'll want to be able to track ctrl and shift
+modifiers, so I might as well allow that now, right? Or better to start with
+just a raw key symbol, without modifiers, make sure that works, then update
+it? As a sort of intermediate step?
+
+Well, whatever I decide, I think it's clear I'll want an implementation of
+some sort of map structure, and that can be abstracted away with two
+functions:
+
+map(event, script); Adds a mapping.
+lookup(event); Looks up a mapping.
+
+Initial implementation can be a singly linked list, which I suspect is easy to
+implement, and won't be too slow for such a small number of entries and the
+whole interactivity of it. I can change it to something else later if needed.
+
+ctrl and shift will be easy enough to add, let me just do so right away. Or I
+suppose I could make it even more general. Use Event directly, but have
+another field which is State, and I can add state later? It can't matter that
+much either way.
+
+After I implement the map, I can try that directly. Add my events to the map,
+verify it works. Allow me to do that now?
+
+EventMap Create() - create a new event map.
+void insert(EventMap, Event, script) - insert an event into the map.
+script lookup(EventMap, Event) - look up an entry in the event map.
+void Free(EventMap) - free an event map.
+
+Start with that. Prefix is... EM? EVNTM EVENTMAP EMAP EVENTM EVMP EVNTMP
+Eventer_ aha! good. Eventually it will be its own library. For now I'll put it
+together with filler.
+
+Sat Sep 17 12:17:07 EDT 2011
+
+Okay, did that. Now the next step will be adding the reconfigurability. I
+figure that will be as simple as:
+
+  1. Provide a tcl command to insert a mapping.
+  2. Source a tcl script at startup.
+
+Here's an idea. I would like to have default key mappings by default, if the
+startup script isn't found (which shouldn't be an error). For now let me just
+define the key mappings, and the user can overwrite those if desired. In the
+future I can add a way to clear all keymappings the user can use if he
+prefers. That way the defaults are built in, don't need an extra file, work
+fine with test cases, and can be completely reconfigured or partially reused
+or whatever.
+
+Cool. Let me try this after lunch.
+
+Sat Sep 17 13:36:48 EDT 2011
+
+Had some thoughts. My Eventer interface, where I specify an Event, doesn't
+make sense. It's overly general in a useless sort of way. If you can specify
+an event, you'll want a way to get at its fields. What use is it to match
+against a Resize 124 422 event, for example? Since I don't have that
+capability, and don't want to have it yet, it makes no sense to use Event
+instead of the much simpler keysym for keypress events.
+
+So let me change the interface to take, rather than an event, a keysym,
+ctrlon, shifton. And you should pass it all the key events so it can maintain
+the state correctly. Or you manually set shift and ctrl values? Or should it
+provide a loop you can run? Or both?
+
+Here's the way I expect I'll always be using it:
+  - call insert a bunch of times to set default key bindings
+  - call insert from a tcl command.
+  - call input in a main loop whenever we get a keypress, have it
+    automatically call the appropriate function.
+
+And I want it to support ctrl and shift, and in the future I could imagine it
+supporting an alt modifier, maybe. Possibly.
+
+In what other ways could it be used or extend that I should consider?
+ - Add support for general events: like resize and quit? This would want some
+   way to map the event values to variables in the tcl script.
+ - General configuration stuff? Or is that completely separate? I think that's
+   separate from the keymapper. This isn't a: hook your program up to tcl
+   thing. It's a: map key events to actions?
+
+What functionality does this have over a generic map container? It keeps track
+of shift and ctrl, which means it expects to get all inputs, which means, I
+think, it makes sense for it to call the actions when appropriate (rather than
+returning them for someone else to call). Should it know about tcl?
+
+I feel like maybe there are two parts. One should be tclless, the other could
+be a tcl/convinience library wrapper.
+
+This would be much easier if it weren't so annoying to specify partially
+applied functions in c. In that case I would just say eventer should take as
+input a keysym, ctrlon, shifton, and a function to call back whenever that
+happens, then provide an input function which does the lookup and callback and
+ctrl and shift tracking. Easy.
+
+It's just annoying to specify a function, because we will need to know:
+  - the address of the function.
+  - the tcl interpreter.
+  - a script to evaluate.
+
+I suppose the easiest way to do partial application is using global variables,
+so the usual function pointer and user data thing. Ug! How annoying. Which is
+why it's so much more convinient if the key mapper event thing knew all about
+tcl and could automatically do eval (so it doesn't need a function address)
+and you pass the tcl interpreter once, and then you give it a script.
+
+
+

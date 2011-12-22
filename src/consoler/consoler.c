@@ -40,6 +40,7 @@ CNSL_Event CNSL_MakeKeypress(CNSL_Keysym sym)
     CNSL_Event event;
     event.type = CNSLE_KEYPRESS;
     event.v1 = sym;
+    event.v2 = 0;
     return event;
 }
 
@@ -48,6 +49,7 @@ CNSL_Event CNSL_MakeKeyrelease(CNSL_Keysym sym)
     CNSL_Event event;
     event.type = CNSLE_KEYRELEASE;
     event.v1 = sym;
+    event.v2 = 0;
     return event;
 }
 
@@ -55,6 +57,8 @@ CNSL_Event CNSL_MakeQuit()
 {
     CNSL_Event event;
     event.type = CNSLE_QUIT;
+    event.v1 = 0;
+    event.v2 = 0;
     return event;
 }
 
@@ -98,6 +102,28 @@ bool CNSL_IsResize(CNSL_Event event, int* width, int* height)
     return false;
 }
 
+bool CNSL_EventsEqual(CNSL_Event a, CNSL_Event b)
+{
+    if (a.type != b.type) {
+        return false;
+    }
+
+    switch (a.type) {
+        case CNSLE_QUIT:
+            return true;
+
+        case CNSLE_KEYPRESS:
+        case CNSLE_KEYRELEASE:
+            return a.v1 == b.v1;
+
+        case CNSLE_RESIZE:
+            return a.v1 == b.v1 && a.v2 == b.v2;
+
+        default:
+            assert(false && "invalid event type in equality check");
+    }
+    return false;
+}
 
 uint8_t CNSL_GetRed8(CNSL_Color c)
 {

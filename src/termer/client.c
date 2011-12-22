@@ -7,7 +7,7 @@
 
 #include "client.h"
 
-CLIENT_Client CLIENT_Open()
+CLIENT_Client CLIENT_Open(const char* file, char* const argv[])
 {
     setenv("TERM", "termer", 1);
 
@@ -19,15 +19,22 @@ CLIENT_Client CLIENT_Open()
     }
     
     if (pid == 0) {
-        const char* shell = getenv("SHELL");
-        if (!shell) {
-            shell = "/bin/sh";
+        if (file == NULL) {
+            const char* shell = getenv("SHELL");
+            if (!shell) {
+                shell = "/bin/sh";
+            }
+            
+            execl(shell, shell, NULL);
+            perror("execl");
+            exit(1);
         }
-        
-        execl(shell, shell, NULL);
-        perror("execl");
+
+        execvp(file, argv);
+        perror("execvp");
         exit(1);
     }
+
     return client;
 }
 
