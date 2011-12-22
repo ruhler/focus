@@ -37,3 +37,33 @@ Thu Dec 22 15:08:54 EST 2011
 I added zoom and scroll support to pnger (68.tsk). It's nifty. So I may as
 well keep this support for my general image viewer when I merge them.
 
+Thu Dec 22 17:44:25 EST 2011
+
+Is it time to merge them, you think? 
+
+Perhaps first should be to unify them. The idea is simple: we load the raster
+image into a common format: 2d array of CNSL_Color with width and height. Then
+for displaying, viewing, etc... that can all share common code. The trick is,
+at start up, to just choose the right load function.
+
+Yes, that sounds good. So what I should do first will be to change pnger to
+load to this 2D CNSL_Color. Then maybe massage pnger into the raster image
+viewer.
+
+Okay, here I go with the first step.
+
+Thu Dec 22 18:04:25 EST 2011
+
+Cool, so here's the deal. The representation for a raster image internally is
+just a CNSL_Display. So all we need is for each specific kind of image to be
+loadable into a CNSL_Display, and the viewer can work on any CNSL_Display.
+
+Next step then, I think is fairly clear. Separate out things into:
+  pnger.h, pnger.c - loading of a png file
+  jpger.h, jpger.c - loading of a jpeg file
+  imager.h, imager.c - the object for dealing with images
+  imagermain.h, imagermain.c - main function, takes flag -jpeg or -png, etc...
+
+So I'll immediately get resizing of jpeg images. Then implement loading of a
+gif image, and from there I can just add formats as desired.
+

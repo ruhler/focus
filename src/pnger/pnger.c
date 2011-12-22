@@ -23,9 +23,7 @@
 #include "pnger.h"
 
 struct Pnger_ {
-    uint8_t** data;
-    unsigned int width;
-    unsigned int height;
+    CNSL_Display pixels;
 
     // (x, y) is the coordinate in the (post scaled) image which is at the
     // upper left corner of the display. They can be negative.
@@ -74,9 +72,21 @@ Pnger Pnger_Create(const char* filename)
     uint8_t** row_pointers = png_get_rows(png_ptr, info_ptr);
 
     Pnger pnger = malloc(sizeof(struct Pnger_));
-    pnger->data = row_pointers;
-    pnger->width = png_get_image_width(png_ptr, info_ptr);
-    pnger->height = png_get_image_height(png_ptr, info_ptr);
+
+    int width = png_get_image_width(png_ptr, info_ptr);
+    int height = png_get_image_height(png_ptr, info_ptr);
+    pnger->pixels = CNSL_AllocDisplay(width, height);
+
+    int x, y;
+    for (y = 0; y < pnger->pixels.height; y++) {
+        for (x = 0; x < pnger->pixels.width; x++) {
+            uint8_t rc = row_pointers[y][3*x];
+            uint8_t gc = row_pointers[y][3*x+1];
+            uint8_t bc = row_pointers[y][3*x+2];
+            CNSL_SetPixel(pnger->pixels, x, y, CNSL_MakeColor(rc, gc, bc));
+        }
+    }
+
     pnger->x = 0;
     pnger->y = 0;
     pnger->zfp = 0;
@@ -87,6 +97,7 @@ Pnger Pnger_Create(const char* filename)
 void Pnger_Destroy(Pnger pnger)
 {
     // TODO: libpng cleanup?
+    CNSL_FreeDisplay(pnger->pixels);
     free(pnger);
 }
 
@@ -94,8 +105,8 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
 {
     int x = pnger->x;
     int y = pnger->y;
-    int sw = pnger->width;
-    int sh = pnger->height;
+    int sw = pnger->pixels.width;
+    int sh = pnger->pixels.height;
 
     // (c, r) are coordinates in the display
     int r, c;
@@ -127,9 +138,10 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
                 for (ys = ymin; ys < ymax && ys < sh; ys++) {
                     for (xs = xmin; xs < xmax && xs < sw; xs++) {
                         count++;
-                        rc += pnger->data[ys][3*xs];
-                        gc += pnger->data[ys][3*xs+1];
-                        bc += pnger->data[ys][3*xs+2];
+                        CNSL_Color pixel = CNSL_GetPixel(pnger->pixels, xs, ys);
+                        rc += CNSL_GetRed8(pixel);
+                        gc += CNSL_GetGreen8(pixel);
+                        bc += CNSL_GetBlue8(pixel);
                     }
                 }
 
@@ -142,10 +154,7 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
                 int ysrc = (y + r) / (1 << pnger->zfp);
 
                 if (ysrc >= 0 && ysrc < sh && xsrc >= 0 && xsrc < sw) {
-                    uint8_t rc = pnger->data[ysrc][3*xsrc];
-                    uint8_t gc = pnger->data[ysrc][3*xsrc+1];
-                    uint8_t bc = pnger->data[ysrc][3*xsrc+2];
-                    color = CNSL_MakeColor(rc, gc, bc);
+                    color = CNSL_GetPixel(pnger->pixels, xsrc, ysrc);
                 }
             }
             CNSL_SetPixel(display, c, r, color);
