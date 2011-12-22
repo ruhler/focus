@@ -32,3 +32,8 @@ Yes, decision is, for release 1.2.0, make a single raster image viewer which
 can view png and jpeg and has support for scrolling. Don't worry about zoom
 yet, that can be added to a later release.
 
+Thu Dec 22 15:08:54 EST 2011
+
+I added zoom and scroll support to pnger (68.tsk). It's nifty. So I may as
+well keep this support for my general image viewer when I merge them.
+

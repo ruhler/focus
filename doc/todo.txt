@@ -29,5 +29,5 @@ unassigned
 - alternatives to scons? (56.tsk)
 - have a way to show/hide cursor in sdlcsr?
 
-Next Task: 68.tsk
+Next Task: 69.tsk
 
