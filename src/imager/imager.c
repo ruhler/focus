@@ -18,11 +18,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <png.h>
 
-#include "pnger.h"
+#include "imager.h"
 
-struct Pnger_ {
+struct Imager_ {
     CNSL_Display pixels;
 
     // (x, y) is the coordinate in the (post scaled) image which is at the
@@ -36,77 +35,27 @@ struct Pnger_ {
     int zfp;
 };
 
-Pnger Pnger_Create(const char* filename)
+Imager Imager_Create(CNSL_Display pixels)
 {
-    FILE* pngfile = fopen(filename, "rb");
-    if (!pngfile) {
-        fprintf(stderr, "unable to open %s\n", filename);
-        return NULL;
-    }
-
-    png_structp png_ptr = png_create_read_struct(
-        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL
-    );
-
-    if (!png_ptr) {
-        fprintf(stderr, "unable to create png read struct.\n");
-        return NULL;
-    }
-
-    png_infop info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr)
-    {
-        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-        fprintf(stderr, "unable to create png info struct.\n");
-        return NULL;
-    }
-
-    png_init_io(png_ptr, pngfile);
-    unsigned int transforms = 
-          PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA
-        | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_GRAY_TO_RGB
-        | PNG_TRANSFORM_EXPAND;
-
-    png_read_png(png_ptr, info_ptr, transforms, NULL);
-
-    uint8_t** row_pointers = png_get_rows(png_ptr, info_ptr);
-
-    Pnger pnger = malloc(sizeof(struct Pnger_));
-
-    int width = png_get_image_width(png_ptr, info_ptr);
-    int height = png_get_image_height(png_ptr, info_ptr);
-    pnger->pixels = CNSL_AllocDisplay(width, height);
-
-    int x, y;
-    for (y = 0; y < pnger->pixels.height; y++) {
-        for (x = 0; x < pnger->pixels.width; x++) {
-            uint8_t rc = row_pointers[y][3*x];
-            uint8_t gc = row_pointers[y][3*x+1];
-            uint8_t bc = row_pointers[y][3*x+2];
-            CNSL_SetPixel(pnger->pixels, x, y, CNSL_MakeColor(rc, gc, bc));
-        }
-    }
-
-    pnger->x = 0;
-    pnger->y = 0;
-    pnger->zfp = 0;
-
-    return pnger;
+    Imager imager = malloc(sizeof(struct Imager_));
+    imager->pixels = pixels;
+    imager->x = 0;
+    imager->y = 0;
+    imager->zfp = 0;
+    return imager;
 }
 
-void Pnger_Destroy(Pnger pnger)
+void Imager_Destroy(Imager imager)
 {
-    // TODO: libpng cleanup?
-    CNSL_FreeDisplay(pnger->pixels);
-    free(pnger);
+    free(imager);
 }
 
-void Pnger_Show(Pnger pnger, CNSL_Display display)
+void Imager_Show(Imager imager, CNSL_Display display)
 {
-    int x = pnger->x;
-    int y = pnger->y;
-    int sw = pnger->pixels.width;
-    int sh = pnger->pixels.height;
+    int x = imager->x;
+    int y = imager->y;
+    int sw = imager->pixels.width;
+    int sh = imager->pixels.height;
 
     // (c, r) are coordinates in the display
     int r, c;
@@ -114,13 +63,13 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
         for (c = 0; c < display.width; c++) {
             CNSL_Color color = CNSL_MakeColor(0x80, 0x80, 0x80);
 
-            if (pnger->zfp < 0) {
+            if (imager->zfp < 0) {
                 int count = 0;
                 unsigned int rc = 0;
                 unsigned int gc = 0;
                 unsigned int bc = 0;
 
-                int scale = 1 << (-pnger->zfp);
+                int scale = 1 << (-imager->zfp);
 
                 int xmin = (x + c) * scale;
                 int xmax = xmin + scale;
@@ -138,7 +87,7 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
                 for (ys = ymin; ys < ymax && ys < sh; ys++) {
                     for (xs = xmin; xs < xmax && xs < sw; xs++) {
                         count++;
-                        CNSL_Color pixel = CNSL_GetPixel(pnger->pixels, xs, ys);
+                        CNSL_Color pixel = CNSL_GetPixel(imager->pixels, xs, ys);
                         rc += CNSL_GetRed8(pixel);
                         gc += CNSL_GetGreen8(pixel);
                         bc += CNSL_GetBlue8(pixel);
@@ -150,11 +99,11 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
                 }
                 
             } else {
-                int xsrc = (x + c) / (1 << pnger->zfp);
-                int ysrc = (y + r) / (1 << pnger->zfp);
+                int xsrc = (x + c) / (1 << imager->zfp);
+                int ysrc = (y + r) / (1 << imager->zfp);
 
                 if (ysrc >= 0 && ysrc < sh && xsrc >= 0 && xsrc < sw) {
-                    color = CNSL_GetPixel(pnger->pixels, xsrc, ysrc);
+                    color = CNSL_GetPixel(imager->pixels, xsrc, ysrc);
                 }
             }
             CNSL_SetPixel(display, c, r, color);
@@ -162,14 +111,14 @@ void Pnger_Show(Pnger pnger, CNSL_Display display)
     }
 }
 
-void Pnger_Scroll(Pnger pnger, int x, int y)
+void Imager_Scroll(Imager imager, int x, int y)
 {
-    pnger->x -= x;
-    pnger->y -= y;
+    imager->x -= x;
+    imager->y -= y;
 }
 
-void Pnger_Zoom(Pnger pnger, int zfp)
+void Imager_Zoom(Imager imager, int zfp)
 {
-    pnger->zfp -= zfp;
+    imager->zfp -= zfp;
 }
 

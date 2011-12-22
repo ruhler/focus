@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 
+#include "imager.h"
 #include "pnger.h"
 
 int main(int argc, char* argv[])
@@ -44,11 +45,13 @@ int main(int argc, char* argv[])
     }
 
     char* pngfilename = argv[1];
-    Pnger pnger = Pnger_Create(pngfilename);
-    if (!pnger) {
+    CNSL_Display pixels = Pnger_Load(pngfilename);
+    if (!pixels.pixels) {
         fprintf(stderr, "unable to open %s\n", pngfilename);
         return 1;
     }
+
+    Imager imager = Imager_Create(pixels);
 
     int width;
     int height;
@@ -60,7 +63,7 @@ int main(int argc, char* argv[])
     }
 
     CNSL_Display display = CNSL_AllocDisplay(width, height);
-    Pnger_Show(pnger, display);
+    Imager_Show(imager, display);
     CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
     // Wait for q key press to finish.
@@ -74,16 +77,16 @@ int main(int argc, char* argv[])
             switch (sym) {
                 case CNSLK_q: done = true; break;
 
-                case CNSLK_h: Pnger_Scroll(pnger, width/10, 0); break;
-                case CNSLK_j: Pnger_Scroll(pnger, 0, -height/10); break;
-                case CNSLK_k: Pnger_Scroll(pnger, 0, height/10); break;
-                case CNSLK_l: Pnger_Scroll(pnger, -width/10, 0); break;
+                case CNSLK_h: Imager_Scroll(imager, width/10, 0); break;
+                case CNSLK_j: Imager_Scroll(imager, 0, -height/10); break;
+                case CNSLK_k: Imager_Scroll(imager, 0, height/10); break;
+                case CNSLK_l: Imager_Scroll(imager, -width/10, 0); break;
 
-                case CNSLK_i: Pnger_Zoom(pnger, -1); break;
-                case CNSLK_o: Pnger_Zoom(pnger, 1); break;
+                case CNSLK_i: Imager_Zoom(imager, -1); break;
+                case CNSLK_o: Imager_Zoom(imager, 1); break;
             }
 
-            Pnger_Show(pnger, display);
+            Imager_Show(imager, display);
             CNSL_SendDisplay(stdcon, display, 0, 0, 0, 0, width, height);
 
         } else if (CNSL_IsQuit(event)) {
@@ -91,7 +94,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    Pnger_Destroy(pnger);
+    CNSL_FreeDisplay(pixels);
+    Imager_Destroy(imager);
     return 0;
 }
 

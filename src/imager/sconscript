@@ -2,7 +2,7 @@
 
 Import('env')
 
-pnger = env.Program('pnger', ['pngermain.c', 'pnger.c'],
+pnger = env.Program('pnger', ['pngermain.c', 'imager.c', 'pnger.c'],
         LIBS=['png', 'consoler'])
 Default(pnger)
 
