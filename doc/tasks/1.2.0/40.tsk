@@ -67,3 +67,11 @@ Next step then, I think is fairly clear. Separate out things into:
 So I'll immediately get resizing of jpeg images. Then implement loading of a
 gif image, and from there I can just add formats as desired.
 
+
+Thu Dec 22 18:30:08 EST 2011
+
+Okay, last step here is to change pnger program to imager and start using
+imager, and rewrite the docs, and add the jpeg format to imager.
+
+Let me start by porting jpeger to the imager directory.
+

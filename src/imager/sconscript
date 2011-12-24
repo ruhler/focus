@@ -6,6 +6,10 @@ pnger = env.Program('pnger', ['pngermain.c', 'imager.c', 'pnger.c'],
         LIBS=['png', 'consoler'])
 Default(pnger)
 
+jpeger = env.Program('jpeger', ['jpegermain.c', 'imager.c', 'jpeger.c'],
+        LIBS=['jpeg', 'consoler'])
+Default(jpeger)
+
 pngertest = env.Program('pngertest', 'pngertest.c', LIBS=['png', 'consoler'])
 Default(env.Command('pngertest.out', [pngertest, pnger, 'green.png'],
     "$SOURCES > $TARGET"))

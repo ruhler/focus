@@ -28,6 +28,7 @@ unassigned
 - sgreen doesn't always clean up sockets (43.tsk)
 - alternatives to scons? (56.tsk)
 - have a way to show/hide cursor in sdlcsr?
+- should not require specifying components in config
 
 Next Task: 69.tsk
 

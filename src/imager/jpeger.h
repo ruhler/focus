@@ -16,11 +16,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
--------------
-jpeger FILE
--------------
+#ifndef JPEGER_H
+#define JPEGER_H
 
-jpeger is a consoler application for viewing jpeg files. It takes on the command
-line a single argument which is the jpeg file to view. It will display that
-jpeg file on the screen and wait for the key 'q' to be pressed to quit. 
+#include "consoler.h"
+
+/// Jpeger_Load - load a jpeg file
+///
+/// Create a new CNSL_Display initialized with the contents of the given jpeg
+/// file. The display should be freed using CNSL_FreeDisplay when you are done
+/// using it.
+CNSL_Display Jpeger_Load(const char* filename);
+
+#endif//JPEGER_H
 
