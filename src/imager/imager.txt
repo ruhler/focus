@@ -16,13 +16,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
-pnger is a consoler application for viewing png files.
+imager is a consoler application for viewing images.
 
--------------
-pnger FILE
--------------
+-------------------
+imager -t type FILE
+-------------------
 
-It takes a single command line argument specifying which png file to view.
+It takes the type of image to view, either 'png' or 'jpeg', and the name of
+the image file to view.
 
 The following key bindings are defined.
 

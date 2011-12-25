@@ -2,18 +2,13 @@
 
 Import('env')
 
-pnger = env.Program('pnger', ['pngermain.c', 'imager.c', 'pnger.c'],
-        LIBS=['png', 'consoler'])
-Default(pnger)
+imager = env.Program('imager', ['imagermain.c', 'imager.c', 'pnger.c', 'jpeger.c'],
+        LIBS=['png', 'jpeg', 'consoler'])
+Default(imager)
 
-jpeger = env.Program('jpeger', ['jpegermain.c', 'imager.c', 'jpeger.c'],
-        LIBS=['jpeg', 'consoler'])
-Default(jpeger)
+imagertest = env.Program('imagertest', 'imagertest.c', LIBS=['jpeg', 'png', 'consoler'])
+Default(env.Command('imagertest.out', [imagertest, imager, 'green.png'], "$SOURCES > $TARGET"))
 
-pngertest = env.Program('pngertest', 'pngertest.c', LIBS=['png', 'consoler'])
-Default(env.Command('pngertest.out', [pngertest, pnger, 'green.png'],
-    "$SOURCES > $TARGET"))
-
-env['PROGRAMDOC']('pnger')
-env.Install("$PREFIX/bin", pnger)
+env['PROGRAMDOC']('imager')
+env.Install("$PREFIX/bin", imager)
 

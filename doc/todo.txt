@@ -7,8 +7,8 @@ List of pending issues.
 - write tutorial for getting started with focus? (64.tsk)
 - library man page function prototypes are formatted wrong (65.tsk)
 - generated documentation should include copyright notice? (66.tsk)
-- general purpose image viewer (40.tsk)
 - sgreen should have a way to specify first window (62.tsk)
+- termer test case fails on pacific (69.tsk)
 - release 1.2.0 (58.tsk)
 
 2.0.0
@@ -29,6 +29,7 @@ unassigned
 - alternatives to scons? (56.tsk)
 - have a way to show/hide cursor in sdlcsr?
 - should not require specifying components in config
+- add support for gif to imager?
 
-Next Task: 69.tsk
+Next Task: 70.tsk
 

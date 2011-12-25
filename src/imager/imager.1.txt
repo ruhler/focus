@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
-PNGER(1)
-========
+IMAGER(1)
+=========
 :author: Richard Uhler
 :doctype: manpage
 :man version: {VERSION}
@@ -23,15 +23,15 @@ PNGER(1)
 
 NAME
 ----
-pnger - a consoler png viewer
+imager - a consoler image viewer
 
 SYNOPSIS
 --------
-*pnger* 'FILE'
+*imager* -t 'type' 'FILE'
 
 DESCRIPTION
 -----------
-include::pnger.txt[]
+include::imager.txt[]
 
 OPTIONS
 -------
@@ -39,6 +39,8 @@ OPTIONS
     Output a help message and exit.
 *--version*::
     Output version information and exit.
+*-t* 'type'::
+    The type of image being viewed. Type is 'png' or 'jpeg'.
 
 BUGS
 ----

@@ -75,3 +75,36 @@ imager, and rewrite the docs, and add the jpeg format to imager.
 
 Let me start by porting jpeger to the imager directory.
 
+Sat Dec 24 18:04:51 EST 2011
+
+I ported jpeger over. The next step is, I think, to make just one imager
+application capable of viewing jpegs, pngs, whatever I add. There's no reason
+to need multiple different applications, with multiple main files, and
+multiple documentations all for what's essentially the same thing.
+
+The only reason would be if you wanted to have a png viewer, for example,
+without having the jpeg library installed, but... I don't want to deal with
+that for now.
+
+The question is, how should it work? To start, I think you should specify what
+type of image file it is. How do you do that? I have a couple of ideas.
+
+* have flags:
+    -jpeg, -png, etc...
+* have a flag:
+    -t jpeg
+    -t png
+    etc...
+
+I think the later makes more sense, even if it is a little more work to parse.
+
+Sun Dec 25 12:52:40 EST 2011
+
+Okay, so let me implement it, clean things up, and so on.
+
+Sun Dec 25 13:30:08 EST 2011
+
+I implemented it. So, guess what? I would say this task is done!
+
+Even though I haven't implemented the gif yet. That can be a different task.
+

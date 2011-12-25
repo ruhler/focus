@@ -22,14 +22,15 @@
 #include "consoler.h"
 
 
-// Call this with first command line argument the path to the pnger
+// Call this with first command line argument the path to the imager
 // application to test, and second command line argument the path to a png
 // file which is solid green and sized 64x128
 int main(int argc, char* argv[])
 {
     CNSL_Display display = CNSL_AllocDisplay(64, 128);
+    char* args[] = {argv[1], "-t", "png", argv[2], NULL};
 
-    CNSL_Client pnger = CNSL_LaunchClient(argv[1], argv+1);
+    CNSL_Client pnger = CNSL_LaunchClient(argv[1], args);
     CNSL_SendEvent(pnger, CNSL_MakeResize(64, 128));
 
     CNSL_RecvDisplay(pnger, display, NULL, NULL, NULL, NULL);

@@ -31,7 +31,7 @@ boxer:: A box game.
 filler:: A sample program to fill a display with color.
 green:: A screen-like application window manager.
 pdfer:: A pdf viewer.
-pnger:: A png viewer.
+imager:: An image viewer.
 sdlcsr:: A consoler server implemented on libSDL.
 termer:: A terminal emulator.
 
@@ -80,10 +80,10 @@ include::pdfer/pdfer.txt[]
 
 :leveloffset: 0
 
-Pnger
+Imager
 -----
 :leveloffset: 1
-include::imager/pnger.txt[]
+include::imager/imager.txt[]
 
 :leveloffset: 0
 

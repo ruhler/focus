@@ -1,0 +1,38 @@
+
+Sat Dec 24 18:12:05 EST 2011
+
+Task: a termer test case fails on pacific
+
+So let me figure out what's wrong and fix it so it doesn't fail, because I'm
+getting annoyed with having to compile things with !scons -k.
+
+termertest.c:39 assertion failed
+
+So r didn't go to red.
+I launched a termer with no args, with SHELL set to termfillerpath.
+We receive a display, it's black, then key red, get the result, and it should
+be red.
+
+Let me try manually.
+
+It appears to work fine manually.
+
+What color does it say we get?
+0xAFAFAF
+
+That's funny. What color is that?
+
+That's the color of the cursor. I wonder if we don't end up doing enough
+screen updates. Should I let it settle?
+
+It doesn't settle over time. If I continue to receive displays, I continue to
+get white.
+
+When I switched from sampling 20, 30 to sampling 2, 3, it changed to black.
+
+I don't understand. What I don't understand is, how can I repeatedly be
+receiving a display? Perhaps I should wait much longer?
+
+That doesn't seem to help.
+I don't know what's going on.
+
