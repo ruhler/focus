@@ -9,18 +9,6 @@ Import('env')
 # Specify the desired prefix where things should be installed.
 env['PREFIX'] = "/usr/local"
 
-# Specify which of the components you want to build.
-env['COMPONENTS'] = [
-        'boxer',
-        'consoler',
-        'filler',
-        'fonter',
-        'green',
-        'pdfer',
-        'pnger',
-        'sdlcsr',
-        'termer'
-        ]
 
 ## If you have any non standard pkgconfig directories you want to use to find
 ## library information, you can list them here

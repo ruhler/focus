@@ -88,9 +88,20 @@ def librarydoc(name):
 
 env['LIBRARYDOC'] = librarydoc
 
+components = [
+        'boxer',
+        'consoler',
+        'filler',
+        'fonter',
+        'green',
+        'pdfer',
+        'imager',
+        'sdlcsr',
+        'termer'
+        ]
 
 # Build each of the components
-for comp in env['COMPONENTS']:
+for comp in components:
     env['RELEASE'] = Dir('focus-%s/src/%s' % (env['VERSION'], comp))
     SConscript('src/%s/sconscript' % comp)
 

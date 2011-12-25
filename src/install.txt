@@ -35,9 +35,8 @@ consoler:: none
 filler:: none
 fonter:: freetype2, fontconfig
 green:: none
-jpeger:: libjpeg
+imager:: libjpeg, libpng
 pdfer:: freetype2, fontconfig, poppler-cpp
-pnger:: libpng
 sdlcsr:: sdl
 termer:: freetype2, fontconfig
 

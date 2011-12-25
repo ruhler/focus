@@ -28,8 +28,7 @@ unassigned
 - sgreen doesn't always clean up sockets (43.tsk)
 - alternatives to scons? (56.tsk)
 - have a way to show/hide cursor in sdlcsr?
-- should not require specifying components in config
 - add support for gif to imager?
 
-Next Task: 70.tsk
+Next Task: 71.tsk
 

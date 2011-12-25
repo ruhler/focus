@@ -1,0 +1,20 @@
+
+Sun Dec 25 16:04:53 EST 2011
+
+Task: Should not require specifying components in config
+
+I'm not keeping them up to date, and it's a pain for the user to have to
+specifying them and change them as the components change, and it's not surving
+any purpose.
+
+The original motivation was so people could build stuff without requiring
+dependencies for things they don't want. It's a reasonable goal, but as long
+as I'm the only person using this, I don't think it's worth maintaining.
+
+Perhaps I'll bring back config options in the future. For now, let me get rid
+of them.
+
+Sun Dec 25 16:13:21 EST 2011
+
+Done. That was easy.
+
