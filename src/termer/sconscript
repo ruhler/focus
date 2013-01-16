@@ -22,7 +22,7 @@ env.Default(env.Command('outputtertest.out', outputtertest, "$SOURCE > $TARGET")
 # termer
 termer = env.Program('termer',
     ['termer.c', 'client.c', 'display.c', inputter_o, outputter_o, screen_o],
-    LIBS=['util', 'pthread', 'fontconfig', 'freetype', 'm', 'fonter', 'consoler'])
+    LIBS=['util', 'pthread', 'fonter', 'fontconfig', 'freetype', 'm', 'consoler'])
 env.Default(termer)
 
 # termfiller
