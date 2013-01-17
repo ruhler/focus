@@ -45,55 +45,62 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-//    SSL_METHOD* method = SSLv3_client_method();
-//    if (!method) {
-//        perror("SSLv3_client_method");
-//        return 1;
-//    }
-//
-//    SSL_CTX* ctx = SSL_CTX_new(method);
-//    if (!ctx) {
-//        perror("SSL_ctx");
-//        return 1;
-//    }
-//
-//    SSL* ssl = SSL_new(ctx);
-//    if (!ssl) {
-//        perror("SSL_new");
-//        return 1;
-//    }
-//
-//    if (!SSL_set_fd(ssl, sfd)) {
-//        perror("SSL_set_fd");
-//        return 1;
-//    }
-//
-//    int sslcret = SSL_connect(ssl);
-//    if (sslcret < 0) {
-//        switch (SSL_get_error(ssl, sslcret)) {
-//            case SSL_ERROR_ZERO_RETURN:
-//                fprintf(stderr, "zero return\n");
-//                break;
-//            case SSL_ERROR_SSL:
-//                fprintf(stderr, "ssl error\n");
-//                break;
-//            default:
-//                fprintf(stderr, "err %i\n", SSL_get_error(ssl, sslcret));
-//                break;
-//        }
-//        return 1;
-//    }
+    SSL_METHOD* method = SSLv3_client_method();
+    if (!method) {
+        perror("SSLv3_client_method");
+        return 1;
+    }
+
+    SSL_CTX* ctx = SSL_CTX_new(method);
+    if (!ctx) {
+        perror("SSL_ctx");
+        return 1;
+    }
+
+
+    SSL* ssl = SSL_new(ctx);
+    if (!ssl) {
+        perror("SSL_new");
+        return 1;
+    }
+
+    const char cipher[] = "ADH-AES256-SHA";
+    if (!SSL_set_cipher_list(ssl, cipher)) {
+        perror("SSL_set_cipher_list");
+        return 1;
+    }
+
+    if (!SSL_set_fd(ssl, sfd)) {
+        perror("SSL_set_fd");
+        return 1;
+    }
+
+    int sslcret = SSL_connect(ssl);
+    if (sslcret < 0) {
+        switch (SSL_get_error(ssl, sslcret)) {
+            case SSL_ERROR_ZERO_RETURN:
+                fprintf(stderr, "zero return\n");
+                break;
+            case SSL_ERROR_SSL:
+                fprintf(stderr, "ssl error\n");
+                break;
+            default:
+                fprintf(stderr, "err %i\n", SSL_get_error(ssl, sslcret));
+                break;
+        }
+        return 1;
+    }
 
     char buf[BUFSIZ] = {0};
     int red;
     do 
     { 
         red = read(STDIN_FILENO, buf, BUFSIZ-1);
-        write(sfd, buf, red);
-        //SSL_write(ssl, buf, red);
+        //write(sfd, buf, red);
+        SSL_write(ssl, buf, red);
     } while (red);
 
-    //SSL_shutdown(ssl);
+    SSL_shutdown(ssl);
     
     close(sfd);
     return 0;
