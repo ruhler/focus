@@ -7,24 +7,24 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
-#include <sys/un.h>
+#include <netinet/in.h>
 
 #define UNIX_PATH_MAX    108
 
 int start_server()
 {
-    int lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    int lsfd = socket(AF_INET, SOCK_STREAM, 0);
     if (lsfd < 0) {
         perror("socket");
         return 1;
     }
 
-    struct sockaddr_un inaddr;
-    inaddr.sun_family = AF_UNIX;
-    unlink("foo.sock");
-    snprintf(inaddr.sun_path, UNIX_PATH_MAX, "%s", "foo.sock");
+    struct sockaddr_in inaddr;
+    inaddr.sin_family = AF_INET;
+    inaddr.sin_port = htons(4433);
+    inaddr.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {
+    if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) < 0) {
         perror("bind");
         return 1;
     }
@@ -46,7 +46,7 @@ int main (int argc, char* arv[])
         printf("Waiting for connection...");
         fflush(stdout);
 
-        struct sockaddr_un paddr;
+        struct sockaddr_in paddr;
         socklen_t paddr_size;
         int pfd = accept(lsfd, (struct sockaddr*) &paddr, &paddr_size);
         if (pfd < 0) {
