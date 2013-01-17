@@ -54,46 +54,46 @@ int main (int argc, char* arv[])
             return 1;
         }
 
-        SSL_METHOD* method = SSLv2_server_method();
-        if (!method) {
-            perror("SSLv2_server_method");
-            return 1;
-        }
-
-        SSL_CTX* ctx = SSL_CTX_new(method);
-        if (!ctx) {
-            perror("SSL_ctx");
-            return 1;
-        }
-
-        SSL* ssl = SSL_new(ctx);
-        if (!ssl) {
-            perror("SSL_new");
-            return 1;
-        }
-
-        if (!SSL_set_fd(ssl, pfd)) {
-            perror("SSL_set_fd");
-            return 1;
-        }
-
-        printf("ciphers: %p\n", SSL_get_ciphers(ssl));
-
-        int sslaret = SSL_accept(ssl);
-        if (sslaret < 0) {
-            switch (SSL_get_error(ssl, sslaret)) {
-                case SSL_ERROR_ZERO_RETURN:
-                    fprintf(stderr, "zero return\n");
-                    break;
-                case SSL_ERROR_SSL:
-                    fprintf(stderr, "ssl error\n");
-                    break;
-                default:
-                    fprintf(stderr, "err %i\n", SSL_get_error(ssl, sslaret));
-                    break;
-            }
-            return 1;
-        }
+//        SSL_METHOD* method = SSLv3_server_method();
+//        if (!method) {
+//            perror("SSLv3_server_method");
+//            return 1;
+//        }
+//
+//        SSL_CTX* ctx = SSL_CTX_new(method);
+//        if (!ctx) {
+//            perror("SSL_ctx");
+//            return 1;
+//        }
+//
+//        SSL* ssl = SSL_new(ctx);
+//        if (!ssl) {
+//            perror("SSL_new");
+//            return 1;
+//        }
+//
+//        if (!SSL_set_fd(ssl, pfd)) {
+//            perror("SSL_set_fd");
+//            return 1;
+//        }
+//
+//        printf("ciphers: %p\n", SSL_get_ciphers(ssl));
+//
+//        int sslaret = SSL_accept(ssl);
+//        if (sslaret < 0) {
+//            switch (SSL_get_error(ssl, sslaret)) {
+//                case SSL_ERROR_ZERO_RETURN:
+//                    fprintf(stderr, "zero return\n");
+//                    break;
+//                case SSL_ERROR_SSL:
+//                    fprintf(stderr, "ssl error\n");
+//                    break;
+//                default:
+//                    fprintf(stderr, "err %i\n", SSL_get_error(ssl, sslaret));
+//                    break;
+//            }
+//            return 1;
+//        }
 
         printf("\nACCEPTED CLIENT:\n");
 
@@ -101,11 +101,12 @@ int main (int argc, char* arv[])
         int red;
         do 
         { 
-            red = SSL_read(ssl, buf, BUFSIZ-1);
+            //red = SSL_read(ssl, buf, BUFSIZ-1);
+            red = read(pfd, buf, BUFSIZ-1);
             write(STDOUT_FILENO, buf, red);
         } while (red);
 
-        SSL_shutdown(ssl);
+        //SSL_shutdown(ssl);
 
         printf("\nCLOSED CLIENT\n");
     //}
