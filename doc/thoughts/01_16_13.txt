@@ -1,0 +1,166 @@
+
+Wed Jan 16 12:52:12 EST 2013
+
+So, it's been a long time since I've touched the focus code. Focus has served
+me very well, day in and day out.
+
+I now have a brief break from other projects, and it's become more and more
+clear a feature is missing from focus that would make a huge difference to me:
+remote focus.
+
+I want to be able to work on one computer from the display of another. I want
+to log into a server, accessed with focus. In particular, viewing images and
+pdf files should work just as well as working on text.
+
+So, this is the task I want to handle next.
+
+It's very important I do this securely. Things need to be encrypted.
+Unfortunately, I don't think I have the expertise required to make sure things
+come out right in that respect, and I don't trust that I could learn properly
+myself.
+
+So, it looks like the best approach will be to piggy back off of ssh. If I
+can, that's what I would want most anyway.
+
+There are two issues I see with ssh.
+
+1. How do we separate the password from the CNSL stream?
+This can be circumvented using keys, but I think I need password support.
+
+2. How to convey the host's environment to the client applications?
+This should be easy enough with a program which let's you change the
+CNSL environment. It can be a separate thing.
+
+Okay, so that's the high level. I think first I should do some research...
+
+Things to figure out:
+
+* how to run a command remotely using ssh
+Easy: ssh ruhler@foo cmd
+* how to run a command remotely using ssh which takes input on stdin (to
+  figure out password capture issue)
+Easy: it just works.
+* how to run focus locally (shouldn't be too hard...)
+Not so easy... but I got it to work.
+* how to change the environment for focus (perhaps using 'env'?)
+Easy: use env, it works.
+
+And then, everything could just work. I might not need to write any c code at
+all. That would be cool.
+
+Let me start experimenting a little.
+
+Oh, I think I remember the password issue.
+
+It's easy enough to use ssh for a command which does input/output to stdin and
+stdout. The hard part is, we want input and output to be hooked up to the
+server program, not the user!
+
+Hmm... I'll have to think about this some.
+
+Wed Jan 16 13:53:13 EST 2013
+
+Let me first see how far I can get with a key.
+
+Wed Jan 16 13:56:45 EST 2013
+
+Okay, so I set up the key. I'll probably want to remove it in a little bit...
+
+It may be that I can accept just a key, and if I want to work remotely, first
+create the key and send it, then remove the key when I'm done?
+
+Anyway, let's see how far we can get. Goal: sdlcsr, with remote termer.
+
+Wed Jan 16 13:58:59 EST 2013
+
+Trouble: it sends garbage. Like, garbledy gook.
+
+It has a really small font... Perhaps the environment variables are set
+wrong... So really I want to somehow forward the environment set up by sdlcsr.
+
+Let me see if I can figure out what that is.
+
+Okay! So, we have:
+CNSLHEIGHT=1050
+CNSLWIDTH=1680
+TERMERFONT=Bitstream Vera Sans Mono-32:Bold
+
+Let me make sure all those are set then, when I run ssh.
+
+Wed Jan 16 14:20:46 EST 2013
+
+I can set those fine. There's some other issue. The display gets all messed
+up.
+
+I feel like the input works fine still...
+
+It looks like boxer works just fine. Perhaps this is an issue with termer?
+
+I don't know. I don't understand. I wonder if there is some issue with
+buffering, or line based thing, or escape characters, or something like that.
+
+I feel like, perhaps, the best approach to take would be as follows...
+
+I want to use some variant of sgreen, which connects to a server. That's
+important, because it distinguishes between stdin when the command is invoked,
+and stdin where the application is used. That solves the password issue.
+
+Then, do everything programatically. Figure out how to do tcp connections
+encrypted properly with openssh. There ought to be tutorials and examples on
+the internet for that. That should avoid issues with binary/escapes or
+whatever.
+
+And it would be cool if I could use the same sgreen server for different
+hosts. Perhaps the only difference is, the existing one listens on a local
+server pipe thing, I want to give it the ability to listen on tcp socket.
+
+That's something I can figure out how to do locally. I can also figure out how
+to do the encryption locally.
+
+Okay, so here's my proposed plan: add an option to sgreen to set up a server
+on tcp instead of local pipes. This way I should be able to start (unencrypted)
+remote applications using cgreen which connect to the host display properly.
+Then I just add the encryption I need...
+
+Well, I'll need a password to log onto the remote maching and call cgreen. The
+other thing I want to do is make sure the communication between the forked
+program and the sgreen server are encrypted. So, perhaps the right thing to do
+would be: anytime I start sgreen, I can specify a password. I have to give
+this same password to cgreen if it wants to connect (and if the sgreen server
+is encrypted). Something like that.
+
+That sounds good to me. So, we just have some research to do: how to use
+openssh to encrypt socket communication? I'll take a little break, then come
+back to take a look at this.
+
+It would be cool if I could get encryption working locally before I even try
+getting the remote thing to work.
+
+Wed Jan 16 18:07:30 EST 2013
+
+Okay, so man ssl is the right thing to look at. And it looks like it could be
+pretty easy. Like, they give "accept", "listen", "read" and "write" functions
+for doing the socket communication.
+
+Let me see if I can get a dummy sample working.
+
+Goal is to have a server and a client. Server starts. Client connects, sends a
+message encrypted, and the server prints out the message.
+
+Let's say the server takes a password, if needed, and the client has to
+provide the same password? Or something. Whatever I need to encrypt things.
+
+If I don't know what kind of encryption to use, try to use whatever ssh uses
+by default.
+
+Cool. Sounds like fun. Let me get started.
+
+Wed Jan 16 19:26:34 EST 2013
+
+Well, I'm close. The server side seems to work. For some reason the client
+side gives me an ssl error on connect.
+
+Wed Jan 16 19:36:12 EST 2013
+
+I don't know what's up. I'll come back to this.
+

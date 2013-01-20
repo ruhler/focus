@@ -1,0 +1,180 @@
+
+Thu Jan 17 09:21:37 EST 2013
+
+To get ssl working, I think the best thing I can do is learn about ssl v2.
+That might bring up some obvious issues. Things like, do I need to set a
+password? Do I need to have certificates? How does the protocol work?
+
+At the very least, when I see how the protocol works, I can look at what's
+actually going on in my client and server to find what deviates from that
+protocol.
+
+Sounds like a plan to me. And educational too.
+
+Thu Jan 17 12:18:46 EST 2013
+
+Okay! So I read the rfc for ssl3. Let me switch to ssl 3, because surely it is
+better off than ssl 2.
+
+And here's a good idea: openssl comes with client and server samples which I
+can probably use to debug one side or the other. And maybe even look at for
+code inspiration (though that's questionable).
+
+So, let me switch to ssl3, see if I can make one of the client or server work
+out, and go from there.
+
+I believe, if I'm not doing any encryption or compression, which to start I
+don't want to do, then I don't need any certificates or other such things.
+Eventually I may want or need certificates.
+
+Let me try out ssl3 and see what I can find, if anything.
+
+Thu Jan 17 12:21:40 EST 2013
+
+With ssl3, the server gets an ssl error. So, let me replace the server with
+the one that ships with openssl if I can and see if I can get any better
+detail. I may have to switch to TCP for this.
+
+Thu Jan 17 12:24:07 EST 2013
+
+Yes. s_client and s_server should work great for this. But I'll need to switch
+to TCP. That's okay. I'll have to do that anyway. It shouldn't be too
+difficult.
+
+Thu Jan 17 12:38:12 EST 2013
+
+Okay, switched to use tcp. Let me see what SSL does now.
+
+Server still gets ssl error. Which suggests perhaps something is wrong with
+the client. Let me switch to s_server and see what's up.
+
+s_server says no shared ciphers. Perhaps I have to add ciphers explicitly to
+the client first?
+
+Thu Jan 17 12:53:07 EST 2013
+
+Okay! Progress. I figured out how to get s_server and s_client to communicate.
+I had to add: -cipher SSLv3 to both first, otherwise no matching ciphers would
+be found.
+
+And now, when I try to run my client, I get an error in the server that no
+matching ciphers are found. So I need to figure out how to specify the ciphers
+I want to use in the client first.
+
+Hmm... ADH-AES256-SHA seems to work with s_client, but not NULL. I'm not sure
+why.
+
+Okay, so let me set the cipher to this one in my server and client, and see if
+that helps anything. Or explicitly set it to allow the NULL cipher, or
+something.
+
+Thu Jan 17 14:17:25 EST 2013
+
+Okay! So I figured out how to set the cipher in the client. Though NULL still
+doesn't work. But good news is, it looks like now the client works.
+
+And hints for the server. I probably have to set the cipher, and additionally,
+set some dh parameters somehow. Let me try just setting the cipher first.
+
+Thu Jan 17 14:24:40 EST 2013
+
+Looks like I'll want to set the SSL_OP_SINGLE_DH_USE option.
+Looks like I should use the dhparam program to generate my dh parameters.
+
+And to start, may as well use the simpler SSL_set_tmp_dh to set the parameters
+in the server.
+
+Looks like I can use dhparam to generate C code, then load the parameters by
+calling get_dh512.
+
+Cool. I generated the C code. Not hard. Let me call SSL_set_tmp_dh and see
+what happens.
+
+Thu Jan 17 14:36:14 EST 2013
+
+Server seg faults...
+Okay, fixed that. But this didn't fix any issues. I still have the same
+problem I was having before.
+
+I see s_server says:
+
+Using default temp DH parameters
+Using default temp ECDH parameters
+
+Perhaps I need ECDH parameters?
+Can I look at the source for s_server, just to get an idea of what it's doing?
+
+Thu Jan 17 14:51:04 EST 2013
+
+Wait... it looks like it works! server and client. Not s_server and s_client.
+
+That's cool. So is that it? We have the SSL encryption I need?
+
+Is there any way I can test it?
+
+Perhaps using strace on the server and client? See if I can first set to use
+no encryption, see the plain data being sent in the trace, then set to use
+encryption, see not-so-plain data being sent in the trace?
+
+Should I try to figure out some better form of encryption, that uses passwords
+or something?
+
+Let me start with trying to test plain, then not-so-plain, then I'll look at
+what SSH uses, and try to make that work.
+
+Hmm... looks like the NULL ciphers are RSA authentication based, and don't
+work with DH. So if I want to do this, I probably need to set some RSA things.
+Well, I think that's worth a try, no?
+
+Yes. Let me try getting RSA authentication to work.
+
+Um, actually, the man page suggests I don't want to go the RSA route.
+
+Well, I can try turning encryption on and off entirely to see if that makes a
+difference in the strace log.
+
+Thu Jan 17 15:18:49 EST 2013
+
+Yup! strace log suggests we are doing something. Encryption or compression. At
+least something better than nothing. Good.
+
+Now... what cipher should I be using? What authentication should I be using?
+
+It seems like anonymous authentication can't prevent some sorts of man in the
+middle attacks. So, what I really would like to have, I suppose, is I specify
+a password when I start the server, and I specify that same password when I
+run the client, and if the passwords don't match, then it won't connect. Can
+that solve the man in the middle thing?
+
+Which authentication mechanisms work like that?
+
+Okay, so what about trying one of:
+
+DHE-RSA-AES256-SHA      SSLv3 Kx=DH       Au=RSA  Enc=AES(256)  Mac=SHA1
+DHE-DSS-AES256-SHA      SSLv3 Kx=DH       Au=DSS  Enc=AES(256)  Mac=SHA1
+
+Which are the first on the list.
+
+They use DH for key generation, which I have working.
+I just have to figure out the authentication thing.
+
+Thu Jan 17 15:49:44 EST 2013
+
+Hmm... Not sure what I want to do at this point. Perhaps apply encryption on
+top of the channel? Perhaps use authentication? Keys? Certificates? I don't
+know.
+
+My main concern is, I don't want someone on the network to be able to figure
+out what my passwords are by watching traffic. For example, if I'm on a remote
+termer and login to something or sudo or something.
+
+Perhaps it is worth stewing on, and seeing if I can at least get the rest of
+the remote thing up and running? With the anonymous ssl encryption.
+
+So all I have to do is update sgreen and cgreen to use tcp and ssl. I can
+start by making it use tcp, try out some remote apps that way. But don't enter
+any passwords when I do so. Then add encryption.
+
+I probably ought to do local encryption anyway. So an alternative would be to
+get encryption working first, then switch to tcp. I dunno. Not sure.
+

@@ -1,0 +1,172 @@
+
+Sat Jan 19 10:41:59 EST 2013
+
+Okay, so what are the steps to make this work?
+
+A. Figure out some better form of encryption/authentication.
+Ideally one which can't be decrypted like ADH supposedly can.
+
+B. Implement the encryption/decryption on top of the unix sockets I have.
+
+C. Switch the unix sockets to internet sockets.
+
+Each of these has their own challenges. I don't think any are throw-away easy
+to do. But none so hard either? Not sure.
+
+I should do (B) before (C). Because I don't want plain stuff going over TCP,
+and that let's us test things locally to some extent first. See if there are
+performance issues. That sort of thing.
+
+I feel like it would be nice if I could do (A) first. But that will take some
+learning and research.
+
+Some thoughts on each item, then I'll start researching for A.
+
+A.
+Here's what I envision. We have public/private key pairs. Each server machine
+has a public and private key. Each client machine has a public and private
+key. For a client to connect to the server, the client machine must have the
+server's public key, and the server machine must have the client's public key.
+That way, only explicitly allowed connections are allowed. I can use ssh to
+set up the keys for one time things as needed.
+
+I think that would be safe. You know who you are talking to. You know how you
+are talking with. No accesses from strange machines allowed. And presumably
+things will be encrypted in a safe way. Right? The client encrypts it's info
+with the server's public key, so only the server can read it, and the server
+encrypts it's info with the clients public key, so only the client can read
+it.
+
+And this way I don't need some certificate authority to sign stuff, right?
+
+Oh, and one other thing: the server and client can password protect their
+keys, I think. For additional security if desired. That will prevent people
+who have hacked into my machine from getting at the private keys.
+
+I think that should be plenty safe for my purposes.
+
+Cool. So what's left is to research and figure out if this makes sense, what
+the other options are, and how to get it down.
+
+B.
+Oh... trouble. So we do all the communications using file descriptors. This
+abstraction won't work for encryption/decryption.
+
+So, either I switch to always performing SSL, or I generalize the interface to
+work with generic stuff. In other words, instead of storing file descriptors,
+I store read and write functions, or something like that.
+
+That will affect the entire project, sadly, given this is a key internal
+interface. Hum.
+
+C.
+Switching to use TCP shouldn't be hard. The issue I see is mostly one of how
+do we express the host and port number? Well, seems clear. host:port as
+GREENSVR gives us all the info we need. I'll need to parse that.
+
+There is open question as to whether I want to allow unix sockets too still.
+Perhaps to start, don't. Not unless I find a compelling reason to do so.
+
+
+Okay, so, reading about (A).
+
+man rsa:
+ Not much info...
+ Keys can be encrypted with pass phrases.
+
+man x509:
+ For certificates, a root CA is trusted.
+ Certificates can be signed.
+ DER, PEM are private key file formats
+
+man pkcs8:
+ Deals with private key formats.
+
+man dsa:
+ Another kind of key.
+
+man ssh-keygen:
+ By default, generates rsa keys.
+
+Okay, so let's say I have rsa keys... how can I use them with ssl?
+
+Sat Jan 19 11:40:31 EST 2013
+
+There are a couple of ways I could try to figure this out. Try out s_server
+and s_client using some RSA protocol, and futz around with certificates. Or,
+read the source for ssh and see how it does things.
+
+Sat Jan 19 11:55:54 EST 2013
+
+Ug! So complicated.
+
+I need a server.pem certificate file for the s_server to run. I need a ca file
+to say what certificates are trusted.
+
+I should really read about how certificates work in ssl.
+
+My hope is that I can just generate the right certificates, then ssl will do
+all the rsa encryption and such required for me. Ssh appears to maybe do it's
+own implementation of the encryption and decryption?
+
+This can't be that hard. It really can't.
+
+The trouble is, there are so many different types of keys, certificates,
+formats. I don't know how to keep them straight.
+
+So perhaps it's worth doing some more research to put this all in place. Try
+to answer questions about how all these are related:
+
+* dsa, rsa
+* certificate, certificate authority
+* der, pem
+* pkcs#5, #8, #12, #7
+Public key cryptography standard.
+pkcs#5 - encrypting a string with a password
+pkcs#6 - phased out in favor of x509
+pkcs#7 - syntax for messages with digital signatures and encryption 
+pkcs#8 - private keys
+pkcs#10 - syntax for certificate requests
+pkcs#12 - portable format for private key and other secrets.
+x509 - the certificate authority hierarchy
+
+And figure out what I should need to make things work.
+
+Okay, here's what I'm learning, or thinking:
+
+* A certificate authority is used to say that a certificate is acceptable.
+The certificate authority signs the server's certificate.
+
+* in ssl, the server sends the client a certificate so the client can verify
+  the server. Optionally the client can then send the server a certificate so
+  the server can verify the client. I would like verification both ways.
+
+* The server and client certificates include the server and client public
+  keys.
+
+Err... I'm starting to worry. That maybe ssl isn't the right approach for me
+to take. Because I don't have a certificate authority to sign things. I'm
+certainly not going through all the process.
+
+Erg.
+
+Hmm... I should look into pgp as a possible alternative to ssl.
+
+You know, pgp looks pretty promising. Much simpler (I think). I don't need to
+deal with certificate authorities. The only concern is this issue of: how do I
+know I have the right public key for someone. Well, if I generated that key,
+that doesn't matter to me.
+
+Let me look at what library support there is for pgp.
+
+Sat Jan 19 12:42:28 EST 2013
+
+I'm concerned pgp may be for one time encrypt, then transmit, then decrypt.
+Not for a stream of communication...
+
+Sat Jan 19 12:50:37 EST 2013
+
+Hmm... You know what? Maybe I can use the crypto libraries of ssl without the
+whole certificate part?
+
+Let me think about it.
