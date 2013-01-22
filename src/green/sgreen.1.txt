@@ -27,7 +27,7 @@ sgreen - Start a green window manager
 
 SYNOPSIS
 --------
-sgreen [-s socketname]
+sgreen [-s port]
 
 DESCRIPTION
 -----------
@@ -39,8 +39,8 @@ OPTIONS
     Output a help message and exit.
 *--version*::
     Output version information and exit.
-*-s socketname*::
-    Use socketname as the host socket.
+*-s port*::
+    Use port as the host port to connect to.
 
 BUGS
 ----

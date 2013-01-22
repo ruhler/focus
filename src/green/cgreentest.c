@@ -42,9 +42,9 @@ int main(int argc, char* argv[])
     char* sgreenpath = argv[1];
     char* cgreenpath = argv[2];
     char* fillerpath = argv[3];
-    char socketname[35];
-    snprintf(socketname, 35, "/tmp/cgreentest.%i", getpid());
-    char* sgreenargs[] = {sgreenpath, "-s", socketname, NULL};
+    char port[35];
+    snprintf(port, 35, "%i", 0x1000 | getpid());
+    char* sgreenargs[] = {sgreenpath, "-s", port, NULL};
     char* cgreenargs[] = {cgreenpath, fillerpath, NULL};
 
     CNSL_Display display = CNSL_AllocDisplay(64, 48);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     assert(CNSL_GetPixel(display, 20, 30) == CNSL_MakeColor(255, 255, 255));
 
     // Launch a new filler via cgreen
-    setenv("GREENSVR", socketname, 1);
+    setenv("GREENSVR", port, 1);
     launch(cgreenpath, cgreenargs);
 
     // we clear the new client display, then the new filler makes it black.

@@ -20,7 +20,7 @@ int start_server()
     struct sockaddr_in inaddr;
     inaddr.sin_family = AF_INET;
     inaddr.sin_port = htons(5234);
-    inaddr.sin_addr.s_addr = INADDR_ANY;
+    inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) < 0) {
         perror("bind");

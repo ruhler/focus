@@ -16,11 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
-sgreen starts a green server which listens for clients on a unix socket.  The
-socket name can be specified explicitly with the -s option, otherwise it
-defaults to a name based on the user and process id for the sgreen process. In
-either case, the environment variable GREENSVR will be set with the name of
-this socket for client applications to connect to.
+sgreen starts a green server which listens for clients on a local tcp socket.
+The socket port can be specified explicitly with the -s option, otherwise it
+defaults to a port based on the process id for the sgreen process. In
+either case, the environment variable GREENSVR will be set with the number of
+this port for client applications to connect to.
 
 When sgreen starts it launches the first client based on the CNSLSHELL
 environment variable, defaulting to `termer`.

@@ -22,7 +22,7 @@ switch between multiple running consoler applications.
 Green consists of two programs, sgreen and cgreen.
 
 --------------------------
-sgreen [-s socketname]
+sgreen [-s port]
 --------------------------
 include::sgreen.txt[]
 

@@ -23,13 +23,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
-#include <sys/un.h>
+#include <netinet/in.h>
 #include <pthread.h>
 
 #include "consoler.h"
 #include "green.h"
-
-#define UNIX_PATH_MAX    108
 
 GRN_Green green;
 
@@ -96,24 +94,31 @@ void shell_client_create()
 
 // Start a server and return the file descriptor for it if successful,
 // otherwise -1.
-int start_server(const char* socketname)
+int start_server(const char* port)
 {
-    int lsfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    int lsfd = socket(AF_INET, SOCK_STREAM, 0);
     if (lsfd < 0) {
         perror("socket");
         return -1;
     }
 
-    struct sockaddr_un inaddr;
-    inaddr.sun_family = AF_UNIX;
-    if (socketname) {
-        snprintf(inaddr.sun_path, UNIX_PATH_MAX, "%s", socketname);
+    uint16_t portno;
+    if (port) {
+        portno = atoi(port);
     } else {
-        snprintf(inaddr.sun_path, UNIX_PATH_MAX, "/tmp/green-%s.%i", getenv("USER"), getpid());
+        portno = 0x1000 | getpid();
     }
-    setenv("GREENSVR", inaddr.sun_path, 1);
 
-    if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_un)) < 0) {
+    struct sockaddr_in inaddr;
+    inaddr.sin_family = AF_INET;
+    inaddr.sin_port = htons(portno);
+    inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+    char portstr[10] = {0};
+    snprintf(portstr, 10, "%i", portno);
+    setenv("GREENSVR", portstr, 1);
+
+    if (bind(lsfd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) < 0) {
         perror("bind");
         return -1;
     }
@@ -129,7 +134,7 @@ void* serve_clients_thread(void* lsfdp)
 {
     int lsfd = *((int*)lsfdp);
     while (1) {
-        struct sockaddr_un paddr;
+        struct sockaddr_in paddr;
         socklen_t paddr_size;
         int pfd = accept(lsfd, (struct sockaddr*) &paddr, &paddr_size);
         if (pfd < 0) {
@@ -206,20 +211,20 @@ int main(int argc, char* argv[])
     }
 
     if (argc > 1 && strcmp(argv[1], "--help") == 0) {
-        printf("Usage: sgreen [-s socketname]\n");
+        printf("Usage: sgreen [-s port]\n");
         printf("A green server\n");
         printf("\n");
         printf("Options\n");
         printf("  --help            output this help message and exit\n");
         printf("  --version         output version information and exit\n");
-        printf("  -s socketname     use socketname as the host socket\n");
+        printf("  -s port           use port as the host port\n");
         printf("\n");
         return 0;
     }
 
-    char* socketname = NULL;
+    char* port = NULL;
     if (argc > 2 && strcmp(argv[1], "-s") == 0) {
-        socketname = argv[2];
+        port = argv[2];
     }
 
     int width;
@@ -234,7 +239,7 @@ int main(int argc, char* argv[])
     green = GRN_CreateGreen(width, height);
 
 
-    int lsfd = start_server(socketname);
+    int lsfd = start_server(port);
     if (lsfd < 0) {
         return 1;
     }
@@ -245,7 +250,7 @@ int main(int argc, char* argv[])
     shell_client_create();
     handle_input();
 
-    unlink(getenv("GREENSVR"));
+    close(lsfd);
     return 0;
 }
 

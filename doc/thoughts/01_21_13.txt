@@ -1,0 +1,37 @@
+
+Mon Jan 21 12:09:23 EST 2013
+
+Well, I ran some experiments, without much in the way of positive results:
+
+* INADDR_LOOPBACK doesn't seem to work. The server can't bind to it.
+* INADDR_ANY allows external connections
+* ssh with -R just doesn't seem to work, I don't know why.
+* ssh with -L says it's not allowed.
+
+Mon Jan 21 12:24:26 EST 2013
+
+Something stopped working. I don't understand. I can't run server/client
+locally anymore. Reboot?
+
+Mon Jan 21 12:29:37 EST 2013
+
+Aha! I think I got it to work.
+
+After rebooting, and running
+ ip set link lo up
+
+Then on pacific: ./server  (listens on 5234)
+Then on pacific: ssh -R 4433:localhost:5234 ruhler@greenfield.csail.mit.edu
+/home/ruhler/projects/focus/rsrch/ssl/client (client attaches to 4433).
+
+What did I do differently here? I enabled the lo interface on pacific. That
+makes sense.
+
+In other words... this is it. This is exactly what I need. Server turns into
+sgreen. Client turns into cgreen. I need to make sure to turn on the lo
+interface on my local machine. Then I can do ssh and everything will hopefully
+work just as I want it to.
+
+There is still this problem that anyone can connect to the server, when I only
+want local people to connect to it. Can I do something about that?
+

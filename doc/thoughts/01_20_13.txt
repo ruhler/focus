@@ -1,0 +1,204 @@
+
+
+Sun Jan 20 17:42:16 EST 2013
+
+Goal: learn about encryption with the openssl libraries.
+
+Two things. One will be: how to do encryption. I think something like 3des
+should be fine. Second will be, can I do authentication?
+
+How I feel like I most want to use this is as I said before. Each server
+explicitly lists the clients allowed, and each client explicitly lists the
+servers allowed. I'd rather not have to enter passwords anywhere. But I
+suppose it wouldn't be so bad to enter a password when launching a remote
+client.
+
+Anyway, let me focus on the first. How can I do encryption?
+
+Sun Jan 20 17:57:18 EST 2013
+
+man evp.
+
+Looks like they have support for symmetric and asymmetric encryption.
+
+The symmetric encryption takes a key and IV (initial value?), and then
+encrypts data in blocks. So it should be fairly straight-forward to use, given
+a password.
+
+Let me look into the asymmetric encryption.
+
+Looks like EVP_PKEY_sign and EVP_PKEY_verify can be used for signatures. I
+believe the idea would be use asymmetric encryption to verify the server and
+client are who they say, then use symmetric encryption to encrypt the data
+going between them.
+
+I feel like, if I could use the SSL protocol and the high level functions, it
+would take care of all of this stuff for me. But that would mean I have to set
+up certificates, and I don't really want to deal with that. Hmm...
+
+Well... what should I do?
+
+Let me explore BIOs a little bit.
+
+The idea with a bio is, maybe it already does the annoying work of padding and
+such. I could use it as a common abstraction, perhaps for unencrypted stuff
+too?
+
+BIO_f_cipher looks like it adds encryption and decryption to a BIO, just like
+I would want. Handling padding and such, also just as I would want. That's
+nice.
+
+Hmm... so it seems like, at this point, I could change the consoler library to
+support BIO's, enable and disable encryption as desired, figure out some way
+to choose a key and IV, and maybe do some signing... It sounds terribly
+complicated.
+
+Let me explore the idea of ssh again. Because ssh already does the signing and
+encryption and all that fun stuff. But let me think about it a little
+differently from before, because I didn't make progress with the past
+direction.
+
+The past direction was: let me launch the client with ssh, and forward stdin
+and stdio directly to a server.
+
+Why didn't that work? Well, for some reasons unknown to me. I still don't
+understand why things get garbled. Perhaps something about escapes or binary
+or something?
+
+So, what would be a different approach?
+
+I like the notion of cgreen, which turns its stdin and stdout into sockets.
+That should avoid whatever issuse of stdin and stdout we have.
+
+The goal is to somehow get information from the sockets over to a different
+computer, and from there to the server.
+
+Sun Jan 20 18:24:51 EST 2013
+
+It looks like ssh supports port forwarding. I ought to be able to use this.
+
+How would it work? Hmm...
+
+I think the way they imagine it to work is the opposite direction I want. They
+give an example something like: imagine there is a server on the remote host
+you want to connect to in an encrypted fashion. Then you can make it look like
+that server is on the local host.
+
+Okay, but I want the other way around. I have a server on the localhost, and I
+want it to be available to the server on the remote host. That may be
+supported.
+
+If this were the case, perhaps I could have everything I want?
+
+I would have to change sgreen to use TCP. That's fine with me. I would really
+like a way to make it so nobody outside can connect. You can only connect over
+the loopback interface, or something like that. That's important. (Is there a
+way to enforce that?).
+
+Then I ssh to the remote machine, add port forwarding, which sets up a server
+on the remote machine, then run cgreen on the remote machine, it will think
+it's connecting locally, but it will actually end up connecting to my server.
+
+Hmm... now, I could embed this as part of sgreen and green. That would be
+convinient for use. One server to deal with all... But I could also have it as
+a standalone application. The idea is only to forward across a remote
+connection. That way I could keep green the way it is.
+
+Here's how this would work.
+
+1. On the local machine, I launch a server for a remote connection. This
+server is the consoler client on the local side. I could launch it with
+cgreen, or sdlcsr.
+
+2. Using ssh, and given the port for the server I launched, remotely execute a
+client program. This will be like cgreen. It connects using port forwarding to
+the ssh generated server on the remote machine, which goes back to the server
+I launched in (1).
+
+And, if I do things right, then the server in (1) only will accept on the ssh
+port.
+
+If I could get something like this to work, I would be much happier. No worry
+about encryption or certificates or security or changing interfaces. It would
+be a very simple, remote program.
+
+Well, so I don't have internet right now, or an ssh server, so it would be
+tough to figure out now how to do this, but perhaps I can lay the groundwork.
+I ought to be able to write the server and the client, and try it out all
+locally. Then the only trick is to figure out how to launch the client with
+ssh and do the appropriate port forwarding.
+
+Okay, so here's the interface for the server... uh, let me come up with a
+name.
+
+rcsr, for remote csr?
+
+Or I could pick something like: blue: cblue and sblue. Sure, why not? it
+doesn't make much sense, but it doesn't have to.
+
+  sblue port
+    - Starts a server on the localhost listening on localhost:port for a
+      single connection. Only accepts local connections, not remote
+      connections (if I can figure out how to do that).
+
+  cblue -p port cmd args
+    - Exactly like cgreen, only takes a port, and connects on localhost:port.
+
+How would the usage look with green?
+
+$ cgreen sblue 4872
+$ ssh -R 4873:localhost:4872 ruhler@foo.bar cblue -p 4873 pdfer foo.pdf
+password: ....
+
+And I could perhaps write a script which picks a port number and does it all
+at once for me, assuming I'm using cgreen. But that can come later.
+ 
+Okay! So I just need to implement sblue and cblue. That should be pretty easy,
+considering I have all the code in place already. Right?
+
+Let's see.
+
+It's just like cgreen and sgreen, only using TCP instead of UNIX sockets... So
+why duplicate the effort? Why not, instead, make sgreen use localhost. Then
+all I would have to do is...
+
+$ ssh -R 4873:localhost:$GREENSVR ruhler@foo.bar \
+    env GREENSVR=4873 cgreen pdfer ...
+
+Wouldn't that be much simpler? I think so.
+
+And hopefully it's still secure. I'm starting to worry about the security of
+local communications in green. Perhaps I can encrypt those too later on? I
+don't know.
+
+Regardless, this should work I feel like. The only thing need to do would
+be...
+
+Change green to use TCP. This means, instead of a server socket in /tmp
+somewhere, I need a port. It could be a standard port, or one set on the
+command line. I should restrict it to localhost if at all possible, so the
+only info we need to identify a host is the port number. That seems easy
+enough to me.
+
+Shall I try it out?
+
+Why not?
+
+First step: see if I can learn about how to limit to localhost.
+
+Use INADDR_LOOPBACK instead of INADDR_ANY. That could do the trick. I'm not
+sure.
+
+I want to verify only local host can connect, and forwarded ssh connections,
+before using a server with TCP support.
+
+Sun Jan 20 19:14:36 EST 2013
+
+I don't know. Again, I don't think any of this is so hard to do, but it would
+help if I had a working computer to try it with, and an internet to test
+things out.
+
+So, I shall suspend my discussion of this for now. But I like this ssh
+approach. I think, if it can be made to work, it deals with a whole bunch of
+difficulties very nicely.
+
