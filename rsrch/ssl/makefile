@@ -2,8 +2,8 @@
 all: server client
 
 server: server.c
-	gcc -o $@ $< -lssl
+	gcc -o $@ $<
 
 client: client.c
-	gcc -o $@ $< -lssl
+	gcc -o $@ $<
 
