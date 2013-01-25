@@ -48,7 +48,7 @@ void handle_client(CNSL_Client client)
     GRN_SendDisplay(green, id, display, 0, 0, 0, 0, width, height);
     GRN_ChangeCurrent(green, id);
 
-    int x, y, w, h;
+    unsigned int x, y, w, h = 0;
     bool recved = CNSL_RecvDisplay(client, display, &x, &y, &w, &h);
     while (recved) {
         GRN_SendDisplay(green, id, display, x, y, x, y, w, h);

@@ -249,10 +249,36 @@ void CNSL_CloseClient(CNSL_Client client)
     close(client.fdout);
 }
 
+// Just like the read system call, only always reads as many bytes as
+// specified if possible before returning.
+// Returns either -1 (on error), 0 (on EOF), or positive (on success).
+int read_all(int fd, void* buf, size_t count)
+{
+    int red = read(fd, buf, count);
+    if (red > 0 && red < count) {
+        return read_all(fd, buf+red, count-red);
+    }
+    return red;
+
+}
+
+// Just like the write system call, only always write as many bytes as
+// specified if possible before returning.
+// Returns either -1 (on error), 0 (on EOF), or positive (on success).
+int write_all(int fd, const void* buf, size_t count)
+{
+    int written = write(fd, buf, count);
+    if (written > 0 && written < count) {
+        return write_all(fd, buf+written, count-written);
+    }
+    return written;
+
+}
+
 CNSL_Event CNSL_RecvEvent(CNSL_Console console)
 {
     CNSL_Event event = CNSL_MakeQuit();
-    read(console.fdin, &event, sizeof(CNSL_Event));
+    read_all(console.fdin, &event, sizeof(CNSL_Event));
     return event;
 }
 
@@ -265,7 +291,7 @@ bool CNSL_SendEvent(CNSL_Client client, CNSL_Event event)
         if (fd.revents & (POLLERR | POLLHUP | POLLNVAL)) {
             return false;
         } else if (fd.revents & POLLOUT) {
-            int wrote = write(client.fdout, &event, sizeof(CNSL_Event));
+            int wrote = write_all(client.fdout, &event, sizeof(CNSL_Event));
             return wrote > 0;
         }
     }
@@ -293,12 +319,12 @@ void CNSL_SendDisplay(CNSL_Console console, CNSL_Display display,
     // width*ui4: row (height)
 
     unsigned int header[] = {dstx, dsty, width, height};
-    write(console.fdout, header, 4*sizeof(unsigned int));
+    write_all(console.fdout, header, 4*sizeof(unsigned int));
 
     int y;
     for (y = srcy; y < height+srcy; y++) {
         CNSL_Color* line = display.pixels + (y * display.width) + srcx;
-        write(console.fdout, line, width*sizeof(CNSL_Color));
+        write_all(console.fdout, line, width*sizeof(CNSL_Color));
     }
 }
 
@@ -310,7 +336,8 @@ bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
     static junkwidth = 0;
 
     unsigned int header[4] = {0};
-    if (read(client.fdin, header, 4 * sizeof(unsigned int)) < 4) {
+    ssize_t red = read_all(client.fdin, header, 4 * sizeof(unsigned int));
+    if (red <= 0) {
         return false;
     }
 
@@ -333,13 +360,13 @@ bool CNSL_RecvDisplay(CNSL_Client client, CNSL_Display display,
     for (y = dsty; y < dsty + height && y < display.height; y++) {
         CNSL_Color* buf = display.pixels + display.width * y + dstx;
 
-        read(client.fdin, buf, wuse * sizeof(CNSL_Color));
-        read(client.fdin, junk, wleft * sizeof(CNSL_Color));
+        read_all(client.fdin, buf, wuse * sizeof(CNSL_Color));
+        read_all(client.fdin, junk, wleft * sizeof(CNSL_Color));
     }
     int huse = y - dsty;
 
     for (; y < dsty + height; y++) {
-        read(client.fdin, junk, width * sizeof(CNSL_Color));
+        read_all(client.fdin, junk, width * sizeof(CNSL_Color));
     }
 
     if (dstx_out) {

@@ -1,0 +1,46 @@
+
+Thu Jan 24 14:37:17 EST 2013
+
+I have a network now, so time to do my tests.
+
+1.  binding to LOOPBACK limits to local connections, as expected and desired.
+Cool.
+
+2. ssh -r works! Nifty.
+
+So, everything is all set now, except... understanding why tcp doesn't work
+locally.
+
+Cool.
+
+Now then... how to solve the local issues?
+
+First, collect symptoms. Understand what happens where and when.
+
+Let me focus on the pdfer issue.
+
+Thu Jan 24 14:50:54 EST 2013
+
+Trying Christmas carol pdf files.
+
+Under sgreen: first page loads, I can scroll down, switching to the next page
+gives an assertion.
+
+Under sdlcsr: works fine.
+
+What's the difference?
+
+Well, more observations on the failure: it's ...
+Repeatable, yes: scroll forward, then next page. But I can get to other pages
+if I do different 
+
+consoler.c:280 is where the assertion fails. In CNSL_SendDisplay... who calls
+that?
+
+I suppose the first question is to ask, what is crashing? sdlcsr? sgreen?
+cgreen? pdfer?
+
+I need to think about this some.
+
+It's got to be sgreen which is crashing.
+

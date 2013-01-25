@@ -1,0 +1,122 @@
+
+Tue Jan 22 13:57:20 EST 2013
+
+Goal today: figure out how to limit connections to those from localhost.
+
+In theory I should be able to bind to LOOPBACK (127.0.0.1), and that should do
+it. In practice, I am unable to bind to LOOPBACK. Let me try and understand
+what's going on there.
+
+INADDR_ANY: works just fine. But from previous tests, allows anyone to
+connect, including random people on the network.
+
+Tue Jan 22 14:16:21 EST 2013
+
+Looks like there are a number of things I can try.
+
+* getaddrinfo can be used to query the things I can bind to. I could print out
+that list, see what it looks like, and see if it contains a localhost like
+thing.
+
+* inet_network can be used to convert a string to the s_addr. I could try
+  using "127.0.0.1", see if that works any better.
+
+Let me start with the easiest approach and go from there.
+
+1. trying INADDR_LOOPBACK.
+bind: Cannot assign requested address
+
+2. trying inet_network("127.0.0.1")
+bind: Cannot assign requested address
+
+3. trying inet_network("0.0.0.0")
+Works fine.
+
+4. trying inet_addr("127.0.0.1")
+It works!
+
+Okay, so I think I see what happened. I think the bytes were getting reversed
+somehow. Though I'm not sure why that would happen...
+
+5. trying htonl(INADDR_LOOPBACK)
+That works. Good. I think I like this the best.
+
+Well, that solves that issue.
+
+It is my hypothesis that using this, people can't send to the server if they
+are not local. There are two things I'll want to try:
+
+1. Start a server bound to this address on greenfield, see if I can connect
+from pacific.
+
+Hopefully the answer is no. Then we are restricting the server to local
+connections, which is just what I want.
+
+2. Start a server bound to this address on pacific. Try my ssh -R to
+greenfield, see if it connects still.
+
+Hopefully the answer is yes. Then we can use ssh tunneling to do the remote
+connection in a secure manner.
+
+And if that works (I suspect it will), then I think everything is all set.
+
+Let me summarize then how everything works out. The high level.
+
+First, we update sgreen and cgreen to use local TCP connections. This should
+be easy. The GREENSVR will change from a file name to a port number. And... I
+suppose if I wanted, I could make this port number random. That's something to
+consider. Perhaps make it random by default, but allow a user to override it,
+which is what I do now for the unix sockets.
+
+Only local connections will be accepted, so I don't have to worry about
+attacks from outside.
+
+Now, to do a remote connection, we use ssh with port forwarding. It will set
+up a server on the remote host that looks just like the server on the local
+host, and do the secure connection between them. Then, and in the same ssh
+command, I launch a cgreen client on the remote machine to connect to that
+mirrored server. And that's it. It's easy. Everything should work out great.
+
+I might want to wrap the ssh command in a nicer format to make it easier to
+use. Perhaps, instead of:   
+    cgreen pdfer foo.pdf
+something like:
+    rgreen ruhler@foo.bar pdfer foo.pdf
+
+And that's it. I expect no issues with the mangling I've seen in past attempts
+at using ssh. I don't think I have to worry about updating the environment or
+anything like that. Um... actually, it would be good to figure out how to get
+ssh to open a random port on the remote host and connect to that, to avoid
+name clashes.
+
+And, this is kind of the best way for things to work, because the remote stuff
+is not any different from local stuff in terms of interacting between the
+applications. I expect what I would likely do is, open up a local terminal,
+and a remote terminal. Then launch remote applications with cgreen on the
+remote terminal, and launch local applications with cgreen on the local
+terminal.
+
+As far as code is concerned, the only thing I need is to switch green over to
+unix. I can do that locally, try it out, probably on a different branch.
+Hopefully I don't mess things up too badly.
+
+Let me try that out now. I don't expect much, if any, trouble.
+
+Tue Jan 22 14:54:32 EST 2013
+
+Okay! So I updated the code. Let me try installing and using the new version,
+see if it works.
+
+Tue Jan 22 15:00:51 EST 2013
+
+It doesn't work. Something is wrong, which I don't understand.
+
+I'm getting assertions of things out of bounds for the pdf viewer.
+I'm getting termers which crash or hang without any indication to the server.
+I'm getting the server in a busy loop eating up cpu?
+
+I'm not sure what's going on. Perhaps some options I'm applying to the sockets
+thinking they are unix sockets insetad of tcp, and I need to use different
+options for tcp?
+
+
