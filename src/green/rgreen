@@ -1,0 +1,2 @@
+#!/bin/sh
+ssh -C -R 0:localhost:$GREENSVR $1

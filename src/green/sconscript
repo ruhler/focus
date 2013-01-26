@@ -20,5 +20,5 @@ Default(env.Command('cgreentest.out', [cgreentest, sgreen, cgreen, env["filler"]
 
 env['PROGRAMDOC']('sgreen')
 env['PROGRAMDOC']('cgreen')
-env.Install("$PREFIX/bin", [sgreen, cgreen])
+env.Install("$PREFIX/bin", [sgreen, cgreen, 'rgreen'])
 
