@@ -31,8 +31,8 @@ env.Default(termfiller)
 
 # termertest
 termertest = env.Program('termertest', 'termertest.c', LIBS=['consoler'])
-#env.Default(env.Command('termertest.out', [termertest, termer, termfiller],
-#    "$SOURCES > $TARGET"))
+testout = env.Command('termertest.out', [termertest, termer, termfiller],
+    "$SOURCES > $TARGET")
 
 # A profiling version of termer
 env.Object('termer_prof.o', 'termer.c',
