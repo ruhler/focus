@@ -51,7 +51,8 @@ FNTR_Fonter FNTR_Create(const char* fontname)
     FcPattern* pattern = FcNameParse(fontname);
     FcConfigSubstitute(NULL, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
-    FcPattern* match = FcFontMatch(NULL, pattern, NULL);
+    FcResult result;
+    FcPattern* match = FcFontMatch(NULL, pattern, &result);
 
     FcValue file;
     FcValue psize;
@@ -128,7 +129,8 @@ void FNTR_LoadGlyph(FNTR_Fonter fonter, wchar_t c)
         FcPatternAddCharSet(pattern, "charset", charset);
         FcConfigSubstitute(NULL, pattern, FcMatchPattern);
         FcDefaultSubstitute(pattern);
-        FcPattern* match = FcFontMatch(NULL, pattern, NULL);
+	FcResult result;
+        FcPattern* match = FcFontMatch(NULL, pattern, &result);
 
         FcValue file;
         FcValue psize;
