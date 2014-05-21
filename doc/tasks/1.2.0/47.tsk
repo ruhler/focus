@@ -13,3 +13,34 @@ I haven't gotten a meaningful response yet. Still waiting...
 
 Maybe I should find their bugzilla thing and try to submit my patch that way?
 
+Tue May 20 22:16:47 EDT 2014
+
+Nothing happened last time I tried. My patch has since become out-dated.
+
+I figured out how to get cairo to work with poppler-cpp 0.24.5:
+ * use patch for cpp/poppler-page-renderer from focus
+ * change call to dev.startDoc to take pdfdoc as single argument
+ * cpp/Makefile.am: add $(CAIRO_CFLAGS) to INCLUDES 
+     (should probably use same style as others, to only build if we have CAIRO)
+ * cpp/tests/Makefile.am: 
+     Add poppler/libpoppler-cairo.la, CAIRO_LIBS, FREETYPE_LIBS to LDADDS
+     Add -pthread to poppler_render_LDFLAGS and poppler_dump_LDFLAGS
+ * I think the pkgconfig installed for poppler-cairo is messed up too.
+
+Before I feel comfortable sending the patch to the poppler people, I should
+clean it up and make sure things are right.
+
+First step?
+
+1. Probably I should download the dev version of libpoppler.
+2. Make a git repo if it isn't already so I can generate a patch when I'm
+done.
+3. Make changes to each file, cleaning as I go, and trying to use styles
+consistent with what's already there.
+4. Generate a list of questions about how things should be, and work them out.
+
+At this point, I should be ready:
+
+5. Email poppler folks with my request, include tentative patch
+6. See what happens.
+

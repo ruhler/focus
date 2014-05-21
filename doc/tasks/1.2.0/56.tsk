@@ -85,3 +85,99 @@ change, won't that cause problems?
 
 Hmm... Sounds like a lot of work.
 
+Tue May 20 22:22:11 EDT 2014
+
+tcl sort of works, without dependency tracking. It's what I use for smten. But
+I want to explore a different approach. Why not use autotools?
+
+The benefits of autotools: people are comfortable with them, and they should
+work on lots of platforms. Also, it would be good to try, to see if it's worth
+doing in general in place of make or scons.
+
+I imagine getting set up with autotools will be a bit of work. A step-by-step
+kind of thing.
+
+First questions:
+* How do we control what programs/libraries get built and installed?
+
+Here's a review of the component dependency list:
+
+boxer:: none
+consoler:: none
+documentation:: asciidoc
+filler:: none
+fonter:: freetype2, fontconfig
+green:: none
+imager:: libjpeg, libpng
+pdfer:: freetype2, fontconfig, poppler-cpp, [poppler-cairo, cairo]
+sdlcsr:: sdl
+termer:: freetype2, fontconfig
+
+I wonder if auto-tools support components?
+
+Anyway, the idea should be:
+ * you can manually disable or enable any component
+ * components you don't have the dependencies for will not build
+    - but it should be clear somewhere that they have been disabled
+ * probably just want to try to build everything by default, disabling what
+   doesn't work out of the box.
+
+Well, that's pretty easy.
+
+What are the next steps?
+
+1. Start by setting up the auto-tools to work with the consoler library
+and the consolertest case.
+
+2. Then get them to work with boxer.
+
+3. Then get them to work with everything else, one component at a time.
+
+Should be easy. Let me start by researching what we need to get started with
+consoler.
+
+I'll target autoconf 69 and automake 1.14, which is what I have installed.
+
+Notes:
+ * autotools can be nested. Is that a good thing to do to handle multiple
+   components?
+
+Options:
+  Recursive Make
+    - standard for legacy reasons, not other good reasons.
+    - supports conditional subdirectories
+  Alternative
+    - is not at all well explained in the manual 
+
+Hmm... This is not going to go as smoothly as I like, I suspect.
+
+People suggest cmake as the most decent alternative, but it doesn't appear to
+be up to snuff from what people say.
+
+So it's worth trying autotools.
+
+Let me not do recursive stuff?
+I don't know.
+Let me just do whatever works.
+
+Wed May 21 16:04:17 EDT 2014
+
+Let's set up things with consoler and see what goes wrong.
+
+It might be a little messy to start. Don't worry about that.
+I don't think each component should be treated as a separate thing needing
+configuration.
+
+Questions:
+* How to do a library instead of a program?
+  Okay. Looks simple enough.
+
+* Do I need to specify that my test case needs to be linked with the library I
+  built?
+  
+  Let me try and see.
+
+I think I have the basics in place for consoler with the test case.
+
+Let me try building, and see what happens.
+
