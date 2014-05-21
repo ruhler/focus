@@ -183,3 +183,29 @@ Let me try building, and see what happens.
 
 It works! Cool. That's nifty.
 
+Next steps:
+* Figure out how to do the pkgconfig for consoler
+   Looks like:
+    - I specify foo.pc.in
+    - I use @prefix@ to refer to that
+    - I add foo.pc to the autoconf AC_OUTPUT list.
+   Or perhaps:
+      I add foo.pc to an AC_CONFIG_FILES([foo.pc]) macro
+   Oh. That's what I meant. I get it.
+   Now, in order to install it?
+   Poppler does:
+        pkgconfigdir = $(libdir)/pkgconfig
+        pkgconfig_DATA = foo.pc
+   Why does this make sense?
+
+   Oh. Maybe it's: foo_DATA gets installed in foodir.
+   So by defining the directory, that then makes sense.
+
+   Yes. This is what the automake manual says to do. Good.
+   And it works. Cool.
+    
+* Figure out how to do the documentation for consoler (could be tricky) 
+* Figure out how to have boxer include consoler.h?
+* Figure out how to do the boxertest, which needs boxer to work.
+* Start flushing out the rest of the components.
+

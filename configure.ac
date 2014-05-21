@@ -11,5 +11,7 @@ AC_CONFIG_FILES([
  Makefile
  src/Makefile
  src/consoler/Makefile
+ src/consoler/consoler.pc
+ src/boxer/Makefile
 ])
 AC_OUTPUT

@@ -10,4 +10,7 @@ noinst_PROGRAMS = consolertest
 consolertest_SOURCES = consolertest.c
 consolertest_LDADD = libconsoler.a
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = consoler.pc
+
 
