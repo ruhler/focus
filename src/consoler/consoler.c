@@ -22,11 +22,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "consoler.h"
 
 const char* CNSL_Version()
 {
-    return FOCUS_VERSION_STRING;
+    return PACKAGE_VERSION;
 }
 
 // Event types
