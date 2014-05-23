@@ -22,13 +22,14 @@
 
 #include "consoler.h"
 
-// Call this with first command line argument the path to the boxer
-// application to test.
-int main(int argc, char* argv[]) 
+int main() 
 {
+    const char* path = "./boxer";
+    char* args[] = {"./boxer", NULL};
+
     CNSL_Display display = CNSL_AllocDisplay(640, 480);
     CNSL_Event event;
-    CNSL_Client boxer = CNSL_LaunchClient(argv[1], argv+1);
+    CNSL_Client boxer = CNSL_LaunchClient(path, args);
     CNSL_SendEvent(boxer, CNSL_MakeResize(640, 480));
 
     CNSL_Color white = CNSL_MakeColor(0xff, 0xff, 0xff);

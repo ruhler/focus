@@ -1,11 +1,11 @@
-prefix=@PREFIX@
+prefix=@prefix@
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: Fonter
 Description: Font library for consoler applications
 URL:
-Version: @VERSION@
+Version: @PACKAGE_VERSION@
 Requires: fontconfig, freetype2, consoler
 Conflicts:
 Libs: -L${libdir}

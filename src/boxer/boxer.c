@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 
+#include "config.h"
 #include "consoler.h"
 
 #define BOX_LENGTH 10
@@ -47,7 +48,7 @@ void box(CNSL_Display dpy, unsigned int x, unsigned int y, CNSL_Color col)
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("boxer %s\n", FOCUS_VERSION_STRING);
+        printf("boxer %s\n", PACKAGE_VERSION);
         return 0;
     }
 

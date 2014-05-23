@@ -205,7 +205,45 @@ Next steps:
    And it works. Cool.
     
 * Figure out how to do the documentation for consoler (could be tricky) 
+   I could try texinfo. I think that would be worth while.
+   And man.
+  
+   But the thing is, I want a pre-processor.
+   That is, a single common specification for the documentation of each
+   function.
+
+   I like having this placed in the header file, because it makes sense to go
+   with the header file. If you change the header, you should change the
+   documentation.
+
+   This suggests I'll want a tool which reads the header file and extracts the
+   documentation. Then generates the man file or the texinfo, or input texinfo
+   files. This is what we currently have.
+
+   The question is:
+   * how to invoke this preprocessor from automake.
+   * what the preprocessor should look like in order to be nicely portable
+   * what the preprocessor should generate for the man and texinfo files.
+
+
+
 * Figure out how to have boxer include consoler.h?
+   I would like to include it as #include <consoler.h>
+   I see no special INCLUDES thing in automake.
+   So perhaps just use CPPFLAGS with -I../consoler
+
+   Yup. That works fine.
+
 * Figure out how to do the boxertest, which needs boxer to work.
+   We could assume boxer is in the current directory?
+   Doesn't that seem reasonable to you?
+
 * Start flushing out the rest of the components.
+
+Fri May 23 16:12:54 EDT 2014
+
+Next question: How to find the include directory for freetype?
+And also ensure freetype2 is installed?
+
+I should be able to do a pkg-config check.
 

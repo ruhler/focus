@@ -18,6 +18,7 @@
 
 #include <math.h>
 
+#include "config.h"
 #include "fonter.h"
 
 // Round a fixed point number in 26.6 format to an integer.
@@ -32,7 +33,7 @@ int from26_6(int x)
 
 const char* FNTR_Version()
 {
-    return FOCUS_VERSION_STRING;
+    return PACKAGE_VERSION;
 }
 
 FNTR_Fonter FNTR_Create(const char* fontname)
