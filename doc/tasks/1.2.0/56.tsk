@@ -265,3 +265,28 @@ Questions:
 I don't like how every command is built by linking against every library.
 Shouldn't it be per command?
 
+Sat May 24 14:41:30 EDT 2014
+
+Ignoring the issue with tcl.h for now, I now have all of the executables
+building, and all of the test cases running and passing.
+
+This leaves the following items before I start to think about how to clean up
+the build system:
+ * man pages
+ * documentation
+ * screen term info file.
+
+I think term info file should be the most straight-forward.
+First, figure out what I'm supposed to do:
+ - where should the file go
+ - should I install it by running tic?
+
+Sat May 24 14:53:36 EDT 2014
+
+The existing sconscript build system doesn't do anything with the term info
+files. So let me not worry about them now, but rather, later.
+
+So then, it's on to documentation.
+
+I think this is worth its own task. Say 72.tsk.
+

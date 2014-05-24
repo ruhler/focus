@@ -1,0 +1,70 @@
+
+Sat May 24 14:57:18 EDT 2014
+
+Task: how to deal with documentation in new build system
+
+Let me review how documentation currently works.
+
+We have the following kinds of documentation:
+
+* Library header files
+Each function is documented in a comment above the function prototype.
+
+* General documentation
+Is described using asciidoc.
+For the documentation of library functions, we automatically generate parts
+from the library header files which can be included in the general
+documentation.
+
+* Executable man pages
+Man pages are described using asciidoc, translated into man pages from there.
+The description in the man page is included directly from the general
+documentation.
+
+* Library man pages
+Are automatically generated using a single common template, and extracting the
+rest of the information from the Library header files documentation.
+
+Things that I like:
+ * One place for library function documentation
+   In the header file
+   Which is re-used for general documentation and man pages.
+
+ * One place for general description.
+   Which is re-used for man pages.
+
+I suspect I also like not having to write the man pages in a yucky syntax.
+
+
+What's the plan for the new build system?
+
+I'm willing to try texinfo format for the general documentation.
+I'm willing to try not using asciidoc.
+
+Note: the library header files already work fine for documentation.
+
+It either makes sense to start on non-library texinfo files, or library man
+files.
+
+Let's see the automake documentation for texinfo files.
+The questions to answer are:
+ * when do the texinfo files get built? At user build time, or dist build
+   time?
+
+Looks like they get built by the user. info files are the only ones built by
+default and installed by default.
+
+Hmm... How can I try this?
+
+Start at the top level.
+Start with no content.
+Then fill convert an executable, like 'boxer', to use this.
+See how it works out.
+
+Sat May 24 15:32:07 EDT 2014
+
+The top level focus document looks good as a texinfo. I like it.
+
+There's a way to get at version info in the texinfo file.
+Let me try that next.
+

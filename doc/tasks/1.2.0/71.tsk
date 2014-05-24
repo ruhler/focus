@@ -1,0 +1,9 @@
+
+Sat May 24 14:54:57 EDT 2014
+
+Task: termer gets messed up on elinks sometimes
+
+It leaves characters stranded, or highlighting gets messed up when we scroll.
+I'll try to pay attention to when this happens, to see if we can get an idea
+of the problem.
+

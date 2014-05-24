@@ -1,0 +1,67 @@
+\input texinfo
+@setfilename focus.info
+@settitle Focus Manual ?VERSION?
+
+@copying
+This is the Focus Manual, version ?VERSION?.
+
+Copyright @copyright{} 2014 Richard Uhler.
+@end copying
+
+@titlepage
+@title Focus Manual
+@page
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top Focus Manual
+
+@end ifnottex
+
+@menu
+* Introduction:: Introduction to the focus system.
+@end menu
+
+@node Introduction
+@chapter Introduction
+Focus is a project which aims to produce a computing environment which allows
+you to focus on the work you are doing. focus consists of the following
+components.
+
+@table @asis
+@item consoler
+Library for interacting with the user via keys and display.
+
+@item fonter
+Library for drawing fonts on consoler displays.
+
+@item boxer
+A box game.
+
+@item filler
+A sample program to fill a display with color.
+
+@item green
+A screen-like application window manager.
+
+@item pdfer
+A pdf viewer.
+
+@item imager
+An image viewer.
+
+@item sdlcsr
+A consoler server implemented on libSDL.
+
+@item termer
+A terminal emulator.
+@end table
+
+Each of these components is described in more detail in the following
+sections.
+
+@bye
