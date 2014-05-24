@@ -1,0 +1,7 @@
+Focus README
+============
+
+To set up autotools:
+  $ autoreconf --install
+
+

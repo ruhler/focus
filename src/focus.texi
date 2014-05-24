@@ -1,15 +1,16 @@
 \input texinfo
 @setfilename focus.info
-@settitle Focus Manual ?VERSION?
+@include version.texi
+@settitle Focus @value{VERSION} Manual
 
 @copying
-This is the Focus Manual, version ?VERSION?.
+This is the Focus @value{VERSION} Manual.
 
 Copyright @copyright{} 2014 Richard Uhler.
 @end copying
 
 @titlepage
-@title Focus Manual
+@title Focus @value{VERSION}
 @page
 @insertcopying
 @end titlepage

@@ -18,6 +18,7 @@ AC_CHECK_LIB([png],[png_create_read_struct])
 AC_CHECK_LIB([jpeg],[jpeg_std_error])
 AC_CHECK_LIB([util],[forkpty])
 AC_CHECK_LIB([curses],[initscr])
+AC_CHECK_LIB([tcl8.5],[Tcl_WrongNumArgs])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
@@ -26,6 +27,7 @@ AC_CONFIG_FILES([
  src/consoler/Makefile
  src/consoler/consoler.pc
  src/boxer/Makefile
+ src/filler/Makefile
  src/fonter/Makefile
  src/fonter/fonter.pc
  src/green/Makefile
