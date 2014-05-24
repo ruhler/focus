@@ -254,4 +254,14 @@ Questions:
  * for filler: how to find tcl.h?
  * what about all those posix things I use in green and such?
    Shouldn't we have checks for them?
+ * how to conditionally build components that have dependencies I may not
+   want?
+ * how to output a nice summary of what will be built (once we support
+   conditionally building things
+ * is there a problem with dependency tracking?
+    - I changed pdfertest.c, but it didn't recompile it. Why?
+      It's like all my nightmares from make all over again.
+
+I don't like how every command is built by linking against every library.
+Shouldn't it be per command?
 

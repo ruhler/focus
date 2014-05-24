@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "config.h"
 #include "client.h"
 #include "display.h"
 #include "inputter.h"
@@ -119,7 +120,7 @@ void iput(char c)
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("termer %s\n", FOCUS_VERSION_STRING);
+        printf("termer %s\n", PACKAGE_VERSION);
         return 0;
     }
 

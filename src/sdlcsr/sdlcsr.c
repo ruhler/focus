@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <SDL/SDL.h>
 
+#include "config.h"
 #include "consoler.h"
 
 typedef struct {
@@ -48,7 +49,7 @@ int handle_output(ClientAndScreen* info)
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("sdlcsr %s\n", FOCUS_VERSION_STRING);
+        printf("sdlcsr %s\n", PACKAGE_VERSION);
         return 0;
     }
 
