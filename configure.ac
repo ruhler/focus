@@ -17,6 +17,7 @@ AC_CHECK_LIB([pthread],[pthread_create])
 AC_CHECK_LIB([png],[png_create_read_struct])
 AC_CHECK_LIB([jpeg],[jpeg_std_error])
 AC_CHECK_LIB([util],[forkpty])
+AC_CHECK_LIB([curses],[initscr])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([

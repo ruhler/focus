@@ -49,13 +49,10 @@ void testfills(CNSL_Client termer)
     CNSL_FreeDisplay(display);
 }
 
-// Arg 1: termer program to test.
-// Arg 2: termfiller program
-int main(int argc, char* argv[]) 
+int main() 
 {
-    assert(argc > 2);
-    char* termerpath = argv[1];
-    char* termfillerpath = argv[2];
+    char* termerpath = "./termer";
+    char* termfillerpath = "./termfiller";
 
     // Make termfiller the default shell, test that.
     setenv("SHELL", termfillerpath, 1);
