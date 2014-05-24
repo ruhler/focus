@@ -33,7 +33,7 @@ void sigpipehandler(int signum)
 int main() 
 {
     const char* path = "./filler";
-    char* args{} = {"./filler", NULL};
+    char* args[] = {"./filler", NULL};
 
     // We've had problems with SIGPIPEs being thrown, ending the test case,
     // but not having it fail. Make sure that doesn't happen.

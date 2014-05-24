@@ -17,8 +17,9 @@
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
-#include <tcl.h>
+#include <tcl8.5/tcl.h>
 
+#include "config.h"
 #include "filler.h"
 #include "eventer.h"
 
@@ -71,7 +72,7 @@ int zoom_cmd(ClientData cd, Tcl_Interp* interp, int objc, Tcl_Obj* const objv[])
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("filler %s\n", FOCUS_VERSION_STRING);
+        printf("filler %s\n", PACKAGE_VERSION);
         return 0;
     }
 

@@ -1,3 +1,3 @@
 
-SUBDIRS = consoler boxer fonter green imager pdfer sdlcsr termer
+SUBDIRS = consoler fonter boxer filler green imager pdfer sdlcsr termer
 
