@@ -247,3 +247,11 @@ And also ensure freetype2 is installed?
 
 I should be able to do a pkg-config check.
 
+Fri May 23 19:17:40 EDT 2014
+
+Questions:
+ * how to build documentation?
+ * for filler: how to find tcl.h?
+ * what about all those posix things I use in green and such?
+   Shouldn't we have checks for them?
+

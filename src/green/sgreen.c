@@ -26,6 +26,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
+#include "config.h"
 #include "consoler.h"
 #include "green.h"
 
@@ -206,7 +207,7 @@ void handle_input()
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("sgreen %s\n", FOCUS_VERSION_STRING);
+        printf("sgreen %s\n", PACKAGE_VERSION);
         return 0;
     }
 

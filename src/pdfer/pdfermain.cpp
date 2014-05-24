@@ -18,6 +18,7 @@
 
 #include <iostream>
 
+#include "config.h"
 #include "pdfer.h"
 
 double zoomamt(bool shifton, bool ctrlon)
@@ -34,7 +35,7 @@ double zoomamt(bool shifton, bool ctrlon)
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("pdfer %s\n", FOCUS_VERSION_STRING);
+        printf("pdfer %s\n", PACKAGE_VERSION);
         return 0;
     }
 

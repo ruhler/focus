@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "config.h"
 #include "imager.h"
 #include "jpeger.h"
 #include "pnger.h"
@@ -30,7 +31,7 @@
 int main(int argc, char* argv[])
 {
     if (argc > 1 && strcmp(argv[1], "--version") == 0) {
-        printf("imager %s\n", FOCUS_VERSION_STRING);
+        printf("imager %s\n", PACKAGE_VERSION);
         return 0;
     }
 

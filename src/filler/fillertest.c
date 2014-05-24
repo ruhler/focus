@@ -30,8 +30,11 @@ void sigpipehandler(int signum)
 
 // Call this with first command line argument the path to the filler
 // application to test.
-int main(int argc, char* argv[]) 
+int main() 
 {
+    const char* path = "./filler";
+    char* args{} = {"./filler", NULL};
+
     // We've had problems with SIGPIPEs being thrown, ending the test case,
     // but not having it fail. Make sure that doesn't happen.
     struct sigaction action;
@@ -47,7 +50,7 @@ int main(int argc, char* argv[])
     CNSL_Display display = CNSL_AllocDisplay(width, height);
     CNSL_Event event;
 
-    CNSL_Client filler = CNSL_LaunchClient(argv[1], argv+1);
+    CNSL_Client filler = CNSL_LaunchClient(path, args);
     CNSL_SendEvent(filler, CNSL_MakeResize(width, height));
 
     CNSL_RecvDisplay(filler, display, NULL, NULL, NULL, NULL);

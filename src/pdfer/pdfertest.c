@@ -21,16 +21,15 @@
 
 #include "consoler.h"
 
-// Call this with first command line argument the path to the pdfer
-// application to test, and second command line argument the path to the
-// colors.pdf file 
-// 
-// The colors.pdf file has 8 pages, each 8.5" by 11" with a solid color:
-//  black, blue, green, cyan, red, purple, yellow, white
-int main(int argc, char* argv[])
+int main()
 {
+    // The colors.pdf file has 8 pages, each 8.5" by 11" with a solid color:
+    //  black, blue, green, cyan, red, purple, yellow, white
+    char* arg0 = "./pdfer";
+    char* args[] = {arg0, "colors.pdf", NULL};
+    
     CNSL_Display display = CNSL_AllocDisplay(640, 480);
-    CNSL_Client pdfer = CNSL_LaunchClient(argv[1], argv+1);
+    CNSL_Client pdfer = CNSL_LaunchClient(arg0, args);
     CNSL_Color color;
 
     CNSL_SendEvent(pdfer, CNSL_MakeResize(640, 480));

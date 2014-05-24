@@ -8,7 +8,7 @@ URL:
 Version: @PACKAGE_VERSION@
 Requires: fontconfig, freetype2, consoler
 Conflicts:
-Libs: -L${libdir}
+Libs: -L${libdir} -lfonter
 Libs.private:
 Cflags: -I${includedir}
 
