@@ -68,3 +68,15 @@ The top level focus document looks good as a texinfo. I like it.
 There's a way to get at version info in the texinfo file.
 Let me try that next.
 
+Sat May 24 15:47:31 EDT 2014
+
+It works. That's nice.
+
+The makefiles are annoying me, because the dependencies are not tracked
+properly. I had to clean and rebuild for configure to see that it should
+generate version.texi. That's very distressing.
+
+Next step: Add a description for, say, boxer to the texinfo.
+
+That works swell.
+

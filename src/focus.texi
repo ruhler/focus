@@ -25,6 +25,7 @@ Copyright @copyright{} 2014 Richard Uhler.
 
 @menu
 * Introduction:: Introduction to the focus system.
+* Boxer:: A Box Game
 @end menu
 
 @node Introduction
@@ -64,5 +65,7 @@ A terminal emulator.
 
 Each of these components is described in more detail in the following
 sections.
+
+@include boxer/boxer.texi
 
 @bye
