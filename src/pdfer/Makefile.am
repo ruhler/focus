@@ -13,3 +13,9 @@ pdfertest_SOURCES = pdfertest.c
 pdfertest_CPPFLAGS = -I../consoler
 pdfertest_LDADD = ../consoler/libconsoler.a
 
+man_MANS = pdfer.1
+
+SUFFIXES = .1.txt .1
+.1.txt.1:
+	a2x -v -f manpage -a VERSION=$(VERSION) $<
+

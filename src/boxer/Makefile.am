@@ -12,8 +12,9 @@ boxertest_SOURCES = boxertest.c
 boxertest_CPPFLAGS = -I../consoler
 boxertest_LDADD = ../consoler/libconsoler.a
 
-man_MANS = boxer.1
+man_MANS = boxer.1.txt
 
-boxer.1: boxer.1.txt boxer.txt
-	a2x -v -f manpage -a VERSION=$(VERSION) boxer.1.txt
+SUFFIXES = .1.txt .1
+.1.txt.1:
+	a2x -v -f manpage -a VERSION=$(VERSION) $<
 

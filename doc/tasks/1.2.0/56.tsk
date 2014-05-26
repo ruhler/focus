@@ -320,3 +320,33 @@ if the user doesn't have asciidoc installed.
 
 And also, how to avoid replicating the rule in every makefile.
 
+Mon May 26 10:46:40 EDT 2014
+
+Ug. And now I feel like we are back to the original problem: I don't want to
+use make for the build system.
+
+I suppose all we really need is a configure file.
+In order for people to feel happy about building things.
+
+We don't actually have to use autotools to make it.
+
+The thing that is nice about autotools is they know about the standard things
+people want to do. Annoying things like: what flags people expect to be able
+to give, and how to build in a separate directory, and how to do parallel
+make, and all that fun stuff. How to build shared libraries.
+
+Can I make my own autoconf macros to make it so it doesn't look like I'm
+reverting to make given that automake doesn't know how to handle asciidoc
+files?
+
+What is it that I want?
+
+Okay, here's what I propose.
+Do the yucky manual copying of rules thing.
+Get everything to build and install (assuming you have everything you need).
+
+Then, I can start cleaning things up, and trying to make them better.
+
+Next step:
+  All the rest of the application man pages.
+

@@ -8,3 +8,8 @@ sgreen_LDADD = ../consoler/libconsoler.a
 
 cgreen_SOURCES = cgreen.c
 
+man_MANS = cgreen.1 sgreen.1
+
+SUFFIXES = .1.txt .1
+.1.txt.1:
+	a2x -v -f manpage -a VERSION=$(VERSION) $<

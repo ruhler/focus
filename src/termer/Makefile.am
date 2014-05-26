@@ -23,6 +23,10 @@ termertest_SOURCES = termertest.c
 termertest_CPPFLAGS = -I../consoler
 termertest_LDADD = ../consoler/libconsoler.a
 
+man_MANS = termer.1
 
+SUFFIXES = .1.txt .1
+.1.txt.1:
+	a2x -v -f manpage -a VERSION=$(VERSION) $<
 
 

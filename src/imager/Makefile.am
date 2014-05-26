@@ -14,3 +14,8 @@ imagertest_SOURCES = imagertest.c
 imagertest_CPPFLAGS = -I../consoler
 imagertest_LDADD = ../consoler/libconsoler.a
 
+man_MANS = imager.1
+
+SUFFIXES = .1.txt .1
+.1.txt.1:
+	a2x -v -f manpage -a VERSION=$(VERSION) $<
