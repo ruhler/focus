@@ -80,3 +80,118 @@ Next step: Add a description for, say, boxer to the texinfo.
 
 That works swell.
 
+Sat May 24 16:05:13 EDT 2014
+
+Next step?
+
+Probably at this point it makes sense to do the boxer man page.
+This could be tricky, because I'd like to include the boxer description into
+the description section of the man page. Is that a natural thing to do?
+Or do I want to move the boxer description to a different generic format, and
+generate the boxer man page and boxer texinfo from that somehow?
+
+Sat May 24 19:29:30 EDT 2014
+
+I don't see a standard way to produce man pages from texinfo.
+I suspect my best bet will be to come up with some format for the
+documentation which I can manually translate to either man or texinfo.
+
+How about asciidoc?
+
+The trouble with asciidoc is it is a fairly hefty dependency to have for
+something so simple as what I want to do.
+
+I suppose the next question is, is there some simple standard preprocessor or
+other approach for doing this translation? Could I do it using whatever
+configure.ac already does for .in files? Or use m4?
+
+My goals are:
+ * the documentation should be easily human readable, and not too much of a
+   pain to write
+ * we should be able to generate the part of the man page and the part of the
+   texinfo
+
+Sun May 25 20:09:34 EDT 2014
+
+Looking at the generated boxer.1 man page: it looks pretty complicated.
+I'm not sure I want to have to generate that myself.
+Hmm...
+
+One possibility is help2man, and then I could invest more into --help.
+Except that doesn't help with man pages for library functions.
+
+What's wrong with asciidoc?
+It just seems like it has too many dependencies. It's too hard to install for
+so simple a task.
+
+Mon May 26 06:38:13 EDT 2014
+
+This seems like an opportunity to experiment with some language stuff.
+Because we have the following problem:
+ A. I desire a nice language for writing man pages.
+    Presumably one which knows about style requirements for man pages.
+    And one for which we have a compiler that tells us if we did something
+    wrong.
+
+ B. I desire a nice language for writing other documents.
+    Maybe targeted toward texinfo, but I could also imagine a tex target, or
+    other things.
+    Again, I would like a compiler to help me with things.
+
+ C. I would like to write some description which can be used by both of these
+    languages.
+    And wouldn't it be nice to have a compiler to help out?
+
+And to address the problem of extra dependencies: We could either require they
+have installed this stuff, or we could just ship it with focus and make it
+part of the build system.
+
+The ultimate point is: we want the help of computers. It should be okay to
+have the help of computers in making things that we want.
+
+The question is about interfaces:
+ * Do you use a standad interface everyone knows and supports
+ * Who is 'everyone' here? Consider texinfo and man vs. asciidoc or a local
+   design
+
+I'm claiming we should be able to use computers for very specific tasks, which
+means having an abstraction or interface for a very specific purpose.
+
+Ah, and now we have the interesting question:
+ * Does it make sense to use an interface which is more general than it needs
+   to be for your purpose?
+
+For example: using tcl for key configuration of filler.
+Or using troff for the purpose of man pages.
+Or using python to write a program for which python is a bit overkill?
+
+Some research: what information do I currently need to express for the focus
+documentation?
+
+* Paragraphs
+* Include other files
+* Sections with titles
+* Subsections with titles
+* Links to current version number
+* Title of document
+* Author of document
+* Email of author
+* Description list
+* Comments in source (for copywrite and such)
+* Some sort of typesetting to get typesetting of manuals write:
+    *foo*, 'foo' (for variable), +foo+ (for reference to program object)
+    `foo` (for something else: a string literal?)
+
+Here's one issue: in more specific contexts, we may be able to infer more
+information than less specific contexts. If I want to use something in both
+contexts, I'll need to annotate it with what would otherwise be infered in the
+more specific contexts.
+
+Mon May 26 10:10:21 EDT 2014
+
+Okay, I'm making a decision. For the first attempt at a switch to the new
+build system, don't change how we do documentation. Stick with asciidoc,
+figure out how to make that work.
+
+I can revisit this later, when I ask how I can make things cleaner.
+

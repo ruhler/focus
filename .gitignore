@@ -27,6 +27,7 @@ src/Makefile.in
 src/boxer/Makefile
 src/boxer/Makefile.in
 src/boxer/boxer
+src/boxer/boxer.1
 src/consoler/Makefile
 src/consoler/Makefile.in
 src/consoler/consoler.pc

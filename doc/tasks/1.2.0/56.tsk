@@ -290,3 +290,33 @@ So then, it's on to documentation.
 
 I think this is worth its own task. Say 72.tsk.
 
+Mon May 26 10:11:09 EDT 2014
+
+I have decided to punt on 72.tsk for the time being. Use ascidoc for the
+documentation. Figure out how to support it in the build system.
+
+Let me start with the boxer man page.
+
+Inputs:
+  boxer.1.txt - the asciicod description of the man page.
+  boxer.txt - the description included by boxer.1.txt.
+
+Goal: generate boxer.1
+How:
+ a2x -v -f manpage -a VERSION=$(VERSION) boxer.1.txt
+
+Then, I would like to use the generated boxer.1 file in a standard automake
+man page rule.
+
+Okay, how do I add this rule for asciidoc to automake?
+
+Looks like just like in a normal makefile.
+Let me try it.
+
+Mon May 26 10:23:45 EDT 2014
+
+That works swell. The real question will be figuring how to do the right thing
+if the user doesn't have asciidoc installed.
+
+And also, how to avoid replicating the rule in every makefile.
+
