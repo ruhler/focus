@@ -350,3 +350,30 @@ Then, I can start cleaning things up, and trying to make them better.
 Next step:
   All the rest of the application man pages.
 
+Mon May 26 11:04:38 EDT 2014
+
+What remains now:
+ * library man pages
+ * the top level documentation (via asciidoc)
+
+Question: can we generate texinfo from asciidoc?
+
+It looks like no.
+
+The next best thing: can we tell automake about the html to be installed?
+
+Maybe just another rule, and it automatically gets installed?
+Or I can install it as dist_DATA I suppose.
+
+Mon May 26 11:17:27 EDT 2014
+
+Fine. It's ugly. I basically reverted to make.
+
+And it's like... what's the purpose of automake at all if you are just going
+to revert to make?
+
+Anyway. Next step: generating all the library man pages.
+
+Ug. This is so complicated. Because I don't know the generated files
+statically.
+

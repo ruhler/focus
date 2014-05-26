@@ -9,6 +9,7 @@ config
 *.trs
 *.1
 
+focus.html
 Makefile
 Makefile.in
 aclocal.m4
