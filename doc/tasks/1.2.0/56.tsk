@@ -377,3 +377,180 @@ Anyway. Next step: generating all the library man pages.
 Ug. This is so complicated. Because I don't know the generated files
 statically.
 
+Mon May 26 14:13:33 EDT 2014
+
+I'm not happy with autotools if it just reverts to make.
+It's already had problems with dependencies. I already don't trust it, and end
+up git cleaning everything and rerunning everything.
+This makes it a failure in my mind.
+
+What do I want from a build system?
+
+There are two distinct users of a build system:
+A. Developer: Goal is to develop an application.
+Developers will often make small changes, and want to quickly rebuild the
+entire system based on those small changes.
+
+B. End user: Goal is to build the application and install it.
+They have not previously built it. They don't care about tracking
+dependencies, because they just want to build it once. That is, unless the
+build fails, in which case they do care about dependencies, because they don't
+want to have to recompile everything to try and fix it. And let's be honest,
+builds fail a lot.
+
+There is also a configuration question: What programs and utilities and
+libraries are available on the current system. What does this mean for how to
+build and install. What does this mean for *what* to build and install.
+
+There are two ways for a user to help find needed programs utilities and
+libraries: guess where they are and see if we are right, or ask the user for
+them. In practice, probably best to guess, but let the user overwrite things
+if we are wrong.
+
+What's wrong with make and automake and scons? A human is responsible for
+specifying the dependencies. These dependencies are inevitable incorrectly
+specified, meaning we can't rely on partial rebuilds. In this case, may as
+well just have a single script to build everything always.
+
+This doesn't entirely work out for, say, smten, because of two things:
+1. It's really too much of a pain to rebuild everything always.
+For smten in particular, having to download and install all the cabal
+dependencies is unreasonable.
+
+2. Haskell tries to do its own partial rebuilds, and it messes up.
+Stupid.
+
+Thus, my conclusion, if we want to have a decent build system with support for
+partial rebuilds, we must automatically determine the dependencies.
+
+How could you automatically determine dependencies?
+ * Use system call traces
+ * Restrict the language to one which tracks things.
+
+The second option is not satisfactory, because it requires anything you want
+to use for building to be implemented in the language.
+But in practice we must support existing tools and commands and languages for
+building things.
+
+So, assuming we use tracing somehow to figure out what everything does.
+The only way to know the dependencies is to run it. That sounds right to me.
+This means that the first time we build the system, we don't know the
+dependencies. What order should we build it in?
+
+I believe there should be a clear order in which to build things.
+Is that the case?
+Like, the order I would write if I just wrote a shell script to build
+everything.
+
+This order may be overly restrictive: it may not allow parallelization and
+other things we would like to improve performance if we knew all the
+dependencies. But note, this order is also probably fine if all we want to do
+is build and install the thing, without partial rebuilds.
+
+Okay, so far we have the following:
+ * You specify build commands using arbitrary executables
+    (shell script, other script, makefile, compiler call, whatever)
+ * You specify an order to build things the first time.
+    A sequence of build commands.
+
+What other things are there to worry about?
+ * Configuration
+ * Cleaning
+ * Phased builds
+    - to let you build only those parts of the graph named.
+    I'm thinking like:
+    The maintainer may want to build part of the package before distributing it.
+    Or you may want to 'make check' separately from 'make'.
+    And 'make install', etc...
+
+Sun Jul 13 16:45:50 EDT 2014
+
+It's also important for people to be able to configure and build the package
+in a standard way.
+
+Thus, the interface should be the standard interface:
+
+ ./configure && make && make install
+
+With standard make targets.
+
+The job of configure is to figure out what should be built, and where
+libraries can be found.
+
+Note: just because we call make and support the make targets, does not mean we
+need to use make for the core build process.
+
+Now, then, thoughts on tracking dependencies, and when it is safe to not
+compile something again...
+
+Things which affect a command are the environment, and command inputs.
+Let's assume the only way to change the command inputs is to change the
+environment.
+What things in the environment can effect the build?
+Or, in other words, what operations can the commands do to access the
+environment? System calls.
+
+* presence or absence of file
+* contents of file
+* presence or absence of env var
+* content of env var
+* and many, many other possible things
+
+But the idea is clear: 
+We keep a database for each command, when we first run it, we record all the
+environment queries it made.
+
+Next time we go to run the command, we check if the environment is the same or
+not. Note: we probably want to do a bunch of caching to see.
+
+I would expect, for the most part, the first time we run the command, it
+obviously must be run. The second time we run it, we probably want to run it
+again too, because it generated things from the first time. After that, I
+think we will have reached a steady state.
+
+There is also some dependency grahing to do. Things like: this command
+doesn't depend on this other command, so they can be executed in parallel.
+
+Good. There is a lot of work to do to implement this, in terms of tracking
+what things do, making sure we don't mess things up. But I should be able to
+implement a naive version which just always reruns things to start, and slowly
+improve performance. The key question is: what should be the interface?
+
+We want primitive commands - so you can call the primitive build however you
+want.
+
+We want command sequences - a conservative description of command
+dependencies, which we will be able to automatically refine.
+
+Anything else?
+
+How about a general purpose language for commands? Something like tcl?
+To make it much easier to describe these primitive command invocations and
+command sequences.
+
+How about some way to call commands hierarchically? To allow for finer grain
+parallelism? Or does that not really matter?
+
+Something we will have to assume is that the environment will not change
+externally during the execution of a command. At lesat, the important part of
+the environment.
+
+Well, I think the interface to use is obvious: write tcl scripts. But redefine
+the core tcl commands to do dependency things.
+
+Can I do that? Can I recognize a sequence of commands in tcl and then run
+them? Yes. I can change 'exec', for example, to record the list of commands.
+Except, we might want some way to refer to the output... That's awkward.
+
+I want to limit the language, because I think it will make life easier.
+
+But, anyway, let me start by assuming the full language, make an initial build
+script, and see what all kinds of things I want to specify and how.
+
+Cool. So, plan is: ditch autotools, ditch scons, write a tcl script to build
+focus. That will tell me what things I need, how I want to write the script.
+It will be annoying to build, because it will always rebuild everything, but I
+should be patient. That's the key.
+
+Cool. Let me get started then.
+
