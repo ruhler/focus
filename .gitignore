@@ -1,0 +1,4 @@
+src/consoler/consoler.o
+src/consoler/consoler.pc
+src/consoler/consolertest
+src/consoler/libconsoler.a

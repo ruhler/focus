@@ -554,3 +554,38 @@ should be patient. That's the key.
 
 Cool. Let me get started then.
 
+Sun Jul 13 17:17:39 EDT 2014
+
+What to start with?
+
+Consoler.
+I'll have a file called make.tcl at the top level, and then one in each
+directory, and they can source each other. What do you think about that?
+
+Sounds reasonable to me.
+
+Sun Jul 13 17:36:48 EDT 2014
+
+Question: I want different make commands. How should I support those?
+
+Well, the obvious way would seem to be: have a different script for each
+command. They can share common stuff if they need to.
+
+Cool. So next step is: make check.
+
+But this suggests we might have a lot of files for making. So, what if I put
+them in a directory called tclmk? Or have some way to make it clear they are
+part of the build system and nothing else? Hmm... Something to ponder.
+
+Sun Jul 13 17:54:19 EDT 2014
+
+Actually, it doesn't work so cleanly, because there are dependencies.
+Check should run normal make first. But not complete normal make.
+
+Perhaps a better way is to have conditional commands:
+* if CHECK, then do the check stuff
+* if INSTALL, then do the install stuff.
+
+Yes. I think that makes more sense to me.
+Better to keep things ordered and all together.
+
