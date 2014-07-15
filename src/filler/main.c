@@ -17,9 +17,8 @@
 // along with Focus.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
-#include <tcl8.5/tcl.h>
+#include <tcl/tcl.h>
 
-#include "config.h"
 #include "filler.h"
 #include "eventer.h"
 

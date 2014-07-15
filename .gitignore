@@ -14,3 +14,7 @@ src/boxer/boxer
 src/boxer/boxer.1
 src/boxer/boxertest
 
+src/filler/filler
+src/filler/filler.1
+src/filler/fillertest
+
