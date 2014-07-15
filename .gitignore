@@ -2,3 +2,10 @@ src/consoler/consoler.o
 src/consoler/consoler.pc
 src/consoler/consolertest
 src/consoler/libconsoler.a
+
+src/fonter/fonter.o
+src/fonter/fonter.pc
+src/fonter/fonterexample
+src/fonter/fontertest
+src/fonter/libfonter.a
+ 

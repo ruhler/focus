@@ -18,7 +18,6 @@
 
 #include <math.h>
 
-#include "config.h"
 #include "fonter.h"
 
 // Round a fixed point number in 26.6 format to an integer.

@@ -14,6 +14,7 @@ exec sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= consoler.pc
 
 if $::INSTALL {
     exec install -t $::PREFIX/include consoler.h consoler_keysym.h
+    exec install -t $::PREFIX/lib libconsoler.a
     exec install -t $::PREFIX/lib/pkgconfig consoler.pc
 }
 
