@@ -27,3 +27,7 @@ src/imager/imager
 src/imager/imager.1
 src/imager/imagertest
 
+src/pdfer/pdfer
+src/pdfer/pdfer.1
+src/pdfer/pdfertest
+

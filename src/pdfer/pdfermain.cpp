@@ -18,7 +18,6 @@
 
 #include <iostream>
 
-#include "config.h"
 #include "pdfer.h"
 
 double zoomamt(bool shifton, bool ctrlon)

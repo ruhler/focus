@@ -1,5 +1,5 @@
 
-SUBDIRS = pdfer sdlcsr termer
+SUBDIRS = sdlcsr termer
 
 doc_DATA = focus.html
 
