@@ -22,7 +22,6 @@
 #include <unistd.h>
 #include <SDL/SDL.h>
 
-#include "config.h"
 #include "consoler.h"
 
 typedef struct {

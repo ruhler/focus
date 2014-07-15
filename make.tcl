@@ -7,4 +7,5 @@ indir src/filler {source make.tcl}
 indir src/green {source make.tcl}
 indir src/imager {source make.tcl}
 indir src/pdfer {source make.tcl}
+indir src/sdlcsr {source make.tcl}
 

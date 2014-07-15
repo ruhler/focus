@@ -31,3 +31,6 @@ src/pdfer/pdfer
 src/pdfer/pdfer.1
 src/pdfer/pdfertest
 
+src/sdlcsr/sdlcsr
+src/sdlcsr/sdlcsr.1
+
