@@ -1,9 +1,9 @@
 
-execv gcc -o boxer -I../consoler boxer.c -L../consoler -lconsoler -DPACKAGE_VERSION="$::VERSION"
+execv gcc -o boxer $::CONSOLER_CFLAGS boxer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION"
 
 
 if $::CHECK {
-    execv gcc -o boxertest -I../consoler boxertest.c -L../consoler -lconsoler
+    execv gcc -o boxertest $::CONSOLER_CFLAGS boxertest.c $::CONSOLER_LIBS
     execv ./boxertest
 }
 

@@ -1,6 +1,6 @@
 
-set ::FONTER_CFLAGS "$::FREETYPE_CFLAGS $::FONTCONFIG_CFLAGS -I../consoler"
-set ::FONTER_LIBS "-L../consoler -lconsoler -L. -lfonter $::FREETYPE_LIBS $::FONTCONFIG_LIBS -lm"
+set ::FONTER_CFLAGS "$::CONSOLER_CFLAGS $::FREETYPE_CFLAGS $::FONTCONFIG_CFLAGS"
+set ::FONTER_LIBS "$::CONSOLER_LIBS -L[pwd] -lfonter $::FREETYPE_LIBS $::FONTCONFIG_LIBS -lm"
 
 # libfonter.a
 execv gcc -c -o fonter.o $::FONTER_CFLAGS fonter.c -DPACKAGE_VERSION="$::VERSION"
