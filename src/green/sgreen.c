@@ -26,7 +26,6 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
-#include "config.h"
 #include "consoler.h"
 #include "green.h"
 

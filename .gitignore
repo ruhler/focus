@@ -18,3 +18,8 @@ src/filler/filler
 src/filler/filler.1
 src/filler/fillertest
 
+src/green/cgreen
+src/green/cgreen.1
+src/green/sgreen
+src/green/sgreen.1
+
