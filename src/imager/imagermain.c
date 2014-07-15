@@ -19,7 +19,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "config.h"
 #include "imager.h"
 #include "jpeger.h"
 #include "pnger.h"

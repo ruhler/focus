@@ -23,3 +23,7 @@ src/green/cgreen.1
 src/green/sgreen
 src/green/sgreen.1
 
+src/imager/imager
+src/imager/imager.1
+src/imager/imagertest
+
