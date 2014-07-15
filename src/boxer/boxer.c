@@ -18,7 +18,6 @@
 
 #include <stdio.h>
 
-#include "config.h"
 #include "consoler.h"
 
 #define BOX_LENGTH 10

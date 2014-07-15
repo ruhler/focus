@@ -1,3 +1,4 @@
+
 src/consoler/consoler.o
 src/consoler/consoler.pc
 src/consoler/consolertest
@@ -8,4 +9,8 @@ src/fonter/fonter.pc
 src/fonter/fonterexample
 src/fonter/fontertest
 src/fonter/libfonter.a
- 
+
+src/boxer/boxer
+src/boxer/boxer.1
+src/boxer/boxertest
+

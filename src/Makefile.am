@@ -1,5 +1,5 @@
 
-SUBDIRS = boxer filler green imager pdfer sdlcsr termer
+SUBDIRS = filler green imager pdfer sdlcsr termer
 
 doc_DATA = focus.html
 

@@ -40,7 +40,6 @@ int main()
 
     CNSL_RecvDisplay(boxer, display, NULL, NULL, NULL, NULL);
     color = CNSL_GetPixel(display, 105, 105);
-    fprintf(stderr, "%08x\n", color);
     assert(color == white);
 
     CNSL_SendEvent(boxer, CNSL_MakeKeypress(CNSLK_j));

@@ -589,3 +589,13 @@ Perhaps a better way is to have conditional commands:
 Yes. I think that makes more sense to me.
 Better to keep things ordered and all together.
 
+Tue Jul 15 18:49:48 EDT 2014
+
+Question: How to do make clean?
+Shouldn't this be automatically generated based on what the commands produce?
+Or should I manually specify it?
+That's a little bit annoying.
+
+Also, if we make clean, we don't also want to build things first.
+That would be silly.
+
