@@ -34,3 +34,11 @@ src/pdfer/pdfertest
 src/sdlcsr/sdlcsr
 src/sdlcsr/sdlcsr.1
 
+src/termer/inputtertest
+src/termer/outputtertest
+src/termer/screentest
+src/termer/termer
+src/termer/termer.1
+src/termer/termertest
+src/termer/termfiller
+

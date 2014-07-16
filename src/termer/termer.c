@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "config.h"
 #include "client.h"
 #include "display.h"
 #include "inputter.h"
