@@ -10,7 +10,7 @@ if $::CHECK {
 execv a2x -v -f manpage -a VERSION=$::VERSION filler.1.txt
 
 if $::INSTALL {
-    install -t $::PREFIX/bin filler
-    install -t $::PREFIX/share/man/man1 filler.1
+    install $::PREFIX/bin filler
+    install $::PREFIX/share/man/man1 filler.1
 }
 

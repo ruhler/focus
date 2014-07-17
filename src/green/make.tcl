@@ -6,7 +6,7 @@ execv a2x -v -f manpage -a VERSION=$::VERSION sgreen.1.txt
 execv a2x -v -f manpage -a VERSION=$::VERSION cgreen.1.txt
 
 if $::INSTALL {
-    install -t $::PREFIX/bin sgreen cgreen rgreen
-    install -t $::PREFIX/share/man/man1 sgreen.1 cgreen.1
+    install $::PREFIX/bin sgreen cgreen rgreen
+    install $::PREFIX/share/man/man1 sgreen.1 cgreen.1
 }
 

@@ -11,7 +11,7 @@ if $::CHECK {
 execv a2x -v -f manpage -a VERSION=$::VERSION pdfer.1.txt
 
 if $::INSTALL {
-    install -t $::PREFIX/bin pdfer
-    install -t $::PREFIX/share/man/man1 pdfer.1
+    install $::PREFIX/bin pdfer
+    install $::PREFIX/share/man/man1 pdfer.1
 }
 

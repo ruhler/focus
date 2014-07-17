@@ -18,8 +18,8 @@ execv sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= consoler.p
 librarydoc consoler.h
 
 if $::INSTALL {
-    execv install -t $::PREFIX/include consoler.h consoler_keysym.h
-    execv install -t $::PREFIX/lib libconsoler.a
-    execv install -t $::PREFIX/lib/pkgconfig consoler.pc
+    install $::PREFIX/include consoler.h consoler_keysym.h
+    install $::PREFIX/lib libconsoler.a
+    install $::PREFIX/lib/pkgconfig consoler.pc
 }
 

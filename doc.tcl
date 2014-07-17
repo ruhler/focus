@@ -73,7 +73,7 @@ proc librarydoc {fname} {
     foreach {full name brief desc_ proto} $result {
         set desc [string trim [string map {"\n///" "\n"} [string map {"\n/// " "\n"} $desc_]]]
         set bar [string range $::titlebar 1 [string length $name]]
-        set mapping [list @NAME@ $name @TITLEBAR@ $bar @BRIEF@ $brief @DESCRIPTION@ $desc @PROTOTYPE@ $proto]
+        set mapping [list @NAME@ $name @TITLEBAR@ $bar @BRIEF@ $brief @DESCRIPTION@ $desc @PROTOTYPE@ $proto @VERSION@ $::VERSION]
 
         set fout [open "$name.3.txt" w]
         puts $fout [string map $mapping $::mantemplate]
@@ -82,11 +82,11 @@ proc librarydoc {fname} {
         set fout [open "$name.txt" w]
         puts $fout [string map $mapping $::doctemplate]
         close $fout
-    }
 
-    execv a2x -v -f manpage $name.3.txt
-    if $::INSTALL {
-        install -t $::PREFIX/share/man/man3 "$name.3"
+        execv a2x -v -f manpage $name.3.txt
+        if $::INSTALL {
+            install $::PREFIX/share/man/man3 $name.3
+        }
     }
 }
 

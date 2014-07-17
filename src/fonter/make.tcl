@@ -19,9 +19,9 @@ exec sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= fonter.pc.i
 librarydoc fonter.h
 
 if $::INSTALL {
-    exec install -t $::PREFIX/include fonter.h
-    exec install -t $::PREFIX/lib libfonter.a
-    exec install -t $::PREFIX/lib/pkgconfig fonter.pc
+    install $::PREFIX/include fonter.h
+    install $::PREFIX/lib libfonter.a
+    install $::PREFIX/lib/pkgconfig fonter.pc
 }
 
 

@@ -10,7 +10,7 @@ if $::CHECK {
 execv a2x -v -f manpage -a VERSION=$::VERSION boxer.1.txt
 
 if $::INSTALL {
-    install -t $::PREFIX/bin boxer
-    install -t $::PREFIX/share/man/man1 boxer.1
+    install $::PREFIX/bin boxer
+    install $::PREFIX/share/man/man1 boxer.1
 }
 

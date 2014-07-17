@@ -10,7 +10,7 @@ if $::CHECK {
 execv a2x -v -f manpage -a VERSION=$::VERSION imager.1.txt
 
 if $::INSTALL {
-    install -t $::PREFIX/bin imager
-    install -t $::PREFIX/share/man/man1 imager.1
+    install $::PREFIX/bin imager
+    install $::PREFIX/share/man/man1 imager.1
 }
 

@@ -6,10 +6,10 @@ foreach key [array names ::env] {
 set ::env(PATH) "/usr/bin:/bin"
 set ::env(LANG) "en_US.UTF-8"
 
-set ::PREFIX "/home/ruhler/local"
+set ::PREFIX "/home/ruhler/scratch/focustest"
 set ::VERSION "1.2.0"
 set ::CHECK yes
-set ::INSTALL no
+set ::INSTALL yes
 set ::FREETYPE_CFLAGS -I/usr/include/freetype2
 set ::FONTCONFIG_CFLAGS -I/usr/include/freetype2
 set ::FREETYPE_LIBS -lfreetype
@@ -30,6 +30,14 @@ proc exec {args} {
 
 proc execv {args} {
     exec {*}[join $args]
+}
+
+# Install to the directory 'dest' each of the files given.
+proc install {dest args} {
+    foreach x $args {
+        execv mkdir -p $dest
+        execv cp $x $dest
+    }
 }
 
 proc indir {dir script} {

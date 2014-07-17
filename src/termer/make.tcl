@@ -21,7 +21,7 @@ if $::CHECK {
 execv a2x -v -f manpage -a VERSION=$::VERSION termer.1.txt
 
 if $::INSTALL {
-    install -t $::PREFIX/bin termer
-    install -t $::PREFIX/share/man/man1 termer.1
+    install $::PREFIX/bin termer
+    install $::PREFIX/share/man/man1 termer.1
 }
 
