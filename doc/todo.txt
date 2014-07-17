@@ -2,20 +2,18 @@
 List of pending issues.
 
 1.2.0
-- how to deal with documentation in new build system (72.tsk)
 - get poppler patch into poppler release (47.tsk)
 - alternatives to scons? (56.tsk)
+- don't rebuild things that are already built
+- add support for standard make targets
+- add support for standard configure script
+- get rid of 'src' directory, we don't need the indirection
 - termertest fails from tcl, but not manually?
 - should filler really require tcl?
-- rotate test in pdfer should be removed or made useful
-- get rid of profiling stuff in termer if it isn't used
 - update documentation on how to build and install focus
 - how should termer.ti file be installed?
 - termer gets messed up on elinks sometimes (71.tsk)
-- get rid of scons stuff once new build system is working
 - add a man page for rgreen
-- don't replicate rule for building man page in every Makefile.am
-- define flags which encapsulate all dependencies of a library being used
 - release 1.2.0 (58.tsk)
 
 1.3.0

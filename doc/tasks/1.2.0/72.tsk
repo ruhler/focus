@@ -195,3 +195,7 @@ figure out how to make that work.
 
 I can revisit this later, when I ask how I can make things cleaner.
 
+Wed Jul 16 21:39:14 EDT 2014
+
+Since I have given up on autotools, I'm fine sticking with asciidoc.
+
