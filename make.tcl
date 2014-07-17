@@ -1,6 +1,7 @@
 
-source common.tcl
-source doc.tcl
+source tclmk.tcl
+source config.tcl
+source librarydoc.tcl
 indir src/consoler {source make.tcl}
 indir src/fonter {source make.tcl}
 indir src/boxer {source make.tcl}

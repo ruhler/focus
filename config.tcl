@@ -1,5 +1,4 @@
 
-# Explicitly initialize the environment.
 foreach key [array names ::env] {
     array unset ::env $key
 }
@@ -18,34 +17,4 @@ set ::POPPLER_CFLAGS "-I/home/ruhler/local/include/poppler/cpp -I/home/ruhler/lo
 set ::POPPLER_LIBS "-L/home/ruhler/local/lib -lpoppler-cpp -lpoppler-cairo -lm -lstdc++ -pthread -lpoppler -lcairo"
 set ::SDL_CFLAGS "-D_GNU_SOURCE=1 -D_REENTRANT -I/usr/include/SDL"
 set ::SDL_LIBS "-lSDL"
-
-set ::BUILD_ROOT [pwd]
-
-rename exec tclexec
-
-proc exec {args} {
-    puts "$args"
-    eval tclexec $args
-}
-
-proc execv {args} {
-    exec {*}[join $args]
-}
-
-# Install to the directory 'dest' each of the files given.
-proc install {dest args} {
-    foreach x $args {
-        execv mkdir -p $dest
-        execv cp $x $dest
-    }
-}
-
-proc indir {dir script} {
-    set wd [pwd]
-    puts "tclmk: Entering directory `$wd/$dir'"
-    cd $dir
-    eval $script
-    puts "tclmk: Leaving directory `$wd/$dir'"
-    cd $wd
-}
 

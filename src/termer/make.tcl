@@ -23,6 +23,5 @@ execv a2x -v -f manpage -a VERSION=$::VERSION termer.1.txt
 if $::INSTALL {
     install $::PREFIX/bin termer
     install $::PREFIX/share/man/man1 termer.1
-    execv tic termer.ti
 }
 
