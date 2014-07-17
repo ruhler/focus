@@ -5,6 +5,7 @@ List of pending issues.
 - how to deal with documentation in new build system (72.tsk)
 - get poppler patch into poppler release (47.tsk)
 - alternatives to scons? (56.tsk)
+- termertest fails from tcl, but not manually?
 - should filler really require tcl?
 - rotate test in pdfer should be removed or made useful
 - get rid of profiling stuff in termer if it isn't used

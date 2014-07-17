@@ -1,4 +1,22 @@
 
+# LIBRARYDOC
+# Generates documentation for a library component.
+#  name - the name of the component, for example "fonter".
+# Assumptions:
+#   $name.h is a header file where each function to be documented is proceeded
+#   with a special comment of the form:
+#   /// name - brief
+#   ///
+#   /// asciidoc description
+#   /// more description
+#   /// etc...
+#   prototype;
+#
+#   The prototype may span multiple lines. The current implementation is very
+#   picky about everything else, so be exact or the function will be ignored.
+# Generates: man pages for each function, and an asciidoc file with the
+# description suitable for including in a guide called $name.txt.
+
 set ::titlebar "============================================================"
 
 set ::mantemplate {

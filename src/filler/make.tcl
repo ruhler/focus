@@ -1,7 +1,6 @@
 
 execv gcc -o filler $::CONSOLER_CFLAGS main.c filler.c eventer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION" -ltcl
 
-
 if $::CHECK {
     execv gcc -o fillertest $::CONSOLER_CFLAGS fillertest.c $::CONSOLER_LIBS
     execv -ignorestderr ./fillertest

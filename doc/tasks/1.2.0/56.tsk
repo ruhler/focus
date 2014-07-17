@@ -613,3 +613,9 @@ I suppose I could use a python script.
 I think it makes more sense to use a tcl script.
 I'll just need to look into how it works.
 
+Wed Jul 16 21:05:16 EDT 2014
+
+I did the librarydoc thing. Now, in theory, everything is built and installed.
+Let me double check that is indeed the case, and remove all the old build
+stuff.
+

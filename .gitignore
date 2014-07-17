@@ -159,3 +159,7 @@ src/fonter/FNTR_LoadGlyph.3
 src/fonter/FNTR_MaxWidth.3
 src/fonter/FNTR_Version.3
 
+src/README.html
+src/green/cgreentest
+src/green/sgreentest
+
