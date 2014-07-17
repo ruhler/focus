@@ -599,3 +599,17 @@ That's a little bit annoying.
 Also, if we make clean, we don't also want to build things first.
 That would be silly.
 
+Tue Jul 15 21:23:32 EDT 2014
+
+Goal: complete the build script, so it builds everything and installs
+everything as it should. Once that is done, I can ask about how to do
+configuration, and all that fun stuff.
+
+What things are currently missing?
+I think the librarydoc thing: I need a script to extract the librarydoc
+comments.
+
+I suppose I could use a python script.
+I think it makes more sense to use a tcl script.
+I'll just need to look into how it works.
+

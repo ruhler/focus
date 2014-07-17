@@ -16,6 +16,8 @@ execv gcc -o fonterexample $::FONTER_CFLAGS fonterexample.c $::FONTER_LIBS
 # fonter.pc
 exec sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= fonter.pc.in > fonter.pc
 
+librarydoc fonter.h
+
 if $::INSTALL {
     exec install -t $::PREFIX/include fonter.h
     exec install -t $::PREFIX/lib libfonter.a

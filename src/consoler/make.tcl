@@ -15,6 +15,8 @@ if $::CHECK {
 # consoler.pc
 execv sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= consoler.pc.in > consoler.pc
 
+librarydoc consoler.h
+
 if $::INSTALL {
     execv install -t $::PREFIX/include consoler.h consoler_keysym.h
     execv install -t $::PREFIX/lib libconsoler.a

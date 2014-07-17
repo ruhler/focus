@@ -19,6 +19,8 @@ set ::POPPLER_LIBS "-L/home/ruhler/local/lib -lpoppler-cpp -lpoppler-cairo -lm -
 set ::SDL_CFLAGS "-D_GNU_SOURCE=1 -D_REENTRANT -I/usr/include/SDL"
 set ::SDL_LIBS "-lSDL"
 
+set ::BUILD_ROOT [pwd]
+
 rename exec tclexec
 
 proc exec {args} {
