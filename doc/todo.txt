@@ -4,9 +4,9 @@ List of pending issues.
 1.2.0
 - get poppler patch into poppler release (47.tsk)
 - alternatives to scons? (56.tsk)
-- don't rebuild things that are already built
-- add support for standard make targets
-- add support for standard configure script
+- don't rebuild things that are already built (73.tsk)
+- add support for standard make targets (74.tsk)
+- add support for standard configure script (75.tsk)
 - get rid of 'src' directory, we don't need the indirection
 - termertest fails from tcl, but not manually?
 - should filler really require tcl?
@@ -42,5 +42,5 @@ unassigned
 - have a way to show/hide cursor in sdlcsr?
 - add support for gif to imager?
 
-Next Task: 73.tsk
+Next Task: 76.tsk
 

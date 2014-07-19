@@ -1,0 +1,42 @@
+
+Thu Jul 17 19:53:57 EDT 2014
+
+Task: add support for standard configure script
+
+The way I see it, the goal of configure is to determine the following:
+* Where to install (prefix)
+* What environment to use (PATH, etc...)
+* Where to find libraries (FOO_CFLAGS, FOO_LIBS)
+* What components to build
+
+I. How to specify each
+prefix - user sets by flag.
+path - user sets env vars
+libraries - user sets explicitly
+components - flag
+
+II. What default values to use if the user sets nothing
+prefix - /usr/local
+path - /bin:/usr/bin, or some such
+libraries - Try package config. If that doesn't work, assume standard.
+components - enable all
+
+So it's just a matter of writing a script to provide the interface, and generaing
+config.tcl.
+
+Some other thoughts:
+
+On ensuring build will work
+---------------------------
+The only way to know for sure is to try it.
+I hate wasting time testing things ahead of time the way autotools does.
+But, we could imagine the developer knows what things it would be good to
+test, then just make that part of the early part of the build script.
+
+On ensuring configure is run
+----------------------------
+Either check config.tcl is set, don't require configure is run, don't generate
+a makefile until configure is run, or something.
+
+I think the next step is to read about the standard for configure scripts.
+

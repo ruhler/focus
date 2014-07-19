@@ -1,0 +1,63 @@
+
+Thu Jul 17 19:43:17 EDT 2014
+
+Task: don't rebuild things that are already built.
+
+
+When can we avoid rebuilding something that has already been built?
+
+If the inputs have not changed since building it, and the outputs have not
+changed since building it. Because in that case, running it again will not
+change anything.
+
+So the idea is as follows: whenever you go to execute a command, first check
+to see if the inputs and outputs are the same as they were after you last ran
+the command. If so, don't run it, otherwise do.
+
+What we need:
+* A database which says for each command what the last inputs and outputs were
+
+Execute a command, update the database.
+
+Now, the next question is how we say what an input or output was.
+There are different kinds of inputs and outputs:
+* a file that was read
+* a file which didn't exist
+* an environment var which was read
+* a file which was written
+* an environment var which was updated
+and so on.
+
+For each thing, we want some way to represent its state.
+Now, if we were perfect, we would record the exact state: for example, the
+entire contents of the file, or, even better, just those contents of the file
+read by the command when it was executed.
+
+In practice, I suspect that will take up space and it will take a while to
+compare if a thing is the same as it was.
+So instead we approximate.
+
+Each kind of thing will have its own approximation.
+A file that was read could be a timestamp, or an md5sum.
+A file which didn't exist could just be a single name.
+
+Now, comparison will be faster, but it will take time to, for example, hash a
+file, so we'll want to also maintain a cache of the current state of things.
+
+In summary, we have the following structure:
+
+* A database which says for each command, what the last input/output set was
+* For each kind of thing, a way to summarize its state.
+* A cache for the summaries of the current states of things
+
+The database of commands and the ways to summarize things can be orthogonal,
+so, for example, the user could choose to use a different way to summarize
+things on a per-project basis.
+
+Cool. So, the next step is to produce a detailed listing of the kinds of
+things which are inputs and outputs of a command.
+Probably best to just run strace on an interesting command, and see what it
+does.
+Then, figure out a decent way to summarize the state of each of those kinds of
+things. And go from there.
+

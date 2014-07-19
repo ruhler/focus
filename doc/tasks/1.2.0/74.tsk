@@ -1,0 +1,126 @@
+
+Thu Jul 17 19:53:22 EDT 2014
+
+Task: add support for standard make targets
+
+First step: figure out what the standard make targets are.
+
+Fri Jul 18 21:02:36 EDT 2014
+
+Gnu standard has the list.
+Here they are, in decreasing order of importance to me:
+
+all: program, not docs, debug enabled.
+install: program, install program, libs
+install-html: build and install docs
+html: build docs
+clean: delete things not part of distro, except config
+check: Run self tests, assuming program is built.
+distclean: delete things not part of distro, including config
+maintainer-clean: delete everything generated, except configure
+dist: create a tarball
+uninstall: uninstall program, libs, and docs
+
+mostlyclean: same as clean
+dvi, pdf, ps
+install-pdf, install-dvi install-ps
+install-strip
+TAGS
+info
+installcheck
+installdirs
+
+How should I organize things. Is there a clear dependency list?
+Or, a clear set of commands that should be run in each?
+
+all: commands to build program
+install: all + installation
+install-html: html + installation
+distclean: clean + other
+maintainer-clean: clean + other
+
+It looks like for the most part the sets are fully contained. It's a proper
+hierarchy.
+
+So I want a build mode.
+And in the script, I can say: run these commands for this mode, these commands
+for this mode, and so on.
+I can write tcl procs to help with this, and assume things are included in
+other things when appropriate.
+
+One thing we could do to help organize things is have different scripts for
+each target? Is that nicer than having conditional things?
+
+Probably I just want:
+
+make_all {
+  ...
+}
+
+make_install {
+  ...
+}
+
+make_check {
+  ...
+}
+
+As procedures. Put commands in the right place. The library will make sure to
+execute the right things only when the mode is right.
+
+Cool.
+
+Or, we could just label individual commands?
+Or, have a prefix for each command?
+
+The problem is, the 'install' target conflicts with the 'install' procedure.
+
+I suppose I could put them in a different namespace:
+
+make::install {
+    ...
+}
+
+And they work just as well for blocks of commands as single commands, which is
+nice.
+
+Now, how could we describe things so that the implementation can figure out
+what belongs to what targets?
+
+build vs. install
+program vs. doc
+all vs. check
+dist vs. nodist
+
+This is probably a better approach to use then.
+
+Let me start with the make commands manually used, then encapsulate things as
+I go along.
+
+Good. Now, we will want to pass a command line argument to make.tcl.
+Either pass it as the argument, or use the flag --target.
+
+I will also want to write a makefile which is a pass-through for each of these
+targets to the make.tcl script.
+
+Fri Jul 18 21:31:43 EDT 2014
+
+I wrote the makefile so it passes the target name to make.tcl, and only allows
+the targets I specify in the list.
+
+All I need now is to support the targets in make.tcl.
+
+I think I can classify all my commands easily enough.
+Let me try that to start.
+
+Sat Jul 19 19:39:18 EDT 2014
+
+I have the make targets: all, install, check, and clean working now.
+
+The next step, I think, is comming up with a better scheme for specifying
+which targets each command applies to.
+That is, I'm thinking it's probably best if the command knows when it should
+be run, not the developer?
+
+Because the developer isn't supposed to have to know about the user interface.
+

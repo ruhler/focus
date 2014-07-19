@@ -7,8 +7,6 @@ set ::env(LANG) "en_US.UTF-8"
 
 set ::PREFIX "/home/ruhler/scratch/focustest"
 set ::VERSION "1.2.0"
-set ::CHECK yes
-set ::INSTALL yes
 set ::FREETYPE_CFLAGS -I/usr/include/freetype2
 set ::FONTCONFIG_CFLAGS -I/usr/include/freetype2
 set ::FREETYPE_LIBS -lfreetype

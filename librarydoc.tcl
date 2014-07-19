@@ -101,10 +101,9 @@ proc librarydoc {fname} {
         puts $fout [string map $mapping $::doctemplate]
         close $fout
 
-        execv a2x -v -f manpage $name.3.txt
-        if $::INSTALL {
-            install $::PREFIX/share/man/man3 $name.3
-        }
+        make::all execv a2x -v -f manpage $name.3.txt
+        make::install cmd::install $::PREFIX/share/man/man3 $name.3
+        make::clean execv rm -f  $name.txt $name.3.txt $name.3
     }
 }
 

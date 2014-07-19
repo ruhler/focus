@@ -638,3 +638,33 @@ this?
 
 * Get configure up and running in a good way.
 
+Fri Jul 18 20:57:19 EDT 2014
+
+I read the gnu standards for configure and make. They are pretty detailed.
+Here's the deal. I need to think of it in three pieces:
+
+1. The user interface.
+The user interface to build is exactly the GNU standard. That's all it is: an
+interface. Use this interface because people are familiar with it.
+
+In terms of my efforts, I'll probably just focus on those parts of the
+interface I use.
+I should only export a different interface if I think there's something
+better. But I think probably the gnu interface will be just fine.
+
+2. The developer interface.
+This is the interface the developer uses to describe how to build things.
+Note: this should not have to be tied in any way to the user interface.
+If I do it properly, it won't be at all. I just hope the gnu interface doesn't
+have some features which force me to expose it to the developer.
+
+3. The implementation.
+Given a description of how to build things from the developer, implement the
+user interface.
+This is where all the ugly stuff for supporting the user interface should go.
+
+With that it mind, I'm ready to dive in and get to work.
+It probably makes sense to start with the core makefile targets, then
+configuration. Then just slowly expand with what I need, supporting the gnu
+standard as I can.
+
