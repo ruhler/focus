@@ -2,14 +2,14 @@
 source tclmk.tcl
 source config.tcl
 source librarydoc.tcl
-indir src/consoler {source make.tcl}
-indir src/fonter {source make.tcl}
-indir src/boxer {source make.tcl}
-indir src/filler {source make.tcl}
-indir src/green {source make.tcl}
-indir src/imager {source make.tcl}
-indir src/pdfer {source make.tcl}
-indir src/sdlcsr {source make.tcl}
-indir src/termer {source make.tcl}
-indir src {source make.tcl}
+indir consoler {source make.tcl}
+indir fonter {source make.tcl}
+indir boxer {source make.tcl}
+indir filler {source make.tcl}
+indir green {source make.tcl}
+indir imager {source make.tcl}
+indir pdfer {source make.tcl}
+indir sdlcsr {source make.tcl}
+indir termer {source make.tcl}
+indir userdoc {source make.tcl}
 

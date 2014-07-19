@@ -1,0 +1,12 @@
+
+Sat Jul 19 19:46:16 EDT 2014
+
+Task: get rid of 'src' directory, we don't need the indirection.
+
+The only thing is, have a 'userdoc' directory with sources for the user level
+documentation.
+
+This should be very easy to fix.
+
+And it was. Done.
+

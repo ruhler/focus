@@ -7,7 +7,6 @@ List of pending issues.
 - don't rebuild things that are already built (73.tsk)
 - add support for standard make targets (74.tsk)
 - add support for standard configure script (75.tsk)
-- get rid of 'src' directory, we don't need the indirection
 - termertest fails from tcl, but not manually?
 - should filler really require tcl?
 - update documentation on how to build and install focus
@@ -42,5 +41,5 @@ unassigned
 - have a way to show/hide cursor in sdlcsr?
 - add support for gif to imager?
 
-Next Task: 76.tsk
+Next Task: 77.tsk
 
