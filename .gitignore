@@ -1,4 +1,6 @@
 
+config.tcl
+
 consoler/consoler.o
 consoler/consoler.pc
 consoler/consolertest

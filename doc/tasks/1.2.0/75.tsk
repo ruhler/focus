@@ -40,3 +40,56 @@ a makefile until configure is run, or something.
 
 I think the next step is to read about the standard for configure scripts.
 
+Sat Jul 19 20:06:48 EDT 2014
+
+The goal of configure should be to generate configure.tcl.
+Or, perhaps I should call it configure.status?
+
+Anyway, configure will be a tcl script, and it will generate a configure
+script with the configuration.
+
+The first goal I should have is:
+
+Arguments: --prefix= --help
+Builds all components.
+Uses pkgconfig to figure out what it needs to about libraries.
+Don't worry about PATH things for now. Just inherit it from the environment.
+I can deal with that later.
+
+This should be simple.
+
+It is worth reading about configure.status to see if it would be the
+appropriate name to generate, and what else it should contain if so.
+
+Well, first note about the standard: gnu says it should be a shell script.
+
+That wouldn't be so hard if I were much more fluent in shell scripting than I
+am. For now, it's okay with me if I use a tcl script.
+
+Notes:
+* have a comment at the top saying config.tcl was auto generated
+* config.status is just a shell script recording the command line arguments
+  It does not record the results of configuration. (I can try checking this)
+
+So I looked at config.status for grep. It... does a bunch of stuff.
+
+Anyway, the takeaway is ... I don't need to worry about config.status yet.
+So my task is simple.
+
+Let's give it a try, and see if it works.
+
+First step: parsing of command line arguments.
+
+If --help was passed, print help screen and exit.
+Otherwise, print prefix in use, which defaults to /usr/local.
+
+And then, I suppose, I could just run pkgconfig for each of the rest, and
+print out the values.
+
+Sat Jul 19 21:40:31 EDT 2014
+
+Cool! It works. Nifty.
+
+Now it's just grunt work to add more features.
+Let me create individual tasks for that.
+

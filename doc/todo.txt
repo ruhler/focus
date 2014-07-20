@@ -3,10 +3,11 @@ List of pending issues.
 
 1.2.0
 - get poppler patch into poppler release (47.tsk)
-- alternatives to scons? (56.tsk)
+- configure should accept --prefix=var form
+- make distclean should remove config.tcl
+- build should fail in a nice way of config.tcl doesn't exist
+- add support for make dist target
 - don't rebuild things that are already built (73.tsk)
-- add support for standard make targets (74.tsk)
-- add support for standard configure script (75.tsk)
 - termertest fails from tcl, but not manually?
 - should filler really require tcl?
 - update documentation on how to build and install focus

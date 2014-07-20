@@ -1,4 +1,5 @@
 
+set ::VERSION "1.2.0"
 source tclmk.tcl
 source config.tcl
 source librarydoc.tcl

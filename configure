@@ -1,0 +1,62 @@
+#!/bin/sh
+# configure script for focus\
+exec tclsh "$0" "$@"
+
+# Return true if the given key was passed on the command line.
+proc argpresent {key} {
+    return [expr [lsearch $::argv $key] != -1]
+}
+
+# Look up the value of 'key' on the command line.
+# It is of one of the following forms:
+#   ... key value ...
+#
+# If 'key' does not appear on the command line, or it is the last entry,
+# then 'default' is returned.
+proc arglookup {key default} {
+    set idx [lsearch $::argv $key]
+    set val $default
+    if {$idx >= 0 && $idx+1 < [llength $::argv]} {
+        set val [lindex $::argv [expr $idx+1]]
+    }
+    return $val
+}
+
+set helptext {Usage: ./configure [OPTION]...
+
+Defaults for the options are specified in brackets.
+
+Configuration:
+    -h, --help          display this help and exit
+
+Installation directories:
+    --prefix=PREFIX     install architecture-independent files in PREFIX
+                        [/usr/local]
+}
+
+if {[argpresent "--help"] || [argpresent "-h"]} {
+    puts $helptext
+    exit
+}
+
+set prefix [arglookup "--prefix" "/usr/local"]
+
+puts "configure: creating config.tcl"
+
+set fout [open "config.tcl" w]
+puts $fout "set ::PREFIX \"$prefix\""
+
+set packages {
+    FREETYPE freetype2
+    FONTCONFIG fontconfig
+    POPPLER poppler-cpp
+    SDL sdl
+}
+
+foreach {vnm nm} $packages {
+    puts $fout "set ::${vnm}_CFLAGS \"[exec pkg-config --cflags $nm]\""
+    puts $fout "set ::${vnm}_LIBS \"[exec pkg-config --libs $nm]\""
+}
+
+close $fout
+
