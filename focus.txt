@@ -41,28 +41,28 @@ sections.
 Consoler Library
 ----------------
 :leveloffset: 1
-include::../consoler/consoler.txt[]
+include::consoler/consoler.txt[]
 
 :leveloffset: 0
 
 Fonter Library
 --------------
 :leveloffset: 1
-include::../fonter/fonter.txt[]
+include::fonter/fonter.txt[]
 
 :leveloffset: 0
 
 Boxer
 -----
 :leveloffset: 1
-include::../boxer/boxer.txt[]
+include::boxer/boxer.txt[]
 
 :leveloffset: 0
 
 Filler
 ------
 :leveloffset: 1
-include::../filler/filler.txt[]
+include::filler/filler.txt[]
 
 :leveloffset: 0
 
@@ -70,34 +70,34 @@ Green
 -----
 :leveloffset: 1
 
-include::../green/green.txt[]
+include::green/green.txt[]
 :leveloffset: 0
 
 Pdfer
 -----
 :leveloffset: 1
-include::../pdfer/pdfer.txt[]
+include::pdfer/pdfer.txt[]
 
 :leveloffset: 0
 
 Imager
 -----
 :leveloffset: 1
-include::../imager/imager.txt[]
+include::imager/imager.txt[]
 
 :leveloffset: 0
 
 Sdlcsr
 ------
 :leveloffset: 1
-include::../sdlcsr/sdlcsr.txt[]
+include::sdlcsr/sdlcsr.txt[]
 
 :leveloffset: 0
 
 Termer
 ------
 :leveloffset: 1
-include::../termer/termer.txt[]
+include::termer/termer.txt[]
 
 :leveloffset: 0
 
