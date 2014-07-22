@@ -1,5 +1,5 @@
 
-make::all execv gcc -o boxer $::CONSOLER_CFLAGS boxer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION"
+cmd::prog boxer gcc -o boxer $::CONSOLER_CFLAGS boxer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION"
 cmd::man1 boxer
 
 make::check {
@@ -7,6 +7,5 @@ make::check {
     execv ./boxertest
 }
 
-make::install cmd::install $::PREFIX/bin boxer
-make::clean execv rm -f boxer boxertest
+make::clean execv rm -f boxertest
 

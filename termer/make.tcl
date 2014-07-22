@@ -1,5 +1,5 @@
 
-make::all execv gcc -o termer $::FONTER_CFLAGS termer.c client.c display.c inputter.c outputter.c screen.c $::FONTER_LIBS -DPACKAGE_VERSION="$::VERSION" -lpthread -lutil
+cmd::prog termer gcc -o termer $::FONTER_CFLAGS termer.c client.c display.c inputter.c outputter.c screen.c $::FONTER_LIBS -DPACKAGE_VERSION="$::VERSION" -lpthread -lutil
 cmd::man1 termer
 
 make::check {
@@ -20,7 +20,5 @@ make::check {
 }
 
 
-make::install cmd::install $::PREFIX/bin termer
-
 make::clean execv rm -f inputtertest outputtertest screentest \
-    termer termertest termfiller
+    termertest termfiller

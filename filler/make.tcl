@@ -1,5 +1,5 @@
 
-make::all execv gcc -o filler $::CONSOLER_CFLAGS main.c filler.c eventer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION" -ltcl
+cmd::prog filler gcc -o filler $::CONSOLER_CFLAGS main.c filler.c eventer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION" -ltcl
 cmd::man1 filler
 
 make::check {
@@ -7,7 +7,5 @@ make::check {
     execv -ignorestderr ./fillertest
 }
 
-
-make::install cmd::install $::PREFIX/bin filler
-make::clean execv rm -f filler fillertest
+make::clean execv rm -f fillertest
 

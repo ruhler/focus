@@ -35,6 +35,14 @@ namespace eval cmd {
         make::clean execv rm -f $x.pc
     }
 
+    # Build a program of the given name using the given command.
+    # Arranges for the program to be installed in the bin directory.
+    proc prog {name args} {
+        make::all execv $args
+        make::install cmd::install $::PREFIX/bin $name
+        make::clean execv rm -f $name
+    }
+
     proc install {dest args} {
         foreach x $args {
             execv mkdir -p $dest
