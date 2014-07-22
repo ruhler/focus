@@ -25,7 +25,15 @@ namespace eval cmd {
         make::clean execv rm -f $x.1
     }
 
-
+    # pkgconfig foo
+    # Builds foo.pc from a template foo.pc.in by substituting the values of
+    #   @PACKAGE_VERSION@ and @prefix@ in foo.pc.in.
+    # Arranges for said pkgconfig file to be installed in the right place.
+    proc pkgconfig {x} {
+        make::all execv sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= $x.pc.in > $x.pc
+        make::install cmd::install $::PREFIX/lib/pkgconfig $x.pc
+        make::clean execv rm -f $x.pc
+    }
 
     proc install {dest args} {
         foreach x $args {

@@ -6,10 +6,10 @@ make::all {
     execv gcc -c -o fonter.o $::FONTER_CFLAGS fonter.c -DPACKAGE_VERSION="$::VERSION"
     execv ar cr libfonter.a fonter.o
     execv gcc -o fonterexample $::FONTER_CFLAGS fonterexample.c $::FONTER_LIBS
-    exec sed -e s=@PACKAGE_VERSION@=$::VERSION= -e s=@prefix@=$::PREFIX= fonter.pc.in > fonter.pc
 }
 
 librarydoc fonter.h
+cmd::pkgconfig fonter
 
 make::check {
     execv gcc -o fontertest $::FONTER_CFLAGS fontertest.c $::FONTER_LIBS
@@ -19,7 +19,6 @@ make::check {
 make::install {
     cmd::install $::PREFIX/include fonter.h
     cmd::install $::PREFIX/lib libfonter.a
-    cmd::install $::PREFIX/lib/pkgconfig fonter.pc
 }
 
-make::clean execv rm -f fonter.o fonter.pc fonterexample fontertest libfonter.a
+make::clean execv rm -f fonter.o fonterexample fontertest libfonter.a
