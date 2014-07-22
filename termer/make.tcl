@@ -1,8 +1,6 @@
 
-make::all {
-    execv gcc -o termer $::FONTER_CFLAGS termer.c client.c display.c inputter.c outputter.c screen.c $::FONTER_LIBS -DPACKAGE_VERSION="$::VERSION" -lpthread -lutil
-    execv a2x -v -f manpage -a VERSION=$::VERSION termer.1.txt
-}
+make::all execv gcc -o termer $::FONTER_CFLAGS termer.c client.c display.c inputter.c outputter.c screen.c $::FONTER_LIBS -DPACKAGE_VERSION="$::VERSION" -lpthread -lutil
+cmd::man1 termer
 
 make::check {
     execv gcc -o inputtertest $::CONSOLER_CFLAGS inputtertest.c inputter.c $::CONSOLER_LIBS
@@ -22,10 +20,7 @@ make::check {
 }
 
 
-make::install {
-    cmd::install $::PREFIX/bin termer
-    cmd::install $::PREFIX/share/man/man1 termer.1
-}
+make::install cmd::install $::PREFIX/bin termer
 
 make::clean execv rm -f inputtertest outputtertest screentest \
-    termer termer.1 termertest termfiller
+    termer termertest termfiller

@@ -12,6 +12,21 @@ proc execv {args} {
 
 # Install to the directory 'dest' each of the files given.
 namespace eval cmd {
+
+    # man1 foo
+    #  Builds a man page foo.1 from an asciidoc file foo.1.txt.
+    #  The asciidoc file may refer to the variable VERSION with the focus
+    #  version number.
+    #
+    #  Arranges for said man page to be installed in the right place.
+    proc man1 {x} {
+        make::all execv a2x -v -f manpage -a VERSION=$::VERSION $x.1.txt
+        make::install $::PREFIX/share/man/man1 $x.1
+        make::clean execv rm -f $x.1
+    }
+
+
+
     proc install {dest args} {
         foreach x $args {
             execv mkdir -p $dest

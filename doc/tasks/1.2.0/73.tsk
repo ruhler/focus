@@ -61,3 +61,68 @@ does.
 Then, figure out a decent way to summarize the state of each of those kinds of
 things. And go from there.
 
+Sun Jul 20 13:44:28 EDT 2014
+
+Looking at trace from building the entire thing.
+We have the following categories of things:
+
+* File Access: access("foo") = -1      
+Tests whether a file is accessable - at all, for read, o for write.
+Responses: -1 means no.
+
+* File Open, Failing: open("foo") = -1
+Try to open a file, says no such file.
+
+* File Stat, Failing: stat("foo") = -1
+Try to stat a file, says no such file.
+
+* File Stat, Working: stat("foo") = 0
+
+* File Open, working: open("foo") = 3
+
+File Operations (once opened)
+ - fstat, read, close, getdents, getsockname
+
+Get/Set rLimit: getrlimit, setrlimit
+
+Get working directory: getcwd
+Change working directory: chdir
+
+Get user id
+
+Execute: execve
+
+And some other miscellaneous. Hmm. That wasn't as enlightening as I had hoped.
+
+Well, I would summarize as:
+
+* Try to access a file which does not exist
+* Read a file which does exist
+    data, permissions, other stats matter
+* Write a file 
+    data, permissions, other stats matter
+* Read the working directory
+* Write the working directory
+* Read the user id
+* Read an environment var
+* Write an environment var
+
+Note: some operations do things, then undo them. Like temporary working
+directory change, temporary files created and removed.
+What really matters is the relevant state of the machine before and after the
+comand is run.
+The state that is read, and the state that is new.
+If there is state which is modified... in a non-idempotent way... well, I'll
+just assume you aren't interested in that state.
+
+Let me start with just the above list of things.
+I want to write a tcl script which, you give it some script to execute, and it
+will tell you all of the above things that happened?
+
+For now, just list everything. Don't worry about canceling out idempotent
+operations.
+
+I suspect the easiest way to do this will be figure out the right command line
+arguments to strace to produce a decent initial log, then parse that and make
+it pretty.
+
