@@ -21,7 +21,7 @@ namespace eval cmd {
     #  Arranges for said man page to be installed in the right place.
     proc man1 {x} {
         make::all execv a2x -v -f manpage -a VERSION=$::VERSION $x.1.txt
-        make::install $::PREFIX/share/man/man1 $x.1
+        make::install cmd::install $::PREFIX/share/man/man1 $x.1
         make::clean execv rm -f $x.1
     }
 
@@ -40,6 +40,16 @@ namespace eval cmd {
     proc prog {name cmd} {
         make::all execv $cmd
         make::install cmd::install $::PREFIX/bin $name
+        make::clean execv rm -f $name
+    }
+
+    # Build a unit test program with the given name and run it as a test case.
+    #   name - name of generated test program
+    #   build - command to build the test program
+    #   run - command to run the test program
+    proc test {name build run} {
+        make::check execv $build
+        make::check execv -ignorestderr $run
         make::clean execv rm -f $name
     }
 
