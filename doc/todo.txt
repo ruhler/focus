@@ -10,7 +10,6 @@ List of pending issues.
 - don't rebuild things that are already built (73.tsk)
 - termertest fails from tcl, but not manually?
 - should filler really require tcl?
-- update documentation on how to build and install focus
 - how should termer.ti file be installed?
 - termer gets messed up on elinks sometimes (71.tsk)
 - add a man page for rgreen

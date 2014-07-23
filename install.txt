@@ -18,14 +18,19 @@
 
 Building and Installing Focus
 =============================
-To build and install focus, you should create a config file describing your
-local configuration and where to install, run the command make in the top
-level directory, then run make install. If you want to install the terminfo
-entery for the termer component, you should also run tic src/termer/termer.ti.
+To configure Focus for build, run:
 
-There is a sample config file in doc/config.example. Consult it to see how to
-set the installation prefix, non standard include and library paths, and
-choose which components to build.
+   ./configure --prefix <PREFIX>
+
+Where <PREFIX> is the desired installation prefix. It defaults to /usr/local.
+This will generate the file config.tcl with the configuration options.
+
+To build and install Focus, after configuration has been performed:
+
+   make install
+
+If you want to install the terminfo entry for the termer component, you should
+also run tic src/termer/termer.ti.
 
 Component Package Requirements
 ------------------------------
