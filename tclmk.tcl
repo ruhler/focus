@@ -37,8 +37,8 @@ namespace eval cmd {
 
     # Build a program of the given name using the given command.
     # Arranges for the program to be installed in the bin directory.
-    proc prog {name args} {
-        make::all execv $args
+    proc prog {name cmd} {
+        make::all execv $cmd
         make::install cmd::install $::PREFIX/bin $name
         make::clean execv rm -f $name
     }

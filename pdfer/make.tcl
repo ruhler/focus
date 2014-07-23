@@ -1,5 +1,5 @@
 
-cmd::prog pdfer g++ -o pdfer $::FONTER_CFLAGS $::POPPLER_CFLAGS pdfermain.cpp pdfer.cpp $::FONTER_LIBS $::POPPLER_LIBS -DPACKAGE_VERSION="$::VERSION"
+cmd::prog pdfer { g++ -o pdfer $::FONTER_CFLAGS $::POPPLER_CFLAGS pdfermain.cpp pdfer.cpp $::FONTER_LIBS $::POPPLER_LIBS -DPACKAGE_VERSION="$::VERSION" }
 cmd::man1 pdfer
 
 make::check {

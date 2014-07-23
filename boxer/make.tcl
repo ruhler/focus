@@ -1,5 +1,5 @@
 
-cmd::prog boxer gcc -o boxer $::CONSOLER_CFLAGS boxer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION"
+cmd::prog boxer { gcc -o boxer $::CONSOLER_CFLAGS boxer.c $::CONSOLER_LIBS -DPACKAGE_VERSION="$::VERSION" }
 cmd::man1 boxer
 
 make::check {
