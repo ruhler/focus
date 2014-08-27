@@ -3,9 +3,11 @@ List of pending issues.
 
 1.2.0
 - get poppler patch into poppler release (47.tsk)
+- implement a cmd::html procedure, use it for top level make.tcl
+- implement a cmd::script procedure, use it for rgreen
 - configure should accept --prefix=var form
 - make distclean should remove config.tcl
-- build should fail in a nice way of config.tcl doesn't exist
+- build should fail in a nice way if config.tcl doesn't exist
 - add support for make dist target
 - don't rebuild things that are already built (73.tsk)
 - termertest fails from tcl, but not manually?
@@ -13,6 +15,7 @@ List of pending issues.
 - how should termer.ti file be installed?
 - termer gets messed up on elinks sometimes (71.tsk)
 - add a man page for rgreen
+- rgreen seems to have stopped working for greenfield
 - release 1.2.0 (58.tsk)
 
 1.3.0
@@ -34,7 +37,6 @@ unassigned
 - colors get inverted on sparc (endian issues)?
 - add build dir option to config?
 - can I have a consoler version of firefox (27.tsk)
-- clean up and document scons files
 - write development policy docs?
 - get rid of FNTR_GlyphLevel function?
 - sgreen doesn't always clean up sockets (43.tsk)
